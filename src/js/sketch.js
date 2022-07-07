@@ -1,6 +1,6 @@
-import 'src/js/lib/p5.easycam.js';
-import Picker from 'src/js/picker';
-import Cuby from 'src/js/cuby';
+import './lib/p5.easycam.js';
+import Picker from './picker.js';
+import Cuby from './cuby.js';
 
 export default function (p) {
   const CUBYESIZE = 50;
@@ -254,6 +254,10 @@ export default function (p) {
       }
     }
   }
+
+p.keyPressed = () => {
+console.log("x");
+}
 
   p.mousePressed = () => {
     startAction();
