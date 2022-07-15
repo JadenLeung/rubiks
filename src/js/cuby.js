@@ -289,21 +289,34 @@ export default class Cuby {
     this.p.push();
     
       this.p.translate(this.x, this.y, this.z);
-      this.p.strokeWeight(3);
+      this.p.strokeWeight(2);
         
       // p1, p2, p3, p4 coordinates
+
       this.p.fill(this.back);
-      this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
+      //this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
+      this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r, 2, 2);
+
       this.p.fill(this.front);
-      this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
+      //this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
+      this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	  
+
       this.p.fill(this.bottom);
-      this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
+      //this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
+      this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r, 2, 2);	  	  
+
       this.p.fill(this.top);
-      this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
-      this.p.fill(this.right);
-      this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
+      //this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
+      this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r, 2, 2);	  
+	  
+	  this.p.fill(this.right);
+      //this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
+      this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r, 2, 2);     	  	  
+
       this.p.fill(this.left);
-      this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
+      //this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
+      this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
+	  
       this.p.pop();
     
     this.picker.buffer.push();
@@ -322,7 +335,7 @@ export default class Cuby {
       this.picker.buffer.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
       this.picker.buffer.fill(this.buff_left);
       this.picker.buffer.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
-    
+      
     this.picker.buffer.pop();
   }
 }

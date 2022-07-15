@@ -15,7 +15,11 @@ export default function (p) {
   let SIZE = 3;
   let SIZE_SLIDER;
   let GAP_SLIDER;
+  let SPEED_SLIDER;
+  let SPEED = 0.01;
   let BACKGROUND_COLOR = 230;
+  let arr = [];
+  let canMan = true;
   p5.disableFriendlyErrors = DEBUG ? false : true;
 
   p.setup = () => {
@@ -33,17 +37,23 @@ export default function (p) {
     CAM.rotateZ(-p.PI / 2);
 
     reSetup();
-
-    SIZE_SLIDER = p.createSlider(2, 5, 3, 1);
+	
+	// hardcoded to do size 50 (3x3x3) 
+    //SIZE_SLIDER = p.createSlider(2, 5, 3, 1);
+	SIZE_SLIDER = p.createSlider(3, 1);
     SIZE_SLIDER.input(sliderUpdate);
     SIZE_SLIDER.style('top', '80px');
 
     GAP_SLIDER = p.createSlider(0, 100, 0, 1);
     GAP_SLIDER.input(sliderUpdate);
     GAP_SLIDER.style('top', '100px');
+	
+	SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
+    SPEED_SLIDER.input(sliderUpdate);
+    SPEED_SLIDER.style('top', '120px');
     
     const suffle_btn = p.createButton('Shuffle');
-    suffle_btn.position(70, 150);
+	suffle_btn.style('top', '140px');
     suffle_btn.mousePressed(shuffleCube.bind(null, 0));
   }
 
@@ -69,6 +79,7 @@ export default function (p) {
   function sliderUpdate() {
     SIZE = SIZE_SLIDER.value();
     GAP = GAP_SLIDER.value();
+	SPEED = SPEED_SLIDER.value();
     reSetup();
   }
 
@@ -187,7 +198,7 @@ export default function (p) {
         CUBE[i].row = row;
         CUBE[i].dir = dir;
         CUBE[i].anim_axis = axis;
-        CUBE[i].anim_angle = CUBE[i].dir * 0.01;
+        CUBE[i].anim_angle = CUBE[i].dir * SPEED;
       }
     }
   }
@@ -234,11 +245,10 @@ export default function (p) {
   function randomMove() {
     const axes = ['x', 'y', 'z'];
     const dirs = [-1, 1];
-    
+    const row = [-50, 50];
     const axe = p.random(axes);
     const cuby = p.random(Object.values(CUBE));
-    
-    animate(axe, cuby.get(axe), p.random(dirs));
+    animate(axe, p.random(row), p.random(dirs));
   }
 
   function startAction() {
@@ -255,10 +265,220 @@ export default function (p) {
     }
   }
 
-p.keyPressed = () => {
-console.log("x");
-}
+  //   *************************************
+function animateRotate(axis, dir) {
+    let rows = [-50, 0, 50];
+	
+    for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+      if (CUBE[i].animating()) {
+        // some cube is already in animation
+        return;
+      }
+    }
 
+    for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+        for (let j = 0; j < SIZE; j++) {
+		  if (CUBE[i].get(axis) === rows[j]) {
+			CUBE[i].row = rows[j];
+			CUBE[i].dir = dir;
+			CUBE[i].anim_axis = axis;
+			CUBE[i].anim_angle = CUBE[i].dir * SPEED;
+		  }
+		}
+    }
+  }
+  
+  p.keyPressed = () => {
+	console.log("keyCode is: " + p.keyCode);  
+	if(canMan == true)
+	{
+	switch (p.keyCode) {
+		case 37:
+		console.log("Left Arrow/y");
+		animateRotate("x", -1);
+		break;
+		case 39:
+		console.log("Right Arrow/y'");
+		animateRotate("x", 1);
+		break;	
+		case 40:
+		console.log("Down Arrow/x'");
+		animateRotate("z", -1);
+		break;
+		case 38:
+		console.log("Up Arrow/x");
+		animateRotate("z", 1);
+		break;	
+		case 76:
+		console.log("D'");
+		animate('x', 50, -1);
+		break;
+		case 83:
+		console.log("D");
+		animate('x', 50, 1);
+		break;
+		case 74:
+		console.log("U");
+		animate('x', -50, -1);
+		break;
+		case 70:
+		console.log("U'");
+		animate('x', -50, 1);
+		break;
+		case 72:
+		console.log("F");
+		animate('y', 50, -1);
+		break;
+		case 71:
+		console.log("F'");
+		animate('y', 50, 1);
+		break;
+		case 79:
+		console.log("B'");
+		animate('y', -50, -1);
+		break;
+		case 87:
+		console.log("B");
+		animate('y', -50, 1);
+		break;
+		case 75:
+		console.log("R'");
+		animate('z', 50, -1);
+		break;
+		case 73:
+		console.log("R");
+		animate('z', 50, 1);
+		break;
+		case 68:
+		console.log("L");
+		animate('z', -50, -1);
+		break;
+		case 69:
+		console.log("L'");
+		animate('z', -50, 1);
+		break;
+		case 188:
+		console.log("M'");
+		animate('z', 0, 1);
+		break;
+		case 190:
+		console.log("M");
+		animate('z', 0, -1);
+		case 65:
+		console.log("E");
+		animate('x', 0, 1);
+		break;
+		case 186:
+		console.log("E'");
+		animate('x', 0, -1);
+		break;
+		case 32: //space
+		//arr = ["R","U","R'","U","R","U","U","R'"];
+		//arr = ["R", "U", "R'", "F'", "R", "U", "R'", "U'", "R'", "F" ,"R", "R" ,"U'", "R'"];
+		//arr = ["M'", "M'", "U'", "M" ,"U", "U", "M'", "U'", "M", "M"];
+		changeArr("R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'");
+		multiple(0);
+		break;
+		case 13: //enter
+			let tempstr = window.prompt("Enter an algorithm (each move separated by spaces)");
+			changeArr(tempstr);
+			multiple(0);
+		break;
+	}
+	}
+  }
+  function multiple(nb) {
+    if (nb < arr.length) {
+		canMan = false;
+		notation(arr[nb]);
+		console.log(nb);
+		let secs = 375-SPEED*225;
+		if(secs < 20)
+			secs = 20;
+		setTimeout(multiple.bind(null, nb + 1), secs);
+    }
+	else
+	{
+		canMan = true;
+	}
+  }
+  function changeArr(str)
+  {
+	  arr = [];
+	  console.log("here");
+	  let temp = "";
+	  let end  = 1;
+	  while(str != "")
+	  {
+		  console.log(str);
+		  console.log(arr);
+		  end = 1;
+		  temp = "";
+		  temp += str[0];
+		  if(str[1] == "'" || str[1] == "’")
+		  {
+			  temp += "'";
+			  end = 2;
+		  }
+		  if(str[1] == "2")
+		  {
+			  end = 2;
+			  arr.push(temp + "'");
+			  arr.push(temp + "'");
+		  }
+		  else
+		  {
+			  arr.push(temp);
+		  }
+		  str = str.substring(end+1);
+	  }
+	  console.log(arr);
+  }
+  function notation(move){
+	  if(move == "D'")
+		  animate('x', 50, -1);
+	  if(move == "D")
+		  animate('x', 50, 1);
+	  if(move == "U")
+		  animate('x', -50, -1);
+	  if(move == "U'")
+		  animate('x', -50, 1);
+	  if(move == "F")
+		  animate('y', 50, -1);
+	  if(move == "F'")
+		  animate('y', 50, 1);
+	  if(move == "B'")
+		  animate('y', -50, -1);
+	  if(move == "B")
+		  animate('y', -50, 1);
+	  if(move == "R'")
+		  animate('z', 50, -1);
+	  if(move == "R")
+		  animate('z', 50, 1);
+	  if(move == "L")
+		  animate('z', -50, -1);
+	  if(move == "L'")
+		  animate('z', -50, 1);
+	  if(move == "M'")
+		  animate('z', 0, 1);
+	  if(move == "M")
+		  animate('z', 0, -1);
+	  if(move == "x'")
+		  animateRotate("z", -1);
+	  if(move == "x")
+		  animateRotate("z", 1);
+	  if(move == "y")
+		  animateRotate("x", -1);
+	  if(move == "y'")
+		  animateRotate("x", 1);
+	  
+	  
+	  
+	  
+		  
+  }
+  //   *************************************
+  
   p.mousePressed = () => {
     startAction();
   }
