@@ -493,7 +493,7 @@ function testAlg(){
 		multiple(0);		
 }  
 //   *************************************
-  
+/*  
   p.mousePressed = () => {
     startAction();
   }
@@ -523,9 +523,9 @@ function testAlg(){
       }
     }
   }
-
+*/
   p.windowResized = () => {
-    p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth, p.windowHeight);
+    p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.666, p.windowHeight);
     PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth, p.windowHeight);
   }
 
