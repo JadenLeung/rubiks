@@ -38,9 +38,9 @@
 			padding-right:10px;
 		}
 		table, th, td{
-			border: 2px solid;
+			border: 1px solid;
 			text-align:center;
-			padding:10px;
+			padding:0px;
 		}
 		weird{
 			float:left;
@@ -77,38 +77,50 @@
 			padding: 10px;
 			margin-left:auto;
 			margin-right:auto;
-		}
-		
+		}		
 	</style>	
     <meta charset="utf-8">
 </head>
 <body oncontextmenu="return false">
-	<h1 style = "text-align: center;">Jaden's Website - Speedcubing</h1>
+	<h1 style = "text-align: center;">Jaden's Website - Virtual Cubing</h1>
 	<ul>
 		<li><a href="https://jadenleung.github.io/index.html">Home <i class="bi-house-fill"></i></a></li>
 		<li><a href="https://jadenleung.github.io/resume.html">Resume <i class="bi bi-file-person"></i></a></li>
-		<li><a class = "active">Speedcubing <i class="bi bi-box"></i></a></li>
+		<li><a class = "active">Virtual Cubing <i class="bi bi-box"></i></a></li>
 		<li><a href="https://jadenleung.github.io/dino.html">Arrow Game <i class="bi-controller"></i></a></li>		
 		<li><a href="https://jadenleung.github.io/tierlist.html">Tier List <i class="bi bi-card-list"></i></a></li>
 	</ul>
-	<br>
 	
-<div class="footer">
-    <a class="link" href="https://github.com/JadenLeung/rubiks" target="_blank">GitHub Source Code</a>
-	<table>
-	 <th colspan="2">Virtual Cube Key Map</th>
-	 <tr><td>&larr;</td><td>Rotate Left</td></tr>
-	 <tr><td>&rarr;</td><td>Rotate Right</td></tr>	
-	 <tr><td>&uarr;</td><td>Rotate Up</td></tr>
-	 <tr><td>&darr;</td><td>Rotate Down</td></tr>
-	 <tr><td></td><td></td></tr>
-	 <tr><td></td><td></td></tr>
-	 <tr><td></td><td></td></tr>
-	 <tr><td></td><td></td></tr>
-	 <tr><td></td><td></td></tr>
-	 <tr><td></td><td></td></tr>	 
-	</table>
-	<p>Press 'enter' to type in an algorithm</p>
-</div>
+	<div class="row">
+		<div class="col-lg-8" id="cnv_div"></div>
+		<div class="col-lg-4">
+			<p id="test_alg_div">
+				<span>Test Algorithm:</span>
+			</p>
+			<p  id="slider_div">
+				<span>Speed:</span>
+			</p>
+			<p id="shuffle_div">
+			</p>
+			<table style="padding:0px">
+				<th colspan="2">Virtual Cube Key Map</th>
+				<tr><td>&larr;</td><td>Rotate Left</td></tr>
+				<tr><td>&rarr;</td><td>Rotate Right</td></tr>	
+				<tr><td>&uarr;</td><td>Rotate Up</td></tr>
+				<tr><td>&darr;</td><td>Rotate Down</td></tr>
+				<tr><td></td><td></td></tr>
+				<tr><td></td><td></td></tr>
+				<tr><td></td><td></td></tr>
+				<tr><td></td><td></td></tr>
+				<tr><td></td><td></td></tr>
+				<tr><td></td><td></td></tr>	 
+			</table>
+			<p>Press 'enter' to type in an algorithm</p>
+			<p>
+				<a class="link" href="https://github.com/JadenLeung/rubiks" target="_blank">GitHub Source Code</a>
+			</p>		
+			
+		</div>
+	</div>
 </body>
 </html>

@@ -288,53 +288,53 @@ export default class Cuby {
     let r = this.cubysize / 2;
     this.p.push();
     
-      this.p.translate(this.x, this.y, this.z);
-      this.p.strokeWeight(2);
-        
-      // p1, p2, p3, p4 coordinates
+	this.p.translate(this.x, this.y, this.z);
+	this.p.strokeWeight(2);
+	
+	// p1, p2, p3, p4 coordinates
 
-      this.p.fill(this.back);
-      //this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
-      this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r, 2, 2);
+	this.p.fill(this.back);
+	//this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
+	this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r, 2, 2);
 
-      this.p.fill(this.front);
-      //this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
-      this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	  
+	this.p.fill(this.front);
+	//this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
+	this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	  
 
-      this.p.fill(this.bottom);
-      //this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
-      this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r, 2, 2);	  	  
+	this.p.fill(this.bottom);
+	//this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
+	this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r, 2, 2);	  	  
 
-      this.p.fill(this.top);
-      //this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
-      this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r, 2, 2);	  
-	  
-	  this.p.fill(this.right);
-      //this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
-      this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r, 2, 2);     	  	  
+	this.p.fill(this.top);
+	//this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
+	this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r, 2, 2);	  
+  
+	this.p.fill(this.right);
+	//this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
+	this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r, 2, 2);     	  	  
 
-      this.p.fill(this.left);
-      //this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
-      this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
-	  
-      this.p.pop();
+	this.p.fill(this.left);
+	//this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
+	this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
+  
+	this.p.pop();
     
-    this.picker.buffer.push();
+	this.picker.buffer.push();
       
-      this.picker.buffer.strokeWeight(0);
-      this.picker.buffer.translate(this.x, this.y, this.z);
-      this.picker.buffer.fill(this.buff_back);
-      this.picker.buffer.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
-      this.picker.buffer.fill(this.buff_front);
-      this.picker.buffer.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
-      this.picker.buffer.fill(this.buff_bottom);
-      this.picker.buffer.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
-      this.picker.buffer.fill(this.buff_top);
-      this.picker.buffer.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
-      this.picker.buffer.fill(this.buff_right);
-      this.picker.buffer.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
-      this.picker.buffer.fill(this.buff_left);
-      this.picker.buffer.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
+    this.picker.buffer.strokeWeight(0);
+    this.picker.buffer.translate(this.x, this.y, this.z);
+    this.picker.buffer.fill(this.buff_back);
+    this.picker.buffer.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
+    this.picker.buffer.fill(this.buff_front);
+    this.picker.buffer.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
+    this.picker.buffer.fill(this.buff_bottom);
+    this.picker.buffer.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
+    this.picker.buffer.fill(this.buff_top);
+    this.picker.buffer.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
+    this.picker.buffer.fill(this.buff_right);
+    this.picker.buffer.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
+    this.picker.buffer.fill(this.buff_left);
+    this.picker.buffer.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
       
     this.picker.buffer.pop();
   }

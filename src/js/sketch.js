@@ -16,6 +16,7 @@ export default function (p) {
   let SIZE_SLIDER;
   let GAP_SLIDER;
   let SPEED_SLIDER;
+  let inp;
   let SPEED = 0.01;
   let BACKGROUND_COLOR = 230;
   let arr = [];
@@ -23,7 +24,7 @@ export default function (p) {
   p5.disableFriendlyErrors = DEBUG ? false : true;
 
   p.setup = () => {
-    p.createCanvas(DEBUG ? p.windowWidth / 2 : p.windowWidth, p.windowHeight, p.WEBGL);
+    p.createCanvas(DEBUG ? p.windowWidth / 2 : p.windowWidth * 0.666, p.windowHeight, p.WEBGL);
     p.pixelDensity(1);
     p.frameRate(60);
     p.smooth();
@@ -42,19 +43,29 @@ export default function (p) {
     //SIZE_SLIDER = p.createSlider(2, 5, 3, 1);
 	SIZE_SLIDER = p.createSlider(3, 1);
     SIZE_SLIDER.input(sliderUpdate);
-    SIZE_SLIDER.style('top', '80px');
+    SIZE_SLIDER.hide();
+	SIZE_SLIDER.parent("slider_div");
 
     GAP_SLIDER = p.createSlider(0, 100, 0, 1);
     GAP_SLIDER.input(sliderUpdate);
-    GAP_SLIDER.style('top', '100px');
+	GAP_SLIDER.hide();
+	GAP_SLIDER.parent("slider_div");
 	
 	SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
     SPEED_SLIDER.input(sliderUpdate);
-    SPEED_SLIDER.style('top', '120px');
+	SPEED_SLIDER.parent("slider_div");
     
-    const suffle_btn = p.createButton('Shuffle');
-	suffle_btn.style('top', '140px');
-    suffle_btn.mousePressed(shuffleCube.bind(null, 0));
+    const SHUFFLE_BTN = p.createButton('Shuffle');
+	SHUFFLE_BTN.parent("shuffle_div");
+    SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
+	
+	inp = p.createInput('');
+	inp.parent("test_alg_div");
+	inp.size(150);
+	
+    const GO_BTN = p.createButton('Go!');
+	GO_BTN.parent("test_alg_div");
+    GO_BTN.mousePressed(testAlg.bind(null, 0));	
   }
 
   function reSetup() {
@@ -286,9 +297,13 @@ function animateRotate(axis, dir) {
 		  }
 		}
     }
-  }
-  
-  p.keyPressed = () => {
+}
+
+p.keyPressed = (event) => {
+	if (event.srcElement.nodeName == "INPUT") {
+		event.stopPropagation;
+		return;
+	}	  
 	console.log("keyCode is: " + p.keyCode);  
 	if(canMan == true)
 	{
@@ -470,14 +485,14 @@ function animateRotate(axis, dir) {
 	  if(move == "y")
 		  animateRotate("x", -1);
 	  if(move == "y'")
-		  animateRotate("x", 1);
-	  
-	  
-	  
-	  
-		  
+		  animateRotate("x", 1);		  
   }
-  //   *************************************
+
+function testAlg(){
+		changeArr(inp.value());
+		multiple(0);		
+}  
+//   *************************************
   
   p.mousePressed = () => {
     startAction();
