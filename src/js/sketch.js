@@ -21,6 +21,8 @@ export default function (p) {
   let BACKGROUND_COLOR = 230;
   let arr = [];
   let canMan = true;
+  let shuffleNB;
+  let undo = [];
   p5.disableFriendlyErrors = DEBUG ? false : true;
 
   p.setup = () => {
@@ -33,14 +35,16 @@ export default function (p) {
     CAM = p.createEasyCam(p._renderer);
     CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 
-    CAM.rotateX(-p.PI / 4);
-    CAM.rotateY(-p.PI / 5);
+    CAM.rotateX(-p.PI / 2.7);
+    CAM.rotateY(-p.PI / 7);
     CAM.rotateZ(-p.PI / 2);
 
     reSetup();
 	
 	// hardcoded to do size 50 (3x3x3) 
     //SIZE_SLIDER = p.createSlider(2, 5, 3, 1);
+	if(canMan)
+	{
 	SIZE_SLIDER = p.createSlider(3, 1);
     SIZE_SLIDER.input(sliderUpdate);
     SIZE_SLIDER.hide();
@@ -54,10 +58,19 @@ export default function (p) {
 	SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
     SPEED_SLIDER.input(sliderUpdate);
 	SPEED_SLIDER.parent("slider_div");
+	}
     
     const SHUFFLE_BTN = p.createButton('Shuffle');
 	SHUFFLE_BTN.parent("shuffle_div");
     SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
+	
+	const RESET = p.createButton('Reset');
+	RESET.parent("reset_div");
+    RESET.mousePressed(reSetup.bind(null, 0));
+	
+	const UNDO = p.createButton('Undo');
+	UNDO.parent("undo");
+    UNDO.mousePressed(Undo.bind(null, 0));
 	
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
@@ -65,11 +78,12 @@ export default function (p) {
 	
     const GO_BTN = p.createButton('Go!');
 	GO_BTN.parent("test_alg_div");
-    GO_BTN.mousePressed(testAlg.bind(null, 0));	
+	GO_BTN.mousePressed(testAlg.bind(null, 0));	
   }
 
   function reSetup() {
     CUBE = {};
+	arr = [];
     RND_COLORS = genRndColors();
     let cnt = 0;
 
@@ -91,7 +105,7 @@ export default function (p) {
     SIZE = SIZE_SLIDER.value();
     GAP = GAP_SLIDER.value();
 	SPEED = SPEED_SLIDER.value();
-    reSetup();
+    //reSetup();
   }
 
   function genRndColors() {
@@ -247,10 +261,33 @@ export default function (p) {
   }
 
   function shuffleCube(nb) {
-    if (nb < 20) {
-      randomMove();
-      setTimeout(shuffleCube.bind(null, nb + 1), 100);
-    }
+	const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'", "M", "M'", 
+	"E", "E'", "Lw'", "Lw'", "Uw", "Uw'", "Rw", "Rw'", "Dw", "Dw'", "Bw", "Bw'", "Fw", "Fw'"];
+	arr = [];
+	let bad = "";
+    for(let i = 0; i < 15; i++)
+	{
+		while(true)
+		{
+			let rnd = p.random(possible);
+			console.log("rnd is " + rnd);
+			if(rnd == bad)
+				continue;
+			
+			if(rnd.slice(-1) == "'")
+			{
+				bad = rnd.substring(0, rnd.length-1);
+			}
+			else
+			{
+				bad = rnd + "'";
+			}
+			arr.push(rnd);
+			console.log("bad is " + bad);
+			break;
+		}
+	}
+	multiple(0);
   }
 
   function randomMove() {
@@ -298,7 +335,27 @@ function animateRotate(axis, dir) {
 		}
     }
 }
+function animateWide(axis, row, dir) {
+    let rows = [row, 0];
+	
+    for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+      if (CUBE[i].animating()) {
+        // some cube is already in animation
+        return;
+      }
+    }
 
+    for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+        for (let j = 0; j < SIZE; j++) {
+		  if (CUBE[i].get(axis) === rows[j]) {
+			CUBE[i].row = rows[j];
+			CUBE[i].dir = dir;
+			CUBE[i].anim_axis = axis;
+			CUBE[i].anim_angle = CUBE[i].dir * SPEED;
+		  }
+		}
+    }
+  }
 p.keyPressed = (event) => {
 	if (event.srcElement.nodeName == "INPUT") {
 		event.stopPropagation;
@@ -310,89 +367,89 @@ p.keyPressed = (event) => {
 	switch (p.keyCode) {
 		case 37:
 		console.log("Left Arrow/y");
+		undo.push("y");
 		animateRotate("x", -1);
 		break;
 		case 39:
 		console.log("Right Arrow/y'");
+		undo.push("y'");
 		animateRotate("x", 1);
 		break;	
 		case 40:
 		console.log("Down Arrow/x'");
+		undo.push("x'");
 		animateRotate("z", -1);
 		break;
 		case 38:
 		console.log("Up Arrow/x");
+		undo.push("x");
 		animateRotate("z", 1);
 		break;	
 		case 76:
-		console.log("D'");
+		undo.push("D'");
 		animate('x', 50, -1);
 		break;
 		case 83:
-		console.log("D");
+		undo.push("D");
 		animate('x', 50, 1);
 		break;
 		case 74:
-		console.log("U");
+		undo.push("U");
 		animate('x', -50, -1);
 		break;
 		case 70:
-		console.log("U'");
+		undo.push("U'");
 		animate('x', -50, 1);
 		break;
 		case 72:
-		console.log("F");
+		undo.push("F");
 		animate('y', 50, -1);
 		break;
 		case 71:
-		console.log("F'");
+		undo.push("F'");
 		animate('y', 50, 1);
 		break;
 		case 79:
-		console.log("B'");
+		undo.push("B'");
 		animate('y', -50, -1);
 		break;
 		case 87:
-		console.log("B");
+		undo.push("B");
 		animate('y', -50, 1);
 		break;
 		case 75:
-		console.log("R'");
+		undo.push("R'");
 		animate('z', 50, -1);
 		break;
 		case 73:
-		console.log("R");
+		undo.push("R");
 		animate('z', 50, 1);
 		break;
 		case 68:
-		console.log("L");
+		undo.push("L");
 		animate('z', -50, -1);
 		break;
 		case 69:
-		console.log("L'");
+		undo.push("L'");
 		animate('z', -50, 1);
 		break;
 		case 188:
-		console.log("M'");
+		undo.push("M'");
 		animate('z', 0, 1);
 		break;
 		case 190:
-		console.log("M");
+		undo.push("M");
 		animate('z', 0, -1);
 		case 65:
-		console.log("E");
+		undo.push("E");
 		animate('x', 0, 1);
 		break;
 		case 186:
-		console.log("E'");
+		undo.push("E'");
 		animate('x', 0, -1);
 		break;
-		case 32: //space
-		//arr = ["R","U","R'","U","R","U","U","R'"];
-		//arr = ["R", "U", "R'", "F'", "R", "U", "R'", "U'", "R'", "F" ,"R", "R" ,"U'", "R'"];
-		//arr = ["M'", "M'", "U'", "M" ,"U", "U", "M'", "U'", "M", "M"];
-		changeArr("R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'");
-		multiple(0);
+		case 8: //backspace
+		Undo();
 		break;
 		case 13: //enter
 			let tempstr = window.prompt("Enter an algorithm (each move separated by spaces)");
@@ -420,6 +477,7 @@ p.keyPressed = (event) => {
   function changeArr(str)
   {
 	  arr = [];
+	  const arr2 = ['r', 'u', 'd', 'b', 'l', 'f'];
 	  console.log("here");
 	  let temp = "";
 	  let end  = 1;
@@ -429,15 +487,23 @@ p.keyPressed = (event) => {
 		  console.log(arr);
 		  end = 1;
 		  temp = "";
-		  temp += str[0];
-		  if(str[1] == "'" || str[1] == "’")
+		  if(arr2.includes(str[0]))
+			temp += (str[0].toUpperCase() + "w");
+		  else
+			temp += str[0];
+		  if(str[end] == "w")
+		  {
+			temp += "w";
+			end++;
+		  }
+		  if(str[end] == "'" || str[end] == "’")
 		  {
 			  temp += "'";
-			  end = 2;
+			  end++;
 		  }
-		  if(str[1] == "2")
+		  if(str[end] == "2")
 		  {
-			  end = 2;
+			  end++;
 			  arr.push(temp + "'");
 			  arr.push(temp + "'");
 		  }
@@ -445,11 +511,34 @@ p.keyPressed = (event) => {
 		  {
 			  arr.push(temp);
 		  }
-		  str = str.substring(end+1);
+		  str = str.substring(end);
+		  while(str[0] == " " || str[0] == ",")
+		  {
+			 str = str.substring(1); 
+		  }
 	  }
 	  console.log(arr);
   }
+  function Undo()
+  {
+	  if(undo.length == 0 || !canMan)
+		  return;
+		let move = undo.pop();
+		console.log("move is " + move);
+		if(move.slice(-1) == "'")
+		{
+			move = move.substring(0, move.length-1);
+		}
+		else
+		{
+			move = move + "'";
+		}
+		arr = [move];
+		notation(move);
+		undo.pop();
+  }
   function notation(move){
+	  undo.push(move);
 	  if(move == "D'")
 		  animate('x', 50, -1);
 	  if(move == "D")
@@ -485,15 +574,46 @@ p.keyPressed = (event) => {
 	  if(move == "y")
 		  animateRotate("x", -1);
 	  if(move == "y'")
-		  animateRotate("x", 1);		  
+		  animateRotate("x", 1);	
+	  if(move == "E")
+		  animate('x', 0, 1);
+	  if(move == "E'")
+		  animate('x', 0, -1);
+	  if(move == "Lw")
+		  animateWide('z', -50, -1);
+	  if(move == "Lw'")
+		  animateWide('z', -50, 1);
+	  if(move == "Rw'")
+		  animateWide('z', 50, -1);
+	  if(move == "Rw")
+		  animateWide('z', 50, 1);
+	  if(move == "Fw")
+		  animateWide('y', 50, -1);
+	  if(move == "Fw'")
+		  animateWide('y', 50, 1);
+	  if(move == "Bw'")
+		  animateWide('y', -50, -1);
+	  if(move == "Bw")
+		  animateWide('y', -50, 1);
+	  if(move == "Uw")
+		  animateWide('x', -50, -1);
+	  if(move == "Uw'")
+		  animateWide('x', -50, 1);
+	  if(move == "Dw'")
+		  animateWide('x', 50, -1);
+	  if(move == "Dw")
+		  animateWide('x', 50, 1);
   }
 
 function testAlg(){
+	if(canMan)
+	{
 		changeArr(inp.value());
-		multiple(0);		
+		multiple(0);	
+	}
 }  
 //   *************************************
-/*  
+
   p.mousePressed = () => {
     startAction();
   }
@@ -523,7 +643,7 @@ function testAlg(){
       }
     }
   }
-*/
+
   p.windowResized = () => {
     p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.666, p.windowHeight);
     PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth, p.windowHeight);
@@ -578,4 +698,22 @@ function testAlg(){
       }
     }
   }
+  window.addEventListener('keydown', (e) => {
+    if (e.target.localName != 'input') {   // if you need to filter <input> elements
+        switch (e.keyCode) {
+            case 37: // left
+            case 39: // right
+            case 38: // up
+            case 40: // down
+			case 32:
+                e.preventDefault();
+                break;
+            default:
+                break;
+        }
+    }
+}, {
+    capture: true,   // this disables arrow key scrolling in modern Chrome
+    passive: false   // this is optional, my code works without it
+});
 }
