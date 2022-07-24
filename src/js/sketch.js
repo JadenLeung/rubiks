@@ -23,6 +23,22 @@ export default function (p) {
   let canMan = true;
   let shuffleNB;
   let undo = [];
+  let layout = [[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
+				[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
+				[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
+				[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
+				[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
+				[[0, 0, 0],[0, 0, 0],[0, 0, 0]]
+  ];
+  let opposite = [];
+  opposite["g"] = "b";
+  opposite["b"] = "g";
+  opposite["y"] = "w";
+  opposite["w"] = "y";
+  opposite["o"] = "r";
+  opposite["r"] = "o";
+  let color = "lol";
+  let cubyColors = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
   p5.disableFriendlyErrors = DEBUG ? false : true;
 
   p.setup = () => {
@@ -72,6 +88,10 @@ export default function (p) {
 	UNDO.parent("undo");
     UNDO.mousePressed(Undo.bind(null, 0));
 	
+	const SOLVE = p.createButton('Solve');
+	SOLVE.parent("solve");
+    SOLVE.mousePressed(solveCube.bind(null, 0));
+	
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
 	inp.size(150);
@@ -84,7 +104,11 @@ export default function (p) {
   function reSetup() {
     CUBE = {};
 	arr = [];
+	undo = [];
     RND_COLORS = genRndColors();
+	document.getElementById("step").innerHTML = "";
+	document.getElementById("stepbig").innerHTML = "";
+	document.getElementById("fraction").innerHTML = "";
     let cnt = 0;
 
     for (let i = 0; i < SIZE; i++) {
@@ -94,7 +118,13 @@ export default function (p) {
           let x = (CUBYESIZE + GAP) * i - offset;
           let y = (CUBYESIZE + GAP) * j - offset;
           let z = (CUBYESIZE + GAP) * k - offset;
-          CUBE[cnt] = new Cuby(CUBYESIZE, x, y, z, RND_COLORS[cnt], PICKER, p);
+		  if(x == -2)
+			  //chloe
+		  {
+			 CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p);
+			console.log("here");
+		  }else
+			CUBE[cnt] = new Cuby(CUBYESIZE, x, y, z, RND_COLORS[cnt], PICKER, p);
           cnt++;
         }
       }
@@ -356,6 +386,13 @@ function animateWide(axis, row, dir) {
 		}
     }
   }
+  function sleep(milliseconds) {
+	const date = Date.now();
+	let currentDate = null;
+	do {
+		currentDate = Date.now();
+	} while (currentDate - date < milliseconds);
+  }
 p.keyPressed = (event) => {
 	if (event.srcElement.nodeName == "INPUT") {
 		event.stopPropagation;
@@ -364,6 +401,7 @@ p.keyPressed = (event) => {
 	console.log("keyCode is: " + p.keyCode);  
 	if(canMan == true)
 	{
+		setLayout();
 	switch (p.keyCode) {
 		case 37:
 		console.log("Left Arrow/y");
@@ -452,10 +490,19 @@ p.keyPressed = (event) => {
 		Undo();
 		break;
 		case 13: //enter
-			let tempstr = window.prompt("Enter an algorithm (each move separated by spaces)");
-			changeArr(tempstr);
-			multiple(0);
+		setLayout();
+		console.log(crossColor());
 		break;
+		case 32: //enter
+		setLayout();
+		console.log(layout);
+		console.log(cubyColors);
+		break;
+		case 16:
+		stepTwo();
+		break;
+		break;
+		
 	}
 	}
   }
@@ -537,8 +584,19 @@ p.keyPressed = (event) => {
 		notation(move);
 		undo.pop();
   }
+  function solveCube()
+  {
+	  if(!isSolved())
+	  {
+		 document.getElementById("stepbig").innerHTML = "Current Solving Step:";
+		 canMan = false;
+		 stepOne();
+	  }
+	  
+  }
   function notation(move){
 	  undo.push(move);
+	  setLayout();
 	  if(move == "D'")
 		  animate('x', 50, -1);
 	  if(move == "D")
@@ -575,6 +633,10 @@ p.keyPressed = (event) => {
 		  animateRotate("x", -1);
 	  if(move == "y'")
 		  animateRotate("x", 1);	
+	  if(move == "z")
+		  animateRotate("y", -1);
+	  if(move == "z'")
+		  animateRotate("y", 1);
 	  if(move == "E")
 		  animate('x', 0, 1);
 	  if(move == "E'")
@@ -604,14 +666,547 @@ p.keyPressed = (event) => {
 	  if(move == "Dw")
 		  animateWide('x', 50, 1);
   }
-
-function testAlg(){
+  function stepOne() {
+	const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'", "M", "M'", 
+	"E", "E'", "Lw'", "Lw'", "Uw", "Uw'", "Rw", "Rw'", "Dw", "Dw'", "Bw", "Bw'", "Fw", "Fw'"];
+	arr = [];
+	let bad = "";
+	document.getElementById("step").innerHTML = "Random moves until 4 correct edge pieces on a side";
+	document.getElementById("fraction").innerHTML = "1/16 (might take awhile)";
+    for(let i = 0; i < 2000; i++)
+	{
+		while(true)
+		{
+			let rnd = p.random(possible);
+			console.log("rnd is " + rnd);
+			if(rnd == bad)
+				continue;
+			
+			if(rnd.slice(-1) == "'")
+			{
+				bad = rnd.substring(0, rnd.length-1);
+			}
+			else
+			{
+				bad = rnd + "'";
+			}
+			arr.push(rnd);
+			console.log("bad is " + bad);
+			break;
+		}
+	}
+	multipleCross(0);
+  }
+  function stepTwo(){
+	let pos = crossColor()[0];
+	color = crossColor()[1];
+	arr = [];
+	if(pos != 2)
+	{
+		document.getElementById("step").innerHTML = "Putting cross on top";
+		document.getElementById("fraction").innerHTML = "2/16";
+		arr = [];
+		if(pos == 0)
+		arr = ["z"];
+		if(pos == 1)
+		arr = ["z'"];
+		if(pos == 3)
+		arr = ["x","x"];
+		if(pos == 4)
+		arr = ["x'"];
+		if(pos == 5)
+		arr = ["x"];
+		console.log(crossColor() + "   " + arr);
+		multipleCross2(0);
+	}else if(layout[2][0][1][0] != color || layout[2][1][0][0] != color || layout[2][1][2][0] != color || layout[2][2][1][0] != color)
+	{
+		document.getElementById("step").innerHTML = "Fixing orientation of cross pieces";
+		document.getElementById("fraction").innerHTML = "3/16";
+		arr = [];
+		if(layout[2][2][1][0] != color)
+		{
+			arr = ["M", "D", "D","M'","D'","M", "D","M'"];
+		}
+		arr.push("U'");
+		console.log("2");
+		multipleCross2(0);
+	}
+	else if(layout[2][1][1][0] != color)
+	{
+		document.getElementById("step").innerHTML = "Putting correct center piece on top";
+		document.getElementById("fraction").innerHTML = "4/16";
+		arr = [];
+		if(layout[3][1][1][0] == color)
+		{
+			arr = ["z", "M'", "E", "M", "E'", "y", "M'", "E", "M", "E'", "z'"];
+		}
+		else if(layout[5][1][1][0] == color)
+		{
+			arr = ["M'", "y", "M'", "y", "M'", "y", "M'"];
+		}
+		else
+		{
+			arr = ["y"];
+		}
+		multipleCross2(0);
+	}
+	else if(!(layout[2][0][0].includes(color) && layout[2][0][2].includes(color) && layout[2][2][0].includes(color) && layout[2][2][2].includes(color)))
+	{
+		document.getElementById("step").innerHTML = "Putting corner pieces on top";
+		document.getElementById("fraction").innerHTML = "5/16";
+		arr = [];
+		if(layout[2][2][2].includes(color))
+		{
+			arr = ["U'"];
+		}
+		else if(layout[5][2][2].includes(color))
+		{
+			arr = ["R'", "D'", "R"];
+		}
+		else{
+			arr = ["D'"];
+		}
+		multipleCross2(0);
+	}
+	else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color){
+		document.getElementById("step").innerHTML = "Orienting Corners";
+		document.getElementById("fraction").innerHTML = "6/16";
+		arr = [];
+		if(layout[2][2][2][0] == color)
+		{
+			arr = ["U"];
+		}
+		else
+		{
+			arr = ["R'", "D'", "R", "D", "R'", "D'", "R", "D"];
+		}
+		multipleCross2(0);
+	}
+	else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layout[5][0][2][0]))
+	{
+		document.getElementById("step").innerHTML = "Permuting Corners (Making headlights)";
+		document.getElementById("fraction").innerHTML = "7/16";
+		console.log("767");
+		arr = [];
+		if(layout[0][0][0][0] == layout[0][0][2][0])
+		{
+			changeArr("R' D R D B' D' B F D F'"); 
+		}
+		else if(opposite[layout[0][0][0][0]] == layout[0][0][2][0])
+		{
+			changeArr("R' D2 R B D B' D R' D' R U");
+		}
+		else
+		{
+			arr = ["U'"];
+		}
+		multipleCross2(0);
+	}
+	else if(correctPFL() < 3)
+	{
+		document.getElementById("step").innerHTML = "Permuting Edges (Finishing First Layer)";
+		document.getElementById("fraction").innerHTML = "8/16";
+		arr = [];
+		if(correctPFL() == 0)
+			changeArr("M2 U' M U2 M' U' M2");
+		if(correctPFL() == 2)
+			changeArr("M2 U2 M2");
+		if(correctPFL() == 1)
+		{
+			if(layout[4][0][1][0] == layout[4][0][2][0])
+			{
+				if(layout[5][0][1][0] == layout[0][0][2][0])
+					changeArr("M2 U' M U2 M' U' M2");
+				else
+					changeArr("M2 U M U2 M' U M2");
+			}
+			else
+			{
+				arr = ["U'"];
+			}
+		}
+		console.log("arr is " + arr);
+		multipleCross2(0);
+	}
+	else if(layout[5][0][1][0] != layout[5][1][1][0])
+	{
+		document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
+		document.getElementById("fraction").innerHTML = "9/16";
+		arr = ["U"];
+		multipleCross2(0);
+	}
+	else if(!( layout[5][1][0][0] == layout[5][1][1][0] && layout[5][1][1][0] == layout[5][1][2][0]
+			&&layout[4][1][0][0] == layout[4][1][1][0] && layout[4][1][1][0] == layout[4][1][2][0]  
+			&& layout[0][1][0][0] == layout[0][1][1][0] && layout[0][1][1][0] == layout[0][1][2][0]
+			&& layout[1][1][0][0] == layout[1][1][1][0] && layout[1][1][1][0] == layout[1][1][2][0]))
+	{
+		document.getElementById("step").innerHTML = "Solving middle layer";
+		document.getElementById("fraction").innerHTML = "10/16";
+		arr = [];
+		if(!(layout[3][0][1].includes(opposite[color]) && layout[3][1][0].includes(opposite[color]) && 
+			layout[3][1][2].includes(opposite[color]) && layout[3][2][1].includes(opposite[color])))
+		{
+			if(layout[5][2][1].includes(opposite[color]))
+			{
+				arr = ["D'"];
+			}
+			else
+			{
+				if(layout[5][2][1][0] != layout[5][1][1][0])
+				{
+					arr = ["Uw"];
+				}	
+				else if(layout[5][2][1][5] == layout[0][1][1][0])
+				{
+					changeArr("D L D L' D' F' D' F");
+				}
+				else
+				{
+					changeArr("D' R' D' R D F D F'")
+				}
+			}
+		}
+		else
+		{
+			if(layout[5][1][2][0] == layout[5][1][1][0] && layout[1][1][0][0] == layout[1][1][1][0])
+			{
+				arr = ["Uw"];
+			}
+			else
+			{
+				changeArr("R' D' R D F D F'");
+			}
+		}
+		multipleCross2(0);
+	}
+	else if(!isSolved())
+	{
+		color = opposite[color];
+		stepThree(color);
+	}
+	else
+	{
+		document.getElementById("step").innerHTML = "";
+		document.getElementById("fraction").innerHTML = "";
+		document.getElementById("stepbig").innerHTML = "";
+		canMan = true;
+	}
+  }
+  function stepThree()
+  {
+	  if(isSolved())
+	  {
+		  document.getElementById("stepbig").innerHTML = "";
+		  document.getElementById("step").innerHTML = "";
+		  document.getElementById("fraction").innerHTML = "";
+		  return;
+	  }
+	  console.log(color + " " + layout[2][1][1][0]);
+	  if(layout[2][1][1][0] != color)
+	  {
+		  document.getElementById("step").innerHTML = "And we go upside-down!";
+		  document.getElementById("fraction").innerHTML = "11/16";
+		  arr = ["x", "x"];
+		  multipleCross3(0);
+	  }
+	  else if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][2][0] == color))
+	  {
+		  document.getElementById("step").innerHTML = "Bottom Cross";
+		  document.getElementById("fraction").innerHTML = "12/16";
+		  arr = [];
+		  if(layout[2][1][0][0] == color && layout[2][1][2][0] == color)
+		  {
+			  changeArr("F R U R' U' F'");
+		  }
+		  else if(layout[2][0][1][0] == color && layout[2][1][0][0] == color)
+		  {
+			  changeArr("F U R U' R' F'");
+		  }
+		  else if(layout[2][0][1][0] != color && layout[2][1][0][0] != color && layout[2][1][2][0] != color)
+		  {
+			  changeArr("F U R U' R' F'");
+		  }
+		  else{
+			  arr = ["U'"];
+		  }
+		  multipleCross3(0);
+	  }
+	  else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color)
+	  {
+		  document.getElementById("step").innerHTML = "Bottom Corners";
+		  document.getElementById("fraction").innerHTML = "13/16";
+		  arr = [];
+		  if(layout[2][2][2][0] == color)
+		  {
+			  arr = ["U'"];
+		  }
+		  else
+		  {
+			  changeArr("R' D' R D R' D' R D");
+		  }
+		  multipleCross3(0);
+	  }
+	  else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layout[5][0][2][0]))
+	  {
+		document.getElementById("step").innerHTML = "Permuting Corners (Making headlights)";
+		document.getElementById("fraction").innerHTML = "14/16";
+		arr = [];
+		if(layout[0][0][0][0] == layout[0][0][2][0])
+		{
+			changeArr("R U R' F' R U R' U' R' F R2 U' R'"); 
+		}
+		else if(opposite[layout[0][0][0][0]] == layout[0][0][2][0])
+		{
+			changeArr("F R U' R' U' R U R' F' R U R' U' R' F R F' U");
+		}
+		else
+		{
+			arr = ["U'"];
+		}
+		multipleCross3(0);
+	  }
+	  else if(correctPFL() < 3)
+	  {
+		 document.getElementById("step").innerHTML = "Permuting Edges (Solving last layer)";
+		 document.getElementById("fraction").innerHTML = "15/16";
+		arr = [];
+		if(correctPFL() == 0)
+			changeArr("M2 U' M U2 M' U' M2");
+		if(correctPFL() == 1)
+		{
+			if(layout[4][0][1][0] == layout[4][0][2][0])
+			{
+				if(layout[5][0][1][0] == layout[0][0][2][0])
+					changeArr("M2 U' M U2 M' U' M2");
+				else
+					changeArr("M2 U M U2 M' U M2");
+			}
+			else
+			{
+				arr = ["U'"];
+			}
+		}
+		multipleCross3(0);
+	}
+	else if(layout[5][0][1][0] != layout[5][1][1][0])
+	{
+		document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
+		document.getElementById("fraction").innerHTML = "16/16";
+		arr = ["U"];
+		multipleCross3(0);
+	}
+	else
+	{
+		document.getElementById("step").innerHTML = "";
+		document.getElementById("fraction").innerHTML = "";
+		document.getElementById("stepbig").innerHTML = "";
+		canMan = true;
+	}
+  }
+  function multipleCross3(nb) {
+	setLayout();
+    if (nb < arr.length) {
+		canMan = false;
+		notation(arr[nb]);
+		console.log(nb);
+		let secs = 375-SPEED*225;
+		if(secs < 20)
+			secs = 20;
+		setTimeout(multipleCross3.bind(null, nb + 1), secs);
+    }
+	else
+	{
+		//sleep(1000);
+		stepThree();
+		console.log("done");
+	}
+  }
+  function multipleCross2(nb) {
+	setLayout();
+    if (nb < arr.length) {
+		canMan = false;
+		notation(arr[nb]);
+		console.log(nb);
+		let secs = 375-SPEED*225;
+		if(secs < 20)
+			secs = 20;
+		setTimeout(multipleCross2.bind(null, nb + 1), secs);
+    }
+	else
+	{
+		//sleep(1000);
+		stepTwo();
+		console.log("done");
+	}
+  }
+  function multipleCross(nb) {
+	setLayout();
+    if (crossColor() == "nope") {
+		canMan = false;
+		notation(arr[nb]);
+		console.log(nb);
+		let secs = 375-SPEED*225;
+		if(secs < 20)
+			secs = 20;
+		setTimeout(multipleCross.bind(null, nb + 1), secs);
+    }
+	else
+	{
+		//sleep(1000);
+		console.log("Calling step 2");
+		stepTwo();
+		console.log("done");
+	}
+  }
+  function crossColor(){
+	  let max = 0;
+	  let maxpos = 0;
+	  let maxcolor = "";
+	  for(let i = 2;; i++)
+	  {
+		  let cnt = 1;
+		  let color = layout[i][0][1][0];
+		  if(layout[i][1][0].includes(color)) cnt++;
+		  if(layout[i][1][2].includes(color)) cnt++;
+		  if(layout[i][2][1].includes(color)) cnt++;
+		  if(cnt > max)
+		  {
+			  max = cnt;
+			  maxpos = i;
+			  maxcolor = color;
+		  }
+		  if(i == 5)
+			  i = 0;
+		  if(i == 1)
+			  break;
+	  }
+	  if(max == 4)
+		  return [maxpos, maxcolor];
+	  for(let i = 2;; i++)
+	  {
+		  let cnt = 1;
+		  let color = layout[i][0][1][5];
+		  if(layout[i][1][0].includes(color)) cnt++;
+		  if(layout[i][1][2].includes(color)) cnt++;
+		  if(layout[i][2][1].includes(color)) cnt++;
+		  if(cnt > max)
+		  {
+			  max = cnt;
+			  maxpos = i;
+			  maxcolor = color;
+		  }
+		  if(i == 5)
+			  i = 0;
+		  if(i == 1)
+			  break;
+	  }
+	  if(max == 4)
+		  return [maxpos, maxcolor];
+	  return "nope";
+  }
+  function correctPFL() //Permutation of the First Layer, assuming all headlights
+  {
+	  let cnt = 0;
+	  if(layout[0][0][1][0] == layout[0][0][2][0]) cnt++;
+	  if(layout[1][0][1][0] == layout[1][0][2][0]) cnt++;
+	  if(layout[4][0][1][0] == layout[4][0][2][0]) cnt++;
+	  if(layout[5][0][1][0] == layout[5][0][2][0]) cnt++;
+	  return cnt;
+  }
+  function setLayout(){
+	  //nora
+	let cnt = 0;
+	let temp = [];
+	//left, right, top, bottom, back, front
+	let axis = ["z", "z", "x", "x", "y", "y"];
+	let row = [-50, 50, -50, 50, -50, 50];
+	let pos = ["back", "front", "right", "left", "bottom", "top"];
+	for(let h = 0; h < row.length; h++)
+	{
+		for(let i = 0; i < 27; i++)
+		{
+			if(CUBE[i][axis[h]] == row[h])
+				temp.push(i);
+		}
+		let temp2 = [[0, 0, 0],[0, 0, 0],[0, 0, 0]];
+		for(let i = 0; i < 9; i++)
+		{
+			let temp3 = CUBE[temp[i]];
+			//console.log((temp3.x*0.02+1) + " " + (temp3.y*0.02+1));
+			let array = [];
+			if(axis[h] == "z")
+				temp2[temp3.x*0.02+1][temp3.y*0.02+1] = temp[i];
+			if(axis[h] == "x")
+				temp2[temp3.y*0.02+1][temp3.z*0.02+1] = temp[i];
+			if(axis[h] == "y")
+				temp2[temp3.x*0.02+1][temp3.z*0.02+1] = temp[i];
+		}
+		
+		for(let x = 0; x < 3; x++) 
+		{
+			for(let y = 0; y < 3; y++)
+			{
+				if(temp2[x][y] > 9)
+					layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " " + temp2[x][y];
+				else
+					layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " 0" + temp2[x][y];
+			}
+		}
+		temp = [];
+	}
+	for(let i = 0; i < 6; i++)
+	{
+		for(let x = 0; x < 3; x++)
+		{
+			for(let y = 0; y < 3; y++)
+			{
+				let cubynum = +(layout[i][x][y][2] + layout[i][x][y][3]);	
+				//console.log(cubynum + " " + layout[i][x][y][0]);
+				if(!cubyColors[cubynum].includes(layout[i][x][y][0]))
+					cubyColors[cubynum].push(layout[i][x][y][0]);
+			}
+		}
+	}
+	for(let i = 0; i < 6; i++)
+	{
+		for(let x = 0; x < 3; x++)
+		{
+			for(let y = 0; y < 3; y++)
+			{
+				let cubynum = +(layout[i][x][y][2] + layout[i][x][y][3]);	
+				let temp2 = cubyColors[cubynum];
+				for(let j = 0; j < temp2.length; j++)
+				{
+					if(!layout[i][x][y].includes(temp2[j]))
+					{
+						layout[i][x][y] += (" " + temp2[j]);
+					}
+				}
+			}
+		}
+	}
+  }
+  function getColor(color)
+  {
+	  if(color[0] == 250)
+		  return "w";
+	  if(color[1] == 18)
+		  return "r";
+	  if(color[2] == 219)
+		  return "b";
+	  if(color[1] == 125)
+		  return "o";
+	  if(color[0] == 209)
+		  return "y";
+	  return "g";
+  }
+  function testAlg(){
 	if(canMan)
 	{
 		changeArr(inp.value());
 		multiple(0);	
 	}
-}  
+  }  
 //   *************************************
 
   p.mousePressed = () => {
@@ -697,6 +1292,21 @@ function testAlg(){
         CUBE[i].show();
       }
     }
+  }
+  function isSolved()
+  {
+	  for(let i = 0; i < 6; i++)
+	  {
+		 let curcolor = layout[i][0][0][0]; 
+		 for(let x = 0; x < 3; x++)
+		 {
+			for(let y = 0; y < 3; y++)
+			{
+				if(layout[i][x][y][0] != curcolor) return false; 
+			}
+		 }			 
+	  }
+	  return true;
   }
   window.addEventListener('keydown', (e) => {
     if (e.target.localName != 'input') {   // if you need to filter <input> elements
