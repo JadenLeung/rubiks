@@ -9,7 +9,7 @@ export default class Picker {
   initBuffer() {
     const p = this.p;
 
-    const buffer = p.createGraphics(this.debug ? p.windowWidth / 2 : p.windowWidth, p.windowHeight, p.WEBGL);
+    const buffer = p.createGraphics(this.debug ? p.windowWidth / 2 : p.windowWidth * 0.5, p.windowHeight * 0.9, p.WEBGL);
     buffer.pixelDensity(1);
     buffer.frameRate(60);
     
@@ -21,15 +21,18 @@ export default class Picker {
   
   getColor(x, y) {
     const p = this.p;
-
     if (x > p.width || y > p.height || p.width < 0 || p.height < 0) {
       return 0;
     }
+	
+    const gl = this.buffer.elt.getContext('webgl');	
+	const colorArr = p.get(x, p.windowHeight * 0.9 - y);
+	return colorArr;	
 
-    const gl = this.buffer.elt.getContext('webgl');
-	  const pix = this.getPixels();
+
+    // **************** original
+	const pix = this.getPixels();
     const i = 4 * ((gl.drawingBufferHeight - y) * gl.drawingBufferWidth + x);
-    
     if (!pix[i]) {
       return 0;
     }

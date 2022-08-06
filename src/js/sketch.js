@@ -1,7 +1,7 @@
 import './lib/p5.easycam.js';
 import Picker from './picker.js';
 import Cuby from './cuby.js';
-
+//Thanks to Antoine Gaubert
 export default function (p) {
   const CUBYESIZE = 50;
   const DEBUG = false;
@@ -22,7 +22,7 @@ export default function (p) {
   let SPEED = 0.01;
   let DELAY = 0;
   let shufflespeed = 5;
-  let BACKGROUND_COLOR = 230;
+  let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
   let arr = [];
   let canMan = true;
   let shuffleNB;
@@ -42,6 +42,9 @@ export default function (p) {
   opposite["w"] = "y";
   opposite["o"] = "r";
   opposite["r"] = "o";
+  let selectedCuby = -1;
+  let selectedColor = [];
+  let dev = 0;
   let color = "lol";
   let colorTwo = "lmao";
   let colorThree = "lmaoliest";
@@ -52,15 +55,13 @@ export default function (p) {
   let mo5 = [];
   let movesarr = [];
   let flipmode = 0;
+  let flipmode2 = 0;
   let flipper = [];
-  flipper["F"] = "B"; flipper["F'"] = "B'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "L"; flipper["R'"] = "L'"; flipper["L"] = "R"; 
-  flipper["L'"] = "R'"; flipper["B"] = "F"; flipper["B'"] = "F'"; flipper["D"] = "D"; flipper["D'"] = "D'"; flipper["M"] = "M'"; flipper["M'"] = "M"; 
-  flipper["E"] = "E"; flipper["E'"] = "E'"; flipper["S'"] = "S"; flipper["S"] = "S'"; flipper["Fw"] = "Bw"; flipper["Fw'"] = "Bw'"; flipper["Uw"] = "Uw"; 
-  flipper["Uw'"] = "Uw'"; flipper["Rw"] = "Lw"; flipper["Rw'"] = "Lw'"; flipper["Lw"] = "Rw"; flipper["Lw'"] = "Rw'"; flipper["Bw"] = "Fw"; 
-  flipper["Bw'"] = "Bw"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["Dw'"] = "Dw'"; flipper["x"] = "x'"; flipper["x'"] = "x";
-  flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "z"; flipper["z"] = "z'";
+  defineFlipper();
+  let flipper2 = [];
+  defineFlipper2();
   p5.disableFriendlyErrors = DEBUG ? false : true;
-	
+
 class Timer {
   constructor () {
     this.isRunning = false;
@@ -78,7 +79,8 @@ class Timer {
 
   start () {
     if (this.isRunning) {
-      return console.error('Timer is already running');
+		return;
+      //return console.error('Timer is already running');
     }
 
     this.isRunning = true;
@@ -88,7 +90,8 @@ class Timer {
 
   stop () {
     if (!this.isRunning) {
-      return console.error('Timer is already stopped');
+		return;
+      //return console.error('Timer is already stopped');
     }
 
     this.isRunning = false;
@@ -120,39 +123,6 @@ class Timer {
   }
 }
 const timer = new Timer();
-setInterval(() => {
-  const timeInSeconds = Math.round(timer.getTime() / 100)/10.0;
-  document.getElementById('time').innerText = timeInSeconds;
-  document.getElementById('moves').innerText = moves;
-  document.getElementById('speed').innerText = Math.round(SPEED*100);
-  document.getElementById('delay2').innerText = DELAY;
-  displayAverage();
-  setLayout();
-  let secs = 375-SPEED*225;
-  if(secs < 20)
-		secs = 20;
-  if(isSolved() && timer.getTime() > secs && timer.isRunning)
-	{
-		timer.stop();
-		flipmode = 0;
-		movesarr.push(moves);
-		if(canMan == true)
-		{
-		if(ao5.length<5)
-		{
-			ao5.push(timeInSeconds);
-			mo5.push(timeInSeconds);
-		}
-		else
-		{
-			ao5.push(timeInSeconds);
-			mo5.push(timeInSeconds);
-			ao5.shift()
-		}
-		}
-		console.log(isSolved());
-	}
-}, 100)
   p.setup = () => {
     p.createCanvas(DEBUG ? p.windowWidth / 2 : p.windowWidth * 0.5, p.windowHeight*0.9, p.WEBGL);
     p.pixelDensity(1);
@@ -187,10 +157,10 @@ setInterval(() => {
     SPEED_SLIDER.input(sliderUpdate);
 	SPEED_SLIDER.parent("slider_div");
 	
-	DELAY_SLIDER = p.createSlider(0, 1, 0, 0.1);
+	DELAY_SLIDER = p.createSlider(0, 2, 0, 0.1);
     DELAY_SLIDER.input(sliderUpdate);
 	DELAY_SLIDER.parent("delay");
-	DELAY_SLIDER.style('width', '80px');
+	DELAY_SLIDER.style('width', '100px');
 	}
     const REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
@@ -230,11 +200,44 @@ setInterval(() => {
 	GO_BTN.parent("test_alg_div");
 	GO_BTN.mousePressed(testAlg.bind(null, 0));	
   }
-
+setInterval(() => {
+  const timeInSeconds = Math.round(timer.getTime() / 100)/10.0;
+  document.getElementById('time').innerText = timeInSeconds;
+  document.getElementById('moves').innerText = moves;
+  document.getElementById('speed').innerText = Math.round(SPEED*100);
+  document.getElementById('delay2').innerText = DELAY;
+  displayAverage();
+  setLayout();
+  let secs = 375-SPEED*225;
+  if(secs < 20)
+		secs = 20;
+  if(isSolved() && timer.getTime() > secs && timer.isRunning)
+	{
+		timer.stop();
+		flipmode2 = 0;
+		movesarr.push(moves);
+		if(canMan == true)
+		{
+		if(ao5.length<5)
+		{
+			ao5.push(timeInSeconds);
+			mo5.push(timeInSeconds);
+		}
+		else
+		{
+			ao5.push(timeInSeconds);
+			mo5.push(timeInSeconds);
+			ao5.shift()
+		}
+		}
+		console.log(isSolved());
+	}
+}, 100)
   function reSetup() {
     CUBE = {};
 	arr = [];
 	flipmode = 0;
+	flipmode2 = 0;
 	CAM = p.createEasyCam(p._renderer);
     CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(-100);
@@ -261,16 +264,56 @@ setInterval(() => {
           let y = (CUBYESIZE + GAP) * j - offset;
           let z = (CUBYESIZE + GAP) * k - offset;
 		  if(x == -2)
-			  //chloe
 		  {
-			 CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p);
+			 CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt);
 			console.log("here");
 		  }else
-			CUBE[cnt] = new Cuby(CUBYESIZE, x, y, z, RND_COLORS[cnt], PICKER, p);
+			CUBE[cnt] = new Cuby(CUBYESIZE, x, y, z, RND_COLORS[cnt], PICKER, p, cnt);
           cnt++;
         }
       }
     }
+  }
+  function getPos(cubyindex)
+  {
+	  let piece = cubyColors[cubyindex];
+	  let expectedlength = piece.length*2 + 2;
+	  //console.log("expectedlength " + expectedlength, piece);
+	  for(let h = 0; h < 6; h++)
+	  {
+		for(let x = 0; x < 3; x++)
+		{
+			for(let y = 0; y < 3; y++)
+			{
+				if(layout[h][x][y].length == expectedlength)
+				{
+					let total = 0;
+					for(let i = 0; i < expectedlength; i++)
+					{
+						if(layout[h][x][y].includes(piece[i]))
+							total++;
+					}
+					if(total == piece.length)
+					{
+						if(h == 0)
+							return [(x-1)*50, (y-1)*50, -50];
+						if(h == 1)
+							return [(x-1)*50,(y-1)*50, 50];
+						if(h == 2)
+							return [-50,(x-1)*50, (y-1)*50];
+						if(h == 3)
+							return [50,(x-1)*50, (y-1)*50];
+						if(h == 4)
+							return [(x-1)*50, -50, (y-1)*50];
+						else
+							return [(x-1)*50, 50, (y-1)*50];
+							
+					}
+				}
+			}
+		}
+	  }
+	  return "lol";
   }
 
   function sliderUpdate() {
@@ -282,7 +325,10 @@ setInterval(() => {
   }
   //Henry
   function regular(){
-	  let mode = "normal"
+	  if(MODE != "normal")
+		reSetup();
+	  MODE = "normal"
+	  
 	  document.getElementById("test_alg_div").style.display = "block";
 	  document.getElementById("shuffle_div").style.display = "inline";
 	  document.getElementById("reset_div").style.display = "inline";
@@ -295,7 +341,7 @@ setInterval(() => {
   }
   function speedmode()
   {
-	  let mode = "speed"
+	  MODE = "speed"
 	  reSetup();
 	  console.log("wefwefew");
 	  document.getElementById("test_alg_div").style.display = "none";
@@ -355,7 +401,7 @@ setInterval(() => {
     for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
       if (CUBE[i].x === row) {
         primes = rotateMatrix(CUBE[i].y, CUBE[i].z, dir);
-        tmp[i] = new Cuby(CUBYESIZE, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p);
+        tmp[i] = new Cuby(CUBYESIZE, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i);
         tmp[i].syncColors(CUBE[i]);
         tmp[i].rotateX(dir);
         if (CUBE[i].debugging === true) {
@@ -376,7 +422,7 @@ setInterval(() => {
     for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
       if (CUBE[i].y === row) { // if cubbie in the 'Y' face
         primes = rotateMatrix(CUBE[i].x, CUBE[i].z, dir); // calculate new position for that cube
-        tmp[i] = new Cuby(CUBYESIZE, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p); // buffer theme in a new cubye
+        tmp[i] = new Cuby(CUBYESIZE, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i); // buffer theme in a new cubye
         tmp[i].syncColors(CUBE[i]);
         tmp[i].rotateY(dir);
         if (CUBE[i].debugging === true) {
@@ -397,7 +443,7 @@ setInterval(() => {
     for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
       if (CUBE[i].z === row) { // if cubbie in the 'z' face
         primes = rotateMatrix(CUBE[i].x, CUBE[i].y, dir); // calculate new position for that cube
-        tmp[i] = new Cuby(CUBYESIZE, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p); // buffer theme in a new cubye
+        tmp[i] = new Cuby(CUBYESIZE, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i); // buffer theme in a new cubye
         tmp[i].syncColors(CUBE[i]);
         tmp[i].rotateZ(dir);
         if (CUBE[i].debugging === true) {
@@ -434,33 +480,95 @@ setInterval(() => {
   function cleanAllSelectedCubies() {
     for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
       CUBE[i].is_selected = false;
-      CUBE[i].selected_face = false;
+      CUBE[i].selected_color = null;
     }
   }
 
   function getCubyByColor(arr1) {
-    let face;
-
-    for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-      // for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-        face = CUBE[i].hasColorFace(arr1);
-        if (face !== false) {
-          return [CUBE[i], face];
-        }
-      // }
-    }
-
-    return false;
+	  for(let i = 0; i < 27; i++)
+	  {
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.white.levels))
+			return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.yellow.levels))
+			return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.green.levels))
+			return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.blue.levels))
+			return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.orange.levels))
+			return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.red.levels))
+			return CUBE[i];
+	  }
+  }
+  function getCubyIndexByColor2(arr1) //original
+  {
+	  if(JSON.stringify(arr1) == "[218,124,24,255]") return 0;
+	  if(JSON.stringify(arr1) == "[218,125,24,255]") return 3;
+	  if(JSON.stringify(arr1) == "[218,126,24,255]") return 6;
+	  if(JSON.stringify(arr1) == "[219,124,24,255]") return 9;
+	  if(JSON.stringify(arr1) == "[219,125,24,255]") return 12;
+	  if(JSON.stringify(arr1) == "[219,126,24,255]") return 15;
+	  if(JSON.stringify(arr1) == "[220,124,24,255]") return 18;
+	  if(JSON.stringify(arr1) == "[220,125,24,255]") return 21;
+	  if(JSON.stringify(arr1) == "[220,126,24,255]") return 24;
+	  if(JSON.stringify(arr1) == "[249,251,249,255]") return 6;
+	  if(JSON.stringify(arr1) == "[249,251,250,255]") return 7;
+	  if(JSON.stringify(arr1) == "[249,251,251,255]") return 8;
+	  if(JSON.stringify(arr1) == "[250,251,249,255]") return 15;
+	  if(JSON.stringify(arr1) == "[250,251,250,255]") return 16;
+	  if(JSON.stringify(arr1) == "[250,251,251,255]") return 17;
+	  if(JSON.stringify(arr1) == "[251,251,249,255]") return 24;
+	  if(JSON.stringify(arr1) == "[251,251,250,255]") return 25;
+	  if(JSON.stringify(arr1) == "[251,251,251,255]") return 26;
+	  if(JSON.stringify(arr1) == "[24,104,218,255]") return 0;
+	  if(JSON.stringify(arr1) == "[24,104,219,255]") return 1;
+	  if(JSON.stringify(arr1) == "[24,104,220,255]") return 2;
+	  if(JSON.stringify(arr1) == "[24,105,218,255]") return 3;
+	  if(JSON.stringify(arr1) == "[24,105,219,255]") return 4;
+	  if(JSON.stringify(arr1) == "[24,105,220,255]") return 5;
+	  if(JSON.stringify(arr1) == "[24,106,218,255]") return 6;
+	  if(JSON.stringify(arr1) == "[24,106,219,255]") return 7;
+	  if(JSON.stringify(arr1) == "[24,106,220,255]") return 8;
+	  if(JSON.stringify(arr1) == "[218,26,26,255]") return 8;
+	  if(JSON.stringify(arr1) == "[218,25,26,255]") return 5;
+	  if(JSON.stringify(arr1) == "[218,24,26,255]") return 2;
+	  if(JSON.stringify(arr1) == "[219,26,26,255]") return 17;
+	  if(JSON.stringify(arr1) == "[219,25,26,255]") return 14;
+	  if(JSON.stringify(arr1) == "[219,24,26,255]") return 11;
+	  if(JSON.stringify(arr1) == "[220,26,26,255]") return 26;
+	  if(JSON.stringify(arr1) == "[220,25,26,255]") return 23;
+	  if(JSON.stringify(arr1) == "[220,24,26,255]") return 20;
+	  if(JSON.stringify(arr1) == "[26,220,30,255]") return 24;
+	  if(JSON.stringify(arr1) == "[26,220,31,255]") return 25;
+	  if(JSON.stringify(arr1) == "[26,220,32,255]") return 26;
+	  if(JSON.stringify(arr1) == "[26,219,30,255]") return 21;
+	  if(JSON.stringify(arr1) == "[26,219,31,255]") return 22;
+	  if(JSON.stringify(arr1) == "[26,219,32,255]") return 23;
+	  if(JSON.stringify(arr1) == "[26,218,30,255]") return 18;
+	  if(JSON.stringify(arr1) == "[26,218,31,255]") return 19;
+	  if(JSON.stringify(arr1) == "[26,218,32,255]") return 20;
+	  if(JSON.stringify(arr1) == "[208,218,26,255]") return 2;
+	  if(JSON.stringify(arr1) == "[208,218,25,255]") return 1;
+	  if(JSON.stringify(arr1) == "[208,218,24,255]") return 0;
+	  if(JSON.stringify(arr1) == "[209,218,26,255]") return 11;
+	  if(JSON.stringify(arr1) == "[209,218,25,255]") return 10;
+	  if(JSON.stringify(arr1) == "[209,218,24,255]") return 9;
+	  if(JSON.stringify(arr1) == "[210,218,26,255]") return 20;
+	  if(JSON.stringify(arr1) == "[210,218,25,255]") return 19;
+	  if(JSON.stringify(arr1) == "[210,218,24,255]") return 18;
+	  //if(JSON.stringify(arr1) == "[0,0,0,255]")
+	  return false;
   }
 
-  function getSelectedCube() {
+  function getActionStartCuby() {
     for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
       if (CUBE[i].is_selected) {
         return CUBE[i];
       }
     }
 
-    return false;
+    return null;
   }
 
   function shuffleCube(nb) { 
@@ -604,19 +712,35 @@ setInterval(() => {
     const cuby = p.random(Object.values(CUBE));
     animate(axe, p.random(row), p.random(dirs));
   }
-
-  function startAction() {
+  function getIndex(cuby)
+  {
+	  for(let i = 0; i < 27; i++)
+	  {
+		  if(CUBE[i].x == cuby.x && CUBE[i].y == cuby.y && CUBE[i].z == cuby.z)
+		  {
+			  console.log("lol ", CUBE[i].x, CUBE[i].y, CUBE[i].z, cuby.x, cuby.y, cuby.z);
+			  return i;
+		  }
+	  }
+	  return null;
+  }
+  function startAction() {	 
     const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
-
-    if (hoveredColor) {
-      
-      const res = getCubyByColor(hoveredColor);
-      if (res) {
-        cleanAllSelectedCubies();
-        res[0].is_selected = true;
-        res[0].selected_face = res[1];
-      }
-    }
+	setLayout();
+	console.log(hoveredColor);
+    if (hoveredColor !== false && hoveredColor[0] != BACKGROUND_COLOR) { 
+      const cuby = getCubyIndexByColor2(hoveredColor);
+	  
+      if (cuby !== false) {
+		//console.log(hoveredColor, getIndex(getCubyByColor(hoveredColor)), getCubyIndexByColor2(hoveredColor), getPos(cuby), cubyColors[getCubyIndexByColor2(hoveredColor)]);
+		selectedCuby = cuby;
+		selectedColor = hoveredColor;
+      } 
+    } else {
+		selectedCuby = -1;
+		selectedColor = [];
+		//cleanAllSelectedCubies();
+	}
   }
 
   //   *************************************
@@ -809,15 +933,19 @@ p.keyPressed = (event) => {
 		setLayout();
 		console.log(crossColor());
 		break;
-		case 32: //enter
+		case 32: //space
+		flipmode = 0;
 		setLayout();
 		console.log(layout);
+		console.log(CUBE)
 		console.log(cubyColors);
 		break;
 		case 16: //shift
-		//flipmode = 1 - flipmode;
-		window.localStorage.setItem("algs", )
-		break;
+		/*fetch('src/flip.json')
+		.then((response) => response.json())
+		.then((obj) => console.log(obj["F"]));*/
+	
+		//console.log(crossColor() + " " + flipmode2);
 		break;
 		
 	}
@@ -930,6 +1058,8 @@ p.keyPressed = (event) => {
 	  console.log(redo);
 	  if(redo.length == 0 || !canMan)
 		  return;
+	  flipmode = 0;
+	  setLayout();
 	  if(timer.IsRunning)
 		moves++;
 		let move = redo.pop();
@@ -963,7 +1093,14 @@ p.keyPressed = (event) => {
   }
   function notation(move){
 	  if(flipmode == 1)
+	  {
 		  move = flipper[move];
+	  }
+	  if(flipmode2 == 1)
+	  {
+		  console.log(move + " " + flipper2[move]);
+		  move = flipper2[move];
+	  }
 	  undo.push(move);
 	  setLayout();
 	  if(move == "D'")
@@ -1040,10 +1177,16 @@ p.keyPressed = (event) => {
 		  animateWide('x', 50, 1);
   }
   function stepTwo(){
+	flipmode2 = 1;
+	//dev = 1;
+	if(dev == 1)
+		flipmode2 = 0;
+	setLayout();
 	let pos = crossColor()[0];
 	color = crossColor()[1];
+	console.log(color);
 	arr = [];
-	if(pos != 2)
+	if(pos != 2 && saystep < 3)
 	{
 		document.getElementById("step").innerHTML = "Putting most solved side on top";
 		document.getElementById("fraction").innerHTML = "1/10):";
@@ -1060,11 +1203,13 @@ p.keyPressed = (event) => {
 		arr = ["x"];
 		console.log(crossColor() + "   " + arr);
 		multipleCross2(0);
+		
 	}
 	else if(crossColor()[2] < 4)
 	{
 		document.getElementById("step").innerHTML = "Putting in remaining edge pieces";
 		document.getElementById("fraction").innerHTML = "2/10):";
+		saystep = 2;
 		arr = [];
 		if(layout[5][1][0][0] == color && layout[2][1][0][0] != color)
 			arr = ["L'"];
@@ -1147,7 +1292,9 @@ p.keyPressed = (event) => {
 			else if(layout[4][0][1][0] == color)
 				changeArr("B U' L");
 			else if(!layout[0][0][1].includes(color))
+			{
 				arr = ["U'"]
+			}
 			else
 				arr = ["U"];
 		}
@@ -1158,6 +1305,7 @@ p.keyPressed = (event) => {
 		console.log(numPFL());
 		document.getElementById("step").innerHTML = "Permuting edges";
 		document.getElementById("fraction").innerHTML = "3/10):";
+		saystep = 3;
 		arr = [];
 		if(numPFL() < 2)
 		{
@@ -1189,12 +1337,21 @@ p.keyPressed = (event) => {
 	{
 		console.log("cornerPFL " + cornerPFL());
 		saystep = 7;
-		document.getElementById("step").innerHTML = "Putting corner pieces on top";
+		document.getElementById("step").innerHTML = "Putting corner pieces on bottom";
 		document.getElementById("fraction").innerHTML = "4/10):";
 		arr = [];
 		let color2 = layout[5][0][1][0];
 		let color3 = layout[1][0][1][0];
-		if(layout[3][0][0].includes(color) || layout[3][0][2].includes(color) || layout[3][2][0].includes(color) || layout[3][2][2].includes(color))
+		if(goodF2L() != 2 && goodF2L() != 0)
+		{
+			if(goodF2L() == 1)
+				changeArr("D")
+			else if(goodF2L() == 3)
+				changeArr("D'")
+			else
+				changeArr("D2")
+		}
+		else if(layout[3][0][0].includes(color) || layout[3][0][2].includes(color) || layout[3][2][0].includes(color) || layout[3][2][2].includes(color))
 		{
 			if(!layout[5][2][2].includes(color))
 			{
@@ -1347,11 +1504,11 @@ p.keyPressed = (event) => {
 					else if(layout[5][2][2][0] == layout[5][2][1][0] && layout[1][2][2][0] == layout[3][2][1][0])
 						changeArr("R' D' R D2 R' D' R D R' D' R")
 					else if(layout[5][2][2][0] == layout[3][0][1][0] && layout[1][2][2][0] == layout[4][2][1][0])
-						changeArr("D2 F D F' D F D' F'");
+						changeArr("F D' F' D2 F D F'");
 					else if(layout[5][2][2][0] == layout[4][2][1][0] && layout[1][2][2][0] == layout[3][0][1][0])
 						changeArr("D' R' D2 R D' R' D R");
 					else if(layout[5][2][2][0] == layout[0][2][1][0] && layout[1][2][2][0] == layout[3][1][0][0])
-						changeArr("D2 R' D' R D' R' D R");
+						changeArr("R' D R D2 R' D' R");
 					else if(layout[5][2][2][0] == layout[3][1][0][0] && layout[1][2][2][0] == layout[0][2][1][0])
 						changeArr("D F D2 F' D F D' F'")
 					else if(layout[5][2][2][0] == layout[5][1][0][0] && layout[1][2][2][0] == layout[0][1][2][0])
@@ -1618,7 +1775,7 @@ p.keyPressed = (event) => {
 			}
 			else
 			{
-				changeArr("R' D' R D F D F'");
+				changeArr("R' D' R");
 			}
 		}
 		multipleCross2(0);
@@ -1626,6 +1783,7 @@ p.keyPressed = (event) => {
 	else if(!isSolved())
 	{
 		color = opposite[color];
+		flipmode2 = 0;
 		stepThree(color);
 	}
 	else
@@ -1652,6 +1810,17 @@ p.keyPressed = (event) => {
   }
   function stepThree()
   {
+	  console.log("gergerger " + dev);
+	  if(dev > 0)
+	  {
+		  changeArr("x");
+		  dev -= 0.5;
+		  console.log("gergerger2 " + dev);
+		  multipleCross3(0);
+		  return;
+	  }
+	  flipmode2 = 0;
+	  setLayout();
 	  if(isSolved())
 	  {
 		  document.getElementById("stepbig").innerHTML = "";
@@ -1676,21 +1845,17 @@ p.keyPressed = (event) => {
 		  return;
 	  }
 	  console.log(color + " " + layout[2][1][1][0]);
-	  if(layout[2][1][1][0] != color)
+	  if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][2][0] == color) && saystep < 14)
 	  {
-		  document.getElementById("step").innerHTML = "And we go upside-down!";
-		  document.getElementById("fraction").innerHTML = "7/10):";
-		  arr = ["x", "x"];
-		  multipleCross3(0);
-	  }
-	  else if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][2][0] == color) && saystep < 14)
-	  {
+		  flipmode2 = 0;
+		  setLayout();
+		  console.log(layout);
 		  document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
 		  document.getElementById("fraction").innerHTML = "8/10):";
 		  saystep = 13;
 		  flipmode = 0;
 		  arr = [];
-		  if(layout[2][1][0][0] == color && layout[2][1][2][0] == color)
+		  if(layout[2][1][0][0] == color && layout[2][1][2][0] == color) // -
 		  {
 			  console.log("erter " + cornerOLL());
 			  if(cornerOLL() == 4)
@@ -1711,7 +1876,7 @@ p.keyPressed = (event) => {
 			  }
 			  else if(cornerOLL() == 1){
 				  if(layout[2][2][0][0] == color && layout[5][0][2][0] == color)
-					  changeArr("F U R U' R2 F' R U R U' R'"); //13
+					  changeArr("r U' r' U' r U r' F' U F"); //13
 				  else if(layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 				  {
 					  changeArr("R' F R U R' F' R F U' F'"); //14
@@ -1725,7 +1890,7 @@ p.keyPressed = (event) => {
 				  {
 					  flipmode = 1;
 					  if(layout[2][0][2][0] == color && layout[4][0][0][0] == color)
-						changeArr("F U R U' R2 F' R U R U' R'"); //13
+						changeArr("r U' r' U' r U r' F' U F"); //13
 					  else if(layout[2][0][0][0] == color && layout[4][0][2][0] == color)
 					  {
 						changeArr("R' F R U R' F' R F U' F'"); //14
@@ -1745,7 +1910,7 @@ p.keyPressed = (event) => {
 				  else if(layout[2][0][2][0] == color && layout[2][2][0][0] == color && layout[5][0][2][0] != color)
 					  changeArr("L F' L' U' L U F U' L'"); //39
 				  else if(layout[2][2][0][0] == color && layout[2][2][2][0] == color && layout[4][0][0][0] != color)
-					  changeArr("R U R2 U' R' F R U R U' F'");//34
+					  changeArr("R U R' d' l' U' L U M");//34
 				  else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 					  changeArr("R U R' U' R' F R F'"); //33
 				  else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color)
@@ -1758,7 +1923,7 @@ p.keyPressed = (event) => {
 					else if(layout[2][2][0][0] == color && layout[2][0][2][0] == color && layout[4][0][0][0] != color)
 						changeArr("L F' L' U' L U F U' L'"); //39
 					else if(layout[2][0][2][0] == color && layout[2][0][0][0] == color && layout[5][0][2][0] != color)
-					  changeArr("R U R2 U' R' F R U R U' F'");//34
+					  changeArr("R U R' d' l' U' L U M");//34
 					else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
 					  changeArr("R U R' U' R' F R F'"); //33
 					else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color)
@@ -1768,7 +1933,7 @@ p.keyPressed = (event) => {
 				  }
 			  }
 		  }
-		  else if(layout[2][0][1][0] == color && layout[2][2][1][0] == color)
+		  else if(layout[2][0][1][0] == color && layout[2][2][1][0] == color) // |
 		  {
 			  if(cornerOLL() == 2)
 			  {
@@ -1797,7 +1962,7 @@ p.keyPressed = (event) => {
 			  else
 				  arr = ["U'"]
 		  }
-		  else if(layout[2][0][1][0] == color && layout[2][1][0][0] == color) //Normal
+		  else if(layout[2][0][1][0] == color && layout[2][1][0][0] == color) //Normal (J)
 		  {
 			  if(cornerOLL() == 4)
 				  changeArr("M U M' U2 M U M'"); //28
@@ -1807,17 +1972,21 @@ p.keyPressed = (event) => {
 					  changeArr("F R U R' U' R U R' U' F'"); // 48
 				  else if(layout[0][0][0][0] != color && layout[0][0][2][0] != color && layout[5][0][2][0] == color && layout[5][0][2][0] == color)
 					  changeArr("r U2 R' U' R U R' U' R U' r'"); //54
-				  else
-					  arr = ["U'"];
+				  else if(layout[1][0][0][0] == color && layout[4][0][0][0] == color && layout[1][0][2][0] == color)
+				  {
+					  flipmode = 1;
+					  changeArr("r' U r2 U' r2 U' r2 U r'"); //50
+				  }
+				  else arr = ["U'"];
 			  }
 			  else if(cornerOLL() == 1)
 			  {
 				  if(layout[0][0][0][0] == color && layout[5][0][0][0] == color && layout[2][2][2][0] == color)
-					  changeArr("R' U' R y r U' r' U r U r'"); //9
+					  changeArr("R' U' R b U' b' U b U b'"); //9
 				  else if(layout[2][2][0][0] == color && layout[5][0][2][0] == color && layout[1][0][0][0] == color)
 					  changeArr("r U R' U R U2 r'"); //7
 				  else if(layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
-					  changeArr("r U R' U R' F R F' R U2 r'"); //10):
+					  changeArr("r U R' U R' F R F' R U2 r'"); //11
 				  else if(layout[2][0][0][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
 					  changeArr("l' U2 L U L' U l"); //5
 				  else
@@ -1826,11 +1995,11 @@ p.keyPressed = (event) => {
 			  else
 			  {
 				  if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-					  changeArr("y' M U R U R' U' R' F R F' M'"); //29
+					  changeArr("S' U F U F' U' F' L F L' S"); //29
 				  else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color && layout[0][0][0][0] == color)
-					  changeArr("F R' F R2 U' R' U' R U R' F2"); //30
+					  changeArr("F U R U' B R' F' R B' R'"); //30
 				  else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color)
-					  changeArr("R U R' U R U2 R' F R U R' U' F'"); //41
+					  changeArr("M' R' F' U' F U R U' M"); //41
 				  else if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 					  changeArr("F R' F' R U R U' R'"); //37
 				  else if(layout[2][0][0][0] == color && layout[2][2][0][0] == color && layout[5][0][2][0] == color)
@@ -1840,7 +2009,13 @@ p.keyPressed = (event) => {
 				  else if(layout[2][2][0][0] == color && layout[2][0][2][0] == color && layout[5][0][2][0] != color)
 					  changeArr("R U R' U R U' R' U' R' F R F'"); //38
 				  else
-					  arr = ["U'"]
+				  {
+					  flipmode = 1;
+					  if(cornerOLL() == 2 && layout[2][0][0][0] == color && layout[4][0][2][0] == color && layout[2][2][2][0] == color)
+						changeArr("R U2 R2 F R F' R U2 R'"); //35
+					  else
+					    arr = ["U"]
+				  }
 			  }
 		  }
 		  else if(layout[2][1][0][0] == color && layout[2][2][1][0] == color) //Backwards r
@@ -1850,16 +2025,42 @@ p.keyPressed = (event) => {
 				  if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[5][0][0][0] == color)
 					  changeArr("M U F R U R' U' F' M'"); //42
 				  else
-					  arr = ["U'"];
+				  {
+					flipmode = 1;
+					if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+					  changeArr("R' U' F U R U' R' F' R"); //31
+					else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color)
+					  changeArr("F' U' L' U L F");//43
+					else if(layout[2][2][2][0] == color && layout[2][0][0][0] == color && layout[1][0][0][0] == color)
+					  changeArr("L' U' L U' L' U L U L F' L' F");//36
+					else
+					  arr = ["U"];
+				  }
 			  }
 			  else if(cornerOLL() == 1 && layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
 			  {
-				  changeArr("R U R' U R' F R F' R U2 R'"); //10
+				  changeArr("R U R' B' R B U' B' R' B"); //10
 			  }
 			  else
-				  arr = ["U'"];
+			  {
+				flipmode = 1;
+				if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[5][0][2][0] == color && layout[4][0][2][0] == color)
+				  changeArr("F' L' U' L U L' U' L U F"); //47
+				else if(cornerOLL() == 0 && layout[4][0][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
+				  changeArr("r U' r2 U r2 U r2 U' r"); //49
+				else if(cornerOLL() == 0 && layout[4][0][2][0] == color && layout[4][0][0][0] == color && layout[5][0][2][0] == color)
+				  changeArr("l' U2 L U L' U' L U L' U l"); //53
+				else if(cornerOLL() == 1 && layout[2][0][0][0] == color && layout[1][0][2][0] == color && layout[4][0][2][0] == color)
+				  changeArr("l' U' L U' L' U2 l"); //8
+				else if(cornerOLL() == 1 && layout[2][2][0][0] == color && layout[1][0][2][0] == color && layout[4][0][2][0] == color)
+				  changeArr("r U2 R' U' R U' r'"); //6
+				else if(cornerOLL() == 1 && layout[0][0][0][0] == color && layout[4][0][2][0] == color && layout[2][2][2][0] == color)
+				  changeArr("M' R' U' R U' R' U2 R U' M"); //12
+				else
+				  arr = ["U"];
+			  }
 		  }
-		  else if(layout[2][1][2][0] == color && layout[2][0][1][0] == color) //J
+		  else if(layout[2][1][2][0] == color && layout[2][0][1][0] == color) //L
 		  {
 			  if(cornerOLL() == 2)
 			  {
@@ -1869,6 +2070,11 @@ p.keyPressed = (event) => {
 					  changeArr("F' U' L' U L F");//43
 				  else if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[0][0][2][0] == color)
 					  changeArr("L' U' L U' L' U L U L F' L' F");//36
+				  else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color && layout[4][0][2][0] == color)
+				  {
+					  flipmode = 1;
+					  changeArr("M U F R U R' U' F' M'"); //42
+				  }
 				  else
 					  arr = ["U'"];
 			  }
@@ -1884,7 +2090,12 @@ p.keyPressed = (event) => {
 				  changeArr("r U2 R' U' R U' r'"); //6
 			  else if(cornerOLL() == 1 && layout[1][0][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
 				  changeArr("M' R' U' R U' R' U2 R U' M"); //12
-			  else
+			  else if(cornerOLL() == 1 && layout[2][2][0][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color)
+			  {
+				  flipmode = 1;
+				  changeArr("R U R' B' R B U' B' R' B"); //10
+			  }
+			  else  
 				  arr = ["U'"];
 				  
 		  }
@@ -1895,7 +2106,52 @@ p.keyPressed = (event) => {
 			  else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
 				  changeArr("R U2 R2 F R F' R U2 R'"); //35
 			  else
-				  arr = ["U'"];
+			  {
+				 flipmode = 1;
+				if(cornerOLL() == 4)
+				  changeArr("M U M' U2 M U M'"); //28
+				else if(cornerOLL() == 0)
+				{
+				  if(layout[1][0][2][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color && layout[5][0][0][0] == color)
+					  changeArr("F R U R' U' R U R' U' F'"); // 48
+				  else if(layout[1][0][2][0] != color && layout[1][0][0][0] != color && layout[4][0][0][0] == color && layout[4][0][0][0] == color)
+					  changeArr("r U2 R' U' R U R' U' R U' r'"); //54
+				  else
+					  arr = ["U"];
+				}
+				else if(cornerOLL() == 1)
+				{
+				  if(layout[1][0][2][0] == color && layout[4][0][2][0] == color && layout[2][0][0][0] == color)
+					  changeArr("R' U' R b U' b' U b U b'"); //9
+				  else if(layout[2][0][2][0] == color && layout[4][0][0][0] == color && layout[0][0][2][0] == color)
+					  changeArr("r U R' U R U2 r'"); //7
+				  else if(layout[2][2][0][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color)
+					  changeArr("r U R' U R' F R F' R U2 r'"); //11
+				  else if(layout[2][2][2][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color)
+					  changeArr("l' U2 L U L' U l"); //5
+				  else
+					  arr = ["U"]
+				}
+				else
+				{
+				  if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+					  changeArr("S' U F U F' U' F' L F L' S"); //29
+				  else if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[1][0][2][0] == color)
+					  changeArr("F U R U' B R' F' R B' R'"); //30
+				  else if(layout[2][0][0][0] == color && layout[2][0][2][0] == color)
+					  changeArr("M' R' F' U' F U R U' M"); //41
+				  else if(layout[2][2][2][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+					  changeArr("F R' F' R U R U' R'"); //37
+				  else if(layout[2][2][2][0] == color && layout[2][0][2][0] == color && layout[4][0][0][0] == color)
+					  changeArr("L U F' U' L' U L F L'"); //32
+				  else if(layout[2][2][2][0] == color && layout[2][0][2][0] == color)
+					  changeArr("F U R U' R' F'"); //44
+				  else if(layout[2][0][2][0] == color && layout[2][2][0][0] == color && layout[4][0][0][0] != color)
+					  changeArr("R U R' U R U' R' U' R' F R F'"); //38
+				  else
+					  arr = ["U"]
+				}		
+			  }
 			  
 		  }
 		  else if(layout[2][0][1][0] != color && layout[2][1][0][0] != color && layout[2][1][2][0] != color) //Dot Cases (Dot Product Haha)
@@ -1950,6 +2206,8 @@ p.keyPressed = (event) => {
 	  }
 	  else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color && saystep < 15)
 	  {
+		  flipmode2 = 0;
+		   setLayout();
 		  document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
 		  document.getElementById("fraction").innerHTML = "8/10):";
 		  flipmode = 0;
@@ -2010,6 +2268,8 @@ p.keyPressed = (event) => {
 	  }
 	  else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layout[5][0][2][0]) && saystep <16)
 	  {
+		flipmode2 = 0;
+		 setLayout();
 		document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
 		document.getElementById("fraction").innerHTML = "9/10):";
 		saystep = 15;
@@ -2082,14 +2342,14 @@ p.keyPressed = (event) => {
 			if(layout[5][0][0][0] == layout[5][0][1][0] && layout[0][0][1][0] == layout[0][0][2][0]) //V
 				changeArr("R' U R' d' R' F' R2 U' R' U R' F R F");
 			else if(layout[5][0][0][0] == layout[5][0][1][0] && layout[1][0][0][0] == layout [1][0][1][0]) //Y
-				changeArr("F R U' R' U' R U R' F' R U R' U' R' F R F'");
+				changeArr("R2 U' R' U R U' B' R' F R' F' R' B R");
 			else if(layout[5][0][0][0] == layout[5][0][1][0] && layout[0][0][0][0] == layout[0][0][1][0]) //Nb
 				changeArr("L' U R' d2 R U' L R' U L' U2 l F' r");
 			else if(layout[5][0][1][0] == layout[5][0][2][0] && layout[0][0][1][0] == layout[0][0][2][0]) //Na
 				changeArr("R U' L d2 L' U L R' U' R U2 r' F l'")
 			else if(layout[5][0][0][0] != layout[5][0][1][0] && layout[5][0][2][0] != layout[5][0][1][0]
 			&& layout[4][0][0][0] != layout[4][0][1][0] && layout[4][0][2][0] != layout[4][0][1][0] && layout[5][0][0][0] == opposite[layout[0][0][1][0]])
-				changeArr("F R' F' r U R U' r' F R F' r U R' U' r'"); //E 
+				changeArr("R B L B' R' B F R F' L' F R' B' F'"); //E 
 			else if(layout[4][0][2][0] == layout[4][0][1][0] && layout[1][0][1][0] == layout[1][0][0][0]) //V
 			{
 				flipmode = 1;
@@ -2116,6 +2376,9 @@ p.keyPressed = (event) => {
 	  {
 		 document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
 		document.getElementById("fraction").innerHTML = "9/10):";
+		flipmode2 = 0;
+		flipmode = 0;
+		 setLayout();
 		arr = [];
 		if(correctPFL() == 0)
 		{
@@ -2126,7 +2389,7 @@ p.keyPressed = (event) => {
 			}
 			else if(layout[5][0][1][0] == layout[1][0][2][0])
 			{
-				changeArr("M' U' M2 U' M2 U' M' U2 M2")
+				changeArr("M2 u M2 u' S M2 S'")
 			}
 			else
 				changeArr("M' U M2 U M2 U M' U2 M2")
@@ -2172,6 +2435,9 @@ p.keyPressed = (event) => {
 	{
 		document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
 		document.getElementById("fraction").innerHTML = "10/10):";
+		flipmode2 = 0;
+		flipmode = 0;
+		 setLayout();
 		if(layout[5][0][1][0] == layout[0][1][1][0])
 			arr = ["U"];
 		else
@@ -2201,6 +2467,7 @@ p.keyPressed = (event) => {
 	}
   }
   function multipleCross3(nb) {
+	flipmode2=0;
 	setLayout();
     if (nb < arr.length) {
 		canMan = false;
@@ -2216,6 +2483,7 @@ p.keyPressed = (event) => {
 	else
 	{
 		//sleep(1000);
+		flipmode2 = 0;
 		setLayout();
 		stepThree();
 		console.log("done");
@@ -2336,6 +2604,36 @@ p.keyPressed = (event) => {
 	  if(layout[3][2][1].includes(colorTwo) && layout[3][2][1].includes(colorThree)) return true;
 	  return false;
   }
+  function goodF2L(){
+	  if(layout[5][2][2][0] == color && layout[3][2][2][0] == layout[0][2][1][0] && layout[1][2][2][0] == layout[3][1][0][0]) return 2;
+	  if(layout[1][2][2][0] == color && layout[5][2][2][0] == layout[3][0][1][0] && layout[3][2][2][0] == layout[4][2][1][0]) return 2;
+	  if(layout[5][2][2][0] == color && layout[3][2][2][0] == layout[3][1][2][0] && layout[1][2][2][0] == layout[1][2][1][0]) return 2;
+	  if(layout[1][2][2][0] == color && layout[5][2][2][0] == layout[5][2][1][0] && layout[3][2][2][0] == layout[3][2][1][0]) return 2;
+	  if(layout[0][2][2][0] == color && layout[5][2][0][0] == layout[3][0][1][0] && layout[3][2][0][0] == layout[4][2][1][0]) return 1;
+	  if(layout[5][2][0][0] == color && layout[0][2][2][0] == layout[3][1][2][0] && layout[3][2][0][0] == layout[1][2][1][0]) return 1;
+	  if(layout[0][2][2][0] == color && layout[5][2][0][0] == layout[5][2][1][0] && layout[3][2][0][0] == layout[3][2][1][0]) return 1;
+	  if(layout[5][2][0][0] == color && layout[0][2][2][0] == layout[0][2][1][0] && layout[3][2][0][0] == layout[3][1][0][0]) return 1;
+	  if(layout[1][2][0][0] == color && layout[4][2][2][0] == layout[3][2][1][0] && layout[3][0][2][0] == layout[5][2][1][0]) return 3;
+	  if(layout[1][2][0][0] == layout[3][1][0][0] && layout[4][2][2][0] == color && layout[3][0][2][0] == layout[0][2][1][0]) return 3;
+	  if(layout[1][2][0][0] == color && layout[4][2][2][0] == layout[4][2][1][0] && layout[3][0][2][0] == layout[3][0][1][0]) return 3;
+	  if(layout[1][2][0][0] == layout[1][2][1][0] && layout[4][2][2][0] == color && layout[3][0][2][0] == layout[3][1][2][0]) return 3;
+	  if(layout[4][2][0][0] == color && layout[0][2][0][0] == layout[3][1][2][0] && layout[3][0][0][0] == layout[1][2][1][0]) return 4;
+	  if(layout[4][2][0][0] == layout[3][2][1][0] && layout[0][2][0][0] == color && layout[3][0][0][0] == layout[5][2][1][0]) return 4;
+	  if(layout[4][2][0][0] == color && layout[0][2][0][0] == layout[0][2][1][0] && layout[3][0][0][0] == layout[3][1][0][0]) return 4;
+	  if(layout[4][2][0][0] == layout[4][2][1][0] && layout[0][2][0][0] == color && layout[3][0][0][0] == layout[3][0][1][0]) return 4;
+	  return 0;
+  }
+  function goodF2L2(){
+	  if(layout[5][2][2][0] == color) return 2;
+	  if(layout[1][2][2][0] == color) return 2;
+	  if(layout[0][2][2][0] == color) return 1;
+	  if(layout[5][2][0][0] == color) return 1;
+	  if(layout[1][2][0][0] == color) return 3;
+	  if(layout[4][2][2][0] == color) return 3;
+	  if(layout[4][2][0][0] == color) return 4;
+	  if(layout[0][2][0][0] == color) return 4;
+	  return 0;
+  }
   function setLayout(){
 	  //nora
 	let cnt = 0;
@@ -2390,6 +2688,45 @@ p.keyPressed = (event) => {
 			}
 		}
 	}
+	//flipmode2 = 1;
+	//console.log("flipmode is " + flipmode2)
+	if(flipmode2 == 1)
+	{
+		//console.log("Got in here");
+		for(let x = 0; x < 3; x++)
+		{
+			for(let y = 0; y < 3; y++)
+			{
+				let temp2 = layout[0][x][y];
+				layout[0][x][y] = layout[1][2-x][y];
+				layout[1][2-x][y] = temp2;
+			}
+		}
+		for(let x = 0; x < 3; x++)
+		{
+			for(let y = 0; y < 3; y++)
+			{
+				let temp2 = layout[2][x][y];
+				layout[2][x][y] = layout[3][x][2-y];
+				layout[3][x][2-y] = temp2;
+			}
+		}
+		for (let i = 4; i < 6; i++)
+		{
+			for(let x = 0; x < 2; x++)
+			{
+				for(let y = 0; y < 3; y++)
+				{
+					let temp2 = layout[i][x][y];
+					if(y>0 && x == 1)
+						continue;
+					layout[i][x][y] = layout[i][2-x][2-y];
+					layout[i][2-x][2-y] = temp2;
+				}
+			}
+		}
+		
+	}
 	for(let i = 0; i < 6; i++)
 	{
 		for(let x = 0; x < 3; x++)
@@ -2411,6 +2748,7 @@ p.keyPressed = (event) => {
   }
   function getColor(color)
   {
+	  /*
 	  if(color[0] == 250)
 		  return "w";
 	  if(color[1] == 18)
@@ -2420,6 +2758,33 @@ p.keyPressed = (event) => {
 	  if(color[1] == 125)
 		  return "o";
 	  if(color[0] == 209)
+		  return "y";
+	  return "g";
+	  */
+	  let cl = [];
+	  cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
+	  cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);
+	  cl[2] = Math.abs(color[0] - 18) + Math.abs(color[1] - 105) + Math.abs(color[2] - 219);
+	  cl[3] = Math.abs(color[0] - 219) + Math.abs(color[1] - 125) + Math.abs(color[2] - 18);
+	  cl[4] = Math.abs(color[0] - 209) + Math.abs(color[1] - 219) + Math.abs(color[2] - 18);
+	  cl[5] = Math.abs(color[0] - 18) + Math.abs(color[1] - 219) + Math.abs(color[2] - 31);
+	  let minpos = 0;
+	  for(let i = 0; i < 6; i++)
+	  {
+		  if(cl[i] < cl[minpos])
+		  {
+			  minpos = i
+		  }
+	  }
+	  if(minpos == 0)
+		  return "w";
+	  if(minpos == 1)
+		  return "r";
+	  if(minpos == 2)
+		  return "b";
+	  if(minpos == 3)
+		  return "o";
+	  if(minpos == 4)
 		  return "y";
 	  return "g";
   }
@@ -2442,38 +2807,256 @@ p.keyPressed = (event) => {
 
   p.mouseDragged = () => {
     const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
-
+		
     if (hoveredColor) {
-      const res = getCubyByColor(hoveredColor);
+	
+      const cuby = getCubyIndexByColor2(hoveredColor);
+      if (cuby !== false) {
 
-      if (res) {
-        const pk = getSelectedCube();
-
-        if (pk) {
+        if (selectedCuby !== false) {
+			
+			/*
           const move = pk.getMove(res[0], res[1], ((SIZE - 1) * (CUBYESIZE + GAP)) * 0.5);
-
           if (move) {
             animate(move[0], move[1], move[2]);
             pk.is_selected = false;
-            pk.selected_face = false;
           }
+		  */
+		  //console.log("Dragging from Cuby ", selectedCuby, "(", selectedColor, ") to Cuby ", cuby, " (color ", hoveredColor, ")");
+		  dragCube(selectedCuby, selectedColor, cuby, hoveredColor);
         }
       }
     }
   }
-
+  
+	function dragCube(cuby1, color1, cuby2, color2)
+	{
+		let turnface = [];
+		let colorx = -1;
+		let colory = -1;
+		if(!canMan)
+			return;
+		//console.log(cuby1, color1, cuby2, color2)
+		for(let i = 0; i < 6; i++)
+		{
+			colorx = -1;
+			colory = -1;
+			let times = 0;
+			for(let x = 0; x < 3; x++)
+			{
+				for(let y = 0; y < 3; y++)
+				{
+					let testnum = +(layout[i][x][y][2] + layout[i][x][y][3]);
+					if(testnum == cuby1 || testnum == cuby2)
+					{
+						times++;
+						if(testnum == cuby2)
+						{
+							colorx = x;
+							colory = y;
+						}
+						
+					}
+				}
+			}
+			if(times == 2)
+			{
+				turnface.push([i,colorx,colory]);
+			}
+		}
+		if(turnface.length == 1)
+		{
+				console.log("Love me some middle slices");
+				let i = turnface[0][0];
+				let cuby3 = getPos(cuby1);
+				let cuby4 = getPos(cuby2);
+				if(getPos(cuby1)[0] == getPos(cuby2)[0] && getPos(cuby2)[0] == 0)
+				{
+					if(i == 0 || i == 5)
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["E'"];
+						else
+							arr = ["E"];
+					else
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["E'"]
+						else
+							arr = ["E"];
+					multiple(0);
+					selectedCuby = -1;
+					selectedColor = [];
+					return;
+				}
+				if(getPos(cuby1)[1] == getPos(cuby2)[1] && getPos(cuby2)[1] == 0)
+				{
+					if(i == 1 || i == 2)
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["S'"];
+						else
+							arr = ["S"];
+					else
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["S'"]
+						else
+							arr = ["S"];
+					multiple(0);
+					selectedCuby = -1;
+					selectedColor = [];
+					return;
+				}
+				if(getPos(cuby1)[2] == getPos(cuby2)[2] && getPos(cuby2)[2] == 0)
+				{
+					if(i == 2 || i == 5)
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["M'"];
+						else
+							arr = ["M"];
+					else
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["M'"]
+						else
+							arr = ["M"];
+					multiple(0);
+					selectedCuby = -1;
+					selectedColor = [];
+					return;
+				}
+		}
+		if(turnface.length < 2)
+		{
+			//console.log("length error", turnface);
+			return false;
+		}
+		for(let i = 0; i < turnface.length; i++)
+		{
+			let testface = turnface[i][0];
+			let testx = turnface[i][1];
+			let testy = turnface[i][2];
+			let testface2 = turnface[1-i][0];
+			if(layout[testface][testx][testy][0] != getColor(color2))
+			{
+				console.log("working", turnface, layout[testface][testx][testy][0], testface);
+				let cuby3 = getPos(cuby1);
+				let cuby4 = getPos(cuby2);
+				if(testface == 0){
+					if(testface2 == 3 || testface2 == 4)
+					{
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["L"]
+						else
+							arr = ["L'"];
+					}
+					else
+					{
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["L"]
+						else
+							arr = ["L'"];
+					}
+				}
+				if(testface == 1){
+					if(testface2 == 3 || testface2 == 4)
+					{
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["R"]
+						else
+							arr = ["R'"];
+					}
+					else
+					{
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["R"]
+						else
+							arr = ["R'"];
+					}
+				}
+				if(testface == 2){
+					if(testface2 == 0 || testface2 == 5)
+					{
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["U"]
+						else
+							arr = ["U'"];
+					}
+					else
+					{
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["U"]
+						else
+							arr = ["U'"];
+					}
+				}
+				if(testface == 3){
+					if(testface2 == 0 || testface2 == 5)
+					{
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["D"]
+						else
+							arr = ["D'"];
+					}
+					else
+					{
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["D"]
+						else
+							arr = ["D'"];
+					}
+				}
+				if(testface == 4){
+					if(testface2 == 2 || testface2 == 1)
+					{
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["B"]
+						else
+							arr = ["B'"];
+					}
+					else
+					{
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["B"]
+						else
+							arr = ["B'"];
+					}
+				}
+				if(testface == 5){
+					if(testface2 == 2 || testface2 == 1)
+					{
+						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
+							arr = ["F"]
+						else
+							arr = ["F'"];
+					}
+					else
+					{
+						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
+							arr = ["F"]
+						else
+							arr = ["F'"];
+					}
+				}
+				multiple(0);
+				selectedCuby = -1;
+				selectedColor = [];
+				return true;
+			}
+		}
+		console.log("Loser_error")
+		return false;
+	}
   p.windowResized = () => {
     //p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.666, p.windowHeight);
 	p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.5, p.windowHeight*0.9, p.WEBGL);
-    PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth, p.windowHeight);
+    PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.5, p.windowHeight * 0.9);
   }
 
   p.draw = () => {
     const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
-    if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {
+    //if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {
+	if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {
       CAM.removeMouseListeners();
     } else {
-      CAM.attachMouseListeners();
+		if(hoveredColor[0] == BACKGROUND_COLOR)
+			CAM.attachMouseListeners();
     }
 
     CAM_PICKER.setState(CAM.getState(), 0);
@@ -2533,7 +3116,25 @@ p.keyPressed = (event) => {
 		 }			 
 	  }
 	  //console.log("solved");
+	  //flipmode2 = 1;
 	  return true;
+  }
+  function defineFlipper()
+  {
+	flipper["F"] = "B"; flipper["F'"] = "B'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "L"; flipper["R'"] = "L'"; flipper["L"] = "R"; 
+	flipper["L'"] = "R'"; flipper["B"] = "F"; flipper["B'"] = "F'"; flipper["D"] = "D"; flipper["D'"] = "D'"; flipper["M"] = "M'"; flipper["M'"] = "M"; 
+	flipper["E"] = "E"; flipper["E'"] = "E'"; flipper["S'"] = "S"; flipper["S"] = "S'"; flipper["Fw"] = "Bw"; flipper["Fw'"] = "Bw'"; flipper["Uw"] = "Uw"; 
+	flipper["Uw'"] = "Uw'"; flipper["Rw"] = "Lw"; flipper["Rw'"] = "Lw'"; flipper["Lw"] = "Rw"; flipper["Lw'"] = "Rw'"; flipper["Bw"] = "Fw"; 
+	flipper["Bw'"] = "Fw'"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["x"] = "x'"; flipper["x'"] = "x";
+	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "z"; flipper["z"] = "z'";
+  }
+  function defineFlipper2(){ //180 degree rotation around y-axis
+	flipper2["F"] = "F"; flipper2["F'"] = "F'"; flipper2["U"] = "D"; flipper2["U'"] = "D'"; flipper2["R"] = "L"; flipper2["R'"] = "L'"; flipper2["L"] = "R"; 
+	flipper2["L'"] = "R'"; flipper2["B"] = "B"; flipper2["B'"] = "B'"; flipper2["D"] = "U"; flipper2["D'"] = "U'"; flipper2["M"] = "M'"; flipper2["M'"] = "M"; 
+	flipper2["E"] = "E'"; flipper2["E'"] = "E"; flipper2["S'"] = "S'"; flipper2["S"] = "S"; flipper2["Fw"] = "Fw"; flipper2["Fw'"] = "Fw'"; flipper2["Uw"] = "Dw"; 
+	flipper2["Uw'"] = "Dw'"; flipper2["Rw"] = "Lw"; flipper2["Rw'"] = "Lw'"; flipper2["Lw"] = "Rw"; flipper2["Lw'"] = "Rw'"; flipper2["Bw"] = "Bw"; 
+	flipper2["Bw'"] = "Bw'"; flipper2["Dw"] = "Uw"; flipper2["Dw'"] = "Uw'"; flipper2["x"] = "x'"; flipper2["x'"] = "x";
+	flipper2["y"] = "y"; flipper2["y'"] = "y'"; flipper2["z'"] = "z'"; flipper2["z"] = "z";  
   }
   window.addEventListener('keydown', (e) => {
     if (e.target.localName != 'input') {   // if you need to filter <input> elements
@@ -2554,15 +3155,17 @@ p.keyPressed = (event) => {
     passive: false   // this is optional, my code works without it
 });
 }
-//BELOW 65 MOVES
-//D' L' B L U' L' U B F' D U L' F U2 B U' D' L' F'(64)
-//U' L B F L' D U L' D' B F D U' L U2 L2 F' R (63)
-//D' B U F R' U' L D F' B U L' D B R' L' B R U' D(63)
-//D' R U D' L D B L2 B' F' U' B D R L' U B R B'(62)
-//R' B' D R2 D L R B' U L D U L' R' F2 D L D'(62)
-//U' F L' U D' L' B' D2 U' F U2 R B' L' U' R' D' B(61)
+//WEIRD
+//R L' B D U2 R F' D' U L2 F' U' R U R' B D B'
+
+//BELOW 61 MOVES
+//L' U' D' B' U D' F' U' R B D' L' B U L' R F' D' L U'(60)
+//L' D' L B U D2 F' B R L R' F' L F L' U2 F L(60)
+//U R B U F B' R' U F' R B' D R D' L D R L' U B (60)
+//B' L' R' U' D B U' D' F' L2 B L F' R B D2 F R
+// L D L' U D' U' R' U L D B U R' F D' L2 R U B'(59)
 //WORLD RECORD SCRAMBLES
-//D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D (55, was 60)
-//B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U (59)
-//L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' (was 58, now 73)
-//Something that got 55
+//D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D (*53, was 60)
+//B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U (*was 59, 70)
+//L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' (*was 58, 75)
+//D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (55)

@@ -2,16 +2,8 @@
 <html>
 <head>
     <title>Jaden</title>
-
-    <!--script src="../main.js"></script-->
-	<!--script src="index.js"></script>
-	<script src="js/cuby.js"></script>
-	<script src="js/lib/p5.easycam.js"></script>
-	<script src="js/picker.js"></script>
-	<script src="js/sketch.js"></script>
-	<script src="../webpack.config.js"></script-->
-	<script src = "https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>    
-	<!--script src = "js/sketch.js" type="module"></script-->
+	<!--script src = "https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script-->   
+    <script src = "https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script>
 	<script src = "src/index.js" type="module"></script>	
 	
     <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
@@ -106,6 +98,7 @@
 			<p style = "font-size:20px; text-align:center; padding-left:0px; padding-top:20px;"><b>Select Modes:</b></p>
 			<p id="mode" style = "text-align:center;"></p>
 			<p id="mode2" style = "text-align:center;"></p>
+			<p><a class="link" href="https://github.com/JadenLeung/rubiks" target="_blank" style = "padding-left:4px;">GitHub Source Code</a></p>
 		</div>
 		<div class="col-lg-6" style = "padding-right: 0px;"id="cnv_div" ></div>
 		<div class="col-lg-4" style = "padding-left:35px;">
@@ -117,7 +110,7 @@
 				<span style = "display: inline;" id = "speed">0.01 </span>
 			</div>
 			<div class = "normal" style = "padding-bottom:7px">
-				<p id="delay" style = "display: inline;"><span>Transition Delay: &nbsp;</span></p>
+				<p id="delay" style = "display: inline;"><span>Delay: &nbsp;</span></p>
 				<span style = "display: inline;" id = "delay2">4</span>
 				<p style = "display: inline">&nbsp; (For autosolve/alg test)</p>
 			</div>	
@@ -157,6 +150,6 @@
 			
 		</div>
 	</div>
-	<a class="link" href="https://github.com/JadenLeung/rubiks" target="_blank" style = "padding-left:4px;">GitHub Source Code</a>
+	
 </body>
 </html>

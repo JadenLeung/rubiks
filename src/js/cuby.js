@@ -1,22 +1,33 @@
 export default class Cuby {
-  constructor(size, x, y, z, buff, picker, p) {
+  constructor(size, x, y, z, buff, picker, p, index) {
     this.cubysize = size;
     this.x = x;
     this.y = y;
     this.z = z;
     this.picker = picker;
     this.p = p;
+	this.index = index;
 
+	/*
     this.colors = {
-      def: p.color(25, 25, 25),
-      white: p.color(250, 250, 250),
-      red: p.color(219, 18, 18),
-      blue: p.color(18, 105, 219),
-      orange: p.color(219, 125, 18),
-      green: p.color(18, 219, 31),
-      yellow: p.color(209, 219, 18),
+      def: p.color(25, 25, 25, 255),
+      white: p.color(250, 250, 250, 255),
+      red: p.color(219, 18, 18, 255),
+      blue: p.color(18, 105, 219, 255),
+      orange: p.color(219, 125, 18, 255),
+      green: p.color(18, 219, 31, 255),
+      yellow: p.color(209, 219, 18, 255),
+    }; */
+	 this.colors = {
+      def:   p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
+      white: p.color(250 + this.x*0.02, 250 + this.y*0.02, 250 + this.z*0.02),
+      red:   p.color(219 + this.x*0.02, 25 + this.y*0.02,  25 + this.z*0.02),
+      blue:  p.color(25 + this.x*0.02,  105 + this.y*0.02, 219 + this.z*0.02),
+      orange:p.color(219 + this.x*0.02, 125 + this.y*0.02, 25 + this.z*0.02),
+      green: p.color(25 + this.x*0.02,  219 + this.y*0.02, 31 + this.z*0.02),
+      yellow:p.color(209 + this.x*0.02, 219 + this.y*0.02, 25 + this.z*0.02),
     };
-
+	
     this.top = this.colors.white;
     this.bottom = this.colors.yellow;
     this.front = this.colors.red;
@@ -160,9 +171,7 @@ export default class Cuby {
   hasColorFace(arr1) {
     let arr2;
     let face;
-    
-    arr1 = arr1.levels;
-    
+    //console.log("top", this.buff_top.levels, "bottom", this.buff_bottom.levels, this.buff_front.levels, this.buff_back.levels, this.buff_left.levels, this.buff_right.levels)
     for (let j = 0; j < 6; j++) {
       if (j === 0) {
         arr2 = this.buff_top.levels;
@@ -184,7 +193,7 @@ export default class Cuby {
         face = 'right';
       }
       
-      if ((arr1[0] === arr2[0] || arr1[0] === arr2[0] + 1 || arr1[0] === arr2[0] - 1) &&
+      if (arr1 && arr2 && (arr1[0] === arr2[0] || arr1[0] === arr2[0] + 1 || arr1[0] === arr2[0] - 1) &&
           (arr1[1] === arr2[1] || arr1[1] === arr2[1] + 1 || arr1[1] === arr2[1] - 1) &&
           (arr1[2] === arr2[2] || arr1[2] === arr2[2] + 1 || arr1[2] === arr2[2] - 1)) {
         return face;
@@ -289,10 +298,10 @@ export default class Cuby {
     this.p.push();
     
 	this.p.translate(this.x, this.y, this.z);
-	this.p.strokeWeight(2);
+	this.p.strokeWeight(1);
 	
 	// p1, p2, p3, p4 coordinates
-
+	
 	this.p.fill(this.back);
 	//this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
 	this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r, 2, 2);
@@ -316,9 +325,9 @@ export default class Cuby {
 	this.p.fill(this.left);
 	//this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
 	this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
-  
+
 	this.p.pop();
-    
+    /*
 	this.picker.buffer.push();
       
     this.picker.buffer.strokeWeight(0);
@@ -336,6 +345,6 @@ export default class Cuby {
     this.picker.buffer.fill(this.buff_left);
     this.picker.buffer.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
       
-    this.picker.buffer.pop();
+    this.picker.buffer.pop();*/
   }
 }
