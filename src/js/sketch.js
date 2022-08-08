@@ -2882,6 +2882,8 @@ p.keyPressed = (event) => {
 							arr = ["E'"]
 						else
 							arr = ["E"];
+					if(Math.round(timer.getTime() / 100)/10.0 == 0)
+						timer.start();
 					multiple(0);
 					selectedCuby = -1;
 					selectedColor = [];
@@ -2899,6 +2901,8 @@ p.keyPressed = (event) => {
 							arr = ["S'"]
 						else
 							arr = ["S"];
+					if(Math.round(timer.getTime() / 100)/10.0 == 0)
+						timer.start();
 					multiple(0);
 					selectedCuby = -1;
 					selectedColor = [];
@@ -2916,6 +2920,8 @@ p.keyPressed = (event) => {
 							arr = ["M'"]
 						else
 							arr = ["M"];
+					if(Math.round(timer.getTime() / 100)/10.0 == 0)
+						timer.start();
 					multiple(0);
 					selectedCuby = -1;
 					selectedColor = [];
@@ -2933,6 +2939,8 @@ p.keyPressed = (event) => {
 			let testx = turnface[i][1];
 			let testy = turnface[i][2];
 			let testface2 = turnface[1-i][0];
+			if(Math.round(timer.getTime() / 100)/10.0 == 0)
+				timer.start();
 			if(layout[testface][testx][testy][0] != getColor(color2))
 			{
 				console.log("working", turnface, layout[testface][testx][testy][0], testface);
@@ -3164,6 +3172,7 @@ p.keyPressed = (event) => {
 //U R B U F B' R' U F' R B' D R D' L D R L' U B (60)
 //B' L' R' U' D B U' D' F' L2 B L F' R B D2 F R
 // L D L' U D' U' R' U L D B U R' F D' L2 R U B'(59)
+// D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (57)
 //WORLD RECORD SCRAMBLES
 //D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D (*53, was 60)
 //B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U (*was 59, 70)
