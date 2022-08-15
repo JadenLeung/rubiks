@@ -22,6 +22,8 @@ export default function (p) {
   let SPEED = 0.01;
   let DELAY = 0;
   let shufflespeed = 5;
+  let easystep = 0;
+  let medstep = 0;
   let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
   let arr = [];
   let canMan = true;
@@ -172,6 +174,7 @@ const timer = new Timer();
 	SPEEDMODE.style("height:60px; width:180px; text-align:center; font-size:20px;")
     SPEEDMODE.mousePressed(speedmode.bind(null, 0));
 	
+	
     const SHUFFLE_BTN = p.createButton('Scramble');
 	SHUFFLE_BTN.parent("shuffle_div");
     SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
@@ -192,6 +195,16 @@ const timer = new Timer();
 	SOLVE.parent("solve");
     SOLVE.mousePressed(solveCube.bind(null, 0));
 	
+	const EASY = p.createButton('Easy');
+	EASY.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	EASY.parent("s_easy");
+    EASY.mousePressed(easy.bind(null, 0));
+	
+	const MED = p.createButton('Medium');
+	MED.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	MED.parent("s_medium");
+    MED.mousePressed(medium.bind(null, 0));
+	
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
 	inp.size(150);
@@ -211,7 +224,7 @@ setInterval(() => {
   let secs = 375-SPEED*225;
   if(secs < 20)
 		secs = 20;
-  if(isSolved() && timer.getTime() > secs && timer.isRunning)
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && MODE == "normal")
 	{
 		timer.stop();
 		flipmode2 = 0;
@@ -230,7 +243,68 @@ setInterval(() => {
 			ao5.shift()
 		}
 		}
-		console.log(isSolved());
+		console.log(isSolved(), MODE);
+	}
+	else if(MODE == "speed")
+	{
+		if(isSolved() && easystep == 1)
+		{
+			timer.stop();
+			console.log("herer")
+			easystep++;
+			ao5 = [Math.round(timer.getTime() / 100)/10.0];
+			easy();
+		}
+		else if(crossColor()[2] == 4 && easystep == 3)
+		{
+			timer.stop();
+			easystep++;
+			console.log("wefg")
+			ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			easy();
+		}
+		else if(easystep == 5)
+		{
+			for(let i = 0; i < 6; i++)
+			{
+				if(layout[i][1][1][0] == "g" && layout[i][0][0][0] == layout[i][0][2][0] && layout[i][0][0][0] == layout[i][2][0][0] && 
+			layout[i][0][0][0] == layout[i][2][2][0])
+				{
+					timer.stop();
+					ao5.push(Math.round(timer.getTime() / 100)/10.0);
+					easystep++;
+					easy();
+				}	
+			}
+		}
+		else if(easystep == 7)
+		{
+			if(twoLines())
+			{
+				timer.stop();
+				ao5.push(Math.round(timer.getTime() / 100)/10.0);
+				easystep++;
+				easy();
+			}
+		}
+		else if(medstep == 1)
+		{
+			if(mostSolved() == 9)
+			{
+				timer.stop();
+				ao5 = [Math.round(timer.getTime() / 100)/10.0];
+				medstep++;
+				medium();
+			}
+		}
+		else if(medstep == 3 && isSolved())
+		{
+			timer.stop();
+			ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			medstep++;
+			medium();
+		}
+		
 	}
 }, 100)
   function reSetup() {
@@ -238,6 +312,8 @@ setInterval(() => {
 	arr = [];
 	flipmode = 0;
 	flipmode2 = 0;
+	easystep = 0;
+	medstep = 0;
 	CAM = p.createEasyCam(p._renderer);
     CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(-100);
@@ -254,9 +330,34 @@ setInterval(() => {
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
+	document.getElementById("s_instruct").innerHTML = "";
+	document.getElementById("s_easy").style.display = "none";
+	document.getElementById("s_medium").style.display = "none";
     let cnt = 0;
 
     for (let i = 0; i < SIZE; i++) {
+      for (let j = 0; j < SIZE; j++) {
+        for (let k = 0; k < SIZE; k++) {
+          let offset = ((SIZE - 1) * (CUBYESIZE + GAP)) * 0.5;
+          let x = (CUBYESIZE + GAP) * i - offset;
+          let y = (CUBYESIZE + GAP) * j - offset;
+          let z = (CUBYESIZE + GAP) * k - offset;
+		  if(x == -2)
+		  {
+			 CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt);
+			console.log("here");
+		  }else
+			CUBE[cnt] = new Cuby(CUBYESIZE, x, y, z, RND_COLORS[cnt], PICKER, p, cnt);
+          cnt++;
+        }
+      }
+    }
+  }
+  function quickSolve()
+  {
+	  CUBE = {};
+	  let cnt = 0;
+	  for (let i = 0; i < SIZE; i++) {
       for (let j = 0; j < SIZE; j++) {
         for (let k = 0; k < SIZE; k++) {
           let offset = ((SIZE - 1) * (CUBYESIZE + GAP)) * 0.5;
@@ -328,31 +429,253 @@ setInterval(() => {
 	  if(MODE != "normal")
 		reSetup();
 	  MODE = "normal"
-	  
-	  document.getElementById("test_alg_div").style.display = "block";
-	  document.getElementById("shuffle_div").style.display = "inline";
-	  document.getElementById("reset_div").style.display = "inline";
-	  document.getElementById("solve").style.display = "inline";
 	  var elements = document.getElementsByClassName('normal');
 	  for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='block';
 	  }
+	  document.getElementById("test_alg_div").style.display = "block";
+	  document.getElementById("shuffle_div").style.display = "inline";
+	  document.getElementById("reset_div").style.display = "inline";
+	  document.getElementById("solve").style.display = "inline";
+	  document.getElementById("undo").style.display = "inline";
+	  document.getElementById("redo").style.display = "inline";
+	  document.getElementById("speed").style.display = "inline";
+	  document.getElementById("slider_div").style.display = "inline";
+	  document.getElementById("outermoves").style.display = "inline";
+	  document.getElementById("outertime").style.display = "inline";
+	  
+	  document.getElementById("s_INSTRUCT").innerHTML = "";
+	  document.getElementById("s_instruct").innerHTML = "";
+	  document.getElementById("s_difficulty").innerHTML = "";
+	  document.getElementById("keymap").style.display = "table";
+	  document.getElementById("s_easy").style.display = "none";
+	  document.getElementById("s_medium").style.display = "none";
+	  easystep = 0;
+	  medstep = 0;
+	  ao5 = [];
+	  mo5 = [];
 	  
   }
   function speedmode()
   {
 	  MODE = "speed"
 	  reSetup();
+	  ao5 = [];
+	  mo5 = [];
 	  console.log("wefwefew");
 	  document.getElementById("test_alg_div").style.display = "none";
 	  document.getElementById("shuffle_div").style.display = "none";
 	  document.getElementById("reset_div").style.display = "none";
 	  document.getElementById("solve").style.display = "none";
+	  document.getElementById("s_INSTRUCT").innerHTML = "Instructions for Speed Mode";
+	  document.getElementById("s_instruct").innerHTML = "In one game of speed mode, there will be <b>4</b> stages, each requiring you to complete a challenge. Your score will be the time it takes to do all the tasks.";
+	  document.getElementById("s_difficulty").innerHTML = "Select Difficulty:";
 	  var elements = document.getElementsByClassName('normal');
 	  for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	  }
+	  document.getElementById("s_easy").style.display = "block";
+	  document.getElementById("s_medium").style.display = "block";
+	  easystep = 0;
+	  medstep = 0;
 	  
+  }
+  function showSpeed()
+  {
+		document.getElementById("s_difficulty").innerHTML = "";
+		document.getElementById("s_easy").style.display = "none";
+		document.getElementById("s_medium").style.display = "none";
+		document.getElementById("keymap").style.display = "table";
+		document.getElementById("speed").style.display = "inline";
+		document.getElementById("slider_div").style.display = "inline";
+		document.getElementById("outertime").style.display = "inline";
+		document.getElementById("time").style.display = "inline";
+		document.getElementById("times_par").style.display = "block";
+  }
+  function easy() 
+  {
+	  if(easystep == 0)
+	  {
+		ao5 = 0;
+		quickSolve();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve the Cube";
+		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it.";
+		showSpeed();
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		let rnd = p.random(possible);
+		arr = [];
+		arr[0] = [rnd];
+		arr[1] = [rnd];
+		shufflespeed = 2;
+		multipleEasy(0, 0);
+	  }
+	  else if(easystep == 2)
+	  {
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #2: Solve the Cross In Any Face";
+		document.getElementById("s_instruct").innerHTML = "A cross is solved when all the edge pieces in a face match its center piece.";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		for(let i = 0; i < 20; i++)
+		{
+			let rnd = p.random(possible);
+			arr.push(rnd);
+		}
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 0);
+	  }
+	  else if(easystep == 3)
+	  {
+		  timer.reset();
+	  }
+	  else if(easystep == 4)
+	  {
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #3: Same Colored Corners in the Green Face";
+		document.getElementById("s_instruct").innerHTML = "This challenge is complete when all 4 corners in the green face are the same color. The green face is the face where the center piece is green.";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		for(let i = 0; i < 20; i++)
+		{
+			let rnd = p.random(possible);
+			arr.push(rnd);
+		}
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 0);
+	  }
+	  else if(easystep == 5)
+	  {
+		  timer.reset();
+	  }
+	  else if(easystep == 6)
+	  {
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Construct a Line of Solved Edges in Two Faces";
+		document.getElementById("s_instruct").innerHTML = "Take a look at these pictures for an example:";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		for(let i = 0; i < 20; i++)
+		{
+			let rnd = p.random(possible);
+			arr.push(rnd);
+		}
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 0);
+	  }
+	  else if(easystep == 7)
+	  {
+		  timer.reset();
+	  }
+	  else if(easystep == 8)
+	  {
+		var elements = document.getElementsByClassName('normal');
+		for(var i=0; i<elements.length; i++) { 
+			elements[i].style.display='none';
+		}
+		let total = 0;
+		for(let i = 0; i < 4; i++)
+		{
+			total += ao5[i];
+		}
+		total = Math.round(total * 10) / 10
+		document.getElementById("s_INSTRUCT").innerHTML = "Congrats on completing all the challenges!";
+		let grade = "F-";
+		let grades = ["A++", "A+", "A", "A-", "B+", "B", "B-", "C++", "C+", "C", "C-", "D+", "D", "D-", "F"];
+		let scores = [2, 3, 6, 10, 15, 25, 40, 60, 90, 120, 200, 300, 400, 500, 600];
+		for(let i = 0; i < grades.length; i++)
+		{
+			if(total < scores[i])
+			{
+				grade = grades[i];
+				break;
+			}
+		}
+		document.getElementById("time").style.display = "inline";
+		document.getElementById("times_par").style.display = "block";
+		document.getElementById("s_instruct").innerHTML = "Your final time is " + total + " seconds, granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
+		document.getElementById("s_easy").style.display = "block";
+		document.getElementById("s_medium").style.display = "block";
+		easystep = 0;
+		timer.reset();
+	  }
+	  
+  }
+  function medium(){ //ez
+	  if(medstep == 0)
+	  {
+		showSpeed();
+		ao5 = 0;
+		quickSolve();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve at a face";
+		document.getElementById("s_instruct").innerHTML = "The challenge is complete when all the pieces in a side have the same color. Move any layer to start time, solve the cube to stop it.";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		for(let i = 0; i < 20; i++)
+		{
+			let rnd = p.random(possible);
+			arr.push(rnd);
+		}
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 1);
+	  }
+	  else if(medstep == 1)
+	  {
+		 timer.reset();
+	  }
+	  else if(medstep == 2)
+	  {
+		timer.reset();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #2: Solve the cube";
+		quickSolve();
+		arr = [];
+		const mess = ["M2 U' M U2 M' U' M2", "M2 U M U2 M' U M2", "M2 U M2 U2 M2 U M2", "M U M2 U M2 U M U2 M2"];
+		const sugalg = [" (With solved part of last layer in the back) R U' R U R U R U' R' U' R2",
+						" (With solved part of last layer in the back) R2 U R U R' U' R' U' R' U R'",
+						" (From anywhere) M2 U M2 U2 M2 U M2",
+						" (Right side of the swapping pair- a pair constitutes 2 faces having the same colors- facing front) M U M2 U M2 U M U2 M2"];
+		let rnd2 = Math.round(Math.random()*4);
+		changeArr(mess[rnd2]);
+		shufflespeed = 2;
+		let rnd = Math.round(Math.random()*4);
+		for(let i = 0; i < rnd; i++)
+		{
+			arr.push("U");
+		}
+		canMan = false;
+		console.log("bruh", arr);
+		document.getElementById("s_instruct").innerHTML = "Use your beginner last layer techniques to solve it! <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + sugalg[rnd2] +  " </p>";
+		multipleEasy(0, 1);
+	  }
+	  else if(medstep == 3)
+	  {
+		  timer.reset();
+	  }
+  }
+  function multipleEasy(nb, dificil) {
+    if (nb < arr.length) {
+		canMan = false;
+		shufflespeed = 2;
+		moves++;
+		notation(arr[nb]);
+		console.log(nb, "easy", dificil);
+		let secs = 20;
+		setTimeout(multipleEasy.bind(null, nb + 1, dificil), secs);
+    }
+	else
+	{
+		shufflespeed = 5;
+		if(dificil == 0)
+		{
+			easystep++;
+			easy();
+		}
+		else{
+			medstep++;
+			medium();
+		}
+		canMan = true;
+	}
   }
   function genRndColors() {
     let cols = [];
@@ -454,6 +777,78 @@ setInterval(() => {
     for (let [i, cube] of Object.entries(tmp)) {
       CUBE[i] = cube;
     }
+  }
+  function twoLines()
+  {
+	let testcubes = [[2, 5], [5, 3], [3, 4], [4, 2]];
+	for(let i = 0; i < 4; i++)
+	{
+		let a = testcubes[i][0];
+		let b = testcubes[i][1];
+		console.log(a,b);
+		if(layout[a][0][1][0] == layout[a][1][1][0] && layout[a][2][1][0] == layout[a][1][1][0])
+		{
+			if(layout[b][0][1][0] == layout[b][1][1][0] && layout[b][2][1][0] == layout[b][1][1][0])
+			{
+				return true;
+			}
+		}
+	}  
+	testcubes = [[0, 5], [5, 1], [1, 4], [4, 0]];
+	for(let i = 0; i < 4; i++)
+	{
+		let a = testcubes[i][0];
+		let b = testcubes[i][1];
+		console.log(a,b);
+		if(layout[a][1][0][0] == layout[a][1][1][0] && layout[a][1][2][0] == layout[a][1][1][0])
+		{
+			if(layout[b][1][0][0] == layout[b][1][1][0] && layout[b][1][2][0] == layout[b][1][1][0])
+			{
+				return true;
+			}
+		}
+	} 
+	testcubes = [[2, 1], [3, 1], [3, 0], [2, 0]];
+	for(let i = 0; i < 4; i++)
+	{
+		let a = testcubes[i][0];
+		let b = testcubes[i][1];
+		console.log(a,b);
+		if(layout[a][1][0][0] == layout[a][1][1][0] && layout[a][1][2][0] == layout[a][1][1][0])
+		{
+			if(layout[b][0][1][0] == layout[b][1][1][0] && layout[b][2][1][0] == layout[b][1][1][0])
+			{
+				return true;
+			}
+		}
+	} 
+	return false;
+  }
+  function mostSolved() //most colors solved in a side
+  {
+	  let max = 1;
+	  for(let i = 0; i < 6; i++)
+	  {
+		  let keymap = [];
+		  keymap['g'] = 0; keymap['r'] = 0; keymap['b'] = 0; keymap['y'] = 0; keymap['o'] = 0; keymap['w'] = 0; keymap['y'] = 0; 
+		  for(let x = 0; x < 3; x++)
+		  {
+			  for(let y = 0; y < 3; y++)
+			  {
+				  let color = layout[i][x][y][0];
+				  if(keymap[color] == NaN)
+					 keymap[color] = 1;
+				  else
+					keymap[color]++;
+			  }
+		  }
+		  for(let i in keymap)
+		  {
+			  if(keymap[i] > max)
+				  max = keymap[i];
+		  }
+	  }
+	  return max;
   }
 
   function animate(axis, row, dir) {
@@ -681,6 +1076,21 @@ setInterval(() => {
 		display += " &nbsp;&nbsp;Mo" + mo5.length + ": " + (Math.round((meano5/(mo5.length * 1.0))*100)/100);
 	  if(ao5.length == 0)
 		  display = "N/A";
+	  if(MODE == "speed")
+	  {
+		  display = "";
+		  let total = 0;
+		  for(let i in ao5)
+		  {
+			  total += ao5[i];
+			  display += (ao5[i] + " &nbsp;");
+		  }
+		  if(ao5.length == 0)
+			  display = "N/A"
+		  total = Math.round(total * 10) / 10;
+		  if(ao5.length > 1)
+			display += " &nbsp;Total: " + total; 
+	  }
 	  document.getElementById('ao5').innerHTML = display;
 	  let i = 0;
 	  if(movesarr.length > 4) 
@@ -809,7 +1219,7 @@ p.keyPressed = (event) => {
 	{
 	setLayout();
 	console.log("here");
-	let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 8";
+	let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 8 86 82 78 66 77 85";
 	if(Math.round(timer.getTime() / 100)/10.0 == 0 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
 	if(include.includes(p.keyCode))
@@ -944,8 +1354,8 @@ p.keyPressed = (event) => {
 		/*fetch('src/flip.json')
 		.then((response) => response.json())
 		.then((obj) => console.log(obj["F"]));*/
-	
-		//console.log(crossColor() + " " + flipmode2);
+		console.log(quickSolve())
+		ao5 = [0.2]
 		break;
 		
 	}
@@ -953,6 +1363,8 @@ p.keyPressed = (event) => {
 	}
   }
   function multiple(nb) {
+	if(MODE == "speed" && arr.length > 1)
+		return;
     if (nb < arr.length) {
 		canMan = false;
 		moves++;
@@ -2532,6 +2944,7 @@ p.keyPressed = (event) => {
 	}
   }
   function crossColor(){
+	  setLayout();
 	  let max = 0;
 	  let maxpos = 2;
 	  let maxcolor = layout[2][1][1][0];
@@ -2552,7 +2965,7 @@ p.keyPressed = (event) => {
 			maxcolor = curcolor;
 		}
 		  if(i == 5)
-			  i = 0;
+			  i = -1;
 		  if(i == 1)
 			  break;
 	  }
@@ -2836,7 +3249,9 @@ p.keyPressed = (event) => {
 		let colory = -1;
 		if(!canMan)
 			return;
-		//console.log(cuby1, color1, cuby2, color2)
+		if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
+			return;
+		console.log(cuby1, color1, cuby2, color2)
 		for(let i = 0; i < 6; i++)
 		{
 			colorx = -1;
@@ -2850,6 +3265,7 @@ p.keyPressed = (event) => {
 					if(testnum == cuby1 || testnum == cuby2)
 					{
 						times++;
+						if(cuby1 == cuby2) times++;
 						if(testnum == cuby2)
 						{
 							colorx = x;
@@ -2859,20 +3275,33 @@ p.keyPressed = (event) => {
 					}
 				}
 			}
-			if(times == 2)
+			console.log("times " + times);
+			if(times >= 2)
 			{
 				turnface.push([i,colorx,colory]);
 			}
 		}
-		if(turnface.length == 1)
+		console.log("turnface is ", turnface);
+		if(turnface.length == 1 || (turnface.length == 2 && cuby1 == cuby2))
 		{
 				console.log("Love me some middle slices");
 				let i = turnface[0][0];
 				let cuby3 = getPos(cuby1);
 				let cuby4 = getPos(cuby2);
+				let face1 = getFace(cuby1, color1);
+				let face2 = getFace(cuby2, color2);
 				if(getPos(cuby1)[0] == getPos(cuby2)[0] && getPos(cuby2)[0] == 0)
 				{
-					if(i == 0 || i == 5)
+					let arrange = [0, 5, 1, 4, 0];
+					if(cuby1 == cuby2)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["E"];
+						else
+							arr = ["E'"]
+					}
+					else if(i == 0 || i == 5)
 						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
 							arr = ["E'"];
 						else
@@ -2891,7 +3320,16 @@ p.keyPressed = (event) => {
 				}
 				if(getPos(cuby1)[1] == getPos(cuby2)[1] && getPos(cuby2)[1] == 0)
 				{
-					if(i == 1 || i == 2)
+					let arrange = [2, 1, 3, 0, 2];
+					if(cuby1 == cuby2)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["S"];
+						else
+							arr = ["S'"];
+					}
+					else if(i == 1 || i == 2)
 						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
 							arr = ["S'"];
 						else
@@ -2910,7 +3348,16 @@ p.keyPressed = (event) => {
 				}
 				if(getPos(cuby1)[2] == getPos(cuby2)[2] && getPos(cuby2)[2] == 0)
 				{
-					if(i == 2 || i == 5)
+					let arrange = [2, 5, 3, 4, 2];
+					if(cuby1 == cuby2)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["M"];
+						else
+							arr = ["M'"]
+					}
+					else if(i == 2 || i == 5)
 						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
 							arr = ["M'"];
 						else
@@ -2938,16 +3385,29 @@ p.keyPressed = (event) => {
 			let testface = turnface[i][0];
 			let testx = turnface[i][1];
 			let testy = turnface[i][2];
-			let testface2 = turnface[1-i][0];
+			let testface2 = 0;
+			if(turnface.length == 2)
+				testface2 = turnface[1-i][0];
 			if(Math.round(timer.getTime() / 100)/10.0 == 0)
 				timer.start();
-			if(layout[testface][testx][testy][0] != getColor(color2))
+			if(layout[testface][testx][testy][0] != getColor(color2) && (turnface.length == 2 || layout[testface][testx][testy][0] != getColor(color1)))
 			{
-				console.log("working", turnface, layout[testface][testx][testy][0], testface);
+				console.log("working", turnface, layout[testface][testx][testy][0], testface, getColor(color2), getColor(color1));
 				let cuby3 = getPos(cuby1);
 				let cuby4 = getPos(cuby2);
+				let face1 = getFace(cuby1, color1);
+				let face2 = getFace(cuby2, color2);
 				if(testface == 0){
-					if(testface2 == 3 || testface2 == 4)
+					let arrange = [2, 5, 3, 4, 2];
+					if(turnface.length == 3)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["L"];
+						else
+							arr = ["L'"]
+					}
+					else if(testface2 == 3 || testface2 == 4)
 					{
 						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
 							arr = ["L"]
@@ -2963,7 +3423,16 @@ p.keyPressed = (event) => {
 					}
 				}
 				if(testface == 1){
-					if(testface2 == 3 || testface2 == 4)
+					let arrange = [2, 5, 3, 4, 2];
+					if(turnface.length == 3)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["R'"];
+						else
+							arr = ["R"]
+					}
+					else if(testface2 == 3 || testface2 == 4)
 					{
 						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
 							arr = ["R"]
@@ -2979,7 +3448,16 @@ p.keyPressed = (event) => {
 					}
 				}
 				if(testface == 2){
-					if(testface2 == 0 || testface2 == 5)
+					let arrange = [0, 5, 1, 4, 0];
+					if(turnface.length == 3)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["U'"];
+						else
+							arr = ["U"]
+					}
+					else if(testface2 == 0 || testface2 == 5)
 					{
 						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
 							arr = ["U"]
@@ -2995,7 +3473,16 @@ p.keyPressed = (event) => {
 					}
 				}
 				if(testface == 3){
-					if(testface2 == 0 || testface2 == 5)
+					let arrange = [0, 5, 1, 4, 0];
+					if(turnface.length == 3)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["D"];
+						else
+							arr = ["D'"]
+					}
+					else if(testface2 == 0 || testface2 == 5)
 					{
 						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
 							arr = ["D"]
@@ -3011,7 +3498,16 @@ p.keyPressed = (event) => {
 					}
 				}
 				if(testface == 4){
-					if(testface2 == 2 || testface2 == 1)
+					let arrange = [0, 2, 1, 3, 0];
+					if(turnface.length == 3)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["B'"];
+						else
+							arr = ["B"];
+					}
+					else if(testface2 == 2 || testface2 == 1)
 					{
 						if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
 							arr = ["B"]
@@ -3027,7 +3523,16 @@ p.keyPressed = (event) => {
 					}
 				}
 				if(testface == 5){
-					if(testface2 == 2 || testface2 == 1)
+					let arrange = [0, 2, 1, 3, 0];
+					if(turnface.length == 3)
+					{
+						let index = arrange.indexOf(face1);
+						if(arrange[index+1] == face2)
+							arr = ["F"];
+						else
+							arr = ["F'"];
+					}
+					else if(testface2 == 2 || testface2 == 1)
 					{
 						if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
 							arr = ["F"]
@@ -3070,6 +3575,24 @@ p.keyPressed = (event) => {
     CAM_PICKER.setState(CAM.getState(), 0);
 
     renderCube();
+  }
+  function getFace(cuby1, color1)
+  {
+	  for(let i = 0; i < 6; i++)
+	  {
+		  for(let x = 0; x < 3; x++)
+		  {
+			  for(let y = 0; y < 3; y++)
+			  {
+				  let testnum = +(layout[i][x][y][2] + layout[i][x][y][3]);
+				  if(layout[i][x][y][0] == getColor(color1) && testnum == cuby1)
+				  {
+					  return i;
+				  }
+			  }
+		  }
+	  }
+	  return;
   }
 
   function renderCube() {

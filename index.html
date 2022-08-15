@@ -76,14 +76,22 @@
 		sub{
 			font-weight: bold;
 		}
-		button.mode1:hover {
+		button:hover {
 			cursor: pointer;
 			background-color: #FABD44;
+		}
+		.noselect {
+			-webkit-touch-callout: none; /* iOS Safari */
+			-webkit-user-select: none; /* Safari */
+			-khtml-user-select: none; /* Konqueror HTML */
+			-moz-user-select: none; /* Old versions of Firefox */
+			-ms-user-select: none; /* Internet Explorer/Edge */
+			user-select: none; 
 		}
 	</style>	
     <meta charset="utf-8">
 </head>
-<body oncontextmenu="return false">
+<body oncontextmenu="return false" class = "noselect">
 	<h1 style = "text-align: center;">Jaden's Website - Virtual Cubing</h1>
 	<ul>
 		<li><a href="https://jadenleung.github.io/index.html">Home <i class="bi-house-fill"></i></a></li>
@@ -106,8 +114,8 @@
 				<span>Test Algorithm:</span>
 			</p>
 			<div style = "padding-bottom:7px">
-				<p id="slider_div" style = "display: inline;"><span>Turn Speed: </span></p>
-				<span style = "display: inline;" id = "speed">0.01 </span>
+				<p id="slider_div" style = "display: inline;"  class = "normal"><span>Turn Speed: </span></p>
+				<span style = "display: inline;" id = "speed"  class = "normal">0.01 </span>
 			</div>
 			<div class = "normal" style = "padding-bottom:7px">
 				<p id="delay" style = "display: inline;"><span>Delay: &nbsp;</span></p>
@@ -115,17 +123,17 @@
 				<p style = "display: inline">&nbsp; (For autosolve/alg test)</p>
 			</div>	
 			<div>
-				<p id="shuffle_div" style = "display: inline;"></p>
-				<p id="reset_div" style = "display: inline;"></p>
-				<p id="undo" style = "display: inline;"></p>
-				<p id="redo" style = "display: inline;"></p>
-				<p id="solve" style = "display: inline;"></p>
+				<p id="shuffle_div" style = "display: inline;"  class = "normal"></p>
+				<p id="solve" style = "display: inline;"  class = "normal"></p>
+				<p id="reset_div" style = "display: inline;"  class = "normal"></p>
+				<p id="undo" style = "display: inline;"  class = "normal"></p>
+				<p id="redo" style = "display: inline;"  class = "normal"></p>
 			</div>
 			<div style = "padding-top:10px;">
-				<p style = "display: inline;">Elapsed time: <span id="time">0</span>s&emsp;</p>
-				<p style = "display: inline;">Move Count: <span id = "moves">0</span></p>
+				<p style = "display: inline;" class = "normal" id = "outertime">Elapsed time: <span id="time">0</span>s&emsp;</p>
+				<p style = "display: inline;"  class = "normal" id = "outermoves">Move Count: <span id = "moves">0</span></p>
 			</div>
-			<table style="padding:2px">
+			<table style="padding:2px" class = "normal" id = "keymap">
 				<th colspan="10">Virtual Cube Key Map</th>
 				<tr>
 				 <td><sup>&larr;</sup><sub>y</sub></td>
@@ -141,11 +149,16 @@
 			</table>
 			<div>
 				<p id = "scramble_par" class = "normal">Scramble: <span id = "scramble" style = "font-size:12px;">N/A</span></p>
-				<p id = "times_par">Times: <span id = "ao5" style = "font-size:12px;">N/A</span></p>
+				<p id = "times_par"  class = "normal">Times: <span id = "ao5" style = "font-size:12px;">N/A</span></p>
 				<p id = "moves_par" class = "normal">Moves: <span id = "moves2" style = "font-size:12px;">N/A</span></p>
 			</div>
 			<h5><span id = "stepbig"></span><span id = "fraction"></span></h5>
 			<p id = "step"></p>
+			<h5 id = "s_INSTRUCT"></h5>
+			<p id = "s_instruct"></p>
+			<p id = "s_difficulty"></p>
+			<p id = "s_easy"></p>
+			<p id = "s_medium"></p>
 			
 			
 		</div>
