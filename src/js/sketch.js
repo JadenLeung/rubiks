@@ -3280,29 +3280,23 @@ p.keyPressed = (event) => {
   }
 
   p.mouseDragged = () => {
-    const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
-		
-    if (hoveredColor) {
-	
-      const cuby = getCubyIndexByColor2(hoveredColor);
-      if (cuby !== false) {
-
-        if (selectedCuby !== false) {
-			
-			/*
-          const move = pk.getMove(res[0], res[1], ((SIZE - 1) * (CUBYESIZE + GAP)) * 0.5);
-          if (move) {
-            animate(move[0], move[1], move[2]);
-            pk.is_selected = false;
-          }
-		  */
-		  //console.log("Dragging from Cuby ", selectedCuby, "(", selectedColor, ") to Cuby ", cuby, " (color ", hoveredColor, ")");
-		  dragCube(selectedCuby, selectedColor, cuby, hoveredColor);
-        }
-      }
-    }
+	dragAction();
   }
-  
+  p.touchMoved = () => {
+	dragAction();
+  }
+	function dragAction()
+	{
+		const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
+		if (hoveredColor) {
+			const cuby = getCubyIndexByColor2(hoveredColor);
+			if (cuby !== false) {
+				if (selectedCuby !== false) {
+					dragCube(selectedCuby, selectedColor, cuby, hoveredColor);
+				}
+			}
+		}
+	}
 	function dragCube(cuby1, color1, cuby2, color2)
 	{
 		let turnface = [];
