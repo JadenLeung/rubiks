@@ -287,20 +287,13 @@ setInterval(() => {
 				easy();
 			}
 		}
-		else if(medstep == 1)
-		{
-			if(mostSolved() == 9)
-			{
-				timer.stop();
-				ao5 = [Math.round(timer.getTime() / 100)/10.0];
-				medstep++;
-				medium();
-			}
-		}
-		else if(medstep == 3 && isSolved())
+		else if(medstep == 1 && mostSolved() == 9 || medstep == 3 && isSolved() || medstep == 5 && oppositeCross() || medstep == 7 && twobytwo() >= 3)
 		{
 			timer.stop();
-			ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			if(ao5 == 0)
+				ao5 = [Math.round(timer.getTime() / 100)/10.0];
+			else
+				ao5.push(Math.round(timer.getTime() / 100)/10.0);
 			medstep++;
 			medium();
 		}
@@ -426,6 +419,7 @@ setInterval(() => {
   }
   //Henry
   function regular(){
+	  canMan = true;
 	  if(MODE != "normal")
 		reSetup();
 	  MODE = "normal"
@@ -458,6 +452,7 @@ setInterval(() => {
   }
   function speedmode()
   {
+	  canMan = false;
 	  MODE = "speed"
 	  reSetup();
 	  ao5 = [];
@@ -474,14 +469,15 @@ setInterval(() => {
 	  for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	  }
-	  document.getElementById("s_easy").style.display = "block";
-	  document.getElementById("s_medium").style.display = "block";
+	  document.getElementById("s_easy").style.display = "inline";
+	  document.getElementById("s_medium").style.display = "inline";
 	  easystep = 0;
 	  medstep = 0;
 	  
   }
   function showSpeed()
   {
+	    canMan = true;
 		document.getElementById("s_difficulty").innerHTML = "";
 		document.getElementById("s_easy").style.display = "none";
 		document.getElementById("s_medium").style.display = "none";
@@ -582,9 +578,11 @@ setInterval(() => {
 		let grade = "F-";
 		let grades = ["A++", "A+", "A", "A-", "B+", "B", "B-", "C++", "C+", "C", "C-", "D+", "D", "D-", "F"];
 		let scores = [2, 3, 6, 10, 15, 25, 40, 60, 90, 120, 200, 300, 400, 500, 600];
+		if(medstep == 8)
+			scores = [20, 25, 30, 40, 50, 60, 80, 100, 120, 150, 200, 300, 400, 500, 600];
 		for(let i = 0; i < grades.length; i++)
 		{
-			if(total < scores[i])
+			if(total <= scores[i])
 			{
 				grade = grades[i];
 				break;
@@ -593,9 +591,10 @@ setInterval(() => {
 		document.getElementById("time").style.display = "inline";
 		document.getElementById("times_par").style.display = "block";
 		document.getElementById("s_instruct").innerHTML = "Your final time is " + total + " seconds, granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
-		document.getElementById("s_easy").style.display = "block";
-		document.getElementById("s_medium").style.display = "block";
+		document.getElementById("s_easy").style.display = "inline";
+		document.getElementById("s_medium").style.display = "inline";
 		easystep = 0;
+		medstep = 0;
 		timer.reset();
 	  }
 	  
@@ -606,7 +605,7 @@ setInterval(() => {
 		showSpeed();
 		ao5 = 0;
 		quickSolve();
-		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve at a face";
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve a face";
 		document.getElementById("s_instruct").innerHTML = "The challenge is complete when all the pieces in a side have the same color. Move any layer to start time, solve the cube to stop it.";
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
@@ -630,14 +629,14 @@ setInterval(() => {
 		quickSolve();
 		arr = [];
 		const mess = ["M2 U' M U2 M' U' M2", "M2 U M U2 M' U M2", "M2 U M2 U2 M2 U M2", "M U M2 U M2 U M U2 M2"];
-		const sugalg = [" (With solved part of last layer in the back) R U' R U R U R U' R' U' R2",
-						" (With solved part of last layer in the back) R2 U R U R' U' R' U' R' U R'",
+		const sugalg = [" (With solved part of last layer in the back) M2 U M U2 M' U M2",
+						" (With solved part of last layer in the back) M2 U' M U2 M' U' M2",
 						" (From anywhere) M2 U M2 U2 M2 U M2",
-						" (Right side of the swapping pair- a pair constitutes 2 faces having the same colors- facing front) M U M2 U M2 U M U2 M2"];
-		let rnd2 = Math.round(Math.random()*4);
+						" (Right side of the swapping pair- a pair constitutes 2 faces having the same colors- facing front) M' U M2 U M2 U M' U2 M2"];
+		let rnd2 = Math.floor(Math.random()*4);
 		changeArr(mess[rnd2]);
 		shufflespeed = 2;
-		let rnd = Math.round(Math.random()*4);
+		let rnd = Math.floor(Math.random()*4);
 		for(let i = 0; i < rnd; i++)
 		{
 			arr.push("U");
@@ -647,9 +646,43 @@ setInterval(() => {
 		document.getElementById("s_instruct").innerHTML = "Use your beginner last layer techniques to solve it! <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + sugalg[rnd2] +  " </p>";
 		multipleEasy(0, 1);
 	  }
-	  else if(medstep == 3)
+	  else if(medstep == 4)
+	  {
+		timer.reset();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #3: Solve the cross in 2 opposite faces";
+		document.getElementById("s_instruct").innerHTML = "A cross is solved when all the edge pieces in a face match its center piece. You need this to occur in a face and the face opposite of it.";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		for(let i = 0; i < 20; i++)
+		{
+			let rnd = p.random(possible);
+			arr.push(rnd);
+		}
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 1);
+	  }
+	  else if(medstep == 6)
+	  {
+		timer.reset();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Construct a solved 2x2 square in 3 faces";
+		document.getElementById("s_instruct").innerHTML = "A 2x2 square includes a faces' center, a corner, and two edges, and should look like a square consisting on one color.";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		for(let i = 0; i < 20; i++)
+		{
+			let rnd = p.random(possible);
+			arr.push(rnd);
+		}
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 1);
+	  }
+	  else if(medstep == 8)
 	  {
 		  timer.reset();
+		  easystep = 8;
+		  easy();
 	  }
   }
   function multipleEasy(nb, dificil) {
@@ -850,7 +883,37 @@ setInterval(() => {
 	  }
 	  return max;
   }
-
+  function oppositeCross() //returns true if two crosses are solved in opposite faces
+  {
+	  
+	  for(let i = 0; i < 6; i+=2)
+	  {
+		let cnt = 0;
+		let clr = layout[i][1][1][0];
+		let clr2 = layout[i+1][1][1][0];
+		if(layout[i][0][1][0] == clr && layout[i][1][0][0] == clr && layout[i][1][2][0] == clr && layout[i][2][1][0] == clr) cnt++;
+		if(layout[i+1][0][1][0] == clr2 && layout[i+1][1][0][0] == clr2 && layout[i+1][1][2][0] == clr2 && layout[i+1][2][1][0] == clr2) cnt++;
+		if(cnt == 2)
+			return true;
+	  }
+	  return false;
+  }
+  function twobytwo() //returns the number of faces containing 2x2 squares
+  {
+	  let cnt = 0;
+	  for(let i = 0; i < 6; i++)
+	  {
+		  let clr = layout[i][1][1][0];
+		  if(  layout[i][0][0][0] == clr && layout[i][1][0][0] == clr && layout[i][0][1][0] == clr 
+			|| layout[i][0][2][0] == clr && layout[i][0][1][0] == clr && layout[i][1][2][0] == clr
+			|| layout[i][2][2][0] == clr && layout[i][2][1][0] == clr && layout[i][1][2][0] == clr
+			|| layout[i][2][0][0] == clr && layout[i][2][1][0] == clr && layout[i][1][0][0] == clr)
+		  {
+			  cnt++;
+		  }
+	  }
+	  return cnt;
+  }
   function animate(axis, row, dir) {
     for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
       if (CUBE[i].animating()) {
@@ -1340,8 +1403,7 @@ p.keyPressed = (event) => {
 		Undo();
 		break;
 		case 13: //enter
-		setLayout();
-		console.log(crossColor());
+		console.log(quickSolve());
 		break;
 		case 32: //space
 		flipmode = 0;
@@ -1354,8 +1416,7 @@ p.keyPressed = (event) => {
 		/*fetch('src/flip.json')
 		.then((response) => response.json())
 		.then((obj) => console.log(obj["F"]));*/
-		console.log(quickSolve())
-		ao5 = [0.2]
+		console.log(p.windowWidth);
 		break;
 		
 	}
@@ -3557,7 +3618,6 @@ p.keyPressed = (event) => {
 		return false;
 	}
   p.windowResized = () => {
-    //p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.666, p.windowHeight);
 	p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.5, p.windowHeight*0.9, p.WEBGL);
     PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.5, p.windowHeight * 0.9);
   }
