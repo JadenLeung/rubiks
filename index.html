@@ -80,18 +80,18 @@
 			cursor: pointer;
 			background-color: #FABD44;
 		}
-		/*.noselect {
+		.noselect {
 			-webkit-touch-callout: none; /* iOS Safari */
 			-webkit-user-select: none; /* Safari */
 			-khtml-user-select: none; /* Konqueror HTML */
 			-moz-user-select: none; /* Old versions of Firefox */
 			-ms-user-select: none; /* Internet Explorer/Edge */
 			user-select: none; 
-		}*/
+		}
 	</style>	
     <meta charset="utf-8">
 </head>
-<body oncontextmenu="return false" class = "noselect">
+<body oncontextmenu="return false">
 	<h1 style = "text-align: center;">Jaden's Website - Virtual Cubing</h1>
 	<ul>
 		<li><a href="https://jadenleung.github.io/index.html">Home <i class="bi-house-fill"></i></a></li>
@@ -102,7 +102,7 @@
 	</ul>
 	
 	<div class="row">
-		<div class = "col-lg-2" style = "padding-left:30px;">
+		<div class = "col-lg-2 noselect" style = "padding-left:30px;">
 			<p style = "font-size:20px; text-align:center; padding-left:0px; padding-top:20px;"><b>Select Modes:</b></p>
 			<p id="mode" style = "text-align:center;"></p>
 			<p id="mode2" style = "text-align:center;"></p>
@@ -110,30 +110,30 @@
 		</div>
 		<div class="col-lg-6" style = "padding-right: 0px;"id="cnv_div" ></div>
 		<div class="col-lg-4" style = "padding-left:35px;">
-			<p id="test_alg_div" style="margin-top:4px;">
+			<p id="test_alg_div" style="margin-top:4px;"  class = "noselect">
 				<span>Test Algorithm:</span>
 			</p>
-			<div style = "padding-bottom:7px">
+			<div style = "padding-bottom:7px"  class = "noselect">
 				<p id="slider_div" style = "display: inline;"  class = "normal"><span>Turn Speed: </span></p>
 				<span style = "display: inline;" id = "speed"  class = "normal">0.01 </span>
 			</div>
-			<div class = "normal" style = "padding-bottom:7px">
+			<div class = "normal noselect" style = "padding-bottom:7px">
 				<p id="delay" style = "display: inline;"><span>Delay: &nbsp;</span></p>
 				<span style = "display: inline;" id = "delay2">4</span>
 				<p style = "display: inline">&nbsp; (For autosolve/alg test)</p>
 			</div>	
-			<div>
+			<div  class = "noselect">
 				<p id="shuffle_div" style = "display: inline;"  class = "normal"></p>
 				<p id="solve" style = "display: inline;"  class = "normal"></p>
 				<p id="reset_div" style = "display: inline;"  class = "normal"></p>
 				<p id="undo" style = "display: inline;"  class = "normal"></p>
 				<p id="redo" style = "display: inline;"  class = "normal"></p>
 			</div>
-			<div style = "padding-top:10px;">
+			<div style = "padding-top:10px;"  class = "noselect">
 				<p style = "display: inline;" class = "normal" id = "outertime">Elapsed time: <span id="time">0</span>s&emsp;</p>
 				<p style = "display: inline;"  class = "normal" id = "outermoves">Move Count: <span id = "moves">0</span></p>
 			</div>
-			<table style="padding:2px" class = "normal" id = "keymap">
+			<table style="padding:2px" class = "normal noselect" id = "keymap">
 				<th colspan="10">Virtual Cube Key Map</th>
 				<tr>
 				 <td><sup>&larr;</sup><sub>y</sub></td>

@@ -134,7 +134,7 @@ const timer = new Timer();
     PICKER = new Picker(p, DEBUG);
     CAM = p.createEasyCam(p._renderer);
     CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.zoom(-100);
+	CAM.zoom(-150);
     CAM.rotateX(-p.PI / 2.7);
     CAM.rotateY(-p.PI / 7);
     CAM.rotateZ(-p.PI / 2);
@@ -301,6 +301,7 @@ setInterval(() => {
 	}
 }, 100)
   function reSetup() {
+	
     CUBE = {};
 	arr = [];
 	flipmode = 0;
@@ -309,7 +310,7 @@ setInterval(() => {
 	medstep = 0;
 	CAM = p.createEasyCam(p._renderer);
     CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.zoom(-100);
+	CAM.zoom(-150);
     CAM.rotateX(-p.PI / 2.7);
     CAM.rotateY(-p.PI / 7);
     CAM.rotateZ(-p.PI / 2);
@@ -414,11 +415,13 @@ setInterval(() => {
     SIZE = SIZE_SLIDER.value();
     GAP = GAP_SLIDER.value();
 	SPEED = SPEED_SLIDER.value();
-	DELAY = DELAY_SLIDER.value();
+	if(MODE == "normal")
+		DELAY = DELAY_SLIDER.value();
     //reSetup();
   }
   //Henry
   function regular(){
+	  DELAY = DELAY_SLIDER.value();
 	  canMan = true;
 	  if(MODE != "normal")
 		reSetup();
@@ -452,6 +455,7 @@ setInterval(() => {
   }
   function speedmode()
   {
+	  DELAY = 0;
 	  canMan = false;
 	  MODE = "speed"
 	  reSetup();
@@ -477,6 +481,7 @@ setInterval(() => {
   }
   function showSpeed()
   {
+	  DELAY = 0;
 	    canMan = true;
 		document.getElementById("s_difficulty").innerHTML = "";
 		document.getElementById("s_easy").style.display = "none";
@@ -1416,7 +1421,7 @@ p.keyPressed = (event) => {
 		/*fetch('src/flip.json')
 		.then((response) => response.json())
 		.then((obj) => console.log(obj["F"]));*/
-		console.log(p.windowWidth);
+		console.log(DELAY);
 		break;
 		
 	}
@@ -1829,9 +1834,41 @@ p.keyPressed = (event) => {
 			if(!layout[5][2][2].includes(color))
 			{
 				if(layout[0][2][2].includes(color))
-					arr = ["D"];
-				else
-					arr = ["D'"];
+				{
+					let piece = layout[0][2][2];
+					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
+						|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
+						{
+						arr = ["y'"]
+						console.log("save1")
+						}
+					else
+						arr = ["D"];
+				}
+				else if(layout[0][2][0].includes(color))
+				{
+					let piece = layout[0][2][0];
+					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
+						|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
+						{
+						arr = ["y'"]
+						console.log("save2")
+						}
+					else
+						arr = ["D"];
+				}
+				else 
+				{
+					let piece = layout[1][2][0];
+					if(piece.includes(layout[1][1][1][0]) && piece.includes(layout[4][1][1][0]) 
+						|| piece.includes(layout[0][1][1][0]) && piece.includes(layout[4][1][1][0]))
+						{
+						arr = ["y"]
+						console.log("save3")
+						}
+					else
+						arr = ["D'"];
+				}
 			}
 			else if(layout[5][2][2].includes(color2) && layout[5][2][2].includes(color3))
 			{
@@ -1973,9 +2010,9 @@ p.keyPressed = (event) => {
 					else if(layout[5][2][2][0] == layout[3][2][1][0] && layout[1][2][2][0] == layout[5][2][1][0])
 						changeArr("F D2 F' D' F D F'");
 					else if(layout[5][2][2][0] == layout[3][1][2][0] && layout[1][2][2][0] == layout[1][2][1][0])
-						changeArr("R' D' R D' R' D' R D2 F D' F'")
+						changeArr("R' D' R D' F D' F' D F D' F'")
 					else if(layout[5][2][2][0] == layout[5][2][1][0] && layout[1][2][2][0] == layout[3][2][1][0])
-						changeArr("R' D' R D2 R' D' R D R' D' R")
+						changeArr("R' D' R F D' F' R' D' R")
 					else if(layout[5][2][2][0] == layout[3][0][1][0] && layout[1][2][2][0] == layout[4][2][1][0])
 						changeArr("F D' F' D2 F D F'");
 					else if(layout[5][2][2][0] == layout[4][2][1][0] && layout[1][2][2][0] == layout[3][0][1][0])
@@ -2940,6 +2977,12 @@ p.keyPressed = (event) => {
 	}
   }
   function multipleCross3(nb) {
+	if(MODE != "normal")
+	{
+		flipmode = 0;
+		flipmode2 = 0;
+		return;
+	}
 	flipmode2=0;
 	setLayout();
     if (nb < arr.length) {
@@ -2963,6 +3006,12 @@ p.keyPressed = (event) => {
 	}
   }
   function multipleCross2(nb) {
+	if(MODE != "normal")
+	{
+		flipmode = 0;
+		flipmode2 = 0;
+		return;
+	}
 	setLayout();
     if (nb < arr.length) {
 		canMan = false;
@@ -3618,9 +3667,10 @@ p.keyPressed = (event) => {
 
   p.draw = () => {
     const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
-    //if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {
+    //if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {	
+	
 	if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {
-      CAM.removeMouseListeners();
+		CAM.removeMouseListeners();
     } else {
 		if(hoveredColor[0] == BACKGROUND_COLOR)
 			CAM.attachMouseListeners();
@@ -3719,7 +3769,7 @@ p.keyPressed = (event) => {
 	flipper2["E"] = "E'"; flipper2["E'"] = "E"; flipper2["S'"] = "S'"; flipper2["S"] = "S"; flipper2["Fw"] = "Fw"; flipper2["Fw'"] = "Fw'"; flipper2["Uw"] = "Dw"; 
 	flipper2["Uw'"] = "Dw'"; flipper2["Rw"] = "Lw"; flipper2["Rw'"] = "Lw'"; flipper2["Lw"] = "Rw"; flipper2["Lw'"] = "Rw'"; flipper2["Bw"] = "Bw"; 
 	flipper2["Bw'"] = "Bw'"; flipper2["Dw"] = "Uw"; flipper2["Dw'"] = "Uw'"; flipper2["x"] = "x'"; flipper2["x'"] = "x";
-	flipper2["y"] = "y"; flipper2["y'"] = "y'"; flipper2["z'"] = "z'"; flipper2["z"] = "z";  
+	flipper2["y"] = "y'"; flipper2["y'"] = "y"; flipper2["z'"] = "z'"; flipper2["z"] = "z";  
   }
   window.addEventListener('keydown', (e) => {
     if (e.target.localName != 'input') {   // if you need to filter <input> elements
@@ -3743,15 +3793,18 @@ p.keyPressed = (event) => {
 //WEIRD
 //R L' B D U2 R F' D' U L2 F' U' R U R' B D B'
 
-//BELOW 61 MOVES
-//L' U' D' B' U D' F' U' R B D' L' B U L' R F' D' L U'(60)
-//L' D' L B U D2 F' B R L R' F' L F L' U2 F L(60)
-//U R B U F B' R' U F' R B' D R D' L D R L' U B (60)
-//B' L' R' U' D B U' D' F' L2 B L F' R B D2 F R
-// L D L' U D' U' R' U L D B U R' F D' L2 R U B'(59)
-// D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (57)
+//BELOW 60 MOVES
+//R' B D F L' D B L2 D' L' R' U' F U R' U2 B D' (59)
+// F B2 L' F B L' B' F R L' B F' B' L' D' F R2 U (59)
+// L D L' U D' U' R' U L D B U R' F D' L2 R U B'(58)
+// F D L' R' B' L U F R F' D' R B U D' R L F R F' (58)
+// B R' U B' F R D U' D' L' B F U' B F' D' U' D B' U (57)
+// U2 R U' B D B U' L2 F R2 D2 F2 L2 F2 R2 U2 F L2 U' (57, Jaden's WR Scramble)
+// R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (57)
+// D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (56)
+////D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (56, 1.2 second WR)
 //WORLD RECORD SCRAMBLES
-//D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D (*53, was 60)
-//B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U (*was 59, 70)
-//L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' (*was 58, 75)
+//D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(53, was 60)
+//B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 70)
+//L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y(was 58, 61)
 //D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (55)

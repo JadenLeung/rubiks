@@ -252,8 +252,6 @@ class EasyCam {
       },
 
       mousedrag : function(){
-        var pd = cam.P5.pixelDensity();
-
         var mouse = cam.mouse;
         if(mouse.ismousedown){
 
@@ -284,6 +282,8 @@ class EasyCam {
         mouse.ismousedown = mouse.button > 0;
         mouse.isPressed = (mouse.istouchdown || mouse.ismousedown);
         cam.SHIFT_CONSTRAINT = 0;
+		
+		console.log("Mouse up'ed.");
       },
 
       dblclick : function(event){
@@ -521,7 +521,7 @@ class EasyCam {
       var el = renderer.elt;
 
       cam.attachListener(el    , 'mousedown' , mouse.mousedown , op);
-      cam.attachListener(el    , 'mouseup'   , mouse.mouseup   , op);
+      cam.attachListener(window    , 'mouseup'   , mouse.mouseup   , op);
       cam.attachListener(el    , 'dblclick'  , mouse.dblclick  , op);
       cam.attachListener(el    , 'wheel'     , mouse.wheel     , op);
       cam.attachListener(el    , 'touchstart', mouse.touchstart, op);

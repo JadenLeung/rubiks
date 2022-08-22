@@ -299,13 +299,13 @@ export default class Cuby {
     
 	this.p.translate(this.x, this.y, this.z);
 	this.p.strokeWeight(1);
-	
+	this.p.stroke(20);
 	// p1, p2, p3, p4 coordinates
 	
 	this.p.fill(this.back);
 	//this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
-	this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r, 2, 2);
-
+	this.p.quad(-r, -r, -r,    r, -r, -r,  r, r, -r,   -r, r, -r, 2, 2);
+	
 	this.p.fill(this.front);
 	//this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
 	this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	  
@@ -325,7 +325,9 @@ export default class Cuby {
 	this.p.fill(this.left);
 	//this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
 	this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
-
+	/*this.p.line(r,r,r,-r,-r,-r);
+	this.p.line(r,r,r,-r,-r,-r);
+	this.p.line(r,r,r,-r,-r,-r);*/
 	this.p.pop();
     /*
 	this.picker.buffer.push();
