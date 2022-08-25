@@ -8,8 +8,8 @@ export default class Picker {
   
   initBuffer() {
     const p = this.p;
-
-    const buffer = p.createGraphics(this.debug ? p.windowWidth / 2 : p.windowWidth * 0.5, p.windowHeight * 0.9, p.WEBGL);
+	let cnv_div = document.getElementById("cnv_div");
+    const buffer = p.createGraphics(this.debug ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight * 0.9, p.WEBGL);
     buffer.pixelDensity(1);
     buffer.frameRate(60);
     
@@ -26,6 +26,7 @@ export default class Picker {
     }
 	
     const gl = this.buffer.elt.getContext('webgl');	
+	let cnv_div = document.getElementById("cnv_div");
 	const colorArr = p.get(x, p.windowHeight * 0.9 - y);
 	return colorArr;	
 

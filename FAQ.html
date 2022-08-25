@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+	<title>Jaden Leung, Lexington High School</title>
+	<!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"/>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Bootstrap Icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<style>
+		body{
+			background-color:#c9ffda;
+			color:#0a1970;
+			font:courier;
+			
+		}
+		.actualbody{
+			padding-left:20px;
+			padding-right:0px;
+		}
+		table, th, td{
+			 border: 1px solid;
+		}
+		ul.top_nav_bar {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+		}
+		li.top_nav_bar {
+			float: left;
+		}
+		li.top_nav_bar a{
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+		}
+		li.top_nav_bar a:hover {
+			background-color: #111;
+		}
+		.active {
+			background-color: #04AA6D;
+		}
+		.caption{
+			text-align:center;
+			color: red;
+			font-size: 15px;
+		}
+		img{
+			padding: 10px;
+			margin-left:auto;
+			margin-right:auto;
+		}
+		.row{
+			max-width: 100%;
+		}
+		
+	</style>
+</head>
+<body>
+	<h1 style = "text-align: center;">Jaden's Website - Resume</h1>
+	<ul class="top_nav_bar">
+		<li class="top_nav_bar"><a href="index.html" class="top_nav_bar">Home <i class="bi-house-fill"></i></a></li>
+		<li class="top_nav_bar"><a href="resume.html"  class = "top_nav_bar">Resume <i class="bi bi-file-person"></i></a></li>
+		<li class="top_nav_bar"><a href="https://jadenleung.github.io/rubiks/index.html" class = "active">Virtual Cubing <i class="bi bi-box"></i></a></li>
+		<li class="top_nav_bar"><a href="dino.html" class="top_nav_bar">Arrow Game <i class="bi bi-controller"></i></a></li>
+		<li class="top_nav_bar"><a href="tierlist.html" class="top_nav_bar">Tier List <i class="bi bi-card-list"></i></a></li>				
+	</ul>
+	<br>
+	<div class="actualbody" style =  "padding-left:20px; padding-right:40px;">
+		<h5>Github code please?</h5>
+		<p><p style = "display: inline;"> <a href="https://github.com/JadenLeung/rubiks" target="_blank">Sure</a></p></p>
+		<h5>How do I read cube notation? (e.g. R, R')</h5>
+		<p>R, L, F, B, U, D correspond to turning the right, left, front, back, upper (top), and down (bottom) faces respectively. An apostrophe (') indicates turning the face
+		counterclockwise, while lacking the apostrophe indicates turning it clockwise. For more info, check out <a href = "https://www.youtube.com/watch?v=24eHm4ri8WM&t=111s">Jperm's video </a>on cube notation.</p>
+		<h5>Why are there weird diagonal lines on each square?</h5>
+		<p>I am using the p5 library, which draws quadriliaterals in a 3D plane as two connected triangles. According to one of the p5 devs, "In p5.js the quad is drawn as 2 triangles hence the diagonal line. 
+		It is not usual to draw quads in 3D because all four vertices should lie in the same plane and that can’t be guaranteed. On the other hand a triangle has three vertices and they will always be in the same plane." Making 
+		the border of the squares black will in turn show off the diagonal.</p>
+		<h5>Which scrambles have you gotton that are really good?</h5>
+		<p>Put this in the algortihm tester: D' R' U' L R F' L2 D' U B' D U F D F2 L' D2. The auto-solve solves it in 46 moves!</p>
+		<h5>What are your fastest times for speed mode?</h5>
+		<p>Easy: 0.8s, Medium: 15.4s</p>
+		<h5>Can you tell me a cubing joke?</h5>
+		<p>Nah, that would be too edgy. Okay I'm definitely cutting corners on what is to be considered a cubing joke.</p>
+		
+	</div>
+	
+	 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  
+</body>
+</html>

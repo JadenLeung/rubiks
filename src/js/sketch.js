@@ -5,7 +5,7 @@ import Cuby from './cuby.js';
 export default function (p) {
   const CUBYESIZE = 50;
   const DEBUG = false;
-
+	
   let CAM;
   let CAM_PICKER;
   let PICKER;
@@ -24,8 +24,13 @@ export default function (p) {
   let shufflespeed = 5;
   let easystep = 0;
   let medstep = 0;
+  let pllstep = 0;
   let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
   let arr = [];
+  let obj2 = [];
+  fetch('src/PLL.json')
+	.then((response) => response.json())
+	.then((obj) => (setPLL(obj)));
   let canMan = true;
   let shuffleNB;
   let undo = [];
@@ -126,7 +131,8 @@ class Timer {
 }
 const timer = new Timer();
   p.setup = () => {
-    p.createCanvas(DEBUG ? p.windowWidth / 2 : p.windowWidth * 0.5, p.windowHeight*0.9, p.WEBGL);
+	let cnv_div = document.getElementById("cnv_div");
+    p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
     p.pixelDensity(1);
     p.frameRate(60);
     p.smooth();
@@ -174,7 +180,6 @@ const timer = new Timer();
 	SPEEDMODE.style("height:60px; width:180px; text-align:center; font-size:20px;")
     SPEEDMODE.mousePressed(speedmode.bind(null, 0));
 	
-	
     const SHUFFLE_BTN = p.createButton('Scramble');
 	SHUFFLE_BTN.parent("shuffle_div");
     SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
@@ -204,6 +209,11 @@ const timer = new Timer();
 	MED.style("height:60px; width:180px; text-align:center; font-size:20px;")
 	MED.parent("s_medium");
     MED.mousePressed(medium.bind(null, 0));
+	
+	const PLL = p.createButton('PLL Practice');
+	PLL.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	PLL.parent("s_PLL");
+    PLL.mousePressed(speedPLL.bind(null, 0));
 	
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
@@ -297,6 +307,17 @@ setInterval(() => {
 			medstep++;
 			medium();
 		}
+		else if(isSolved() && pllstep % 2 == 1)
+		{
+			timer.stop();
+			if(ao5 == 0)
+				ao5 = [Math.round(timer.getTime() / 100)/10.0];
+			else
+				ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			console.log("you", ao5);
+			pllstep++;
+			speedPLL();
+		}
 		
 	}
 }, 100)
@@ -308,6 +329,7 @@ setInterval(() => {
 	flipmode2 = 0;
 	easystep = 0;
 	medstep = 0;
+	pllstep = 0;
 	CAM = p.createEasyCam(p._renderer);
     CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(-150);
@@ -327,6 +349,7 @@ setInterval(() => {
 	document.getElementById("s_instruct").innerHTML = "";
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
+	document.getElementById("s_PLL").style.display = "none";
     let cnt = 0;
 
     for (let i = 0; i < SIZE; i++) {
@@ -447,8 +470,10 @@ setInterval(() => {
 	  document.getElementById("keymap").style.display = "table";
 	  document.getElementById("s_easy").style.display = "none";
 	  document.getElementById("s_medium").style.display = "none";
+	  document.getElementById("s_PLL").style.display = "none";
 	  easystep = 0;
 	  medstep = 0;
+	  pllstep = 0;
 	  ao5 = [];
 	  mo5 = [];
 	  
@@ -468,15 +493,17 @@ setInterval(() => {
 	  document.getElementById("solve").style.display = "none";
 	  document.getElementById("s_INSTRUCT").innerHTML = "Instructions for Speed Mode";
 	  document.getElementById("s_instruct").innerHTML = "In one game of speed mode, there will be <b>4</b> stages, each requiring you to complete a challenge. Your score will be the time it takes to do all the tasks.";
-	  document.getElementById("s_difficulty").innerHTML = "Select Difficulty:";
+	  document.getElementById("s_difficulty").innerHTML = "Select Difficulty/Mode";
 	  var elements = document.getElementsByClassName('normal');
 	  for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	  }
 	  document.getElementById("s_easy").style.display = "inline";
 	  document.getElementById("s_medium").style.display = "inline";
+	  document.getElementById("s_PLL").style.display = "inline";
 	  easystep = 0;
 	  medstep = 0;
+	  pllstep = 0;
 	  
   }
   function showSpeed()
@@ -486,6 +513,7 @@ setInterval(() => {
 		document.getElementById("s_difficulty").innerHTML = "";
 		document.getElementById("s_easy").style.display = "none";
 		document.getElementById("s_medium").style.display = "none";
+		document.getElementById("s_PLL").style.display = "none";
 		document.getElementById("keymap").style.display = "table";
 		document.getElementById("speed").style.display = "inline";
 		document.getElementById("slider_div").style.display = "inline";
@@ -585,6 +613,8 @@ setInterval(() => {
 		let scores = [2, 3, 6, 10, 15, 25, 40, 60, 90, 120, 200, 300, 400, 500, 600];
 		if(medstep == 8)
 			scores = [20, 25, 30, 40, 50, 60, 80, 100, 120, 150, 200, 300, 400, 500, 600];
+		if(pllstep == 8)
+			scores = [9, 12, 15, 20, 30, 45, 60, 80, 100, 120, 200, 300, 400, 500, 600];
 		for(let i = 0; i < grades.length; i++)
 		{
 			if(total <= scores[i])
@@ -598,8 +628,10 @@ setInterval(() => {
 		document.getElementById("s_instruct").innerHTML = "Your final time is " + total + " seconds, granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
 		document.getElementById("s_easy").style.display = "inline";
 		document.getElementById("s_medium").style.display = "inline";
+		document.getElementById("s_PLL").style.display = "inline";
 		easystep = 0;
 		medstep = 0;
+		pllstep = 0;
 		timer.reset();
 	  }
 	  
@@ -690,6 +722,39 @@ setInterval(() => {
 		  easy();
 	  }
   }
+  function speedPLL()
+  {
+	  if(pllstep % 2 == 0 && pllstep != 8)
+	  {
+		timer.reset();
+		if(pllstep == 0)
+			ao5 = 0;
+		quickSolve();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
+		showSpeed();
+		const possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
+		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"];
+		let rnd = p.random(possible);
+		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + obj2[rnd][0] +  " </p>";
+		
+		console.log(obj2, rnd, obj2[rnd][1]);
+		changeArr(obj2[rnd][1])
+		shufflespeed = 2;
+		let rnd2 = Math.floor(Math.random()*4);
+		for(let i = 0; i < rnd2; i++)
+		{
+			arr.push("U");
+		}
+		multipleEasy(0, 2);
+	  }
+	  else if(pllstep == 8)
+	  {
+		  timer.reset();
+		  easystep = 8;
+		  easy();
+	  }
+	  
+  }
   function multipleEasy(nb, dificil) {
     if (nb < arr.length) {
 		canMan = false;
@@ -708,9 +773,14 @@ setInterval(() => {
 			easystep++;
 			easy();
 		}
-		else{
+		else if (dificil == 1){
 			medstep++;
 			medium();
+		}
+		else
+		{
+			pllstep++;
+			speedPLL();
 		}
 		canMan = true;
 	}
@@ -1418,15 +1488,19 @@ p.keyPressed = (event) => {
 		console.log(cubyColors);
 		break;
 		case 16: //shift
-		/*fetch('src/flip.json')
+		/*fetch('src/PLL.json')
 		.then((response) => response.json())
-		.then((obj) => console.log(obj["F"]));*/
-		console.log(DELAY);
+		.then((obj) => (setPLL(obj)));*/
+		console.log(pllstep)
 		break;
 		
 	}
 	
 	}
+  }
+  function setPLL(obj)
+  {
+	  obj2 = obj;
   }
   function multiple(nb) {
 	if(MODE == "speed" && arr.length > 1)
@@ -1823,11 +1897,41 @@ p.keyPressed = (event) => {
 		if(goodF2L() != 2 && goodF2L() != 0)
 		{
 			if(goodF2L() == 1)
-				changeArr("D")
+			{
+					let piece = layout[0][2][2];
+					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
+						|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
+						{
+						arr = ["y'"]
+						console.log("save1")
+						}
+					else
+						arr = ["D"];
+			}
 			else if(goodF2L() == 3)
-				changeArr("D'")
+			{
+					let piece = layout[1][2][0];
+					if(piece.includes(layout[1][1][1][0]) && piece.includes(layout[4][1][1][0]) 
+						|| piece.includes(layout[0][1][1][0]) && piece.includes(layout[4][1][1][0]))
+						{
+						arr = ["y"]
+						console.log("save3")
+						}
+					else
+						arr = ["D'"];
+			}
 			else
-				changeArr("D2")
+			{
+					let piece = layout[0][2][0];
+					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
+						|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
+						{
+						arr = ["y'"]
+						console.log("save2")
+						}
+					else
+						arr = ["D"];
+			}
 		}
 		else if(layout[3][0][0].includes(color) || layout[3][0][2].includes(color) || layout[3][2][0].includes(color) || layout[3][2][2].includes(color))
 		{
@@ -1845,19 +1949,7 @@ p.keyPressed = (event) => {
 					else
 						arr = ["D"];
 				}
-				else if(layout[0][2][0].includes(color))
-				{
-					let piece = layout[0][2][0];
-					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
-						|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
-						{
-						arr = ["y'"]
-						console.log("save2")
-						}
-					else
-						arr = ["D"];
-				}
-				else 
+				else if(!layout[0][2][0].includes(color))
 				{
 					let piece = layout[1][2][0];
 					if(piece.includes(layout[1][1][1][0]) && piece.includes(layout[4][1][1][0]) 
@@ -1868,6 +1960,18 @@ p.keyPressed = (event) => {
 						}
 					else
 						arr = ["D'"];
+				}
+				else 
+				{
+					let piece = layout[0][2][0];
+					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
+						|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
+						{
+						arr = ["y'"]
+						console.log("save2")
+						}
+					else
+						arr = ["D"];
 				}
 			}
 			else if(layout[5][2][2].includes(color2) && layout[5][2][2].includes(color3))
@@ -1916,17 +2020,17 @@ p.keyPressed = (event) => {
 						else changeArr("F' D2 F2 D F'");
 					}
 					else if(layout[5][1][2][0] == layout[1][1][1][0] && layout[5][1][1][0] == layout[1][1][2][0]){
-						changeArr("D2 R' D' R D F D' F'");
+						changeArr("D R' D' R D' F D F'");
 					}
 					else if(layout[1][2][2][0] == layout[1][1][0][0] && layout[3][2][2][0] == layout[4][1][2][0]){
-						changeArr("D'B' D' B F D' F'");
+						changeArr("D' B' D' B F D' F'");
 					}
 					else if(layout[1][2][2][0] == layout[3][0][1][0] && layout[3][2][2][0] == layout[4][2][1][0]){
 						if(edgeback) changeArr("D' F D F' D F D F'");
 						else changeArr("R D R' F D F'");
 					}
 					else if(layout[1][2][2][0] == layout[0][1][2][0] && layout[3][2][2][0] == layout[5][1][0][0]){
-						changeArr("D F' D' F D2 F D' F'");
+						changeArr("F' D' F2 D F'")
 					}
 					else if(layout[1][2][2][0] == layout[5][1][0][0] && layout[3][2][2][0] == layout[0][1][2][0]){
 						changeArr("L D L' D' F D F'");
@@ -1974,7 +2078,7 @@ p.keyPressed = (event) => {
 						else changeArr("R D2 R2 D' R");
 					}
 					else if(layout[5][1][2][0] == layout[1][1][1][0] && layout[5][1][1][0] == layout[1][1][2][0]){
-						changeArr("D2 F D F' D' R' D R");
+						changeArr("D' F D F' D R' D' R")
 					}
 					else if(layout[5][2][2][0] == layout[5][1][0][0] && layout[3][2][2][0] == layout[0][1][2][0]){
 						changeArr("D L D L' R' D R");
@@ -1989,7 +2093,7 @@ p.keyPressed = (event) => {
 					else if(layout[5][2][2][0] == layout[1][1][0][0] && layout[3][2][2][0] == layout[4][1][2][0])
 						changeArr("B' D' B D R' D' R");
 					else if(layout[5][2][2][0] == layout[4][1][2][0] && layout[3][2][2][0] == layout[1][1][0][0])
-						changeArr("D' B' D' B D R' D R");
+						changeArr("R D R2 D' R")
 					else if(layout[5][2][2][0] == layout[0][1][0][0] && layout[3][2][2][0] == layout[4][1][0][0] )
 						changeArr("B D B' D R' D R");
 					else if(layout[5][2][2][0] == layout[4][1][2][0] && layout[3][2][2][0] == layout[2][1][0][0] )
@@ -3661,8 +3765,9 @@ p.keyPressed = (event) => {
 		return false;
 	}
   p.windowResized = () => {
-	p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.5, p.windowHeight*0.9, p.WEBGL);
-    PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : p.windowWidth * 0.5, p.windowHeight * 0.9);
+	let cnv_div = document.getElementById("cnv_div");
+	p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
+    PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
   }
 
   p.draw = () => {
@@ -3791,20 +3896,18 @@ p.keyPressed = (event) => {
 });
 }
 //WEIRD
-//R L' B D U2 R F' D' U L2 F' U' R U R' B D B'
+//R L' B D U2 R F' D' U L2 F' U' R U R' B D B' (82)
 
 //BELOW 60 MOVES
 //R' B D F L' D B L2 D' L' R' U' F U R' U2 B D' (59)
-// F B2 L' F B L' B' F R L' B F' B' L' D' F R2 U (59)
-// L D L' U D' U' R' U L D B U R' F D' L2 R U B'(58)
-// F D L' R' B' L U F R F' D' R B U D' R L F R F' (58)
-// B R' U B' F R D U' D' L' B F U' B F' D' U' D B' U (57)
+// F D L' R' B' L U F R F' D' R B U D' R L F R F' (57)
 // U2 R U' B D B U' L2 F R2 D2 F2 L2 F2 R2 U2 F L2 U' (57, Jaden's WR Scramble)
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (57)
-// D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (56)
-////D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (56, 1.2 second WR)
+// D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (56, 1.2 second WR)
+// F B2 L' F B L' B' F R L' B F' B' L' D' F R2 U (55)
+// B R' U B' F R D U' D' L' B F U' B F' D' U' D B' U (55)
 //WORLD RECORD SCRAMBLES
 //D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(53, was 60)
-//B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 70)
-//L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y(was 58, 61)
-//D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (55)
+//B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 69)
+//L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y (was 58, 60)
+//D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (46, was 55)

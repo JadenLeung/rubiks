@@ -119,8 +119,8 @@ class EasyCam {
     // mouse action speed
     this.scale_rotation  = 0.001;
     this.scale_pan       = 0.0002;
-    this.scale_zoom      = 0.001;
-    this.scale_zoomwheel = 20.0;
+    //this.scale_zoom      = 0.001;
+    //this.scale_zoomwheel = 20.0;
 
     // zoom limits
     this.distance_min_limit = 0.01;
