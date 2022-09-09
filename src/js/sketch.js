@@ -444,6 +444,10 @@ setInterval(() => {
   }
   //Henry
   function regular(){
+	  ao5 = [];
+	  movesarr = [];
+	  undo = [];
+	  document.getElementById("scramble").innerHTML = "N/A";
 	  DELAY = DELAY_SLIDER.value();
 	  canMan = true;
 	  if(MODE != "normal")
@@ -3768,7 +3772,7 @@ p.keyPressed = (event) => {
 	let cnv_div = document.getElementById("cnv_div");
 	p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
     PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
-  }
+  } 
 
   p.draw = () => {
     const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
@@ -3895,19 +3899,54 @@ p.keyPressed = (event) => {
     passive: false   // this is optional, my code works without it
 });
 }
-//WEIRD
-//R L' B D U2 R F' D' U L2 F' U' R U R' B D B' (82)
+//Jaden WR
+//25.4s
 
 //BELOW 60 MOVES
 //R' B D F L' D B L2 D' L' R' U' F U R' U2 B D' (59)
+//B' R' F' U' R D B' F2 U B' L' D' U' F2 D R2 L' (58)
 // F D L' R' B' L U F R F' D' R B U D' R L F R F' (57)
 // U2 R U' B D B U' L2 F R2 D2 F2 L2 F2 R2 U2 F L2 U' (57, Jaden's WR Scramble)
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (57)
+// B' U' L B' F R U' B L U' F' U L' B' U' D B U' R' L
 // D F' B2 L D' F L U2 F2 U' D F2 L' R' F L (56, 1.2 second WR)
 // F B2 L' F B L' B' F R L' B F' B' L' D' F R2 U (55)
 // B R' U B' F R D U' D' L' B F U' B F' D' U' D B' U (55)
+// F B' R' L B' R B U' D F' R2 D' U R' L' D B D' U' (55)
 //WORLD RECORD SCRAMBLES
 //D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(53, was 60)
 //B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 69)
 //L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y (was 58, 60)
 //D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (46, was 55)
+//L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (52)
+
+/*Mr Sunshine give us your rays
+You're the one who brightens our days
+Wihout your warmth there'll be no tommorow
+Instead of smiling we'll cry tears of sorrow
+
+Mr.Sunshine keep coming through
+You know that we're counting on you
+Your precious rays will brighten our days
+Mr. Sunshine give us your rays/*
+
+
+
+
+It's growing time in story land
+All the plants have their done part
+And now you know if you'll help them grow
+They'll help to give your day a healthy start
+
+ We hope you had a good time at our show
+ And I hope you learned a lot from things I know
+ You've really been grand for our guest at storyland
+ And we surely hate to see you have to go
+
+ (repeat)
+
+ If you want to plant a garden on your very own
+ Our vegetables have shown you how they should be grown
+ Start off with our seeds and tend to all their needs
+And we'll always be good eating in your home
+*/ 
