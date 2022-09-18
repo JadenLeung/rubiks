@@ -2049,7 +2049,7 @@ p.keyPressed = (event) => {
 						changeArr("D' B D B' F D F'");
 					}
 					else if(layout[1][2][2][0] == layout[4][1][2][0] && layout[3][2][2][0] == layout[1][1][0][0]){
-						changeArr("D2 R D R' D F D F'");
+						changeArr("R D2 R' F D F'");
 					}
 					else if(type < 1 && layout[5][1][2][0] == layout[5][1][1][0] && layout[1][1][2][0] == layout[1][1][1][0]){
 						changeArr("D F D F' D2 F D F'");
@@ -2107,7 +2107,7 @@ p.keyPressed = (event) => {
 					else if(type < 1 && layout[5][1][2][0] == layout[5][1][1][0] && layout[1][1][2][0] == layout[1][1][1][0])
 						changeArr("D' R' D' R D2 R' D' R");
 					else if(layout[5][2][2][0] == layout[0][1][2][0] && layout[3][2][2][0] == layout[5][1][0][0] )
-						changeArr("D2 F' D' F D' R' D' R");
+						changeArr("F' D2 F R' D' R");
 					else
 						arr.push("R'", "D'", "R");
 				}
@@ -2118,9 +2118,17 @@ p.keyPressed = (event) => {
 					else if(layout[5][2][2][0] == layout[3][2][1][0] && layout[1][2][2][0] == layout[5][2][1][0])
 						changeArr("F D2 F' D' F D F'");
 					else if(layout[5][2][2][0] == layout[3][1][2][0] && layout[1][2][2][0] == layout[1][2][1][0])
-						changeArr("R' D' R D' F D' F' D F D' F'")
+					{
+						if(edgeleft) changeArr("F D F' R' D R F D F'");
+						else changeArr("F' D' F D' M' F2 M")
+						
+					}
 					else if(layout[5][2][2][0] == layout[5][2][1][0] && layout[1][2][2][0] == layout[3][2][1][0])
-						changeArr("R' D' R F D' F' R' D' R")
+					{
+						if(edgeback) changeArr("R' D' R F D' F' R' D' R");
+						else changeArr("R D R' D S' R2 S");
+						
+					}
 					else if(layout[5][2][2][0] == layout[3][0][1][0] && layout[1][2][2][0] == layout[4][2][1][0])
 						changeArr("F D' F' D2 F D F'");
 					else if(layout[5][2][2][0] == layout[4][2][1][0] && layout[1][2][2][0] == layout[3][0][1][0])
@@ -3901,10 +3909,15 @@ p.keyPressed = (event) => {
 }
 //Jaden WR
 //25.4s
-
+//20.9
+//Bad
+//R U L' D2 L' F' U2 D' B D R L2 F B' L' B D x x
+//Cool scramble
+//F R L F' D B' L U2 R2 D2 B2 L2 F2 B' D2 R2 U2 D2 L' D'
 //BELOW 60 MOVES
 //R' B D F L' D B L2 D' L' R' U' F U R' U2 B D' (59)
 //B' R' F' U' R D B' F2 U B' L' D' U' F2 D R2 L' (58)
+//U' D' F' B2 D2 R F' R' B D' B' F' R L F' R' U' B (58)
 // F D L' R' B' L U F R F' D' R B U D' R L F R F' (57)
 // U2 R U' B D B U' L2 F R2 D2 F2 L2 F2 R2 U2 F L2 U' (57, Jaden's WR Scramble)
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (57)
@@ -3919,6 +3932,7 @@ p.keyPressed = (event) => {
 //L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y (was 58, 60)
 //D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (46, was 55)
 //L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (52)
+//L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (48)
 
 /*Mr Sunshine give us your rays
 You're the one who brightens our days
