@@ -325,6 +325,8 @@ setInterval(() => {
 	
     CUBE = {};
 	arr = [];
+	undo = [];
+	redo = [];
 	flipmode = 0;
 	flipmode2 = 0;
 	easystep = 0;
@@ -444,9 +446,9 @@ setInterval(() => {
   }
   //Henry
   function regular(){
+	  reSetup();
 	  ao5 = [];
 	  movesarr = [];
-	  undo = [];
 	  document.getElementById("scramble").innerHTML = "N/A";
 	  DELAY = DELAY_SLIDER.value();
 	  canMan = true;
@@ -523,10 +525,14 @@ setInterval(() => {
 		document.getElementById("slider_div").style.display = "inline";
 		document.getElementById("outertime").style.display = "inline";
 		document.getElementById("time").style.display = "inline";
+		document.getElementById("undo").style.display = "inline";
+		document.getElementById("redo").style.display = "inline";
 		document.getElementById("times_par").style.display = "block";
   }
   function easy() 
   {
+	  undo = [];
+	  redo = [];
 	  if(easystep == 0)
 	  {
 		ao5 = 0;
@@ -641,6 +647,8 @@ setInterval(() => {
 	  
   }
   function medium(){ //ez
+	  undo = [];
+	  redo = [];
 	  if(medstep == 0)
 	  {
 		showSpeed();
@@ -728,6 +736,8 @@ setInterval(() => {
   }
   function speedPLL()
   {
+	  undo = [];
+	  redo = [];
 	  if(pllstep % 2 == 0 && pllstep != 8)
 	  {
 		timer.reset();
@@ -1361,8 +1371,8 @@ p.keyPressed = (event) => {
 	{
 	setLayout();
 	console.log("here");
-	let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 8 86 82 78 66 77 85";
-	if(Math.round(timer.getTime() / 100)/10.0 == 0 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
+	let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85";
+	if(Math.round(timer.getTime() / 100)/10.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
 	if(include.includes(p.keyCode))
 	{
@@ -1446,6 +1456,7 @@ p.keyPressed = (event) => {
 		case 190:
 		undo.push("M");
 		animate('z', 0, -1);
+		break;
 		case 65:
 		undo.push("E");
 		animate('x', 0, 1);
@@ -1481,6 +1492,13 @@ p.keyPressed = (event) => {
 		case 8: //backspace
 		Undo();
 		break;
+		case 187: //equals
+		Redo();
+		break;
+		case 46: //delete
+		if(MODE == "normal")
+		reSetup();
+		break;
 		case 13: //enter
 		console.log(quickSolve());
 		break;
@@ -1495,7 +1513,7 @@ p.keyPressed = (event) => {
 		/*fetch('src/PLL.json')
 		.then((response) => response.json())
 		.then((obj) => (setPLL(obj)));*/
-		console.log(pllstep)
+		console.log(undo)
 		break;
 		
 	}
@@ -1586,8 +1604,9 @@ p.keyPressed = (event) => {
   }
   function Undo()
   {
-	 
+	  
 	  console.log(undo);
+	  	  console.log(1596)
 	  if(undo.length == 0 || !canMan)
 		  return;
 	  if(timer.IsRunning)
