@@ -3449,6 +3449,20 @@ p.keyPressed = (event) => {
   function testAlg(){
 	if(canMan)
 	{
+		if(inp.value() == "time")
+		{
+			movesarr.pop();
+			mo5.pop();
+			ao5.pop();
+			return;
+		}
+		else if(inp.value()[0] == "p")
+		{
+			console.log("mimni")
+			let shortpll = inp.value().substring(1);
+			changeArr(obj2[shortpll][1])
+		}
+		else
 		changeArr(inp.value());
 		multiple(0);	
 	}
