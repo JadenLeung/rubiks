@@ -298,8 +298,8 @@ export default class Cuby {
     this.p.push();
     
 	this.p.translate(this.x, this.y, this.z);
-	this.p.strokeWeight(1);
-	this.p.stroke(20);
+	this.p.strokeWeight(0.5);
+	this.p.stroke('black');
 	// p1, p2, p3, p4 coordinates
 	
 	this.p.fill(this.back);
