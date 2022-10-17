@@ -64,6 +64,7 @@ let moves = 0;
 let ao5 = [];
 let mo5 = [];
 let movesarr = [];
+let scrambles = [];
 let flipmode = 0;
 let flipmode2 = 0;
 let flipper = [];
@@ -175,14 +176,38 @@ p.setup = () => {
 	}
 	const REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
-	REGULAR.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
 	REGULAR.mousePressed(regular.bind(null, 0));
 	
 	const SPEEDMODE = p.createButton('Speed Mode');
 	SPEEDMODE.parent("mode2").class("mode1");
-	SPEEDMODE.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	SPEEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
 	SPEEDMODE.mousePressed(speedmode.bind(null, 0));
+
+	const TIMEDMODE = p.createButton('Stats Mode');
+	TIMEDMODE.parent("mode3").class("mode1");
+	TIMEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
+	TIMEDMODE.mousePressed(timedmode.bind(null, 0));
 	
+	const REGULAR2 = p.createButton('Normal');
+	REGULAR2.parent("mode4").class("mode1");
+	REGULAR2.style("height:20px; width:55px; text-align:center; font-size:10px;")
+	REGULAR2.mousePressed(regular.bind(null, 0));
+	
+	const SPEEDMODE2 = p.createButton('Speed');
+	SPEEDMODE2.parent("mode5").class("mode1");
+	SPEEDMODE2.style("height:20px; width:55px; text-align:center; font-size:10px;")
+	SPEEDMODE2.mousePressed(speedmode.bind(null, 0));
+
+	const TIMEDMODE2 = p.createButton('Stats');
+	TIMEDMODE2.parent("mode6").class("mode1");
+	TIMEDMODE2.style("height:20px; width:55px; text-align:center; font-size:10px;")
+	TIMEDMODE2.mousePressed(timedmode.bind(null, 0));
+
+	document.getElementById("mode4").style.display = "none";
+	document.getElementById("mode5").style.display = "none";
+	document.getElementById("mode6").style.display = "none";
+
 	const SHUFFLE_BTN = p.createButton('Scramble');
 	SHUFFLE_BTN.parent("shuffle_div");
 	SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
@@ -233,15 +258,17 @@ setInterval(() => {
 	document.getElementById('speed').innerText = Math.round(SPEED*100);
 	document.getElementById('delay2').innerText = DELAY;
 	displayAverage();
+	displayTimes();
 	setLayout();
 	let secs = 375-SPEED*225;
 	if(secs < 20)
 	secs = 20;
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && MODE == "normal")
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed"))
 	{
 		timer.stop();
 		flipmode2 = 0;
 		movesarr.push(moves);
+		scrambles.push(document.getElementById('scramble').innerText)
 		if(canMan == true)
 		{
 			if(ao5.length<5)
@@ -348,6 +375,7 @@ function reSetup() {
 	timer.reset();
 	shufflespeed = 5;
 	RND_COLORS = genRndColors();
+	document.getElementById('scramble').innerText = "N/A";
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
@@ -449,19 +477,25 @@ function sliderUpdate() {
 }
 //Henry
 function regular(){
-	reSetup();
-	ao5 = [];
-	movesarr = [];
+	if(MODE != "timed")
+	{
+		ao5 = [];
+		mo5 = [];
+		movesarr = [];
+		scrambles = [];
+	}
 	document.getElementById("scramble").innerHTML = "N/A";
 	DELAY = DELAY_SLIDER.value();
 	canMan = true;
-	if(MODE != "normal")
 	reSetup();
 	MODE = "normal"
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='block';
 	}
+	document.getElementById("or_instruct").style.display = "block";
+	document.getElementById("or_instruct2").style.display = "block";
+	document.getElementById("or_instruct4").style.display = "block";
 	document.getElementById("test_alg_div").style.display = "block";
 	document.getElementById("shuffle_div").style.display = "inline";
 	document.getElementById("reset_div").style.display = "inline";
@@ -472,7 +506,14 @@ function regular(){
 	document.getElementById("slider_div").style.display = "inline";
 	document.getElementById("outermoves").style.display = "inline";
 	document.getElementById("outertime").style.display = "inline";
-	
+	document.getElementById("or_instruct3").style.display = "none";
+	document.getElementById("mode").style.display = "block";
+	document.getElementById("mode2").style.display = "block";
+	document.getElementById("mode3").style.display = "block";
+	document.getElementById("mode4").style.display = "none";
+	document.getElementById("mode5").style.display = "none";
+	document.getElementById("mode6").style.display = "none";
+	document.getElementById("alltimes").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
 	document.getElementById("s_difficulty").innerHTML = "";
@@ -483,19 +524,45 @@ function regular(){
 	easystep = 0;
 	medstep = 0;
 	pllstep = 0;
-	ao5 = [];
-	mo5 = [];
 	
+}
+function timedmode()
+{
+	if(MODE != "normal")
+	{
+		ao5 = [];
+		mo5 = [];
+		movesarr = [];
+		scrambles = [];
+		regular();
+	}
+	DELAY = 0;
+	MODE = "timed";
+	reSetup();
+	
+	document.getElementById("mode").style.display = "none";
+	document.getElementById("mode2").style.display = "none";
+	document.getElementById("mode3").style.display = "none";
+	document.getElementById("or_instruct").style.display = "none";
+	document.getElementById("or_instruct2").style.display = "none";
+	document.getElementById("or_instruct3").style.display = "block";
+	document.getElementById("or_instruct4").style.display = "none";
+	document.getElementById("mode4").style.display = "inline";
+	document.getElementById("mode5").style.display = "inline";
+	document.getElementById("mode6").style.display = "inline";
+	document.getElementById("or_instruct3").innerHTML = "Stats Mode";
+	document.getElementById("alltimes").style.display = "block";
 }
 function speedmode()
 {
+	regular();
 	DELAY = 0;
 	canMan = false;
 	MODE = "speed"
 	reSetup();
 	ao5 = [];
 	mo5 = [];
-	console.log("wefwefew");
+	scrambles = [];
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
@@ -1169,6 +1236,40 @@ function shuffleCube(nb) {
 	document.getElementById("scramble").innerHTML = total;
 	multiple2(0);
 }
+function downloadAll()
+{
+	let total = "";
+	for(let i = 0; i < mo5.length; i++)
+	{
+		total += (i+1) + ") " + mo5[i] + "s, " + movesarr[i] + " moves, Scramble: " + scrambles[i] + "\n";
+	}
+	download('cubestats.txt', total);
+}
+function displayTimes()
+{
+	if(canMan == false) return;
+	if(MODE != "timed") return;
+	if(mo5.length == 0)
+	{
+		document.getElementById('alltimes').innerHTML = "Your times/moves will be displayed here";
+		return;
+	}
+	let alltimes = "";
+	let displaymoves = "";
+	let j = 0;
+	if(mo5.length > 50) j = mo5.length-50;
+	for(let i = j; i < mo5.length && i < 25+j; i++)
+	{
+		if(i < 9) alltimes += "&nbsp;&nbsp;" + (i+1) + ") ";
+		else alltimes += (i+1) + ") ";
+
+		alltimes +=  mo5[i] + "s, " + movesarr[i] + " moves &nbsp;&nbsp;";
+		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) alltimes += (i+26) + ") " + mo5[i+25] + "s, " + movesarr[i+25] + " moves";
+		alltimes += "<br>"
+	}
+
+	document.getElementById('alltimes').innerHTML = alltimes;
+}
 function displayAverage()
 {
 	if(canMan == false) return;
@@ -1515,7 +1616,7 @@ p.keyPressed = (event) => {
 			Redo();
 			break;
 			case 46: //delete
-			if(MODE == "normal")
+			if(MODE == "normal" || MODE == "timed") 
 			reSetup();
 			break;
 			case 13: //enter
@@ -1532,10 +1633,8 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			color = "g";
-			setLayout();
-			setEdgevars();
-			console.log(color, "left", edgeleft, "back", edgeback, "backleft", edgebackleft);
+			downloadAll();
+			//download('test.txt', 'Hello \nworld!');
 			break;
 			
 		}
@@ -2478,6 +2577,7 @@ else
 	document.getElementById("stepbig").innerHTML = "";
 	timer.stop();
 	movesarr.push(moves);
+	scrambles.push(document.getElementById('scramble').innerText)
 	if(ao5.length<5)
 	{
 		ao5.push(Math.round(timer.getTime() / 100)/10.0);
@@ -2513,6 +2613,7 @@ if(isSolved())
 	document.getElementById("fraction").innerHTML = "";
 	timer.stop();
 	movesarr.push(moves);
+	scrambles.push(document.getElementById('scramble').innerText)
 	flipmode = 0;
 	if(ao5.length<5)
 	{
@@ -3143,6 +3244,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 		document.getElementById("stepbig").innerHTML = "";
 		timer.stop();
 		movesarr.push(moves);
+		scrambles.push(document.getElementById('scramble').innerText)
 		if(ao5.length<5)
 		{
 			ao5.push(Math.round(timer.getTime() / 100)/10.0);
@@ -3159,7 +3261,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 	}
 }
 function multipleCross3(nb) {
-	if(MODE != "normal")
+	if(MODE != "normal" && MODE != "timed")
 	{
 		flipmode = 0;
 		flipmode2 = 0;
@@ -3188,7 +3290,7 @@ function multipleCross3(nb) {
 	}
 }
 function multipleCross2(nb) {
-	if(MODE != "normal")
+	if(MODE != "normal" && MODE != "timed")
 	{
 		flipmode = 0;
 		flipmode2 = 0;
@@ -3963,6 +4065,18 @@ function isSolved()
 	//flipmode2 = 1;
 	return true;
 }
+function download(filename, text) {
+	var element = document.createElement('a');
+	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+	element.setAttribute('download', filename);
+  
+	element.style.display = 'none';
+	document.body.appendChild(element);
+  
+	element.click();
+  
+	document.body.removeChild(element);
+}
 function defineFlipper()
 {
 	flipper["F"] = "B"; flipper["F'"] = "B'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "L"; flipper["R'"] = "L'"; flipper["L"] = "R"; 
@@ -4001,6 +4115,7 @@ window.addEventListener('keydown', (e) => {
 }
 //Mo50 virtual
 //71.80 moves
+//71.34
 //Jaden WR
 //25.4s
 //20.9s
