@@ -31,6 +31,11 @@ export default function (p) {
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
 	let arr = [];
 	let obj2 = [];
+
+	let link1 = document.getElementById("link1");
+	// attach event
+	link1.onclick = function(e) { return myHandler(e); };
+
 	fetch('src/PLL.json')
 	.then((response) => response.json())
 	.then((obj) => (setPLL(obj)));
@@ -208,6 +213,8 @@ p.setup = () => {
 	document.getElementById("mode5").style.display = "none";
 	document.getElementById("mode6").style.display = "none";
 
+	document.getElementById("link1").style.display = "none";
+
 	const SHUFFLE_BTN = p.createButton('Scramble');
 	SHUFFLE_BTN.parent("shuffle_div");
 	SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
@@ -252,7 +259,7 @@ p.setup = () => {
 	GO_BTN.mousePressed(testAlg.bind(null, 0));	
 }
 setInterval(() => {
-	const timeInSeconds = Math.round(timer.getTime() / 100)/10.0;
+	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
 	document.getElementById('time').innerText = timeInSeconds;
 	document.getElementById('moves').innerText = moves;
 	document.getElementById('speed').innerText = Math.round(SPEED*100);
@@ -263,12 +270,13 @@ setInterval(() => {
 	let secs = 375-SPEED*225;
 	if(secs < 20)
 	secs = 20;
+	if(scrambles.length < mo5.length)
+		scrambles.push(document.getElementById('scramble').innerText)
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed"))
 	{
 		timer.stop();
 		flipmode2 = 0;
 		movesarr.push(moves);
-		scrambles.push(document.getElementById('scramble').innerText)
 		if(canMan == true)
 		{
 			if(ao5.length<5)
@@ -292,7 +300,7 @@ setInterval(() => {
 			timer.stop();
 			console.log("herer")
 			easystep++;
-			ao5 = [Math.round(timer.getTime() / 100)/10.0];
+			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			easy();
 		}
 		else if(crossColor()[2] == 4 && easystep == 3)
@@ -300,7 +308,7 @@ setInterval(() => {
 			timer.stop();
 			easystep++;
 			console.log("wefg")
-			ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
 			easy();
 		}
 		else if(easystep == 5)
@@ -311,7 +319,7 @@ setInterval(() => {
 				layout[i][0][0][0] == layout[i][2][2][0])
 				{
 					timer.stop();
-					ao5.push(Math.round(timer.getTime() / 100)/10.0);
+					ao5.push(Math.round(timer.getTime() / 10)/100.0);
 					easystep++;
 					easy();
 				}	
@@ -322,7 +330,7 @@ setInterval(() => {
 			if(twoLines())
 			{
 				timer.stop();
-				ao5.push(Math.round(timer.getTime() / 100)/10.0);
+				ao5.push(Math.round(timer.getTime() / 10)/100.0);
 				easystep++;
 				easy();
 			}
@@ -331,9 +339,9 @@ setInterval(() => {
 		{
 			timer.stop();
 			if(ao5 == 0)
-			ao5 = [Math.round(timer.getTime() / 100)/10.0];
+			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			else
-			ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
 			medstep++;
 			medium();
 		}
@@ -341,16 +349,16 @@ setInterval(() => {
 		{
 			timer.stop();
 			if(ao5 == 0)
-			ao5 = [Math.round(timer.getTime() / 100)/10.0];
+			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			else
-			ao5.push(Math.round(timer.getTime() / 100)/10.0);
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
 			console.log("you", ao5);
 			pllstep++;
 			speedPLL();
 		}
 		
 	}
-}, 100)
+}, 10)
 function reSetup() {
 	
 	CUBE = {};
@@ -521,6 +529,7 @@ function regular(){
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
+	document.getElementById("link1").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	pllstep = 0;
@@ -552,6 +561,7 @@ function timedmode()
 	document.getElementById("mode6").style.display = "inline";
 	document.getElementById("or_instruct3").innerHTML = "Stats Mode";
 	document.getElementById("alltimes").style.display = "block";
+	document.getElementById("link1").style.display = "block";
 }
 function speedmode()
 {
@@ -686,7 +696,7 @@ function easy()
 		{
 			total += ao5[i];
 		}
-		total = Math.round(total * 10) / 10
+		total = Math.round(total * 100) / 100
 		document.getElementById("s_INSTRUCT").innerHTML = "Congrats on completing all the challenges!";
 		let grade = "F-";
 		let grades = ["A++", "A+", "A", "A-", "B+", "B", "B-", "C++", "C+", "C", "C-", "D+", "D", "D-", "F"];
@@ -1249,6 +1259,8 @@ function displayTimes()
 {
 	if(canMan == false) return;
 	if(MODE != "timed") return;
+	if(scrambles.length > 1 & scrambles[scrambles.length-2] == scrambles[scrambles.length-1] && scrambles[scrambles.length-1] != "N/A")
+		scrambles.pop();
 	if(mo5.length == 0)
 	{
 		document.getElementById('alltimes').innerHTML = "Your times/moves will be displayed here";
@@ -1343,7 +1355,7 @@ function displayAverage()
 		}
 		if(ao5.length == 0)
 		display = "N/A"
-		total = Math.round(total * 10) / 10;
+		total = Math.round(total * 100) / 100;
 		if(ao5.length > 1)
 		display += " &nbsp;Total: " + total; 
 	}
@@ -1476,7 +1488,7 @@ p.keyPressed = (event) => {
 		setLayout();
 		console.log("here");
 		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89";
-		if(Math.round(timer.getTime() / 100)/10.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
+		if(Math.round(timer.getTime() / 10)/100.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
 		if(include.includes(p.keyCode) && p.keyCode != 8)
 		{
@@ -1633,7 +1645,6 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			downloadAll();
 			//download('test.txt', 'Hello \nworld!');
 			break;
 			
@@ -1793,6 +1804,10 @@ function solveCube()
 	setLayout();
 	if(!isSolved())
 	{
+		if(timer.getTime() > 0)
+		{
+			document.getElementById("scramble").innerHTML = "N/A";
+		}
 		timer.reset();
 		timer.start();
 		moves = 0;
@@ -2580,13 +2595,13 @@ else
 	scrambles.push(document.getElementById('scramble').innerText)
 	if(ao5.length<5)
 	{
-		ao5.push(Math.round(timer.getTime() / 100)/10.0);
-		mo5.push(Math.round(timer.getTime() / 100)/10.0);
+		ao5.push(Math.round(timer.getTime() / 10)/100.0);
+		mo5.push(Math.round(timer.getTime() / 10)/100.0);
 	}
 	else
 	{
-		ao5.push(Math.round(timer.getTime() / 100)/10.0);
-		mo5.push(Math.round(timer.getTime() / 100)/10.0);
+		ao5.push(Math.round(timer.getTime() / 10)/100.0);
+		mo5.push(Math.round(timer.getTime() / 10)/100.0);
 		ao5.shift()
 	}
 	canMan = true;
@@ -2617,13 +2632,13 @@ if(isSolved())
 	flipmode = 0;
 	if(ao5.length<5)
 	{
-		ao5.push(Math.round(timer.getTime() / 100)/10.0);
-		mo5.push(Math.round(timer.getTime() / 100)/10.0);
+		ao5.push(Math.round(timer.getTime() / 10)/100.0);
+		mo5.push(Math.round(timer.getTime() / 10)/100.0);
 	}
 	else
 	{
-		ao5.push(Math.round(timer.getTime() / 100)/10.0);
-		mo5.push(Math.round(timer.getTime() / 100)/10.0);
+		ao5.push(Math.round(timer.getTime() / 10)/100.0);
+		mo5.push(Math.round(timer.getTime() / 10)/100.0);
 		ao5.shift()
 	}
 	saystep = 0;
@@ -3247,13 +3262,13 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 		scrambles.push(document.getElementById('scramble').innerText)
 		if(ao5.length<5)
 		{
-			ao5.push(Math.round(timer.getTime() / 100)/10.0);
-			mo5.push(Math.round(timer.getTime() / 100)/10.0);
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(Math.round(timer.getTime() / 10)/100.0);
 		}
 		else
 		{
-			ao5.push(Math.round(timer.getTime() / 100)/10.0);
-			mo5.push(Math.round(timer.getTime() / 100)/10.0);
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(Math.round(timer.getTime() / 10)/100.0);
 			ao5.shift()
 		}
 		saystep = 0;
@@ -3725,7 +3740,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["E'"]
 			else
 			arr = ["E"];
-			if(Math.round(timer.getTime() / 100)/10.0 == 0)
+			if(Math.round(timer.getTime() / 10)/100.0 == 0)
 			timer.start();
 			multiple(0);
 			selectedCuby = -1;
@@ -3753,7 +3768,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["S'"]
 			else
 			arr = ["S"];
-			if(Math.round(timer.getTime() / 100)/10.0 == 0)
+			if(Math.round(timer.getTime() / 10)/100.0 == 0)
 			timer.start();
 			multiple(0);
 			selectedCuby = -1;
@@ -3781,7 +3796,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["M'"]
 			else
 			arr = ["M"];
-			if(Math.round(timer.getTime() / 100)/10.0 == 0)
+			if(Math.round(timer.getTime() / 10)/100.0 == 0)
 			timer.start();
 			multiple(0);
 			selectedCuby = -1;
@@ -3802,7 +3817,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 		let testface2 = 0;
 		if(turnface.length == 2)
 		testface2 = turnface[1-i][0];
-		if(Math.round(timer.getTime() / 100)/10.0 == 0)
+		if(Math.round(timer.getTime() / 10)/100.0 == 0)
 		timer.start();
 		if(layout[testface][testx][testy][0] != getColor(color2) && (turnface.length == 2 || layout[testface][testx][testy][0] != getColor(color1)))
 		{
@@ -4064,6 +4079,10 @@ function isSolved()
 	//console.log("solved");
 	//flipmode2 = 1;
 	return true;
+}
+function myHandler(e) {
+    downloadAll();
+    return false;
 }
 function download(filename, text) {
 	var element = document.createElement('a');
