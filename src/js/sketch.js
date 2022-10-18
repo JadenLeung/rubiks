@@ -1263,7 +1263,7 @@ function displayTimes()
 		if(i < 9) alltimes += "&nbsp;&nbsp;" + (i+1) + ") ";
 		else alltimes += (i+1) + ") ";
 
-		alltimes +=  mo5[i] + "s, " + movesarr[i] + " moves &nbsp;&nbsp;";
+		alltimes +=  mo5[i] + "s, " + movesarr[i] + " mvs &nbsp;&nbsp;";
 		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) alltimes += (i+26) + ") " + mo5[i+25] + "s, " + movesarr[i+25] + " moves";
 		alltimes += "<br>"
 	}
