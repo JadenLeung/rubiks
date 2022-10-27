@@ -1637,7 +1637,7 @@ p.keyPressed = (event) => {
 			console.log(quickSolve());
 			break;
 			case 32: //space
-			flipmode = 0;
+			//flipmode = 0;
 			setLayout();
 			console.log(layout);
 			console.log(CUBE)
@@ -1647,7 +1647,10 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(ao5, mo5, movesarr, scrambles);
+			flipmode = 3;
+			defineFlipper4();
+			setLayout();
+			console.log(flipmode);
 			break;
 			
 		}
@@ -1825,14 +1828,13 @@ function solveCube()
 	
 }
 function notation(move){
-	if(flipmode == 1)
-	{
-		move = flipper[move];
-	}
 	if(flipmode2 == 1)
 	{
-		console.log(move + " " + flipper2[move]);
 		move = flipper2[move];
+	}
+	if(flipmode > 0)
+	{
+		move = flipper[move];
 	}
 	undo.push(move);
 	setLayout();
@@ -2761,353 +2763,171 @@ if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][
 	saystep = 13;
 	flipmode = 0;
 	arr = [];
-	if(layout[2][1][0][0] == color && layout[2][1][2][0] == color) // -
+	for(let i = 0; i < 4; i++)
 	{
-		console.log("erter " + cornerOLL());
-		if(cornerOLL() == 4)
-		changeArr("R U R' U' M' U R U' r'") //57
-		else if(cornerOLL() == 0)
+		flipmode = i;
+		if(flipmode == 1)defineFlipper();
+		if(flipmode == 2)defineFlipper4();
+		if(flipmode == 3)defineFlipper3();
+		setLayout();
+		if(layout[2][1][0][0] == color && layout[2][1][2][0] == color) // -
 		{
-			console.log("here");
-			if(layout[5][0][0][0] == color && layout[5][0][2][0] == color && layout[4][0][0][0] == color && layout[4][0][2][0] == color)
-			changeArr("r U2 R' U' M R U R' U' r U' r'"); //55
-			else if(layout[5][0][0][0] == color && layout[4][0][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color) 
-			changeArr("F U R U' R' U R U' R' F'"); //51
-			else if(layout[0][0][0][0] == color && layout[0][0][2][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
-			changeArr("F R U R' U' R F' r U R' U' r'") //56
-			else if(layout[4][0][2][0] == color && layout[5][0][2][0] == color && layout[0][0][2][0] == color && layout[0][0][0][0] == color) 
-			changeArr("f R U R' U' R U R' U' f'"); //51 backwards
-			else
-			arr = ["U'"];
-		}
-		else if(cornerOLL() == 1){
-			if(layout[2][2][0][0] == color && layout[5][0][2][0] == color)
-			changeArr("r U' r' U' r U r' F' U F"); //13
-			else if(layout[2][2][2][0] == color && layout[5][0][0][0] == color)
+			console.log("erter " + cornerOLL());
+			if(cornerOLL() == 4)
+			changeArr("R U R' U' M' U R U' r'") //57
+			else if(cornerOLL() == 0)
 			{
-				changeArr("R' F R U R' F' R F U' F'"); //14
-				console.log("14");
+				console.log("here");
+				if(layout[5][0][0][0] == color && layout[5][0][2][0] == color && layout[4][0][0][0] == color && layout[4][0][2][0] == color)
+				changeArr("r U2 R' U' M R U R' U' r U' r'"); //55
+				else if(layout[5][0][0][0] == color && layout[4][0][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color) 
+				changeArr("F U R U' R' U R U' R' F'"); //51
+				else if(layout[0][0][0][0] == color && layout[0][0][2][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
+				changeArr("F R U R' U' R F' r U R' U' r'") //56
+				else if(layout[4][0][2][0] == color && layout[5][0][2][0] == color && layout[0][0][2][0] == color && layout[0][0][0][0] == color) 
+				changeArr("f R U R' U' R U R' U' f'"); //51 backwards
 			}
-			else if(layout[2][0][0][0] == color && layout[5][0][2][0] == color)
-			changeArr("l' U' M U' L U l' U l") //15
-			else if(layout[2][0][2][0] == color && layout[5][0][0][0] == color)
-			changeArr("r U M U R' U' r U' r'") //16
-			else
-			{
-				flipmode = 1;
-				if(layout[2][0][2][0] == color && layout[4][0][0][0] == color)
+			else if(cornerOLL() == 1){
+				if(layout[2][2][0][0] == color && layout[5][0][2][0] == color)
 				changeArr("r U' r' U' r U r' F' U F"); //13
-				else if(layout[2][0][0][0] == color && layout[4][0][2][0] == color)
-				{
-					changeArr("R' F R U R' F' R F U' F'"); //14
-					console.log("14.1");
-				}
-				else if(layout[2][2][2][0] == color && layout[4][0][0][0] == color)
+				else if(layout[2][2][2][0] == color && layout[5][0][0][0] == color)
+				changeArr("R' F R U R' F' R F U' F'"); //14
+				else if(layout[2][0][0][0] == color && layout[5][0][2][0] == color)
 				changeArr("l' U' M U' L U l' U l") //15
-				else if(layout[2][2][0][0] == color && layout[4][0][2][0] == color)
+				else if(layout[2][0][2][0] == color && layout[5][0][0][0] == color)
 				changeArr("r U M U R' U' r U' r'") //16
-				else
-				arr = ["U"];
 			}
-		}
-		else{
-			if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] != color)
-			changeArr("R' F R U R' U' F' U R"); //40
-			else if(layout[2][0][2][0] == color && layout[2][2][0][0] == color && layout[5][0][2][0] != color)
-			changeArr("L F' L' U' L U F U' L'"); //39
-			else if(layout[2][2][0][0] == color && layout[2][2][2][0] == color && layout[4][0][0][0] != color)
-			changeArr("R U R' d' l' U' L U M");//34
-			else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-			changeArr("R U R' U' R' F R F'"); //33
-			else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color)
-			changeArr("F R U R' U' F'"); //45
-			else
-			{
-				flipmode = 1;
-				if(layout[2][2][2][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] != color)
+			else{
+				if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] != color)
 				changeArr("R' F R U R' U' F' U R"); //40
-				else if(layout[2][2][0][0] == color && layout[2][0][2][0] == color && layout[4][0][0][0] != color)
+				else if(layout[2][0][2][0] == color && layout[2][2][0][0] == color && layout[5][0][2][0] != color)
 				changeArr("L F' L' U' L U F U' L'"); //39
-				else if(layout[2][0][2][0] == color && layout[2][0][0][0] == color && layout[5][0][2][0] != color)
+				else if(layout[2][2][0][0] == color && layout[2][2][2][0] == color && layout[4][0][0][0] != color)
 				changeArr("R U R' d' l' U' L U M");//34
-				else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+				else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 				changeArr("R U R' U' R' F R F'"); //33
-				else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color)
+				else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color)
 				changeArr("F R U R' U' F'"); //45
-				else
-				arr = ["U"];
 			}
 		}
-	}
-	else if(layout[2][0][1][0] == color && layout[2][2][1][0] == color) // |
-	{
-		if(cornerOLL() == 2)
+		else if(layout[2][0][1][0] == color && layout[2][2][1][0] == color) // |
 		{
-			if(layout[2][0][0][0] == color && layout[2][2][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
-			changeArr("R' U' R' F R F' U R"); //46
-			else if(layout[2][2][2][0] == color && layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[0][0][0][0] == color)
+			if(cornerOLL() == 2)
 			{
-				flipmode = 1;
+				if(layout[2][0][0][0] == color && layout[2][2][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
 				changeArr("R' U' R' F R F' U R"); //46
 			}
-			else
-			arr = ["U'"];
-		}
-		else if(cornerOLL() == 0)
-		{
-			if(layout[5][0][0][0] == color && layout[4][0][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
-			changeArr("R U R' U R U' B U' B' R'"); //52
-			else if(layout[4][0][2][0] == color && layout[5][0][2][0] == color && layout[0][0][2][0] == color && layout[0][0][0][0] == color)
+			else if(cornerOLL() == 0)
 			{
-				flipmode = 1;
+				if(layout[5][0][0][0] == color && layout[4][0][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
 				changeArr("R U R' U R U' B U' B' R'"); //52
 			}
-			else
-			arr = ["U'"];
 		}
-		else
-		arr = ["U'"]
-	}
-	else if(layout[2][0][1][0] == color && layout[2][1][0][0] == color) //Normal (J)
-	{
-		if(cornerOLL() == 4)
-		changeArr("M U M' U2 M U M'"); //28
-		else if(cornerOLL() == 0)
+		else if(layout[2][0][1][0] == color && layout[2][1][0][0] == color) //Normal (J)
 		{
-			if(layout[0][0][0][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color && layout[4][0][2][0] == color)
-			changeArr("F R U R' U' R U R' U' F'"); // 48
-			else if(layout[0][0][0][0] != color && layout[0][0][2][0] != color && layout[5][0][2][0] == color && layout[5][0][2][0] == color)
-			changeArr("r U2 R' U' R U R' U' R U' r'"); //54
-			else if(layout[1][0][0][0] == color && layout[4][0][0][0] == color && layout[1][0][2][0] == color)
-			{
-				flipmode = 1;
-				changeArr("r' U r2 U' r2 U' r2 U r'"); //50
-			}
-			else arr = ["U'"];
-		}
-		else if(cornerOLL() == 1)
-		{
-			if(layout[0][0][0][0] == color && layout[5][0][0][0] == color && layout[2][2][2][0] == color)
-			changeArr("R' U' R b U' b' U b U b'"); //9
-			else if(layout[2][2][0][0] == color && layout[5][0][2][0] == color && layout[1][0][0][0] == color)
-			changeArr("r U R' U R U2 r'"); //7
-			else if(layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
-			changeArr("r U R' U R' F R F' R U2 r'"); //11
-			else if(layout[2][0][0][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
-			changeArr("l' U2 L U L' U l"); //5
-			else
-			arr = ["U'"]
-		}
-		else
-		{
-			if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-			changeArr("S' U F U F' U' F' L F L' S"); //29
-			else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color && layout[0][0][0][0] == color)
-			changeArr("F U R U' B R' F' R B' R'"); //30
-			else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color)
-			changeArr("M' R' F' U' F U R U' M"); //41
-			else if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-			changeArr("F R' F' R U R U' R'"); //37
-			else if(layout[2][0][0][0] == color && layout[2][2][0][0] == color && layout[5][0][2][0] == color)
-			changeArr("L U F' U' L' U L F L'"); //32
-			else if(layout[2][0][0][0] == color && layout[2][2][0][0] == color)
-			changeArr("F U R U' R' F'"); //44
-			else if(layout[2][2][0][0] == color && layout[2][0][2][0] == color && layout[5][0][2][0] != color)
-			changeArr("R U R' U R U' R' U' R' F R F'"); //38
-			else
-			{
-				flipmode = 1;
-				if(cornerOLL() == 2 && layout[2][0][0][0] == color && layout[4][0][2][0] == color && layout[2][2][2][0] == color)
-				changeArr("R U2 R2 F R F' R U2 R'"); //35
-				else
-				arr = ["U"]
-			}
-		}
-	}
-	else if(layout[2][1][0][0] == color && layout[2][2][1][0] == color) //Backwards r
-	{
-		if(cornerOLL() == 2)
-		{
-			if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[5][0][0][0] == color)
-			changeArr("M U F R U R' U' F' M'"); //42
-			else
-			{
-				flipmode = 1;
-				if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
-				changeArr("M' B U B' U' r' U' R"); //31
-				else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color)
-				changeArr("F' U' L' U L F");//43
-				else if(layout[2][2][2][0] == color && layout[2][0][0][0] == color && layout[1][0][0][0] == color)
-				changeArr("L' U' L U' L' U L U L F' L' F");//36
-				else
-				arr = ["U"];
-			}
-		}
-		else if(cornerOLL() == 1 && layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
-		{
-			changeArr("R U R' B' R B U' B' R' B"); //10
-		}
-		else
-		{
-			flipmode = 1;
-			if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[5][0][2][0] == color && layout[4][0][2][0] == color)
-			changeArr("F' L' U' L U L' U' L U F"); //47
-			else if(cornerOLL() == 0 && layout[4][0][0][0] == color && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
-			changeArr("r U' r2 U r2 U r2 U' r"); //49
-			else if(cornerOLL() == 0 && layout[4][0][2][0] == color && layout[4][0][0][0] == color && layout[5][0][2][0] == color)
-			changeArr("l' U2 L U L' U' L U L' U l"); //53
-			else if(cornerOLL() == 1 && layout[2][0][0][0] == color && layout[1][0][2][0] == color && layout[4][0][2][0] == color)
-			changeArr("l' U' L U' L' U2 l"); //8
-			else if(cornerOLL() == 1 && layout[2][2][0][0] == color && layout[1][0][2][0] == color && layout[4][0][2][0] == color)
-			changeArr("r U2 R' U' R U' r'"); //6
-			else if(cornerOLL() == 1 && layout[0][0][0][0] == color && layout[4][0][2][0] == color && layout[2][2][2][0] == color)
-			changeArr("M' R' U' R U' R' U2 R U' M"); //12
-			else
-			arr = ["U"];
-		}
-	}
-	else if(layout[2][1][2][0] == color && layout[2][0][1][0] == color) //L
-	{
-		if(cornerOLL() == 2)
-		{
-			if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-			changeArr("M' B U B' U' r' U' R"); //31
-			else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color)
-			changeArr("F' U' L' U L F");//43
-			else if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[0][0][2][0] == color)
-			changeArr("L' U' L U' L' U L U L F' L' F");//36
-			else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color && layout[4][0][2][0] == color)
-			{
-				flipmode = 1;
-				changeArr("M U F R U R' U' F' M'"); //42
-			}
-			else
-			arr = ["U'"];
-		}
-		else if(cornerOLL() == 0 && layout[1][0][0][0] == color && layout[4][0][0][0] == color && layout[5][0][0][0] == color)
-		changeArr("F' L' U' L U L' U' L U F"); //47
-		else if(cornerOLL() == 0 && layout[5][0][2][0] == color && layout[0][0][2][0] == color && layout[0][0][0][0] == color)
-		changeArr("r U' r2 U r2 U r2 U' r"); //49
-		else if(cornerOLL() == 0 && layout[5][0][0][0] == color && layout[5][0][2][0] == color && layout[4][0][0][0] == color)
-		changeArr("l' U2 L U L' U' L U L' U l"); //53
-		else if(cornerOLL() == 1 && layout[2][2][2][0] == color && layout[0][0][0][0] == color && layout[5][0][0][0] == color)
-		changeArr("l' U' L U' L' U2 l"); //8
-		else if(cornerOLL() == 1 && layout[2][0][2][0] == color && layout[0][0][0][0] == color && layout[5][0][0][0] == color)
-		changeArr("r U2 R' U' R U' r'"); //6
-		else if(cornerOLL() == 1 && layout[1][0][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
-		changeArr("M' R' U' R U' R' U2 R U' M"); //12
-		else if(cornerOLL() == 1 && layout[2][2][0][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color)
-		{
-			flipmode = 1;
-			changeArr("R U R' B' R B U' B' R' B"); //10
-		}
-		else  
-		arr = ["U'"];
-		
-	}
-	else if(layout[2][1][2][0] == color && layout[2][2][1][0] == color) //r
-	{
-		if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[5][0][2][0] == color && layout[0][0][0][0] == color)
-		changeArr("r' U r2 U' r2 U' r2 U r'"); //50
-		else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
-		changeArr("R U2 R2 F R F' R U2 R'"); //35
-		else
-		{
-			flipmode = 1;
 			if(cornerOLL() == 4)
 			changeArr("M U M' U2 M U M'"); //28
 			else if(cornerOLL() == 0)
 			{
-				if(layout[1][0][2][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color && layout[5][0][0][0] == color)
-				changeArr("F R U R' U' R U R' U' F'"); // 48
-				else if(layout[1][0][2][0] != color && layout[1][0][0][0] != color && layout[4][0][0][0] == color && layout[4][0][0][0] == color)
+				if(layout[0][0][0][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color && layout[4][0][2][0] == color)
+				changeArr("F R U R' U' R U R' U' F'"); //48
+				else if(layout[0][0][0][0] != color && layout[0][0][2][0] != color && layout[5][0][2][0] == color && layout[5][0][2][0] == color)
 				changeArr("r U2 R' U' R U R' U' R U' r'"); //54
-				else
-				arr = ["U"];
 			}
 			else if(cornerOLL() == 1)
 			{
-				if(layout[1][0][2][0] == color && layout[4][0][2][0] == color && layout[2][0][0][0] == color)
+				if(layout[0][0][0][0] == color && layout[5][0][0][0] == color && layout[2][2][2][0] == color)
 				changeArr("R' U' R b U' b' U b U b'"); //9
-				else if(layout[2][0][2][0] == color && layout[4][0][0][0] == color && layout[0][0][2][0] == color)
+				else if(layout[2][2][0][0] == color && layout[5][0][2][0] == color && layout[1][0][0][0] == color)
 				changeArr("r U R' U R U2 r'"); //7
-				else if(layout[2][2][0][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color)
+				else if(layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
 				changeArr("r U R' U R' F R F' R U2 r'"); //11
-				else if(layout[2][2][2][0] == color && layout[1][0][0][0] == color && layout[4][0][0][0] == color)
+				else if(layout[2][0][0][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
 				changeArr("l' U2 L U L' U l"); //5
-				else
-				arr = ["U"]
 			}
 			else
 			{
-				if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+				if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 				changeArr("S' U F U F' U' F' L F L' S"); //29
-				else if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[1][0][2][0] == color)
+				else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color && layout[0][0][0][0] == color)
 				changeArr("F U R U' B R' F' R B' R'"); //30
-				else if(layout[2][0][0][0] == color && layout[2][0][2][0] == color)
+				else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color)
 				changeArr("M' R' F' U' F U R U' M"); //41
-				else if(layout[2][2][2][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+				else if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 				changeArr("F R' F' R U R U' R'"); //37
-				else if(layout[2][2][2][0] == color && layout[2][0][2][0] == color && layout[4][0][0][0] == color)
+				else if(layout[2][0][0][0] == color && layout[2][2][0][0] == color && layout[5][0][2][0] == color)
 				changeArr("L U F' U' L' U L F L'"); //32
-				else if(layout[2][2][2][0] == color && layout[2][0][2][0] == color)
+				else if(layout[2][0][0][0] == color && layout[2][2][0][0] == color)
 				changeArr("F U R U' R' F'"); //44
-				else if(layout[2][0][2][0] == color && layout[2][2][0][0] == color && layout[4][0][0][0] != color)
+				else if(layout[2][2][0][0] == color && layout[2][0][2][0] == color && layout[5][0][2][0] != color)
 				changeArr("R U R' U R U' R' U' R' F R F'"); //38
-				else
-				arr = ["U"]
-			}		
-		}
-		
-	}
-	else if(layout[2][0][1][0] != color && layout[2][1][0][0] != color && layout[2][1][2][0] != color) //Dot Cases (Dot Product Haha)
-	{
-		if(cornerOLL() == 4)
-		changeArr("S' R U R' S U' M' U R U' r'"); //20
-		else if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[1][0][2][0] == color && layout[0][0][0][0] == color)
-		changeArr("R U2 R2 F R F' U2 R' F R F'"); //1
-		else if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[0][0][0][0] == color)
-		changeArr("F R U R' U' S R U R' U' f'"); //2
-		else if(cornerOLL() == 1 && layout[2][2][0][0] == color && layout[4][0][0][0] == color && layout[5][0][2][0] == color)
-		changeArr("M R U R' U r U2 r' U M'"); //3
-		else if(cornerOLL() == 1 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[0][0][0][0] == color)
-		changeArr("M U' r U2 r' U' R U' R' M'"); //4
-		else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
-		{
-			changeArr("F R' F' R2 r' U R U' R' U' M'"); //17
-			console.log("17.0")
-		}
-		else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[4][2][0][0] == color && layout[2][2][0][0] == color)
-		changeArr("F R U R' d R' U2 R' F R F'"); //18
-		
-		else if(cornerOLL() == 2 && layout[2][0][2][0] == color && layout[2][0][0][0] == color && layout[0][0][2][0] == color)
-		changeArr("M U R U R' U' M' R' F R F'"); //19
-		else
-		{
-			flipmode = 1;
-			if(cornerOLL() == 0 && layout[1][0][0][0] == color && layout[1][0][2][0] == color)
-			changeArr("F R U R' U' S R U R' U' f'"); //2
-			else if(cornerOLL() == 1 && layout[2][0][2][0] == color && layout[5][0][2][0] == color && layout[4][0][0][0] == color)
-			changeArr("M R U R' U r U2 r' U M'"); //3
-			else if(cornerOLL() == 1 && layout[2][0][0][0] == color && layout[4][0][2][0] == color && layout[1][0][2][0] == color)
-			changeArr("M U' r U2 r' U' R U' R' M'"); //4
-			else if(cornerOLL() == 2 && layout[2][0][0][0] == color && layout[4][0][2][0] == color && layout[2][2][2][0] == color)
-			{
-				changeArr("F R' F' R2 r' U R U' R' U' M'"); //17
-				console.log("17.1");
 			}
-			else if(cornerOLL() == 2 && layout[2][0][2][0] == color && layout[5][0][2][0] == color && layout[2][0][0][0] == color)
-			changeArr("F R U R' d R' U2 R' F R F'"); //18
-			else if(cornerOLL() == 2 && layout[2][2][0][0] == color && layout[2][2][2][0] == color && layout[1][0][0][0] == color)
-			changeArr("M U R U R' U' M' R' F R F'"); //19
-			else
-			arr = ["U"];
 		}
+		else if(layout[2][1][0][0] == color && layout[2][2][1][0] == color) //Backwards r
+		{
+			if(cornerOLL() == 2){
+				if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[5][0][0][0] == color)
+				changeArr("M U F R U R' U' F' M'"); //42
+			}
+			else if(cornerOLL() == 1 && layout[2][0][2][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color){
+				changeArr("R U R' B' R B U' B' R' B"); //10
+			}
+		}
+		else if(layout[2][1][2][0] == color && layout[2][0][1][0] == color) //L
+		{
+			if(cornerOLL() == 2)
+			{
+				if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
+				changeArr("M' B U B' U' r' U' R"); //31
+				else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color)
+				changeArr("F' U' L' U L F");//43
+				else if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[0][0][2][0] == color)
+				changeArr("L' U' L U' L' U L U L F' L' F");//36
+			}
+			else if(cornerOLL() == 0 && layout[1][0][0][0] == color && layout[4][0][0][0] == color && layout[5][0][0][0] == color)
+			changeArr("F' L' U' L U L' U' L U F"); //47
+			else if(cornerOLL() == 0 && layout[5][0][2][0] == color && layout[0][0][2][0] == color && layout[0][0][0][0] == color)
+			changeArr("r U' r2 U r2 U r2 U' r"); //49
+			else if(cornerOLL() == 0 && layout[5][0][0][0] == color && layout[5][0][2][0] == color && layout[4][0][0][0] == color)
+			changeArr("l' U2 L U L' U' L U L' U l"); //53
+			else if(cornerOLL() == 1 && layout[2][2][2][0] == color && layout[0][0][0][0] == color && layout[5][0][0][0] == color)
+			changeArr("l' U' L U' L' U2 l"); //8
+			else if(cornerOLL() == 1 && layout[2][0][2][0] == color && layout[0][0][0][0] == color && layout[5][0][0][0] == color)
+			changeArr("r U2 R' U' R U' r'"); //6
+			else if(cornerOLL() == 1 && layout[1][0][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
+			changeArr("M' R' U' R U' R' U2 R U' M"); //12
+			
+		}
+		else if(layout[2][1][2][0] == color && layout[2][2][1][0] == color) //r
+		{
+			if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[5][0][2][0] == color && layout[0][0][0][0] == color)
+			changeArr("r' U r2 U' r2 U' r2 U r'"); //50
+			else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
+			changeArr("R U2 R2 F R F' R U2 R'"); //35
+		}
+		else if(layout[2][0][1][0] != color && layout[2][1][0][0] != color && layout[2][1][2][0] != color) //Dot Cases (Dot Product Haha)
+		{
+			console.log("here4");
+			if(cornerOLL() == 4)
+			changeArr("S' R U R' S U' M' U R U' r'"); //20
+			else if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[1][0][2][0] == color && layout[0][0][0][0] == color)
+			changeArr("R U2 R2 F R F' U2 R' F R F'"); //1
+			else if(cornerOLL() == 0 && layout[0][0][2][0] == color && layout[0][0][0][0] == color)
+			changeArr("F R U R' U' S R U R' U' f'"); //2
+			else if(cornerOLL() == 1 && layout[2][2][0][0] == color && layout[4][0][0][0] == color && layout[5][0][2][0] == color)
+			changeArr("M R U R' U r U2 r' U M'"); //3
+			else if(cornerOLL() == 1 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[0][0][0][0] == color)
+			changeArr("M U' r U2 r' U' R U' R' M'"); //4
+			else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[5][0][0][0] == color && layout[2][0][0][0] == color)
+			changeArr("F R' F' R2 r' U R U' R' U' M'"); //17
+			else if(cornerOLL() == 2 && layout[2][2][2][0] == color && layout[4][0][2][0] == color && layout[2][2][0][0] == color)
+			changeArr("F R U R' d R' U2 R' F R F'"); //18
+			else if(cornerOLL() == 2 && layout[2][0][2][0] == color && layout[2][0][0][0] == color && layout[0][0][2][0] == color)
+			changeArr("M U R U R' U' M' R' F R F'"); //19
+		}
+		if(arr.length > 0)break;
 	}
-	else{
-		arr = ["U'"];
-	}
-	console.log("17.2" + " " + arr);
+	if(arr.length == 0) arr = ["U'"];
 	multipleCross3(0);
 }
 else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color && saystep < 15)
@@ -3119,57 +2939,38 @@ else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][
 	flipmode = 0;
 	saystep = 14;
 	arr = [];
-	if(cornerOLL() == 0){
-		if(layout[0][0][0][0] == color && layout[0][0][2][0] == color)
-		{
-			if(layout[5][0][2][0] == color)
-			changeArr("R U' L' U R' U L U L' U L"); //22
-			else
-			changeArr("R U R' U R U' R' U R U2 R'"); //21
+	for(let i = 0; i < 3; i++)
+	{
+		flipmode = i;
+		if(flipmode == 1)defineFlipper();
+		if(flipmode == 2)defineFlipper4();
+		if(flipmode == 3)defineFlipper3();
+		setLayout();
+		if(cornerOLL() == 0){
+			if(layout[0][0][0][0] == color && layout[0][0][2][0] == color)
+			{
+				if(layout[5][0][2][0] == color)
+				changeArr("R U' L' U R' U L U L' U L"); //22
+				else
+				changeArr("R U R' U R U' R' U R U2 R'"); //21
+			}
 		}
-		else if(layout[1][0][0][0] == color && layout[1][0][2][0] == color && layout[4][0][0][0] == color)
-		{
-			flipmode = 1;
-			changeArr("R U' L' U R' U L U L' U L"); //22
-		}
-		else
-		arr = ["U'"]
-	}
-	else if(cornerOLL() == 1){
-		if(layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-		changeArr("L' U' L U' L' U2 L"); //26 antisune
-		else if(layout[2][2][0][0] == color && layout[5][0][2][0] == color)
-		changeArr("R U R' U R U2 R'"); //27 sune
-		else
-		{
-			flipmode = 1;
-			if(layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+		else if(cornerOLL() == 1){
+			if(layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 			changeArr("L' U' L U' L' U2 L"); //26 antisune
-			else if(layout[2][0][2][0] == color && layout[4][0][0][0] == color)
+			else if(layout[2][2][0][0] == color && layout[5][0][2][0] == color)
 			changeArr("R U R' U R U2 R'"); //27 sune
-			else
-			arr = ["U"];
-		}
-	}else{
-		if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-		changeArr("F R' F' r U R U' r'"); //25
-		else if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[5][0][2][0] == color)
-		changeArr("R2 D R' U2 R D' R' U2 R'"); //23
-		else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
-		changeArr("r U R' U' r' F R F'"); //24
-		else
-		{
-			flipmode = 1;
-			if(layout[2][2][2][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+		}else{
+			if(layout[2][0][0][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 			changeArr("F R' F' r U R U' r'"); //25
-			else if(layout[2][2][2][0] == color && layout[2][2][0][0] == color && layout[4][0][0][0] == color)
+			else if(layout[2][0][0][0] == color && layout[2][0][2][0] == color && layout[5][0][2][0] == color)
 			changeArr("R2 D R' U2 R D' R' U2 R'"); //23
-			else if(layout[2][2][0][0] == color && layout[2][0][0][0] == color && layout[4][0][2][0] == color)
+			else if(layout[2][0][2][0] == color && layout[2][2][2][0] == color && layout[5][0][0][0] == color)
 			changeArr("r U R' U' r' F R F'"); //24
-			else
-			arr = ["U"];
 		}
+		if(arr.length > 0)break;
 	}
+	if(arr.length == 0) arr = ["U'"];
 	multipleCross3(0);
 }
 else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layout[5][0][2][0]) && saystep <16)
@@ -3181,204 +2982,143 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 	saystep = 15;
 	arr = [];
 	flipmode = 0;
-	if(layout[0][0][0][0] == layout[0][0][2][0])
+	for(let i = 0; i < 4; i++)
 	{
-		flipmode = 0;
-		if(layout[5][0][0][0] == layout[5][0][1][0] && opposite[layout[0][0][1][0]] == layout[0][0][2][0]) //T
-		changeArr("R U R' U' R' F R2 U' R' U' R U R' F'")
-		else if(layout[5][0][1][0] == layout[5][0][2][0] && layout[1][0][2][0] == layout[1][0][1][0]) //Aa
-		changeArr("B' R B' L2 B R' B' L2 B2");
-		else if(layout[1][0][0][0] == layout[1][0][1][0] && layout[4][0][2][0] == layout[4][0][1][0]) //Ab
-		changeArr("F R' F L2 F' R F L2 F2");
-		else if(layout[0][0][1][0] == layout[0][0][2][0] && layout[5][0][0][0] == layout[5][0][1][0]) //Ja
-		{
-			changeArr("R' U2 R U R' U2 L U' R U L'");
-		}
-		else if(layout[0][0][1][0] == layout[0][0][2][0] && opposite[layout[5][0][0][0]] == layout[5][0][1][0]) //FF
-		changeArr("B L U M B' U' B M' U B L' B R B R'");
-		else if(layout[0][0][1][0] == layout[5][0][0][0] && layout[0][0][2][0] == layout[5][0][1][0]) //Rb
-		{
-			flipmode = 1;
-			changeArr("B' U2 B U' R' F R B' R' F' R U' B");
-		}
-		else if(layout[5][0][0][0] == layout[5][0][1][0]) //Ra
-		changeArr("B U2 B' U L F' L' B L F L' U B'");
-		else if(layout[0][0][1][0] == layout[0][0][2][0] && layout[5][0][1][0] == layout[5][0][2][0]) //Jbb
-		{
-			changeArr("B U2 R U' B' U B U R' U B'")
-			//RIP MY BELOVED changeArr("R U R' F' R U R' U' R' F R2 U' R'"); 
-		}
-		else if(layout[5][0][1][0] == layout[5][0][2][0]) //Ga
-		changeArr("L F2 R F' L' F U R' U' F' L F' L'");
-		else if(opposite[layout[0][0][1][0]] == layout[0][0][2][0] && opposite[layout[5][0][0][0]] == layout[5][0][1][0]) //Gb
-		changeArr("R' U' R B2 D L' U L U' L D' B2");
-		else if(opposite[layout[0][0][1][0]] == layout[0][0][2][0]) //Gd
-		changeArr("R U R' F2 D' L U' L' U L' D F2");
-		else
-		changeArr("R2 Uw' R U' R U R' u R2 B U' B'"); //Gc
-	}
-	else if(layout[1][0][0][0] == layout[1][0][2][0])
-	{
-		flipmode = 1;
-		if(layout[4][0][2][0] == layout[4][0][1][0] && opposite[layout[1][0][1][0]] == layout[1][0][0][0]) //T
-		changeArr("R U R' U' R' F R2 U' R' U' R U R' F'")
-		else if(layout[4][0][1][0] == layout[4][0][0][0] && layout[0][0][0][0] == layout[0][0][1][0]) //Aa
-		changeArr("B' R B' L2 B R' B' L2 B2");
-		else if(layout[0][0][2][0] == layout[0][0][1][0] && layout[5][0][0][0] == layout[5][0][1][0]) //Ab
-		changeArr("F R' F L2 F' R F L2 F2");
-		else if(layout[1][0][1][0] == layout[1][0][0][0] && layout[4][0][2][0] == layout[4][0][1][0]) //Ja
-		changeArr("R' U2 R U R' U2 L U' R U L'");
-		else if(layout[1][0][1][0] == layout[1][0][0][0] && opposite[layout[4][0][2][0]] == layout[4][0][1][0]) //FF
-		changeArr("B L U M B' U' B M' U B L' B R B R'");
-		else if(layout[1][0][1][0] == layout[4][0][2][0] && layout[1][0][0][0] == layout[4][0][1][0]) //Rb
-		{
-			flipmode = 0;
-			changeArr("B' U2 B U' R' F R B' R' F' R U' B");
-		}
-		else if(layout[4][0][2][0] == layout[4][0][1][0]) //Ra
-		changeArr("B U2 B' U L F' L' B L F L' U B'");
-		//         B' U2 B U' R' F R B' R' F' R U' B
-		else if(layout[1][0][1][0] == layout[1][0][0][0] && layout[4][0][1][0] == layout[4][0][0][0]) //Jbb
-		changeArr("B U2 R U' B' U B U R' U B'")
-		//RIP MY BELOVED changeArr("R U R' F' R U R' U' R' F R2 U' R'"); 
-		else if(layout[4][0][1][0] == layout[4][0][0][0]) //Ga
-		changeArr("L F2 R F' L' F U R' U' F' L F' L'");
-		else if(opposite[layout[1][0][1][0]] == layout[1][0][0][0] && opposite[layout[4][0][2][0]] == layout[4][0][1][0]) //Gb
-		changeArr("R' U' R B2 D L' U L U' L D' B2");
-		else if(opposite[layout[1][0][1][0]] == layout[1][0][0][0]) //Gd
-		changeArr("R U R' F2 D' L U' L' U L' D F2");
-		else
-		changeArr("R2 Uw' R U' R U R' u R2 B U' B'"); //Gc
-	}
-	else if(opposite[layout[0][0][0][0]] == layout[0][0][2][0] && opposite[layout[5][0][0][0]] == layout[5][0][2][0])
-	{
-		if(layout[5][0][0][0] == layout[5][0][1][0] && layout[0][0][1][0] == layout[0][0][2][0]) //V
-		changeArr("R' U R' d' R' F' R2 U' R' U R' F R F");
-		else if(layout[5][0][0][0] == layout[5][0][1][0] && layout[1][0][0][0] == layout [1][0][1][0]) //Y
-		changeArr("R2 U' R' U R U' B' R' F R' F' R' B R");
-		else if(layout[5][0][0][0] == layout[5][0][1][0] && layout[0][0][0][0] == layout[0][0][1][0]) //Nb
-		changeArr("L' U R' d2 R U' L R' U L' U2 l F' r");
-		else if(layout[5][0][1][0] == layout[5][0][2][0] && layout[0][0][1][0] == layout[0][0][2][0]) //Na
-		changeArr("R U' L d2 L' U L R' U' R U2 r' F l'")
-		else if(layout[5][0][0][0] != layout[5][0][1][0] && layout[5][0][2][0] != layout[5][0][1][0]
-			&& layout[4][0][0][0] != layout[4][0][1][0] && layout[4][0][2][0] != layout[4][0][1][0] && layout[5][0][0][0] == opposite[layout[0][0][1][0]])
-			changeArr("R B L B' R' B F R F' L' F R' B' F'"); //E 
-			else if(layout[4][0][2][0] == layout[4][0][1][0] && layout[1][0][1][0] == layout[1][0][0][0]) //V
-			{
-				flipmode = 1;
-				changeArr("R' U R' d' R' F' R2 U' R' U R' F R F");
-			}
-			else if(layout[4][0][2][0] == layout[4][0][1][0] && layout[0][0][2][0] == layout [0][0][1][0]) //Y
-			{
-				flipmode = 1
-				changeArr("R2 U' R' U R U' B' R' F R' F' R' B R");
-			}
-			else
-			arr = ["U'"];
-		}
-		else
-		{
-			if(layout[5][0][0][0] == layout[5][0][2][0])
-			arr = ["U"];
-			else
-			arr = ["U'"];
-		}
-		multipleCross3(0);
-	}
-	else if(correctPFL() < 3)
-	{
-		document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
-		document.getElementById("fraction").innerHTML = "9/10):";
-		flipmode2 = 0;
-		flipmode = 0;
+		flipmode = i;
+		if(flipmode == 1)defineFlipper();
+		if(flipmode == 2)defineFlipper4();
+		if(flipmode == 3)defineFlipper3();
 		setLayout();
-		arr = [];
+		if(layout[0][0][0][0] == layout[0][0][2][0])
+		{
+			setLayout();
+			if(layout[5][0][0][0] == layout[5][0][1][0] && opposite[layout[0][0][1][0]] == layout[0][0][2][0]) //T
+			changeArr("R U R' U' R' F R2 U' R' U' R U R' F'")
+			else if(layout[5][0][1][0] == layout[5][0][2][0] && layout[1][0][2][0] == layout[1][0][1][0]) //Aa
+			changeArr("B' R B' L2 B R' B' L2 B2");
+			else if(layout[1][0][0][0] == layout[1][0][1][0] && layout[4][0][2][0] == layout[4][0][1][0]) //Ab
+			changeArr("F R' F L2 F' R F L2 F2");
+			else if(layout[0][0][1][0] == layout[0][0][2][0] && layout[5][0][0][0] == layout[5][0][1][0]) //Ja
+			changeArr("R' U2 R U R' U2 L U' R U L'");
+			else if(layout[0][0][1][0] == layout[0][0][2][0] && opposite[layout[5][0][0][0]] == layout[5][0][1][0]) //F
+			changeArr("B L U M B' U' B M' U B L' B R B R'");
+			else if(layout[0][0][1][0] == layout[5][0][0][0] && layout[0][0][2][0] == layout[5][0][1][0]) //Rb
+				changeArr("F' U2 F U' L' B L F' L' B' L U' F");
+			else if(layout[5][0][0][0] == layout[5][0][1][0]) //Ra
+			changeArr("B U2 B' U L F' L' B L F L' U B'");
+			else if(layout[0][0][1][0] == layout[0][0][2][0] && layout[5][0][1][0] == layout[5][0][2][0]) //Jb
+				changeArr("B U2 R U' B' U B U R' U B'")
+				//RIP MY BELOVED changeArr("R U R' F' R U R' U' R' F R2 U' R'"); 
+			else if(layout[5][0][1][0] == layout[5][0][2][0]) //Ga
+			changeArr("L F2 R F' L' F U R' U' F' L F' L'");
+			else if(opposite[layout[0][0][1][0]] == layout[0][0][2][0] && opposite[layout[5][0][0][0]] == layout[5][0][1][0]) //Gb
+			changeArr("R' U' R B2 D L' U L U' L D' B2");
+			else if(opposite[layout[0][0][1][0]] == layout[0][0][2][0]) //Gd
+			changeArr("R U R' F2 D' L U' L' U L' D F2");
+			else
+			changeArr("R2 Uw' R U' R U R' u R2 B U' B'"); //Gc
+		}
+		else if(opposite[layout[0][0][0][0]] == layout[0][0][2][0] && opposite[layout[5][0][0][0]] == layout[5][0][2][0])
+		{
+			if(layout[5][0][0][0] == layout[5][0][1][0] && layout[0][0][1][0] == layout[0][0][2][0]) //V
+			changeArr("R' U R' d' R' F' R2 U' R' U R' F R F");
+			else if(layout[5][0][0][0] == layout[5][0][1][0] && layout[1][0][0][0] == layout [1][0][1][0]) //Y
+			changeArr("R2 U' R' U R U' B' R' F R' F' R' B R");
+			else if(layout[5][0][0][0] == layout[5][0][1][0] && layout[0][0][0][0] == layout[0][0][1][0]) //Nb
+			changeArr("L' U R' d2 R U' L R' U L' U2 l F' r");
+			else if(layout[5][0][1][0] == layout[5][0][2][0] && layout[0][0][1][0] == layout[0][0][2][0]) //Na
+			changeArr("R U' L d2 L' U L R' U' R U2 r' F l'")
+			else if(layout[5][0][0][0] != layout[5][0][1][0] && layout[5][0][2][0] != layout[5][0][1][0]
+				&& layout[4][0][0][0] != layout[4][0][1][0] && layout[4][0][2][0] != layout[4][0][1][0] && layout[5][0][0][0] == opposite[layout[0][0][1][0]])
+				changeArr("R B L B' R' B F R F' L' F R' B' F'"); //E 
+		}
+		if(arr.length > 0)break;
+	}
+	if(arr.length == 0) arr = ["U'"];
+	multipleCross3(0);
+}
+else if(correctPFL() < 3)
+{
+	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
+	document.getElementById("fraction").innerHTML = "9/10):";
+	flipmode2 = 0;
+	flipmode = 0;
+	setLayout();
+	arr = [];
+	for(let i = 0; i < 4; i++)
+	{
+		flipmode = i;
+		if(flipmode == 1)defineFlipper();
+		if(flipmode == 2)defineFlipper4();
+		if(flipmode == 3)defineFlipper3();
+		setLayout();
+
 		if(correctPFL() == 0)
 		{
-			console.log("fddf " + layout[5][0][1][0] + " " + layout[1][0][2][0])
 			if(opposite[layout[5][0][1][0]] == layout[5][0][0][0])
 			{
-				changeArr("M2 U' M2 U2 M2 U' M2")
+				changeArr("M2 U' M2 U2 M2 U' M2") //H
 			}
 			else if(layout[5][0][1][0] == layout[1][0][2][0])
 			{
-				changeArr("M2 u M2 u' S M2 S'")
+				changeArr("M2 u M2 u' S M2 S'") //Z
 			}
-			else
-			changeArr("M' U M2 U M2 U M' U2 M2")
 		}
 		if(correctPFL() == 1)
 		{
 			if(layout[4][0][1][0] == layout[4][0][2][0])
 			{
-				if(layout[5][0][1][0] == layout[0][0][0][0])
+				if(layout[5][0][1][0] == layout[0][0][2][0])
 				{
-					changeArr("M2 U' M U2 M' U' M2");
-					console.log("Sfs");
+					changeArr("M2 U' M U2 M' U' M2"); //Ub
 				}
 				else
 				{
-					changeArr("M2 U M U2 M' U M2");
-					console.log("esf");
-				}
-			}
-			else if(layout[5][0][1][0] == layout[5][0][2][0])
-			{
-				flipmode = 1;
-				if(layout[4][0][1][0] == layout[1][0][2][0])
-				{
-					changeArr("M2 U' M U2 M' U' M2");
-					console.log("fdsfsd");
-				}
-				else
-				{
-					changeArr("M2 U M U2 M' U M2");
-					console.log("sdff")
+					changeArr("M2 U M U2 M' U M2"); //Ua
 				}
 				
 			}
-			else
-			{
-				arr = ["U'"]
-			}
 		}
-		multipleCross3(0);
+		if(arr.length > 0)break;
 	}
-	else if(layout[5][0][1][0] != layout[5][1][1][0])
+	if(arr.length == 0) arr = ["U'"];
+	multipleCross3(0);
+}
+else if(layout[5][0][1][0] != layout[5][1][1][0])
+{
+	document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
+	document.getElementById("fraction").innerHTML = "10/10):";
+	flipmode2 = 0;
+	flipmode = 0;
+	setLayout();
+	if(layout[5][0][1][0] == layout[0][1][1][0])
+	arr = ["U"];
+	else
+	arr = ["U'"];
+	multipleCross3(0);
+}
+else
+{
+	document.getElementById("step").innerHTML = "";
+	document.getElementById("fraction").innerHTML = "";
+	document.getElementById("stepbig").innerHTML = "";
+	timer.stop();
+	movesarr.push(moves);
+	scrambles.push(document.getElementById('scramble').innerText)
+	if(ao5.length<5)
 	{
-		document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
-		document.getElementById("fraction").innerHTML = "10/10):";
-		flipmode2 = 0;
-		flipmode = 0;
-		setLayout();
-		if(layout[5][0][1][0] == layout[0][1][1][0])
-		arr = ["U"];
-		else
-		arr = ["U'"];
-		multipleCross3(0);
+		ao5.push(Math.round(timer.getTime() / 10)/100.0);
+		mo5.push(Math.round(timer.getTime() / 10)/100.0);
 	}
 	else
 	{
-		document.getElementById("step").innerHTML = "";
-		document.getElementById("fraction").innerHTML = "";
-		document.getElementById("stepbig").innerHTML = "";
-		timer.stop();
-		movesarr.push(moves);
-		scrambles.push(document.getElementById('scramble').innerText)
-		if(ao5.length<5)
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		}
-		else
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-			ao5.shift()
-		}
-		saystep = 0;
-		canMan = true;
+		ao5.push(Math.round(timer.getTime() / 10)/100.0);
+		mo5.push(Math.round(timer.getTime() / 10)/100.0);
+		ao5.shift()
 	}
+	saystep = 0;
+	canMan = true;
+}
 }
 function multipleCross3(nb) {
 	if(MODE != "normal" && MODE != "timed")
@@ -3627,11 +3367,8 @@ function setLayout(){
 			}
 		}
 	}
-	//flipmode2 = 1;
-	//console.log("flipmode is " + flipmode2)
 	if(flipmode2 == 1)
 	{
-		//console.log("Got in here");
 		for(let x = 0; x < 3; x++)
 		{
 			for(let y = 0; y < 3; y++)
@@ -3665,6 +3402,87 @@ function setLayout(){
 			}
 		}
 		
+	}
+	if(flipmode == 1) //total 180 rotation
+	{
+		for(let x = 0; x < 3; x++){
+			for(let y = 0; y < 3; y++){
+				//console.log("here2");
+				let temp2 = layout[0][x][y];
+				layout[0][x][y] = layout[1][x][2-y];
+				layout[1][x][2-y] = temp2;
+			}
+		}
+		for (let i = 2; i < 4; i++){
+			for(let x = 0; x < 2; x++){
+				for(let y = 0; y < 3; y++)
+				{
+					let temp2 = layout[i][x][y];
+					if(y>0 && x == 1)
+					continue;
+					layout[i][x][y] = layout[i][2-x][2-y];
+					layout[i][2-x][2-y] = temp2;
+				}
+			}
+		}
+		for(let x = 0; x < 3; x++){
+			for(let y = 0; y < 3; y++){
+				let temp2 = layout[4][x][y];
+				layout[4][x][y] = layout[5][x][2-y];
+				layout[5][x][2-y] = temp2;
+			}
+		}
+	}
+	if(flipmode == 2) //clockwise z axis
+	{
+		for(let x = 0; x < 3; x++){
+			for(let y = 0; y < 3; y++){
+				let temp2 = layout[0][x][y];
+				layout[0][x][y] = layout[5][x][y];
+				layout[5][x][y] = layout[1][x][2-y];
+				layout[1][x][2-y] = layout[4][x][2-y];
+				layout[4][x][2-y] = temp2;
+			}
+		}
+		for(let i = 2; i < 4; i++)
+		{
+			let temp2 = layout[i][0][0];
+			layout[i][0][0] = layout[i][2][0];
+			layout[i][2][0] = layout[i][2][2];
+			layout[i][2][2] = layout[i][0][2];
+			layout[i][0][2] = temp2;
+			temp2 = layout[i][0][1];
+			layout[i][0][1] = layout[i][1][0];
+			layout[i][1][0] = layout[i][2][1];
+			layout[i][2][1] = layout[i][1][2];
+			layout[i][1][2] = temp2;
+		}
+	}
+	if(flipmode == 3) //Counterclockwise z axis
+	{
+		//console.log("here");
+		for(let x = 0; x < 3; x++){
+			for(let y = 0; y < 3; y++){
+				let temp2 = layout[5][x][y];
+				layout[5][x][y] = layout[0][x][y];
+				layout[0][x][y] = layout[4][x][2-y];
+				layout[4][x][2-y] = layout[1][x][2-y];
+				layout[1][x][2-y] = temp2;
+			}
+		}
+		for(let i = 2; i < 4; i++)
+		{
+			let temp2 = layout[i][0][0];
+			layout[i][0][0] = layout[i][0][2];
+			layout[i][0][2] = layout[i][2][2];
+			layout[i][2][2] = layout[i][2][0];
+			layout[i][2][0] = temp2;
+			temp2 = layout[i][0][1];
+			layout[i][0][1] = layout[i][1][2];
+			layout[i][1][2] = layout[i][2][1];
+			layout[i][2][1] = layout[i][1][0];
+			layout[i][1][0] = temp2;
+		}
 	}
 	for(let i = 0; i < 6; i++)
 	{
@@ -4218,6 +4036,22 @@ function defineFlipper2(){ //180 degree rotation around y-axis
 	flipper2["Bw'"] = "Bw'"; flipper2["Dw"] = "Uw"; flipper2["Dw'"] = "Uw'"; flipper2["x"] = "x'"; flipper2["x'"] = "x";
 	flipper2["y"] = "y'"; flipper2["y'"] = "y"; flipper2["z'"] = "z'"; flipper2["z"] = "z";  
 }
+function defineFlipper3(){ //Clockwise rotation around z axis
+	flipper["F"] = "L"; flipper["F'"] = "L'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "F"; flipper["R'"] = "F'"; flipper["L"] = "B"; 
+	flipper["L'"] = "B'"; flipper["B"] = "R"; flipper["B'"] = "R'"; flipper["D"] = "D"; flipper["D'"] = "D'"; flipper["M"] = "S'"; flipper["M'"] = "S"; 
+	flipper["E"] = "E'"; flipper["E'"] = "E"; flipper["S'"] = "M'"; flipper["S"] = "M"; flipper["Fw"] = "Lw"; flipper["Fw'"] = "Lw'"; flipper["Uw"] = "Uw"; 
+	flipper["Uw'"] = "Uw'"; flipper["Rw"] = "Fw"; flipper["Rw'"] = "Fw'"; flipper["Lw"] = "Bw"; flipper["Lw'"] = "Bw'"; flipper["Bw"] = "Rw"; 
+	flipper["Bw'"] = "Rw'"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["x"] = "z"; flipper["x'"] = "z'";
+	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "x"; flipper["z"] = "x'";  
+}
+function defineFlipper4(){ //Counterclockwise rotation around z axis
+	flipper["F"] = "R"; flipper["F'"] = "R'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "B"; flipper["R'"] = "B'"; flipper["L"] = "F"; 
+	flipper["L'"] = "F'"; flipper["B"] = "L"; flipper["B'"] = "L'"; flipper["D"] = "D"; flipper["D'"] = "D'"; flipper["M"] = "S"; flipper["M'"] = "S'"; 
+	flipper["E"] = "E'"; flipper["E'"] = "E"; flipper["S'"] = "M"; flipper["S"] = "M'"; flipper["Fw"] = "Rw"; flipper["Fw'"] = "Rw'"; flipper["Uw"] = "Uw"; 
+	flipper["Uw'"] = "Uw'"; flipper["Rw"] = "Bw"; flipper["Rw'"] = "Bw'"; flipper["Lw"] = "Fw"; flipper["Lw'"] = "Fw'"; flipper["Bw"] = "Lw"; 
+	flipper["Bw'"] = "Lw'"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["x"] = "z'"; flipper["x'"] = "z";
+	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "x'"; flipper["z"] = "x";  
+}
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
 		switch (e.keyCode) {
@@ -4243,6 +4077,7 @@ window.addEventListener('keydown', (e) => {
 //71.22
 //70.78
 //70.20
+//69.16
 //Jaden WR
 //25.4s
 //20.9s
@@ -4254,29 +4089,32 @@ window.addEventListener('keydown', (e) => {
 //TODO: Make more efficient:  F R' B' U R L F B' D' B2 L R U D F B' L2 F' (10) dev on
 //D' R F' L' U2 R B' D' R U F' D2 F' B D U F' R' same thing
 //Bad
-//U' L R B D' U' D L2 D F' U' R F B' U' F R D' U (81)
-//Cool scramble
-//F R L F' D B' L U2 R2 D2 B2 L2 F2 B' D2 R2 U2 D2 L' D' (60)
+//U' B' U L' F' U' F U D F2 R' L' R D L' U' L2 R (infinity)
 //BELOW 58 MOVES
-// U' B2 D L U B R' U' L' R B2 D' B D F' L' F D' (57)
 // B' U' L B' F R U' B L U' F' U L' B' U' D B U' R' L (57)
-//U' L' R' L B D U F' B' U D' F' U' B' D F B' R2 D' (57)
-//  R' B D L' U' L B2 U2 L U R D L2 R' B F' L' (57)
-// L F2 R B' D B R2 D F R' L' B' U' R' F' R U R' (55)
+// U' L' R' L B D U F' B' U D' F' U' B' D F B' R2 D' (57)
+// R' B D L' U' L B2 U2 L U R D L2 R' B F' L' (57)
+// D R L' F U B R L' F B U' F' D' F U R' D L' R U (56)
+// U' B2 D L U B R' U' L' R B2 D' B D F' L' F D' (55)
 // B' R2 B U' L' U R2 B' L R' L' B' D' U2 R B2 (54)
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (54)
+// U D2 F' U L' F' U B2 L U F' L' U' B' R L U2 (54)
+// F' L' B' U R2 B D L2 B' D B U' R' L2 U D' F' (53)
+// L F2 R B' D B R2 D F R' L' B' U' R' F' R U R' (53)
 // D' B' U R L B D U2 R D R' U' D' B' L' D F' B' U' (52)
-//R D L2 D' F' B' D' U' B L2 R2 U' B D' B' U D (50)
-//D2 F' D' B R' L' U D F' L B' R' F2 B L R F2 (49)
-//B U F' U' L' D2 B U' B' L' D R F B' F' L B' U R (49)
-//D' R' D2 F B' U B2 R' F D R' L2 F D R' L F' y y x x (48)
+// R D L2 D' F' B' D' U' B L2 R2 U' B D' B' U D (50)
+// B U F' U' L' D2 B U' B' L' D R F B' F' L B' U R (49)
+// D2 F' D' B R' L' U D F' L B' R' F2 B L R F2 (49)
+// D' R' D2 F B' U B2 R' F D R' L2 F D R' L F' y y x x (48)
+// F R L F' D B' L U2 R2 D2 B2 L2 F2 B' D2 R2 U2 D2 L' D' (48) (Cool scramble)
+// R' U' D' F' L R B' D2 F2 D L' B F' B2 R' L D' (46)
 //WORLD RECORD SCRAMBLES
 // D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(70, was 60)
 // B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 66)
 // L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y x x (was 58, 60)
 // D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (65, was 55, was 46)
 // L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (51, was 52)
-// L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (73, was 48)
+// L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (71, was 48)
 
 /*Mr Sunshine give us your rays
 You're the one who brightens our days
