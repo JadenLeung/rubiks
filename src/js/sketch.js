@@ -5,7 +5,7 @@ import Cuby from './cuby.js';
 export default function (p) {
 	const CUBYESIZE = 50;
 	const DEBUG = false;
-	
+	let bruh = 0;
 	let CAM;
 	let CAM_PICKER;
 	let PICKER;
@@ -28,6 +28,8 @@ export default function (p) {
 	let edgeback = false;
 	let edgeleft = false;
 	let edgebackleft = false;
+	let mindist;
+	let minaction;
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
 	let arr = [];
 	let obj2 = [];
@@ -1647,8 +1649,9 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			flipmode = 3;
-			defineFlipper4();
+			flipmode2 = 1;
+			flipmode = 2;
+			defineFlipper3();
 			setLayout();
 			console.log(flipmode);
 			break;
@@ -1940,7 +1943,7 @@ function stepTwo(){
 		multipleCross2(0);
 		
 	}
-	else if(crossColor()[2] < 4) 	//f2l2
+	else if(crossColor()[2] < 4) 
 	{
 		document.getElementById("step").innerHTML = "Putting in remaining edge pieces";
 		document.getElementById("fraction").innerHTML = "2/10):";
@@ -2161,7 +2164,7 @@ function stepTwo(){
 		changeArr("F U' F' U F");
 		multipleCross2(0);
 	}
-	else if(cornerPFL() < 210)
+	else if(cornerPFL() < 210) 	//f2l2
 	{
 		console.log("cornerPFL " + cornerPFL());
 		saystep = 7;
@@ -2174,92 +2177,184 @@ function stepTwo(){
 		{
 			if(goodF2L() == 1)
 			{
-				let piece = layout[0][2][2];
-				if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
-				|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
-				{
-					arr = ["y'"]
-					console.log("save1")
+				if(flipmode == 0){
+					flipmode = 3;
+					defineFlipper4();
+					
 				}
-				else
-				arr = ["D"];
+				else if(flipmode == 3) {
+					flipmode = 1;
+					defineFlipper();
+
+				}
+				else if(flipmode == 1){
+					flipmode = 2;
+					defineFlipper3();
+				}
+				else if(flipmode == 2){
+					flipmode = 0;
+				}
+				setLayout();
 			}
 			else if(goodF2L() == 3)
 			{
-				let piece = layout[1][2][0];
-				if(piece.includes(layout[1][1][1][0]) && piece.includes(layout[4][1][1][0]) 
-				|| piece.includes(layout[0][1][1][0]) && piece.includes(layout[4][1][1][0]))
-				{
-					arr = ["y"]
-					console.log("save3")
+				if(flipmode == 0){
+					flipmode = 2;
+					defineFlipper3();
+					
 				}
-				else
-				arr = ["D'"];
+				else if(flipmode == 2) {
+					flipmode = 1;
+					defineFlipper();
+
+				}
+				else if(flipmode == 1){
+					flipmode = 3;
+					defineFlipper4();
+				}
+				else if(flipmode == 3){
+					flipmode = 0;
+				}
+				setLayout();
 			}
 			else
 			{
-				let piece = layout[0][2][0];
-				if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
-				|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
-				{
-					arr = ["y'"]
-					console.log("save2")
+				if(flipmode == 0){
+					defineFlipper();
+					flipmode = 1;
 				}
-				else
-				arr = ["D"];
+				else if(flipmode == 1) flipmode = 0;
+				else if(flipmode == 2){
+					flipmode = 3;
+					defineFlipper4();
+				}
+				else if(flipmode == 3){
+					flipmode = 2;
+					defineFlipper3();
+				}
+				setLayout();
 			}
 		}
 		else if(layout[3][0][0].includes(color) || layout[3][0][2].includes(color) || layout[3][2][0].includes(color) || layout[3][2][2].includes(color))
 		{
-			if(!layout[5][2][2].includes(color))
-			{
-				if(layout[0][2][2].includes(color))
-				{
-					let piece = layout[0][2][2];
-					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
-					|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
-					{
-						arr = ["y'"]
-						console.log("save1")
-					}
-					else
-					arr = ["D"];
-				}
-				else if(!layout[0][2][0].includes(color))
-				{
-					let piece = layout[1][2][0];
-					if(piece.includes(layout[1][1][1][0]) && piece.includes(layout[4][1][1][0]) 
-					|| piece.includes(layout[0][1][1][0]) && piece.includes(layout[4][1][1][0]))
-					{
-						arr = ["y"]
-						console.log("save3")
-					}
-					else
-					arr = ["D'"];
-				}
-				else 
-				{
-					let piece = layout[0][2][0];
-					if(piece.includes(layout[0][1][1][0]) && piece.includes(layout[5][1][1][0]) 
-					|| piece.includes(layout[4][1][1][0]) && piece.includes(layout[0][1][1][0]))
-					{
-						arr = ["y'"]
-						console.log("save2")
-					}
-					else
-					arr = ["D"];
-				}
+			mindist = 99;
+			minaction = -1;
+			if(layout[5][2][2].includes(color)){ //minaction = 0
+				console.log("hey her", layout[5][2][2]);
+				let color1 = layout[5][2][2][0];
+				let color2 = layout[5][2][2][5];
+				let color3 = layout[5][2][2][7];
+				let center1 = layout[5][1][1][0];
+				let center2 = layout[1][1][1][0];
+				let center3 = layout[4][1][1][0];
+				let center4 = layout[0][1][1][0];
+				F2ldist(color1, color2, color3, center1, center2, center3, center4, 0)
 			}
-			else if(layout[5][2][2].includes(color2) && layout[5][2][2].includes(color3))
+			if(layout[0][2][2].includes(color)){ //minaction = 1
+				let color1 = layout[0][2][2][0];
+				let color2 = layout[0][2][2][5];
+				let color3 = layout[0][2][2][7];
+				let center1 = layout[0][1][1][0];
+				let center2 = layout[5][1][1][0];
+				let center3 = layout[1][1][1][0];
+				let center4 = layout[4][1][1][0];
+				F2ldist(color1, color2, color3, center1, center2, center3, center4, 1)
+			}
+			if(layout[1][2][0].includes(color)){ //minaction = 2
+				let color1 = layout[1][2][2][0];
+				let color2 = layout[1][2][2][5];
+				let color3 = layout[1][2][2][7];
+				let center1 = layout[1][1][1][0];
+				let center2 = layout[4][1][1][0];
+				let center3 = layout[0][1][1][0];
+				let center4 = layout[5][1][1][0];
+				F2ldist(color1, color2, color3, center1, center2, center3, center4, 2)
+			}
+			if(layout[4][2][0].includes(color)){ //minaction = 3
+				let color1 = layout[4][2][2][0];
+				let color2 = layout[4][2][2][5];
+				let color3 = layout[4][2][2][7];
+				let center1 = layout[4][1][1][0];
+				let center2 = layout[0][1][1][0];
+				let center3 = layout[5][1][1][0];
+				let center4 = layout[1][1][1][0];
+				F2ldist(color1, color2, color3, center1, center2, center3, center4, 3)
+			}
+		if(!layout[5][2][2].includes(color))
+		{
+			if(minaction == 1)
 			{
-				let type = 0;
-				if(layout[5][1][2][0] == layout[5][1][1][0] && layout[1][1][2][0] == layout[1][1][1][0] && 
-					(layout[5][1][0][0] != layout[5][1][1][0] || layout[0][1][2][0] != layout[0][1][1][0]))
-				{
-						arr = ["E"];
-						type = 1;
-				}
+				if(flipmode == 0){
+					flipmode = 3;
+					defineFlipper4();
 					
+				}
+				else if(flipmode == 3) {
+					flipmode = 1;
+					defineFlipper();
+
+				}
+				else if(flipmode == 1){
+					flipmode = 2;
+					defineFlipper3();
+				}
+				else if(flipmode == 2){
+					flipmode = 0;
+				}
+				setLayout();
+			}
+			else if(minaction == 2)
+			{
+				if(flipmode == 0){
+					flipmode = 2;
+					defineFlipper3();
+					
+				}
+				else if(flipmode == 2) {
+					flipmode = 1;
+					defineFlipper();
+
+				}
+				else if(flipmode == 1){
+					flipmode = 3;
+					defineFlipper4();
+				}
+				else if(flipmode == 3){
+					flipmode = 0;
+				}
+				setLayout();
+			}
+			else if(minaction == 3)
+			{
+				//return;
+				if(flipmode == 0){
+					defineFlipper();
+					flipmode = 1;
+				}
+				else if(flipmode == 1) flipmode = 0;
+				else if(flipmode == 2){
+					flipmode = 3;
+					defineFlipper4();
+				}
+				else if(flipmode == 3){
+					flipmode = 2;
+					defineFlipper3();
+				}
+				setLayout();
+				//stepThree();
+				//return;
+			}
+			console.log("flipmode", flipmode, "mindist", mindist, "minaction", minaction, layout);
+		}
+		else if(layout[5][2][2].includes(color2) && layout[5][2][2].includes(color3))
+		{
+		let type = 0;
+		if(layout[5][1][2][0] == layout[5][1][1][0] && layout[1][1][2][0] == layout[1][1][1][0] && 
+		(layout[5][1][0][0] != layout[5][1][1][0] || layout[0][1][2][0] != layout[0][1][1][0]))
+		{
+			arr = ["E"];
+			type = 1;
+		}		
 		if(layout[5][1][2][0] == layout[5][1][1][0] && layout[1][1][2][0] == layout[1][1][1][0] && 
 		(layout[1][1][0][0] != layout[1][1][1][0] || layout[4][1][2][0] != layout[4][1][1][0]))
 		{
@@ -3433,7 +3528,7 @@ function setLayout(){
 			}
 		}
 	}
-	if(flipmode == 2) //clockwise z axis
+	if(flipmode == 2 && dev == 0 || flipmode == 3 && dev == 1) //clockwise z axis
 	{
 		for(let x = 0; x < 3; x++){
 			for(let y = 0; y < 3; y++){
@@ -3458,7 +3553,7 @@ function setLayout(){
 			layout[i][1][2] = temp2;
 		}
 	}
-	if(flipmode == 3) //Counterclockwise z axis
+	if(flipmode == 3 && dev == 0 || flipmode == 2 && dev == 1) //Counterclockwise z axis
 	{
 		//console.log("here");
 		for(let x = 0; x < 3; x++){
@@ -3947,7 +4042,25 @@ function getFace(cuby1, color1)
 	}
 	return;
 }
-
+function F2ldist(color1, color2, color3, center1, center2, center3, center4, xx)
+{
+	if((center1 == color1 || center1 == color2 || center1 == color3) &&
+		(center2 == color1 || center2 == color2 || center2 == color3) && mindist > 0){
+		mindist = 0; minaction = xx;
+	}
+	if((center3 == color1 || center3 == color2 || center3 == color3) &&
+		(center2 == color1 || center2 == color2 || center2 == color3) && mindist > 1){
+		mindist = 1; minaction = xx;
+	}
+	if((center3 == color1 || center3 == color2 || center3 == color3) &&
+		(center4 == color1 || center4 == color2 || center4 == color3) && mindist > 2){
+		mindist = 2; minaction = xx;
+	}
+	if((center1 == color1 || center1 == color2 || center1 == color3) &&
+		(center4 == color1 || center4 == color2 || center4 == color3) && mindist > 1){
+		mindist = 1; minaction = xx;
+	}
+}
 function renderCube() {
 	PICKER.buffer.background(0);
 	p.background(BACKGROUND_COLOR);
@@ -4039,7 +4152,7 @@ function defineFlipper2(){ //180 degree rotation around y-axis
 function defineFlipper3(){ //Clockwise rotation around z axis
 	flipper["F"] = "L"; flipper["F'"] = "L'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "F"; flipper["R'"] = "F'"; flipper["L"] = "B"; 
 	flipper["L'"] = "B'"; flipper["B"] = "R"; flipper["B'"] = "R'"; flipper["D"] = "D"; flipper["D'"] = "D'"; flipper["M"] = "S'"; flipper["M'"] = "S"; 
-	flipper["E"] = "E'"; flipper["E'"] = "E"; flipper["S'"] = "M'"; flipper["S"] = "M"; flipper["Fw"] = "Lw"; flipper["Fw'"] = "Lw'"; flipper["Uw"] = "Uw"; 
+	flipper["E"] = "E"; flipper["E'"] = "E'"; flipper["S'"] = "M'"; flipper["S"] = "M"; flipper["Fw"] = "Lw"; flipper["Fw'"] = "Lw'"; flipper["Uw"] = "Uw"; 
 	flipper["Uw'"] = "Uw'"; flipper["Rw"] = "Fw"; flipper["Rw'"] = "Fw'"; flipper["Lw"] = "Bw"; flipper["Lw'"] = "Bw'"; flipper["Bw"] = "Rw"; 
 	flipper["Bw'"] = "Rw'"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["x"] = "z"; flipper["x'"] = "z'";
 	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "x"; flipper["z"] = "x'";  
@@ -4047,7 +4160,7 @@ function defineFlipper3(){ //Clockwise rotation around z axis
 function defineFlipper4(){ //Counterclockwise rotation around z axis
 	flipper["F"] = "R"; flipper["F'"] = "R'"; flipper["U"] = "U"; flipper["U'"] = "U'"; flipper["R"] = "B"; flipper["R'"] = "B'"; flipper["L"] = "F"; 
 	flipper["L'"] = "F'"; flipper["B"] = "L"; flipper["B'"] = "L'"; flipper["D"] = "D"; flipper["D'"] = "D'"; flipper["M"] = "S"; flipper["M'"] = "S'"; 
-	flipper["E"] = "E'"; flipper["E'"] = "E"; flipper["S'"] = "M"; flipper["S"] = "M'"; flipper["Fw"] = "Rw"; flipper["Fw'"] = "Rw'"; flipper["Uw"] = "Uw"; 
+	flipper["E"] = "E"; flipper["E'"] = "E'"; flipper["S'"] = "M"; flipper["S"] = "M'"; flipper["Fw"] = "Rw"; flipper["Fw'"] = "Rw'"; flipper["Uw"] = "Uw"; 
 	flipper["Uw'"] = "Uw'"; flipper["Rw"] = "Bw"; flipper["Rw'"] = "Bw'"; flipper["Lw"] = "Fw"; flipper["Lw'"] = "Fw'"; flipper["Bw"] = "Lw"; 
 	flipper["Bw'"] = "Lw'"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["x"] = "z'"; flipper["x'"] = "z";
 	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "x'"; flipper["z"] = "x";  
@@ -4078,43 +4191,48 @@ window.addEventListener('keydown', (e) => {
 //70.78
 //70.20
 //69.16
+//66.60
+//66.04
 //Jaden WR
 //25.4s
 //20.9s
 //19.7s
 //16.6
 //PLL Practice: 6.9s, 6.84s 
-//Easy: 0.8s
-//Medium: 15.4s
+//Easy: 0.8, 0.52s
+//Medium: 15.4s, 13.58s
 //TODO: Make more efficient:  F R' B' U R L F B' D' B2 L R U D F B' L2 F' (10) dev on
 //D' R F' L' U2 R B' D' R U F' D2 F' B D U F' R' same thing
 //Bad
-//U' B' U L' F' U' F U D F2 R' L' R D L' U' L2 R (infinity)
-//BELOW 58 MOVES
-// B' U' L B' F R U' B L U' F' U L' B' U' D B U' R' L (57)
-// U' L' R' L B D U F' B' U D' F' U' B' D F B' R2 D' (57)
-// R' B D L' U' L B2 U2 L U R D L2 R' B F' L' (57)
-// D R L' F U B R L' F B U' F' D' F U R' D L' R U (56)
-// U' B2 D L U B R' U' L' R B2 D' B D F' L' F D' (55)
-// B' R2 B U' L' U R2 B' L R' L' B' D' U2 R B2 (54)
-// R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (54)
-// U D2 F' U L' F' U B2 L U F' L' U' B' R L U2 (54)
-// F' L' B' U R2 B D L2 B' D B U' R' L2 U D' F' (53)
-// L F2 R B' D B R2 D F R' L' B' U' R' F' R U R' (53)
-// D' B' U R L B D U2 R D R' U' D' B' L' D F' B' U' (52)
-// R D L2 D' F' B' D' U' B L2 R2 U' B D' B' U D (50)
-// B U F' U' L' D2 B U' B' L' D R F B' F' L B' U R (49)
-// D2 F' D' B R' L' U D F' L B' R' F2 B L R F2 (49)
+//R D' L U R' B R U' L2 D F L D' B' L' D B2 L'
+//BELOW 54 MOVES
+// R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (53)
+// L U R U' L R' U D2 U L' B' F' B D U' D' R F L' (53)
+// L' F U' B2 R F L B' D R' U F B L B' R' D B U (53)
+// B' L' B D L' R U' L' B' U' F L' U' L F R' U' F L' D'
+// U D F B F' R' D' L U D' R' L' B L U R L U' L' B' (51)
+// F' U B' R U F D' L' R B2 R L B2 D R B' R' F (51)
+// F' U B' L' B L2 F B2 L B R' L' F' B' R2 B' U' (51)
+// L F2 R B' D B R2 D F R' L' B' U' R' F' R U R' (50)
+//L' F U B' U' F L' R' U' B2 D' U' L' D' B' F' U B D' (50)
+//D F2 U' D' L B U' F B' F' L' U' F R U R' F L U (49)
+// B U F' U' L' D2 B U' B' L' D R F B' F' L B' U R (48)
 // D' R' D2 F B' U B2 R' F D R' L2 F D R' L F' y y x x (48)
 // F R L F' D B' L U2 R2 D2 B2 L2 F2 B' D2 R2 U2 D2 L' D' (48) (Cool scramble)
-// R' U' D' F' L R B' D2 F2 D L' B F' B2 R' L D' (46)
+// R2 D U' R' U L' F' L R' F' U B' D' U2 F L B2 (48)
+//  L' R F' B2 F' L' U' B' R L' D U' F L B' F L' U2 (47)
+// D2 F' D' B R' L' U D F' L B' R' F2 B L R F2 (46)
+//  B R B' D R L F D L' F B' D F' L R B' L' D' F' U' (46)
+// R' L' D U' F U F' B' R L' F' R B2 L' R F' L D R' (46)
+// R' U' D' F' L R B' D2 F2 D L' B F' B2 R' L D' (43)
 //WORLD RECORD SCRAMBLES
-// D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(70, was 60)
-// B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 66)
-// L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y x x (was 58, 60)
-// D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (65, was 55, was 46)
-// L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (51, was 52)
-// L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (71, was 48)
+// D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(was 60, 63)
+// B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 61)
+// L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y x x (54, was 58)
+// D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (64, was 55)
+// L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (50, was 52)
+// L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (70, was 48)
+// R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (41)
 
 /*Mr Sunshine give us your rays
 You're the one who brightens our days
