@@ -1270,8 +1270,80 @@ function displayTimes()
 		document.getElementById('alltimes').innerHTML = "Your times/moves will be displayed here";
 		return;
 	}
+	document.getElementById("or_instruct3").style.display = "none";
 	let alltimes = "";
-	let displaymoves = "";
+	if(mo5.length > 1)
+	{
+		let mintime = mo5[0];
+		let minmove = movesarr[0];
+		for(let i = 0; i < mo5.length; i++)
+		{
+			mintime = Math.min(mintime, mo5[i])
+			minmove = Math.min(minmove, movesarr[i]);
+		}
+		alltimes += "<a style = 'font-size:12px;'>Best: " + mintime + "s, " + minmove + " moves</a><br>";
+	}
+	if(mo5.length > 2)
+	{
+		let sumtime = 0;
+		let summove = 0;
+		for(let i = mo5.length-3; i < mo5.length; i++)
+		{
+			sumtime += mo5[i];
+			summove += movesarr[i]
+		}
+		sumtime = sumtime/3;
+		summove = summove/3;
+		alltimes += "<a style = 'font-size:12px;';>Mo3: " + (Math.round((sumtime)*100)/100) + "s, " + (Math.round((summove)*100)/100) + " moves</a><br>";
+	}
+	if(mo5.length > 4)
+	{
+		let sum1 = 0;
+		let min = mo5[0];
+		let max = mo5[0];
+		let sum2 = 0;
+		let min2 = movesarr[0];
+		let max2 = movesarr[0];
+		for(let i = mo5.length-5; i < mo5.length; i++)
+		{
+			sum1 += mo5[i];
+			min = Math.min(mo5[i], min);
+			max = Math.max(mo5[i], max);
+			sum2 += movesarr[i];
+			min2 = Math.min(movesarr[i], min2);
+			max2 = Math.max(movesarr[i], max2);
+		}
+		sum1 = (sum1 - min - max)/3;
+		sum2 = (sum2 - min2 - max2)/3;
+		alltimes += "<a style = 'font-size:12px;'>Ao5: " + (Math.round((sum1)*100)/100) + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
+	}
+	if(mo5.length > 2)
+	{
+		let copy1 = [];
+		let copy2 = [];
+		for(let i = 0; i < mo5.length; i++)
+		{
+			copy1[i] = mo5[i];
+			copy2[i] = movesarr[i];
+		}
+		let med1 = median(copy1);
+		let med2 = median(copy2);
+		alltimes += "<a style = 'font-size:12px;'>Median: " + (Math.round((med1)*100)/100) + "s, " + (Math.round((med2)*100)/100) + " moves</a><br>";
+	}
+	if(mo5.length > 2)
+	{
+		let sumtime = 0;
+		let summove = 0;
+		for(let i = 0; i < mo5.length; i++)
+		{
+			sumtime += mo5[i];
+			summove += movesarr[i]
+		}
+		sumtime = sumtime/mo5.length;
+		summove = summove/mo5.length;
+		alltimes += "<a style = 'font-size:12px;'>Mean: " + (Math.round((sumtime)*100)/100) + "s, " + (Math.round((summove)*100)/100) + " moves</a><br>";
+	}
+	if(alltimes.length > 0) alltimes += "<br>";
 	let j = 0;
 	if(mo5.length > 50) j = mo5.length-50;
 	for(let i = j; i < mo5.length && i < 25+j; i++)
@@ -4116,6 +4188,19 @@ function isSolved()
 	//flipmode2 = 1;
 	return true;
 }
+function median(values){  
+
+	values.sort(function(a,b){
+	  return a-b;
+	});
+  
+	var half = Math.floor(values.length / 2);
+	
+	if (values.length % 2)
+	  return values[half];
+	
+	return (values[half - 1] + values[half]) / 2.0;
+  }
 function myHandler(e) {
     downloadAll();
     return false;
@@ -4209,7 +4294,8 @@ window.addEventListener('keydown', (e) => {
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (53)
 // L U R U' L R' U D2 U L' B' F' B D U' D' R F L' (53)
 // L' F U' B2 R F L B' D R' U F B L B' R' D B U (53)
-// B' L' B D L' R U' L' B' U' F L' U' L F R' U' F L' D'
+// B' L' B D L' R U' L' B' U' F L' U' L F R' U' F L' D' (53)
+//B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
 // U D F B F' R' D' L U D' R' L' B L U R L U' L' B' (51)
 // F' U B' R U F D' L' R B2 R L B2 D R B' R' F (51)
 // F' U B' L' B L2 F B2 L B R' L' F' B' R2 B' U' (51)
