@@ -25,6 +25,9 @@ export default function (p) {
 	let easystep = 0;
 	let medstep = 0;
 	let pllstep = 0;
+	let m_34step = 0;
+	let m_type = 0;
+	let scramblemoves = 0;
 	let edgeback = false;
 	let edgeleft = false;
 	let edgebackleft = false;
@@ -33,8 +36,9 @@ export default function (p) {
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
 	let arr = [];
 	let obj2 = [];
-
+	let m_points = 0;
 	let link1 = document.getElementById("link1");
+	let m_scramble = [];
 	// attach event
 	link1.onclick = function(e) { return myHandler(e); };
 
@@ -196,25 +200,35 @@ p.setup = () => {
 	TIMEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
 	TIMEDMODE.mousePressed(timedmode.bind(null, 0));
 	
+	const MOVESMODE = p.createButton('Fewest Moves');
+	MOVESMODE.parent("mode7").class("mode1");
+	MOVESMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
+	MOVESMODE.mousePressed(movesmode.bind(null, 0));
+
 	const REGULAR2 = p.createButton('Normal');
 	REGULAR2.parent("mode4").class("mode1");
-	REGULAR2.style("height:20px; width:55px; text-align:center; font-size:10px;")
+	REGULAR2.style("height:20px; width:50px; text-align:center; font-size:10px;")
 	REGULAR2.mousePressed(regular.bind(null, 0));
 	
 	const SPEEDMODE2 = p.createButton('Speed');
 	SPEEDMODE2.parent("mode5").class("mode1");
-	SPEEDMODE2.style("height:20px; width:55px; text-align:center; font-size:10px;")
+	SPEEDMODE2.style("height:20px; width:42px; text-align:center; font-size:10px;")
 	SPEEDMODE2.mousePressed(speedmode.bind(null, 0));
 
-	const TIMEDMODE2 = p.createButton('Stats');
+	const TIMEDMODE2 = p.createButton('Stat');
 	TIMEDMODE2.parent("mode6").class("mode1");
-	TIMEDMODE2.style("height:20px; width:55px; text-align:center; font-size:10px;")
+	TIMEDMODE2.style("height:20px; width:35px; text-align:center; font-size:10px;")
 	TIMEDMODE2.mousePressed(timedmode.bind(null, 0));
+
+	const MOVESMODE2 = p.createButton('FMC');
+	MOVESMODE2.parent("mode8").class("mode1");
+	MOVESMODE2.style("height:20px; width:40px; text-align:center; font-size:10px;")
+	MOVESMODE2.mousePressed(movesmode.bind(null, 0));
 
 	document.getElementById("mode4").style.display = "none";
 	document.getElementById("mode5").style.display = "none";
 	document.getElementById("mode6").style.display = "none";
-
+	document.getElementById("mode8").style.display = "none";
 	document.getElementById("link1").style.display = "none";
 
 	const SHUFFLE_BTN = p.createButton('Scramble');
@@ -224,6 +238,10 @@ p.setup = () => {
 	const RESET = p.createButton('Reset');
 	RESET.parent("reset_div");
 	RESET.mousePressed(reSetup.bind(null, 0));
+
+	const RESET2 = p.createButton('Reset');
+	RESET2.parent("reset2_div");
+	RESET2.mousePressed(moveSetup.bind(null, 0));
 	
 	const UNDO = p.createButton('Undo');
 	UNDO.parent("undo");
@@ -241,6 +259,11 @@ p.setup = () => {
 	EASY.style("height:60px; width:180px; text-align:center; font-size:20px;")
 	EASY.parent("s_easy");
 	EASY.mousePressed(easy.bind(null, 0));
+
+	const M_34 = p.createButton('3 to 5 Movers');
+	M_34.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	M_34.parent("m_34");
+	M_34.mousePressed(m_34.bind(null, 0));
 	
 	const MED = p.createButton('Medium');
 	MED.style("height:60px; width:180px; text-align:center; font-size:20px;")
@@ -360,8 +383,31 @@ setInterval(() => {
 		}
 		
 	}
+	else if(MODE == "moves")
+	{
+		document.getElementById("points_par").innerHTML = "Total Points: " + m_points;
+		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+			if (CUBE[i].animating()) {
+				return;
+			}
+		}  
+		if(m_34step % 2 == 1 && isSolved() && moves <= scramblemoves && moves > 0)
+		{
+			timer.stop();
+			if(movesarr == 0)
+			movesarr = [moves];
+			else
+			movesarr.push(moves);
+			m_34step++;
+			if(m_type == 0) m_points += 2;
+			if(m_type == 1) m_points += 3;
+			if(m_type == 2) m_points += 5;
+			m_34();
+		}
+	}
 }, 10)
 function reSetup() {
+	m_points = 0;
 	CUBE = {};
 	arr = [];
 	undo = [];
@@ -371,6 +417,7 @@ function reSetup() {
 	flipmode2 = 0;
 	easystep = 0;
 	medstep = 0;
+	m_34step = 0;
 	pllstep = 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -393,6 +440,9 @@ function reSetup() {
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
+	document.getElementById("m_34").style.display = "none";
+	document.getElementById("points_par").style.display = "none";
+	document.getElementById("reset2_div").style.display = "none";
 	let cnt = 0;
 	
 	for (let i = 0; i < SIZE; i++) {
@@ -434,6 +484,21 @@ function quickSolve()
 			}
 		}
 	}
+}
+function moveSetup()
+{
+	moves = 0;
+	CAM = p.createEasyCam(p._renderer);
+	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+	CAM.zoom(-150);
+	CAM.rotateX(-p.PI / 2.7);
+	CAM.rotateY(-p.PI / 7);
+	CAM.rotateZ(-p.PI / 2);
+	quickSolve();
+	arr = m_scramble;
+	shufflespeed = 2;
+	canMan = false;
+	multipleEasy(0, 3.5);
 }
 function getPos(cubyindex)
 {
@@ -517,12 +582,15 @@ function regular(){
 	document.getElementById("outermoves").style.display = "inline";
 	document.getElementById("outertime").style.display = "inline";
 	document.getElementById("or_instruct3").style.display = "none";
+	document.getElementById("points_par").style.display = "none";
 	document.getElementById("mode").style.display = "block";
 	document.getElementById("mode2").style.display = "block";
 	document.getElementById("mode3").style.display = "block";
+	document.getElementById("mode7").style.display = "block";
 	document.getElementById("mode4").style.display = "none";
 	document.getElementById("mode5").style.display = "none";
 	document.getElementById("mode6").style.display = "none";
+	document.getElementById("mode8").style.display = "none";
 	document.getElementById("alltimes").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
@@ -531,10 +599,13 @@ function regular(){
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
+	document.getElementById("m_34").style.display = "none";
 	document.getElementById("link1").style.display = "none";
+	document.getElementById("reset2_div").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	pllstep = 0;
+	m_34step = 0;
 	
 }
 function timedmode()
@@ -554,6 +625,7 @@ function timedmode()
 	document.getElementById("mode").style.display = "none";
 	document.getElementById("mode2").style.display = "none";
 	document.getElementById("mode3").style.display = "none";
+	document.getElementById("mode7").style.display = "none";
 	document.getElementById("or_instruct").style.display = "none";
 	document.getElementById("or_instruct2").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "block";
@@ -561,6 +633,7 @@ function timedmode()
 	document.getElementById("mode4").style.display = "inline";
 	document.getElementById("mode5").style.display = "inline";
 	document.getElementById("mode6").style.display = "inline";
+	document.getElementById("mode8").style.display = "inline";
 	document.getElementById("or_instruct3").innerHTML = "Stats Mode";
 	document.getElementById("alltimes").style.display = "block";
 	document.getElementById("link1").style.display = "block";
@@ -594,6 +667,31 @@ function speedmode()
 	pllstep = 0;
 	
 }
+function movesmode()
+{
+	regular();
+	DELAY = 0;
+	m_points = 0;
+	canMan = false;
+	MODE = "moves"
+	reSetup();
+	ao5 = [];
+	mo5 = [];
+	scrambles = [];
+	document.getElementById("test_alg_div").style.display = "none";
+	document.getElementById("shuffle_div").style.display = "none";
+	document.getElementById("reset_div").style.display = "none";
+	document.getElementById("solve").style.display = "none";
+	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for the Fewest Moves Challenge";
+	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'give up' button, but you only get a limited number of them before you lose.";
+	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+	document.getElementById("m_34").style.display = "inline";
+	m_34step = 0;
+}
 function showSpeed()
 {
 	DELAY = 0;
@@ -601,15 +699,25 @@ function showSpeed()
 	document.getElementById("s_difficulty").innerHTML = "";
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
+	document.getElementById("m_34").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("keymap").style.display = "table";
 	document.getElementById("speed").style.display = "inline";
 	document.getElementById("slider_div").style.display = "inline";
-	document.getElementById("outertime").style.display = "inline";
-	document.getElementById("time").style.display = "inline";
 	document.getElementById("undo").style.display = "inline";
 	document.getElementById("redo").style.display = "inline";
-	document.getElementById("times_par").style.display = "block";
+	if(MODE == "speed")
+	{
+		document.getElementById("times_par").style.display = "block";
+		document.getElementById("time").style.display = "inline";
+		document.getElementById("outertime").style.display = "inline";
+	}
+	if(MODE == "moves")
+	{
+		document.getElementById("points_par").style.display = "block";
+		document.getElementById("outermoves").style.display = "inline";
+		document.getElementById("reset2_div").style.display = "inline";
+	}
 }
 function easy() 
 {
@@ -728,7 +836,7 @@ function easy()
 	}
 	
 }
-function medium(){ //ez
+function medium(){ 
 	undo = [];
 	redo = [];
 	if(medstep == 0)
@@ -849,7 +957,77 @@ function speedPLL()
 		easystep = 8;
 		easy();
 	}
-	
+}
+function m_34() 
+{
+	undo = [];
+	redo = [];
+	if(m_34step % 2 == 0)
+	{
+		let rand = parseInt(Math.random()*100);
+		m_scramble = [];
+		arr = [];
+		if(m_34step < 3)
+		{
+			m_type = 0;
+		}
+		else if(m_34step < 10)
+		{
+			if(rand <= 50) m_type = 0;
+			else m_type = 1;
+		}
+		else if(m_34step < 24)
+		{
+			if(rand <= 33) m_type = 0;
+			else if(rand <= 66) m_type = 1;
+			else m_type = 2;
+		}
+		else
+		{
+			if(rand <= (60 - m_34step) || rand % 5 == 0) m_type = 1;
+			else m_type = 2;
+		}
+		quickSolve();
+		showSpeed();
+		if(m_type == 0){
+			scramblemoves = 3;
+			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves (2 points)";
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 3-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+		}else if(m_type == 1){
+			scramblemoves = 4;
+			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 4 moves (3 points)";
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 4-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+		}else if(m_type == 2){
+			scramblemoves = 5;
+			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 5 moves (5 points)";
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 5-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+		}
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		let bad = "";
+		for(let i = 0; i < scramblemoves; i++)
+		{
+			while(true)
+			{
+				let rnd = p.random(possible);
+				console.log("rnd is " + rnd);
+				if(rnd == bad || (arr.length>1 && rnd == arr[i-2]))
+				continue;
+				
+				if(rnd.slice(-1) == "'")
+					bad = rnd.substring(0, rnd.length-1);
+				else
+					bad = rnd + "'";
+				arr.push(rnd);
+				m_scramble.push(rnd);
+				break;
+			}
+		}
+		console.log("arr.length is " + arr.length);
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 3);
+	}
 }
 function multipleEasy(nb, dificil) {
 	if (nb < arr.length) {
@@ -859,6 +1037,7 @@ function multipleEasy(nb, dificil) {
 		notation(arr[nb]);
 		console.log(nb, "easy", dificil);
 		let secs = 20;
+		moves = 0;
 		setTimeout(multipleEasy.bind(null, nb + 1, dificil), secs);
 	}
 	else
@@ -873,10 +1052,19 @@ function multipleEasy(nb, dificil) {
 			medstep++;
 			medium();
 		}
-		else
+		else if(dificil == 2)
 		{
 			pllstep++;
 			speedPLL();
+		}
+		else if(dificil == 3)
+		{
+			m_34step++;
+			m_34();
+		}
+		else if(dificil == 3.5)
+		{
+			m_34();
 		}
 		canMan = true;
 	}
@@ -1566,10 +1754,21 @@ p.keyPressed = (event) => {
 		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89";
 		if(Math.round(timer.getTime() / 10)/100.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
+		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+			if (CUBE[i].animating()) {
+				return;
+			}
+		}
 		if(include.includes(p.keyCode) && p.keyCode != 8)
 		{
-			if(timer.isRunning)
-			moves++;
+			if(timer.isRunning && MODE != "moves")
+			{
+				moves++
+			}
+			else if(MODE == "moves" && (p.keyCode < 37 || p.keyCode > 40))
+			{
+				moves++;
+			}
 		}
 		
 		switch (p.keyCode) {	
@@ -1703,9 +1902,11 @@ p.keyPressed = (event) => {
 			case 187: //equals
 			Redo();
 			break;
-			case 46: //delete
+			case 27: //escape
 			if(MODE == "normal" || MODE == "timed") 
 			reSetup();
+			if(MODE == "moves")
+			moveSetup();
 			break;
 			case 13: //enter
 			console.log(quickSolve());
@@ -1725,7 +1926,7 @@ p.keyPressed = (event) => {
 			flipmode = 2;
 			defineFlipper3();
 			setLayout();
-			console.log(flipmode);
+			console.log(scramblemoves, m_type);
 			break;
 			
 		}
@@ -1737,7 +1938,7 @@ function setPLL(obj)
 	obj2 = obj;
 }
 function multiple(nb) {
-	if(MODE == "speed" && arr.length > 1)
+	if((MODE == "speed" || MODE == "moves") && arr.length > 1)
 	return;
 	if (nb < arr.length) {
 		canMan = false;
@@ -1836,8 +2037,6 @@ function Undo()
 			return;
 		}
 	}
-	if(timer.isRunning)
-	moves++;
 	let move = undo.pop();
 	console.log("move is " + move);
 	if(move.slice(-1) == "'")
@@ -1847,6 +2046,15 @@ function Undo()
 	else
 	{
 		move = move + "'";
+	}
+	if(timer.isRunning && MODE != "moves")
+		moves++;
+	else if(MODE == "moves")
+	{
+		if(!(move.includes("x") || move.includes("y") || move.includes("z")) && moves > 0)
+		{
+			moves--;
+		}
 	}
 	arr = [move];
 	multiple2(0);
@@ -1867,8 +2075,6 @@ function Redo()
 	}  
 	flipmode = 0;
 	setLayout();
-	if(timer.isRunning)
-	moves++;
 	let move = redo.pop();
 	console.log("move is " + move);
 	if(move.slice(-1) == "'")
@@ -1878,6 +2084,15 @@ function Redo()
 	else
 	{
 		move = move + "'";
+	}
+	if(timer.isRunning && MODE != "moves")
+		moves++;
+	else if(MODE == "moves")
+	{
+		if(!(move.includes("x") || move.includes("y") || move.includes("z")) && moves > 0)
+		{
+			moves++;
+		}
 	}
 	arr = [move];
 	multiple2(0);
@@ -4283,7 +4498,7 @@ window.addEventListener('keydown', (e) => {
 //20.9s
 //19.7s
 //16.6
-//PLL Practice: 6.9s, 6.84s 
+//PLL Practice: 6.9s, 6.84s, 6.2s
 //Easy: 0.8, 0.52s
 //Medium: 15.4s, 13.58s
 //TODO: Make more efficient:  F R' B' U R L F B' D' B2 L R U D F B' L2 F' (10) dev on
@@ -4296,9 +4511,11 @@ window.addEventListener('keydown', (e) => {
 // L' F U' B2 R F L B' D R' U F B L B' R' D B U (53)
 // B' L' B D L' R U' L' B' U' F L' U' L F R' U' F L' D' (53)
 //B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
+//F' D' F R F' U D' F' B R L' D' B' F' L' B D' R' B' D' (52)
 // U D F B F' R' D' L U D' R' L' B L U R L U' L' B' (51)
 // F' U B' R U F D' L' R B2 R L B2 D R B' R' F (51)
 // F' U B' L' B L2 F B2 L B R' L' F' B' R2 B' U' (51)
+// R F' U' D' U F' L' D U' L' F D' U' B' L F B R D F (51)
 // L F2 R B' D B R2 D F R' L' B' U' R' F' R U R' (50)
 //L' F U B' U' F L' R' U' B2 D' U' L' D' B' F' U B D' (50)
 //D F2 U' D' L B U' F B' F' L' U' F R U R' F L U (49)

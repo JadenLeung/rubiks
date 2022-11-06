@@ -112,11 +112,13 @@
 			<p id="mode" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="mode3" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="mode2" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
+			<p id="mode7" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="link1" style = "text-align: center; font-size:15px; margin-top: 0px; margin-bottom: 0px;"><a href="#">Download data</a></p>
 			<div>
 				<p id="mode4" style = "display: inline; text-align:center; margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode6" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode5" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
+				<p id="mode8" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 			</div>
 			<h5 id = "or_instruct3" style = "margin-top: 10px; font-size:15px; text-align: center;"></h5>
 			<p id = "alltimes" style = "margin-top: 10px; font-size:10px; text-align: left;"></p>
@@ -139,6 +141,7 @@
 				<p id="shuffle_div" style = "display: inline;"  class = "normal"></p>
 				<p id="solve" style = "display: inline;"  class = "normal"></p>
 				<p id="reset_div" style = "display: inline;"  class = "normal"></p>
+				<p id="reset2_div" style = "display: inline;"  class = "normal"></p>
 				<p id="undo" style = "display: inline;"  class = "normal"></p>
 				<p id="redo" style = "display: inline;"  class = "normal"></p>
 			</div>
@@ -153,9 +156,9 @@
 				 <td><sup>&rarr;</sup><sub>y'</sub></td>
 				 <td><sup>&uarr;</sup><sub>x</sub></td>
 				 <td><sup>&darr;</sup><sub>x'</sub></td>
-				  <td colspan = "2"><sup>Delete</sup><sub>reset</sub></td>
+				  <td colspan = "2"><sup>Escape</sup><sub>reset</sub></td>
 				  <td><sup>=</sup><sub>redo</sub></td>
-				 <td colspan = "3"><sup>backspace</sup><sub>undo</sub></td>
+				 <td colspan = "3"><sup>Backspace</sup><sub>undo</sub></td>
 				</tr>
 				<tr><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
 				<tr><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
@@ -165,6 +168,7 @@
 				<p id = "scramble_par" class = "normal">Scramble: <span id = "scramble" style = "font-size:12px;">N/A</span></p>
 				<p id = "times_par"  class = "normal">Times: <span id = "ao5" style = "font-size:12px;">N/A</span></p>
 				<p id = "moves_par" class = "normal">Moves: <span id = "moves2" style = "font-size:12px;">N/A</span></p>
+				<p id = "points_par" class = "normal">Total Points: <span id = "points2" style = "font-size:12px;">0</span></p>
 			</div>
 			<h5><span id = "stepbig"></span><span id = "fraction"></span></h5>
 			<p id = "step"></p>
@@ -174,6 +178,8 @@
 			<div>
 				<p style = "display: inline;" id = "s_easy"></p>
 				<p style = "display: inline;" id = "s_medium"></p>
+				<p style = "display: inline;" id = "m_34"></p>
+				<p style = "display: inline;" id = "m_45"></p>
 			</div>
 			<div style = "padding-top: 10px;">
 				<p style = "display: inline;" id = "s_PLL"></p>
