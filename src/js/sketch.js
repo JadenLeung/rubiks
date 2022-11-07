@@ -399,6 +399,7 @@ setInterval(() => {
 			else
 			movesarr.push(moves);
 			m_34step++;
+			if(m_type == -1) m_points += 1;
 			if(m_type == 0) m_points += 2;
 			if(m_type == 1) m_points += 3;
 			if(m_type == 2) m_points += 5;
@@ -967,16 +968,20 @@ function m_34()
 		let rand = parseInt(Math.random()*100);
 		m_scramble = [];
 		arr = [];
-		if(m_34step < 3)
+		if(m_34step == 0)
+		{
+			m_type = -1;
+		}
+		else if(m_34step <= 4)
 		{
 			m_type = 0;
 		}
-		else if(m_34step < 10)
+		else if(m_34step < 16)
 		{
 			if(rand <= 50) m_type = 0;
 			else m_type = 1;
 		}
-		else if(m_34step < 24)
+		else if(m_34step < 30)
 		{
 			if(rand <= 33) m_type = 0;
 			else if(rand <= 66) m_type = 1;
@@ -989,7 +994,11 @@ function m_34()
 		}
 		quickSolve();
 		showSpeed();
-		if(m_type == 0){
+		if(m_type == -1){
+			scramblemoves = 2;
+			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 2 moves (1 point)";
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 2-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+		}else if(m_type == 0){
 			scramblemoves = 3;
 			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves (2 points)";
 			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 3-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
@@ -1759,18 +1768,6 @@ p.keyPressed = (event) => {
 				return;
 			}
 		}
-		if(include.includes(p.keyCode) && p.keyCode != 8)
-		{
-			if(timer.isRunning && MODE != "moves")
-			{
-				moves++
-			}
-			else if(MODE == "moves" && (p.keyCode < 37 || p.keyCode > 40))
-			{
-				moves++;
-			}
-		}
-		
 		switch (p.keyCode) {	
 			case 37:
 			console.log("Left Arrow/y");
@@ -1930,7 +1927,34 @@ p.keyPressed = (event) => {
 			break;
 			
 		}
-		
+		let bad = -1;
+		if(undo.length > 0)
+		{
+			let rnd = undo[undo.length-1];
+			if(rnd.slice(-1) == "'")
+				bad = rnd.substring(0, rnd.length-1);
+			else
+				bad = rnd + "'";
+		}
+		if(include.includes(p.keyCode) && p.keyCode != 8)
+		{
+			if(timer.isRunning && MODE != "moves")
+			{
+				moves++
+			}
+			else if(MODE == "moves")
+			{
+				if(undo[undo.length-2] == bad)
+				{
+					undo.pop();
+					undo.pop();
+					if(p.keyCode < 37 || p.keyCode > 40)
+						moves--;
+				}
+				else if(p.keyCode < 37 || p.keyCode > 40)
+					moves++;
+			}
+		}
 	}
 }
 function setPLL(obj)
@@ -1942,8 +1966,31 @@ function multiple(nb) {
 	return;
 	if (nb < arr.length) {
 		canMan = false;
-		moves++;
 		notation(arr[nb]);
+		let bad = -1;
+		if(undo.length > 0)
+		{
+			let rnd = arr[nb];
+			if(rnd.slice(-1) == "'")
+				bad = rnd.substring(0, rnd.length-1);
+			else
+				bad = rnd + "'";
+		}
+		if(timer.isRunning && MODE != "moves")
+		{
+			moves++;
+		}
+		else if(MODE == "moves")
+		{
+			if(undo[undo.length-2] == bad)
+			{
+				undo.pop();
+				undo.pop();
+				moves--;
+			}
+			else
+				moves++;
+		}
 		console.log(nb);
 		let secs = 375-SPEED*225;
 		if(secs < 20)
@@ -2089,7 +2136,7 @@ function Redo()
 		moves++;
 	else if(MODE == "moves")
 	{
-		if(!(move.includes("x") || move.includes("y") || move.includes("z")) && moves > 0)
+		if(!(move.includes("x") || move.includes("y") || move.includes("z")))
 		{
 			moves++;
 		}
@@ -4505,7 +4552,7 @@ window.addEventListener('keydown', (e) => {
 //D' R F' L' U2 R B' D' R U F' D2 F' B D U F' R' same thing
 //Bad
 //R D' L U R' B R U' L2 D F L D' B' L' D B2 L'
-//BELOW 54 MOVES
+//BELOW 54 MOVESmode5
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (53)
 // L U R U' L R' U D2 U L' B' F' B D U' D' R F L' (53)
 // L' F U' B2 R F L B' D R' U F B L B' R' D B U (53)
@@ -4523,11 +4570,13 @@ window.addEventListener('keydown', (e) => {
 // D' R' D2 F B' U B2 R' F D R' L2 F D R' L F' y y x x (48)
 // F R L F' D B' L U2 R2 D2 B2 L2 F2 B' D2 R2 U2 D2 L' D' (48) (Cool scramble)
 // R2 D U' R' U L' F' L R' F' U B' D' U2 F L B2 (48)
+// B' U' B2 F R' B U' D B R D B' U2 F U B L F' (48)
 //  L' R F' B2 F' L' U' B' R L' D U' F L B' F L' U2 (47)
 // D2 F' D' B R' L' U D F' L B' R' F2 B L R F2 (46)
 //  B R B' D R L F D L' F B' D F' L R B' L' D' F' U' (46)
 // R' L' D U' F U F' B' R L' F' R B2 L' R F' L D R' (46)
 // R' U' D' F' L R B' D2 F2 D L' B F' B2 R' L D' (43)
+// L' F R' D F D' R' B U R D U F' D' B F' U2 L R (43)
 //WORLD RECORD SCRAMBLES
 // D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(was 60, 63)
 // B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 61)
