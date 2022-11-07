@@ -696,7 +696,7 @@ function movesmode()
 function showSpeed()
 {
 	DELAY = 0;
-	canMan = true;
+	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
@@ -731,6 +731,8 @@ function easy()
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve the Cube";
 		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it.";
 		showSpeed();
+		timer.stop();
+		timer.reset();
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		let rnd = p.random(possible);
 		arr = [];
@@ -845,6 +847,8 @@ function medium(){
 		showSpeed();
 		ao5 = 0;
 		quickSolve();
+		timer.stop();
+		timer.reset();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve a face";
 		document.getElementById("s_instruct").innerHTML = "The challenge is complete when all the pieces in a side have the same color. Move any layer to start time, solve the cube to stop it.";
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
@@ -937,6 +941,8 @@ function speedPLL()
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
 		showSpeed();
+		timer.stop();
+		timer.reset();
 		const possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
 		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"];
 		let rnd = p.random(possible);
@@ -971,6 +977,8 @@ function m_34()
 		if(m_34step == 0)
 		{
 			m_type = -1;
+			timer.stop();
+			timer.reset();
 		}
 		else if(m_34step <= 4)
 		{
@@ -1923,7 +1931,7 @@ p.keyPressed = (event) => {
 			flipmode = 2;
 			defineFlipper3();
 			setLayout();
-			console.log(scramblemoves, m_type);
+			console.log(canMan);
 			break;
 			
 		}
