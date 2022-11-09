@@ -93,7 +93,7 @@
 </head>
 <body oncontextmenu="return false">
 	<!--h1 style = "text-align: center;">Virtual Cubing</h1-->
-	<ul>
+	<ul class = "noselect">
 		<li><a href="https://jadenleung.github.io/index.html">Home <i class="bi-house-fill"></i></a></li>
 		<li><a href="https://jadenleung.github.io/resume.html">Resume <i class="bi bi-file-person"></i></a></li>
 		<li><a class="active">Virtual Cubing <i class="bi bi-box"></i></a></li>
@@ -144,6 +144,7 @@
 				<p id="reset2_div" style = "display: inline;"  class = "normal"></p>
 				<p id="undo" style = "display: inline;"  class = "normal"></p>
 				<p id="redo" style = "display: inline;"  class = "normal"></p>
+				<p id="giveup" style = "display: inline;"  class = "normal"></p>
 			</div>
 			<div style = "padding-top:10px;"  class = "noselect">
 				<p style = "display: inline;"  class = "normal" id = "outermoves">Move Count: <span id = "moves">0</span>&emsp;</p>
@@ -166,20 +167,23 @@
 			</table>
 			<div>
 				<p id = "scramble_par" class = "normal">Scramble: <span id = "scramble" style = "font-size:12px;">N/A</span></p>
-				<p id = "times_par"  class = "normal">Times: <span id = "ao5" style = "font-size:12px;">N/A</span></p>
-				<p id = "moves_par" class = "normal">Moves: <span id = "moves2" style = "font-size:12px;">N/A</span></p>
-				<p id = "points_par" class = "normal">Total Points: <span id = "points2" style = "font-size:12px;">0</span></p>
+				<p id = "times_par"  class = "normal noselect">Times: <span id = "ao5" style = "font-size:12px;">N/A</span></p>
+				<p id = "moves_par" class = "normal noselect">Moves: <span id = "moves2" style = "font-size:12px;">N/A</span></p>
+				<div>
+					<p id = "points_par" style = "display: inline;" class = "normal noselect">Total Points: <span id = "points2" style = "font-size:12px;">0</span></p>
+					<p id="giveup2" style = "display: inline;"  class = "normal noselect"></p>
+				</div>
 			</div>
 			<h5><span id = "stepbig"></span><span id = "fraction"></span></h5>
 			<p id = "step"></p>
-			<h5 id = "s_INSTRUCT"></h5>
-			<p id = "s_instruct"></p>
-			<p id = "s_difficulty"></p>
+			<h5 id = "s_INSTRUCT" class = "noselect"></h5>
+			<p id = "s_instruct" class = "noselect"></p>
+			<p id = "s_difficulty" class = "noselect"></p>
 			<div>
 				<p style = "display: inline;" id = "s_easy"></p>
 				<p style = "display: inline;" id = "s_medium"></p>
 				<p style = "display: inline;" id = "m_34"></p>
-				<p style = "display: inline;" id = "m_45"></p>
+				<p style = "display: inline;" id = "m_4"></p>
 			</div>
 			<div style = "padding-top: 10px;">
 				<p style = "display: inline;" id = "s_PLL"></p>

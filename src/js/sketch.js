@@ -27,6 +27,7 @@ export default function (p) {
 	let pllstep = 0;
 	let m_34step = 0;
 	let m_type = 0;
+	let m_4step = 0;
 	let scramblemoves = 0;
 	let edgeback = false;
 	let edgeleft = false;
@@ -39,6 +40,9 @@ export default function (p) {
 	let m_points = 0;
 	let link1 = document.getElementById("link1");
 	let m_scramble = [];
+	let m_offset = 0;
+	let inspect = false;
+	let giveups = 0;
 	// attach event
 	link1.onclick = function(e) { return myHandler(e); };
 
@@ -243,6 +247,10 @@ p.setup = () => {
 	RESET2.parent("reset2_div");
 	RESET2.mousePressed(moveSetup.bind(null, 0));
 	
+	const GIVEUP = p.createButton('Give Up');
+	GIVEUP.parent("giveup");
+	GIVEUP.mousePressed(giveUp.bind(null, 0));
+
 	const UNDO = p.createButton('Undo');
 	UNDO.parent("undo");
 	UNDO.mousePressed(Undo.bind(null, 0));
@@ -264,6 +272,11 @@ p.setup = () => {
 	M_34.style("height:60px; width:180px; text-align:center; font-size:20px;")
 	M_34.parent("m_34");
 	M_34.mousePressed(m_34.bind(null, 0));
+
+	const M_4 = p.createButton('Endless (Medium)');
+	M_4.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	M_4.parent("m_4");
+	M_4.mousePressed(m_4.bind(null, 0));
 	
 	const MED = p.createButton('Medium');
 	MED.style("height:60px; width:180px; text-align:center; font-size:20px;")
@@ -386,12 +399,13 @@ setInterval(() => {
 	else if(MODE == "moves")
 	{
 		document.getElementById("points_par").innerHTML = "Total Points: " + m_points;
+		document.getElementById("giveup2").innerHTML = "&nbsp;&nbsp;Lives: " + giveups;
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 			if (CUBE[i].animating()) {
 				return;
 			}
 		}  
-		if(m_34step % 2 == 1 && isSolved() && moves <= scramblemoves && moves > 0)
+		if(m_34step > 0 && m_34step % 2 == 1 && isSolved() && moves <= scramblemoves && moves > 0)
 		{
 			timer.stop();
 			if(movesarr == 0)
@@ -404,6 +418,21 @@ setInterval(() => {
 			if(m_type == 1) m_points += 3;
 			if(m_type == 2) m_points += 5;
 			m_34();
+		}
+		else if(m_4step > 0 && m_4step % 2 == 1 && isSolved() && moves <= m_type && moves > 0)
+		{
+			timer.stop();
+			if(movesarr == 0)
+			movesarr = [moves];
+			else
+			movesarr.push(moves);
+			m_4step++;
+			m_points += parseInt(Math.pow(1.5, m_type));
+			m_4();
+		}
+		else if((m_34step > 0 || m_4step > 0) && isSolved() && moves > 0)
+		{
+			document.getElementById("s_instruct").innerHTML = "Even though the cube might be solved, you used too many moves! Tip: You can press the 'reset' button to reset the scramble.";
 		}
 	}
 }, 10)
@@ -442,8 +471,11 @@ function reSetup() {
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
+	document.getElementById("m_4").style.display = "none";
 	document.getElementById("points_par").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
+	document.getElementById("giveup").style.display = "none";
+	document.getElementById("giveup2").style.display = "none";
 	let cnt = 0;
 	
 	for (let i = 0; i < SIZE; i++) {
@@ -499,7 +531,41 @@ function moveSetup()
 	arr = m_scramble;
 	shufflespeed = 2;
 	canMan = false;
-	multipleEasy(0, 3.5);
+	if(m_34step > 0)
+		multipleEasy(0, 3.5);
+	else if(m_4step > 0)
+		multipleEasy(0, 4.5);
+}
+function giveUp()
+{
+	if(m_4step > 0 && m_4step % 2 == 1)
+	{
+		giveups--;
+		if(giveups > 0)
+		{
+			m_4step++;
+			m_4();
+		}
+		else
+		{
+			m_4step += 0.5;
+			m_4();
+		}
+	}
+	else if(m_34step > 0 && m_34step % 2 == 1)
+	{
+		giveups--;
+		if(giveups > 0)
+		{
+			m_34step++;
+			m_34();
+		}
+		else
+		{
+			m_34step += 0.5;
+			m_4();
+		}
+	}
 }
 function getPos(cubyindex)
 {
@@ -601,12 +667,16 @@ function regular(){
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
+	document.getElementById("m_4").style.display = "none";
 	document.getElementById("link1").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
+	document.getElementById("giveup").style.display = "none";
+	document.getElementById("giveup2").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	pllstep = 0;
 	m_34step = 0;
+	m_4step = 0;
 	
 }
 function timedmode()
@@ -673,6 +743,7 @@ function movesmode()
 	regular();
 	DELAY = 0;
 	m_points = 0;
+	m_offset = 0;
 	canMan = false;
 	MODE = "moves"
 	reSetup();
@@ -691,7 +762,9 @@ function movesmode()
 		elements[i].style.display='none';
 	}
 	document.getElementById("m_34").style.display = "inline";
+	document.getElementById("m_4").style.display = "inline";
 	m_34step = 0;
+	m_4step = 0;
 }
 function showSpeed()
 {
@@ -701,6 +774,7 @@ function showSpeed()
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
+	document.getElementById("m_4").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("keymap").style.display = "table";
 	document.getElementById("speed").style.display = "inline";
@@ -715,9 +789,11 @@ function showSpeed()
 	}
 	if(MODE == "moves")
 	{
-		document.getElementById("points_par").style.display = "block";
+		document.getElementById("points_par").style.display = "inline";
 		document.getElementById("outermoves").style.display = "inline";
 		document.getElementById("reset2_div").style.display = "inline";
+		document.getElementById("giveup").style.display = "inline";
+		document.getElementById("giveup2").style.display = "inline";
 	}
 }
 function easy() 
@@ -969,6 +1045,7 @@ function m_34()
 {
 	undo = [];
 	redo = [];
+	if(m_34step == 0) giveups = 3;
 	if(m_34step % 2 == 0)
 	{
 		let rand = parseInt(Math.random()*100);
@@ -1046,6 +1123,92 @@ function m_34()
 		multipleEasy(0, 3);
 	}
 }
+function m_4() 
+{
+	undo = [];
+	redo = [];
+	if(m_4step == 0 && m_34step == 0) giveups = 3;
+	if(m_4step % 2 == 0)
+	{
+		let rand = parseInt(Math.random()*100);
+		m_scramble = [];
+		arr = [];
+		m_type = m_4step/2+4;
+		if(m_4step == 0)
+			m_type = 2;
+		else 
+		{
+			if(rand < 20) m_type = 2 + m_offset
+			if(rand < 40) m_type = 3 + m_offset;
+			else if(rand < 80) m_type = 4 + m_offset;
+			else m_type = 5 + m_offset;
+		}
+		if(m_type > 20) m_type = 20;
+		if(rand % 5 == 0 && m_4step > 6) m_offset++;
+		quickSolve();
+		showSpeed();
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves (" + parseInt(Math.pow(1.5, m_type)) + " points)";
+		if(m_type < 20)
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This " + m_type + "-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+		else
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 20+ move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Any scramble can be solved in at most 20 moves...HOW ARE YOU STILL PLAYING?";
+		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+		arr = [];
+		let bad = "";
+		for(let i = 0; i < m_type; i++)
+		{
+			while(true)
+			{
+				let rnd = p.random(possible);
+				console.log("rnd is " + rnd);
+				if(rnd == bad || (arr.length>1 && rnd == arr[i-2]))
+				continue;
+				
+				if(rnd.slice(-1) == "'")
+					bad = rnd.substring(0, rnd.length-1);
+				else
+					bad = rnd + "'";
+				arr.push(rnd);
+				m_scramble.push(rnd);
+				break;
+			}
+		}
+		console.log("arr.length is " + arr.length);
+		shufflespeed = 2;
+		canMan = false;
+		multipleEasy(0, 4);
+	}
+	else if((m_4step*2 % 2) == 1 || (m_34step*2) % 2 == 1)
+	{
+		var elements = document.getElementsByClassName('normal');
+		for(var i=0; i<elements.length; i++) { 
+			elements[i].style.display='none';
+		}
+		if(m_34step > 0)
+			document.getElementById("s_INSTRUCT").innerHTML = "You Lost! Stages Passed: " +(((m_34step + 0.5)/2) - 3.0);
+		else if(m_4step > 0)
+			document.getElementById("s_INSTRUCT").innerHTML = "You Lost! Stages Passed: " +(((m_4step + 0.5)/2) - 3.0);
+		let grade = "F";
+		let grades = ["A++", "A+", "A", "A-", "B", "C", "D"];
+		let scores = [60, 35, 25, 15, 10, 6, 2];
+		if(m_34step > 0)
+		scores = [40, 15, 10, 6, 3, 2, 1];
+		for(let i = 0; i < grades.length; i++)
+		{
+			if(m_points >= scores[i])
+			{
+				grade = grades[i];
+				break;
+			}
+		}
+		document.getElementById("s_instruct").innerHTML = "Your final score is " + m_points + ", granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
+		document.getElementById("m_34").style.display = "inline";
+		document.getElementById("m_4").style.display = "inline";
+		m_34step = 0;
+		m_4step = 0;
+		timer.reset();
+	}
+}
 function multipleEasy(nb, dificil) {
 	if (nb < arr.length) {
 		canMan = false;
@@ -1082,6 +1245,15 @@ function multipleEasy(nb, dificil) {
 		else if(dificil == 3.5)
 		{
 			m_34();
+		}
+		else if(dificil == 4)
+		{
+			m_4step++;
+			m_4();
+		}
+		else if(dificil == 4.5)
+		{
+			m_4();
 		}
 		canMan = true;
 	}
@@ -1758,11 +1930,20 @@ function sleep(milliseconds) {
 		currentDate = Date.now();
 	} while (currentDate - date < milliseconds);
 }
+document.onkeydown = keydown; 
+function keydown (evt) { 
+    if (evt.ctrlKey) {
+		inspect = true;
+    } 
+	else
+	inspect = false;
+}
 p.keyPressed = (event) => {
 	if (event.srcElement.nodeName == "INPUT") {
 		event.stopPropagation;
 		return;
-	}	  
+	}	
+	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
 	if(canMan == true)
 	{
@@ -1927,11 +2108,8 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			flipmode2 = 1;
-			flipmode = 2;
-			defineFlipper3();
 			setLayout();
-			console.log(canMan);
+			console.log(giveups);
 			break;
 			
 		}
@@ -4553,7 +4731,7 @@ window.addEventListener('keydown', (e) => {
 //20.9s
 //19.7s
 //16.6
-//PLL Practice: 6.9s, 6.84s, 6.2s
+//PLL Practice: 6.9s, 6.84s, 6.2s, 5.01s
 //Easy: 0.8, 0.52s
 //Medium: 15.4s, 13.58s
 //TODO: Make more efficient:  F R' B' U R L F B' D' B2 L R U D F B' L2 F' (10) dev on
