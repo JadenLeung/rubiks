@@ -41,6 +41,7 @@ export default function (p) {
 	let link1 = document.getElementById("link1");
 	let m_scramble = [];
 	let m_offset = 0;
+	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
 	// attach event
@@ -246,6 +247,10 @@ p.setup = () => {
 	const RESET2 = p.createButton('Reset');
 	RESET2.parent("reset2_div");
 	RESET2.mousePressed(moveSetup.bind(null, 0));
+
+	const HINT = p.createButton('Hint');
+	HINT.parent("hint");
+	HINT.mousePressed(Hint.bind(null, 0));
 	
 	const GIVEUP = p.createButton('Give Up');
 	GIVEUP.parent("giveup");
@@ -408,6 +413,7 @@ setInterval(() => {
 		if(m_34step > 0 && m_34step % 2 == 1 && isSolved() && moves <= scramblemoves && moves > 0)
 		{
 			timer.stop();
+			m_pass++;
 			if(movesarr == 0)
 			movesarr = [moves];
 			else
@@ -422,6 +428,7 @@ setInterval(() => {
 		else if(m_4step > 0 && m_4step % 2 == 1 && isSolved() && moves <= m_type && moves > 0)
 		{
 			timer.stop();
+			m_pass++;
 			if(movesarr == 0)
 			movesarr = [moves];
 			else
@@ -476,6 +483,7 @@ function reSetup() {
 	document.getElementById("reset2_div").style.display = "none";
 	document.getElementById("giveup").style.display = "none";
 	document.getElementById("giveup2").style.display = "none";
+	document.getElementById("hint").style.display = "none";
 	let cnt = 0;
 	
 	for (let i = 0; i < SIZE; i++) {
@@ -520,6 +528,17 @@ function quickSolve()
 }
 function moveSetup()
 {
+	if(document.getElementById("s_instruct").innerHTML.includes("Your final score is"))
+	{
+		CAM = p.createEasyCam(p._renderer);
+		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+		CAM.zoom(-150);
+		CAM.rotateX(-p.PI / 2.7);
+		CAM.rotateY(-p.PI / 7);
+		CAM.rotateZ(-p.PI / 2);
+		quickSolve();
+		return;
+	}
 	moves = 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -536,11 +555,36 @@ function moveSetup()
 	else if(m_4step > 0)
 		multipleEasy(0, 4.5);
 }
+function Hint()
+{
+	if(document.getElementById("s_instruct").innerHTML.includes("The first move is a"))
+	{
+		return;
+	}
+	if(giveups <= 0.5)
+	{
+		document.getElementById("s_instruct").innerHTML = "You need at least one life to get a hint.";
+		return;
+	}
+	if(m_4step > 0 && m_4step % 2 == 1)
+	{
+		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
+		giveups -= 0.5;
+	}
+	else if(m_34step > 0 && m_34step % 2 == 1)
+	{
+		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
+		giveups -= 0.5;
+	}
+}
 function giveUp()
 {
 	if(m_4step > 0 && m_4step % 2 == 1)
 	{
-		giveups--;
+		if(giveups > 0.5)
+			giveups--;
+		else
+			giveups = 0;
 		if(giveups > 0)
 		{
 			m_4step++;
@@ -554,7 +598,10 @@ function giveUp()
 	}
 	else if(m_34step > 0 && m_34step % 2 == 1)
 	{
-		giveups--;
+		if(giveups > 0.5)
+			giveups--;
+		else
+			giveups = 0;
 		if(giveups > 0)
 		{
 			m_34step++;
@@ -566,6 +613,12 @@ function giveUp()
 			m_4();
 		}
 	}
+}
+function Reverse(move)
+{
+	if(move.slice(-1) == "'")
+		return move.substring(0, move.length-1);
+	return move + "'";
 }
 function getPos(cubyindex)
 {
@@ -672,6 +725,7 @@ function regular(){
 	document.getElementById("reset2_div").style.display = "none";
 	document.getElementById("giveup").style.display = "none";
 	document.getElementById("giveup2").style.display = "none";
+	document.getElementById("hint").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	pllstep = 0;
@@ -755,7 +809,7 @@ function movesmode()
 	document.getElementById("reset_div").style.display = "none";
 	document.getElementById("solve").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for the Fewest Moves Challenge";
-	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'give up' button, but you only get a limited number of them before you lose.";
+	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
 	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -794,6 +848,7 @@ function showSpeed()
 		document.getElementById("reset2_div").style.display = "inline";
 		document.getElementById("giveup").style.display = "inline";
 		document.getElementById("giveup2").style.display = "inline";
+		document.getElementById("hint").style.display = "inline";
 	}
 }
 function easy() 
@@ -1021,6 +1076,7 @@ function speedPLL()
 		timer.reset();
 		const possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
 		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"];
+		//const possible = ["Jb", "T", "Z", "Ua", "Ub","H"];
 		let rnd = p.random(possible);
 		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + obj2[rnd][0] +  " </p>";
 		
@@ -1045,7 +1101,11 @@ function m_34()
 {
 	undo = [];
 	redo = [];
-	if(m_34step == 0) giveups = 3;
+	if(m_34step == 0) 
+	{ 
+		giveups = 3;
+		m_pass = 0;
+	}
 	if(m_34step % 2 == 0)
 	{
 		let rand = parseInt(Math.random()*100);
@@ -1127,7 +1187,11 @@ function m_4()
 {
 	undo = [];
 	redo = [];
-	if(m_4step == 0 && m_34step == 0) giveups = 3;
+	if(m_4step == 0 && m_34step == 0) 
+	{
+		m_pass = 0;
+		giveups = 3;
+	}
 	if(m_4step % 2 == 0)
 	{
 		let rand = parseInt(Math.random()*100);
@@ -1184,13 +1248,10 @@ function m_4()
 		for(var i=0; i<elements.length; i++) { 
 			elements[i].style.display='none';
 		}
-		if(m_34step > 0)
-			document.getElementById("s_INSTRUCT").innerHTML = "You Lost! Stages Passed: " +(((m_34step + 0.5)/2) - 3.0);
-		else if(m_4step > 0)
-			document.getElementById("s_INSTRUCT").innerHTML = "You Lost! Stages Passed: " +(((m_4step + 0.5)/2) - 3.0);
+		document.getElementById("s_INSTRUCT").innerHTML = "You Lost! Stages Passed: " + m_pass;
 		let grade = "F";
 		let grades = ["A++", "A+", "A", "A-", "B", "C", "D"];
-		let scores = [60, 35, 25, 15, 10, 6, 2];
+		let scores = [100, 70, 50, 25, 15, 6, 2];
 		if(m_34step > 0)
 		scores = [40, 15, 10, 6, 3, 2, 1];
 		for(let i = 0; i < grades.length; i++)
