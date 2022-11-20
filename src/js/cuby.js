@@ -1,5 +1,6 @@
 export default class Cuby {
   constructor(size, x, y, z, buff, picker, p, index) {
+    //size = 50;
     this.cubysize = size;
     this.x = x;
     this.y = y;
@@ -294,6 +295,8 @@ export default class Cuby {
   }
   
   show() {
+    let arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
+    if(arr.includes(this.index) && this.cubysize == 100) return;
     let r = this.cubysize / 2;
     this.p.push();
     

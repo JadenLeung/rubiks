@@ -128,6 +128,14 @@
 			<p id="test_alg_div" style="margin-top:4px;"  class = "noselect">
 				<span>Test Algorithm:</span>
 			</p>
+			<div class = "normal noselect" style = "padding-bottom:7px">
+				<p id="type" style = "display: inline;"><span>Cube Type: &nbsp;</span></p>
+				<span style = "display: inline;" id = "type2"></span>
+			</div>	
+			<div class = "normal noselect" style = "padding-bottom:7px">
+				<p id="size" style = "display: inline;"><span>Cube Size: &nbsp;</span></p>
+				<span style = "display: inline;" id = "size2">4</span>
+			</div>	
 			<div style = "padding-bottom:7px"  class = "noselect">
 				<p id="slider_div" style = "display: inline;"  class = "normal"><span>Turn Speed: </span></p>
 				<span style = "display: inline;" id = "speed"  class = "normal">0.01 </span>
@@ -147,7 +155,7 @@
 				<p id="hint" style = "display: inline;"  class = "normal"></p>
 				<p id="giveup" style = "display: inline;"  class = "normal"></p>
 			</div>
-			<div style = "padding-top:10px;"  class = "noselect">
+			<div style = "padding-top:5px;"  class = "noselect">
 				<p style = "display: inline;"  class = "normal" id = "outermoves">Move Count: <span id = "moves">0</span>&emsp;</p>
 				<p style = "display: inline;" class = "normal" id = "outertime">Elapsed time: <span id="time">0</span>s</p>
 			</div>
@@ -175,8 +183,10 @@
 					<p id="giveup2" style = "display: inline;"  class = "normal noselect"></p>
 				</div>
 			</div>
-			<h5><span id = "stepbig"></span><span id = "fraction"></span></h5>
-			<p id = "step"></p>
+			<div>
+				<p style = "display: inline; font-size:12px;"><span id = "stepbig"></span><span id = "fraction"></span></h5>
+				<p style = "display: inline; font-size:12px;" id = "step"></p>
+			</div>
 			<h5 id = "s_INSTRUCT" class = "noselect"></h5>
 			<p id = "s_instruct" class = "noselect"></p>
 			<p id = "s_difficulty" class = "noselect"></p>
