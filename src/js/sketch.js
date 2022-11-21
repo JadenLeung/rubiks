@@ -1177,6 +1177,7 @@ function m_34()
 		reCam();
 		giveups = 3;
 		m_pass = 0;
+		m_points = 0;
 	}
 	if(m_34step % 2 == 0)
 	{
@@ -1264,6 +1265,7 @@ function m_4()
 		reCam();
 		m_pass = 0;
 		giveups = 3;
+		m_points = 0;
 	}
 	if(m_4step % 2 == 0)
 	{
