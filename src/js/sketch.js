@@ -2583,6 +2583,7 @@ function notation(move){
 }
 function stepFour()
 {
+	flipmode = 0;
 	flipmode2 = 1;
 	//dev = 1;
 	if(dev == 1)
@@ -2672,6 +2673,7 @@ function stepFour()
 		}
 		if(arr.length == 0)
 		{
+			
 			if(layout[5][2][0].includes(color) || layout[5][0][0][0] == color || layout[0][0][2][0] == color)
 			 	arr = ["y'"];
 			else
@@ -2732,7 +2734,7 @@ function stepFive()
 			{
 				if(layout[5][0][0][0] == color && layout[5][0][2][0] == color && layout[4][0][2][0] == color)
 					changeArr("R2 U2 R U2 R2");
-				else if(layout[0][0][0][0] == color && layout[0][0][2][0] == color)
+				else if(layout[0][0][0][0] == color && layout[0][0][2][0] == color && layout[5][0][2][0] == color)
 					changeArr("F R U R' U' R U R' U' F'");
 			}
 			else if(cornerOLL2() == 1)
@@ -2760,14 +2762,16 @@ function stepFive()
 	{
 		document.getElementById("step").innerHTML = "Permutation of Both Layers (PBL)";
 		document.getElementById("fraction").innerHTML = "3/10):";
+		arr = [];
+		setLayout();
 		let a = cornerPLL()[0];
 		let b = cornerPLL()[1];
 		for(let i = 0; i < 4; i++)
 		{
 			flipmode = i;
 			if(flipmode == 1)defineFlipper();
-			if(flipmode == 2)defineFlipper3();
-			if(flipmode == 3)defineFlipper4();
+			if(flipmode == 2)defineFlipper4();
+			if(flipmode == 3)defineFlipper3();
 			setLayout();
 			if(a == 0 && b == 0)
 			{
@@ -2776,17 +2780,15 @@ function stepFive()
 			else if(a == 1 && b == 1)
 			{
 				if(layout[5][0][0][0] == layout[5][0][2][0] && layout[5][2][0][0] == layout[5][2][2][0])
+				{
 					changeArr("R2 U' B2 U2 R2 U' R2");
-				else if(layout[4][0][0][0] == layout[4][0][2][0] && layout[4][2][0][0] == layout[4][2][2][0])
-					changeArr("y2");
-				else if(layout[1][0][0][0] == layout[1][0][2][0] && layout[1][2][0][0] == layout[1][2][2][0])
-					changeArr("y'");
-				else if(layout[0][0][0][0] == layout[0][0][2][0] && layout[0][2][0][0] == layout[0][2][2][0])
-					changeArr("y")
+				}
 				else if(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][2][0][0] == layout[5][2][2][0])
 					changeArr("U'")
-				else
+				else if(layout[1][0][0][0] == layout[1][0][2][0] && layout[5][2][0][0] == layout[5][2][2][0])
 					changeArr("U")
+				else if(layout[4][0][0][0] == layout[4][0][2][0] && layout[5][2][0][0] == layout[5][2][2][0])
+					changeArr("U2");
 			}
 			else if(a == 1 && b == 0)
 			{
@@ -2818,6 +2820,7 @@ function stepFive()
 			if(arr.length > 0)break;
 		}
 		if(arr.length == 0) arr = ["U'"];
+		console.log("arr is " + arr);
 		multipleCross3(0);
 	}
 	else if(!isSolved())
@@ -4164,6 +4167,7 @@ else
 }
 }
 function multipleCross3(nb) {
+	if(canMan == true)return;
 	if(MODE != "normal" && MODE != "timed")
 	{
 		flipmode = 0;
@@ -4196,6 +4200,7 @@ function multipleCross3(nb) {
 	}
 }
 function multipleCross2(nb) {
+	if(canMan == true)return;
 	if(MODE != "normal" && MODE != "timed")
 	{
 		flipmode = 0;
@@ -5213,7 +5218,7 @@ window.addEventListener('keydown', (e) => {
 //69.16
 //66.60
 //66.04
-//Mo50 virtual 2x2: 34.34s
+//Mo50 virtual 2x2: 34.34, 33.08
 //Jaden WR 3x3: 25.4s, 20.9s, 19.7s, 16.6s
 //Jaden WR 2x2: 3.88s
 //PLL Practice: 6.9s, 6.84s, 6.2s, 5.01s
@@ -5224,7 +5229,7 @@ window.addEventListener('keydown', (e) => {
 //D' R F' L' U2 R B' D' R U F' D2 F' B D U F' R' same thing
 //Bad
 //R D' L U R' B R U' L2 D F L D' B' L' D B2 L'
-//L' D' B U F' D L2 F B U' B' R' L B R' L R D F (2x2)
+//U R' L B F L' U' D' R2 L' F2 L' R' U L' B' F' B (2x2)
 //BELOW 54 MOVES
 // R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (53)
 // L U R U' L R' U D2 U L' B' F' B D U' D' R F L' (53)
