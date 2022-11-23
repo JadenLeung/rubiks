@@ -246,11 +246,11 @@ p.setup = () => {
 	SHUFFLE_BTN.parent("shuffle_div");
 	SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
 
-	TWOBYTWO = p.createButton('2x2x2');
+	TWOBYTWO = p.createButton('2x2');
 	TWOBYTWO.parent("type");
 	TWOBYTWO.mousePressed(changeTwo.bind(null, 0));
 
-	THREEBYTHREE = p.createButton('3x3x3');
+	THREEBYTHREE = p.createButton('3x3');
 	THREEBYTHREE.parent("type2");
 	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
 	THREEBYTHREE.style('background-color', "#f5f573");
@@ -262,6 +262,10 @@ p.setup = () => {
 	const RESET2 = p.createButton('Reset');
 	RESET2.parent("reset2_div");
 	RESET2.mousePressed(moveSetup.bind(null, 0));
+
+	const RESET3 = p.createButton('Reset');
+	RESET3.parent("reset3_div");
+	RESET3.mousePressed(speedSetup.bind(null, 0));
 
 	const HINT = p.createButton('Hint');
 	HINT.parent("hint");
@@ -362,7 +366,7 @@ setInterval(() => {
 			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			easy();
 		}
-		else if(crossColor()[2] == 4 && easystep == 3)
+		else if(((crossColor()[2] == 4 && DIM == 50) || (cornerCross()[0] == 4 && DIM == 100)) && easystep == 3)
 		{
 			timer.stop();
 			easystep++;
@@ -372,21 +376,31 @@ setInterval(() => {
 		}
 		else if(easystep == 5)
 		{
-			for(let i = 0; i < 6; i++)
+			if(DIM == 50)
 			{
-				if(layout[i][1][1][0] == "g" && layout[i][0][0][0] == layout[i][0][2][0] && layout[i][0][0][0] == layout[i][2][0][0] && 
-				layout[i][0][0][0] == layout[i][2][2][0])
+				for(let i = 0; i < 6; i++)
 				{
-					timer.stop();
-					ao5.push(Math.round(timer.getTime() / 10)/100.0);
-					easystep++;
-					easy();
-				}	
+					if(layout[i][1][1][0] == "g" && layout[i][0][0][0] == layout[i][0][2][0] && layout[i][0][0][0] == layout[i][2][0][0] && 
+					layout[i][0][0][0] == layout[i][2][2][0])
+					{
+						timer.stop();
+						ao5.push(Math.round(timer.getTime() / 10)/100.0);
+						easystep++;
+						easy();
+					}	
+				}
+			}
+			else if(greenLayer())
+			{
+				timer.stop();
+				ao5.push(Math.round(timer.getTime() / 10)/100.0);
+				easystep++;
+				easy();
 			}
 		}
 		else if(easystep == 7)
 		{
-			if(twoLines())
+			if(twoLines() && DIM == 50 || isSolved() && DIM == 100)
 			{
 				timer.stop();
 				ao5.push(Math.round(timer.getTime() / 10)/100.0);
@@ -470,6 +484,7 @@ function reSetup() {
 	flipmode2 = 0;
 	easystep = 0;
 	medstep = 0;
+	bruh = 0;
 	m_34step = 0;
 	pllstep = 0;
 	CAM = p.createEasyCam(p._renderer);
@@ -497,6 +512,7 @@ function reSetup() {
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("points_par").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
+	document.getElementById("reset3_div").style.display = "none";
 	document.getElementById("giveup").style.display = "none";
 	document.getElementById("giveup2").style.display = "none";
 	document.getElementById("hint").style.display = "none";
@@ -542,9 +558,41 @@ function quickSolve()
 		}
 	}
 }
+function speedSetup()
+{
+	if(document.getElementById("s_instruct").innerHTML.includes("In one game of") ||
+	document.getElementById("s_instruct").innerHTML.includes("Your final"))
+	{
+		CAM = p.createEasyCam(p._renderer);
+		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+		CAM.zoom(CAMZOOM);
+		CAM.rotateX(-p.PI / 2.7);
+		CAM.rotateY(-p.PI / 7);
+		CAM.rotateZ(-p.PI / 2);
+		quickSolve();
+		return;
+	}
+	let cnt = 0;
+	arr = [];
+	for(let i = undo.length-1; i >= 0; i--)
+	{
+		arr[cnt] = Inverse(undo[i]);
+		cnt++;
+	}
+	console.log(arr);
+	shufflespeed = 2;
+	canMan = false;
+	if(easystep > 0)
+		multipleEasy(0,0.5);
+	else if(medstep > 0)
+		multipleEasy(0,1.5);
+	else if(pllstep > 0)
+		multipleEasy(0,2.5);
+}
 function moveSetup()
 {
-	if(document.getElementById("s_instruct").innerHTML.includes("Your final score is"))
+	if(document.getElementById("s_instruct").innerHTML.includes("In one game of") ||
+	document.getElementById("s_instruct").innerHTML.includes("Your final"))
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -635,7 +683,7 @@ function changeTwo()
 	DIM = 100;
 	CAMZOOM = 0;
 	THREEBYTHREE.remove();
-	THREEBYTHREE = p.createButton('3x3x3');
+	THREEBYTHREE = p.createButton('3x3');
 	THREEBYTHREE.parent("type2");
 	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
 	TWOBYTWO.style('background-color', "#f5f573");
@@ -645,6 +693,10 @@ function changeTwo()
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
 	reSetup();
+	if(MODE == "speed")
+		speedmode();
+	if(MODE == "moves")
+		movesmode();
 }
 function changeThree()
 {
@@ -652,7 +704,7 @@ function changeThree()
 	CAMZOOM = -150;
 	THREEBYTHREE.style('background-color', "#f5f573");
 	TWOBYTWO.remove();
-	TWOBYTWO = p.createButton('2x2x2');
+	TWOBYTWO = p.createButton('2x2');
 	TWOBYTWO.parent("type");
 	TWOBYTWO.mousePressed(changeTwo.bind(null, 0));
 	SIZE_SLIDER2.remove();
@@ -661,6 +713,10 @@ function changeThree()
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
 	reSetup();
+	if(MODE == "speed")
+		speedmode();
+	if(MODE == "moves")
+		movesmode();
 }
 function Reverse(move)
 {
@@ -781,6 +837,7 @@ function regular(){
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("link1").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
+	document.getElementById("reset3_div").style.display = "none";
 	document.getElementById("giveup").style.display = "none";
 	document.getElementById("giveup2").style.display = "none";
 	document.getElementById("hint").style.display = "none";
@@ -895,6 +952,7 @@ function showSpeed()
 	document.getElementById("redo").style.display = "inline";
 	if(MODE == "speed")
 	{
+		document.getElementById("reset3_div").style.display = "inline";
 		document.getElementById("times_par").style.display = "block";
 		document.getElementById("time").style.display = "inline";
 		document.getElementById("outertime").style.display = "inline";
@@ -942,8 +1000,17 @@ function easy()
 	}
 	else if(easystep == 2)
 	{
-		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #2: Solve the Cross In Any Face";
-		document.getElementById("s_instruct").innerHTML = "A cross is solved when all the edge pieces in a face match its center piece.";
+		if(DIM == 50)
+		{
+			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #2: Solve the Cross In Any Face";
+			document.getElementById("s_instruct").innerHTML = "A cross is solved when all the edge pieces in a face match its center piece.";
+		}
+		else
+		{
+			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #2: Solve a Face";
+			document.getElementById("s_instruct").innerHTML = "The challenge is complete when all the pieces in a side have the same color.";
+		
+		}
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
 		for(let i = 0; i < 20; i++)
@@ -961,8 +1028,16 @@ function easy()
 	}
 	else if(easystep == 4)
 	{
-		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #3: Same Colored Corners in the Green Face";
-		document.getElementById("s_instruct").innerHTML = "This challenge is complete when all 4 corners in the green face are the same color. The green face is the face where the center piece is green.";
+		if(DIM == 50)
+		{
+			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #3: Same Colored Corners in the Green Face";
+			document.getElementById("s_instruct").innerHTML = "This challenge is complete when all 4 corners in the green face are the same color. The green face is the face where the center piece is green.";
+		}
+		else
+		{
+			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #3: Solve the Green Layer";
+			document.getElementById("s_instruct").innerHTML = "This challenge is complete when a side has only green squares, and the cubies are permutated in their correct position.";
+		}
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
 		for(let i = 0; i < 20; i++)
@@ -980,14 +1055,40 @@ function easy()
 	}
 	else if(easystep == 6)
 	{
-		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Construct a Line of Solved Edges in Two Faces";
-		document.getElementById("s_instruct").innerHTML = "Take a look at these pictures for an example:";
+		quickSolve();
+		let numsc = 0;
+		if(DIM == 50)
+		{
+			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Construct a Line of Solved Edges in Two Faces";
+			document.getElementById("s_instruct").innerHTML = "Take a look at these pictures for an example:";
+			numsc = 20;
+		}
+		else
+		{
+			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Solve the Cube";
+			document.getElementById("s_instruct").innerHTML = "This is a 3 move scramble, good luck!";
+			numsc = 3;
+		}
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
-		for(let i = 0; i < 20; i++)
+		let bad = "";
+		for(let i = 0; i < numsc; i++)
 		{
-			let rnd = p.random(possible);
-			arr.push(rnd);
+			while(true)
+			{
+				let rnd = p.random(possible);
+				console.log("rnd is " + rnd);
+				if(rnd == bad || (arr.length>1 && rnd == arr[i-2]))
+				continue;
+				
+				if(rnd.slice(-1) == "'")
+					bad = rnd.substring(0, rnd.length-1);
+				else
+					bad = rnd + "'";
+				arr.push(rnd);
+				m_scramble.push(rnd);
+				break;
+			}
 		}
 		shufflespeed = 2;
 		canMan = false;
@@ -1361,20 +1462,39 @@ function multipleEasy(nb, dificil) {
 		shufflespeed = 5;
 		if(dificil == 0)
 		{
+			if(!isSolved())
 			easystep++;
 			easy();
 		}
+		else if(dificil == 0.5)
+		{
+			undo = [];
+			//easy();
+		}
 		else if (dificil == 1){
+			if(!isSolved())
 			medstep++;
 			medium();
 		}
+		else if(dificil == 1.5)
+		{
+			undo = [];
+			//medium();
+		}
 		else if(dificil == 2)
 		{
+			if(!isSolved())
 			pllstep++;
 			speedPLL();
 		}
+		else if(dificil == 2.5)
+		{
+			undo = [];
+			//speedPLL();
+		}
 		else if(dificil == 3)
 		{
+			if(!isSolved())
 			m_34step++;
 			m_34();
 		}
@@ -1384,6 +1504,7 @@ function multipleEasy(nb, dificil) {
 		}
 		else if(dificil == 4)
 		{
+			if(!isSolved())
 			m_4step++;
 			m_4();
 		}
@@ -2234,9 +2355,18 @@ p.keyPressed = (event) => {
 			reSetup();
 			if(MODE == "moves")
 			moveSetup();
+			if(MODE == "speed")
+			speedSetup();
 			break;
-			case 13: //enter
-			//console.log(quickSolve());
+			case 192: //`
+			if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
+			regular();
+			if(MODE == "moves")
+			movesmode();
+			if(MODE == "speed")
+			speedmode();
+			if(MODE == "timed")
+			regular();
 			break;
 			case 32: //space
 			//flipmode = 0;
@@ -2250,7 +2380,8 @@ p.keyPressed = (event) => {
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
 			setLayout();
-			console.log(CAM.getPosition());
+			let i = 2;
+			console.log(undo);
 			break;
 			
 		}
@@ -2590,99 +2721,111 @@ function stepFour()
 	flipmode2 = 0;
 	setLayout();
 	arr = [];
-	if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color)
+	let cornerarr = cornerCross(); //0 = max, 1 = color, 2 = position
+	console.log(cornerarr);
+	color = cornerarr[1];
+	if(cornerarr[2] != 2)
+	{
+		if(cornerarr[2] == 0) changeArr("z");
+		else if(cornerarr[2] == 1) changeArr("z'");
+		else if(cornerarr[2] == 3) changeArr("z2");
+		else if(cornerarr[2] == 4) changeArr("x'");
+		else if(cornerarr[2] == 5) changeArr("x");
+		multipleCross2(0);
+	}
+	else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color)
 	{
 		document.getElementById("step").innerHTML = "Solving Corners on Bottom";
 		document.getElementById("fraction").innerHTML = "1/10):";
-		if(layout[5][2][2][0] == color)
+		flipmode = 0;
+		console.log("color is " + color);
+		for(let i = 0; i < 4; i++)
 		{
-			if(layout[2][2][2][0] != color){
-				if(layout[2][0][2][0] != color) changeArr2("R", 1);
-				else changeArr2("F,  D, F'", 3)
+			flipmode = i;
+			if(flipmode == 1)defineFlipper();
+			if(flipmode == 2)defineFlipper3();
+			if(flipmode == 3)defineFlipper4();
+			setLayout();
+			if(layout[5][2][2][0] == color)
+			{
+				if(layout[2][2][2][0] != color){
+					if(layout[2][0][2][0] != color) changeArr2("R", 1);
+					else changeArr2("F,  D, F'", 3)
+				}
+				if(layout[2][2][0][0] != color){
+					if(layout[2][2][2][0] != color) changeArr2("D' F", 2);
+					else changeArr2("D' L D L'", 4)
+				}
+				if(layout[2][0][2][0] != color){
+					if(layout[2][0][0][0] != color) changeArr2("D B", 2);
+					else changeArr2("B' D B", 3)
+				}
+				if(layout[2][0][0][0] != color){
+					if(layout[2][0][0][0] != color) changeArr2("D2 L", 3);
+					else changeArr2("D L' D L", 4)
+				}
 			}
-			if(layout[2][2][0][0] != color){
-				if(layout[2][2][2][0] != color) changeArr2("D' F", 2);
-				else changeArr2("D' L D L'", 4)
+			if(layout[1][2][2][0] == color)
+			{
+				if(layout[2][2][2][0] != color){
+					if(layout[2][2][0][0] != color) changeArr2("F'", 1);
+					else changeArr2("R', D', R", 3)
+				}
+				if(layout[2][2][0][0] != color){
+					if(layout[2][0][0][0] != color) changeArr2("D' L'", 2);
+					else changeArr2("L D' L'", 3)
+				}
+				if(layout[2][0][2][0] != color){
+					if(layout[2][2][2][0] != color) changeArr2("D R'", 2);
+					else changeArr2("D B' D' B", 4)
+				}
+				if(layout[2][0][0][0] != color){
+					if(layout[2][0][2][0] != color) changeArr2("D2 B'", 3);
+					else changeArr2("D' B D' B'", 4)
+				}
 			}
-			if(layout[2][0][2][0] != color){
-				if(layout[2][0][0][0] != color) changeArr2("D B", 2);
-				else changeArr2("B' D B", 3)
+			if(layout[3][2][2][0] == color)
+			{
+				if(layout[2][2][2][0] != color){
+					if(layout[2][0][2][0] != color) changeArr2("D R2", 3);
+					else if(layout[2][2][0][0] != color) changeArr2("D' F2", 3);
+					else changeArr2("R' B' D2 B R", 6)
+				}
+				if(layout[2][2][0][0] != color){
+					if(layout[2][2][2][0] != color) changeArr2("F2", 2);
+					else if(layout[2][0][0][0] != color) changeArr2("D2 L2", 2);
+					else changeArr2("L D2 L' F' D' F", 7)
+				}
+				if(layout[2][0][2][0] != color){
+					if(layout[2][2][2][0] != color) changeArr2("R2", 2);
+					else if(layout[2][0][0][0] != color) changeArr2("D2 B2", 2);
+					else changeArr2("B' D2 B R D R'", 7)
+				}
+				if(layout[2][0][0][0] != color){
+					if(layout[2][2][0][0] != color) changeArr2("D' L2", 3);
+					else if(layout[2][0][2][0] != color) changeArr2("D B2", 3);
+					else changeArr2("R' D2 R B D' B'", 7)
+				}
 			}
-			if(layout[2][0][0][0] != color){
-				if(layout[2][0][0][0] != color) changeArr2("D2 L", 3);
-				else changeArr2("D L' D L", 4)
+			if(layout[1][0][2][0] == color)
+			{
+				if(layout[2][2][0][0] != color)
+					changeArr2("F'", 1)
+				else if(layout[2][0][2][0] != color && layout[2][0][0][0] != color)
+					changeArr2("R B", 2)
+				else changeArr2("F D' F' R' D' R", 6)
 			}
+			if(layout[5][0][2][0] == color)
+			{
+				if(layout[2][0][2][0] != color)
+					changeArr2("R", 1)
+				else if(layout[2][2][0][0] != color && layout[2][0][0][0] != color)
+					changeArr2("F' L'", 2)
+				else changeArr2("R' D R F D F'", 6)
+			}
+			if(arr.length > 0)break;
 		}
-		if(layout[1][2][2][0] == color)
-		{
-			if(layout[2][2][2][0] != color){
-				if(layout[2][2][0][0] != color) changeArr2("F'", 1);
-				else changeArr2("R', D', R", 3)
-			}
-			if(layout[2][2][0][0] != color){
-				if(layout[2][0][0][0] != color) changeArr2("D' L'", 2);
-				else changeArr2("L D' L'", 3)
-			}
-			if(layout[2][0][2][0] != color){
-				if(layout[2][2][2][0] != color) changeArr2("D R'", 2);
-				else changeArr2("D B' D' B", 4)
-			}
-			if(layout[2][0][0][0] != color){
-				if(layout[2][0][2][0] != color) changeArr2("D2 B'", 3);
-				else changeArr2("D' B D' B'", 4)
-			}
-		}
-		if(layout[3][2][2][0] == color)
-		{
-			if(layout[2][2][2][0] != color){
-				if(layout[2][0][2][0] != color) changeArr2("D R2", 3);
-				else if(layout[2][2][0][0] != color) changeArr2("D' F2", 3);
-				else changeArr2("R' B' D2 B R", 6)
-			}
-			if(layout[2][2][0][0] != color){
-				if(layout[2][2][2][0] != color) changeArr2("F2", 2);
-				else if(layout[2][0][0][0] != color) changeArr2("D2 L2", 2);
-				else changeArr2("L D2 L' F' D' F", 7)
-			}
-			if(layout[2][0][2][0] != color){
-				if(layout[2][2][2][0] != color) changeArr2("R2", 2);
-				else if(layout[2][0][0][0] != color) changeArr2("D2 B2", 2);
-				else changeArr2("B' D2 B R D R'", 7)
-			}
-			if(layout[2][0][0][0] != color){
-				if(layout[2][2][0][0] != color) changeArr2("D' L2", 3);
-				else if(layout[2][0][2][0] != color) changeArr2("D B2", 3);
-				else changeArr2("R' D2 R B D' B'", 7)
-			}
-		}
-		if(layout[1][0][2][0] == color)
-		{
-			if(layout[2][2][0][0] != color)
-				changeArr2("F'", 1)
-			else if(layout[2][0][2][0] != color && layout[2][0][0][0] != color)
-				changeArr2("R B", 2)
-			else changeArr2("F D' F' R' D' R", 6)
-		}
-		if(layout[5][0][2][0] == color)
-		{
-			if(layout[2][0][2][0] != color)
-				changeArr2("R", 1)
-			else if(layout[2][2][0][0] != color && layout[2][0][0][0] != color)
-				changeArr2("F' L'", 2)
-			else changeArr2("R' D R F D F'", 6)
-		}
-		if(arr.length == 0)
-		{
-			
-			if(layout[5][2][0].includes(color) || layout[5][0][0][0] == color || layout[0][0][2][0] == color)
-			 	arr = ["y'"];
-			else
-				arr = ["y"]
-		}
-		console.log("arr is " + arr + " color is " + color);
-		bruh++;
-		//if(bruh == 2)
-		//return;
+		if(arr.length == 0) arr = ["y"];
 		multipleCross2(0);
 	}
 	else if(!isSolved())
@@ -2766,6 +2909,13 @@ function stepFive()
 		setLayout();
 		let a = cornerPLL()[0];
 		let b = cornerPLL()[1];
+		if(a == 4 && b == 0 || a == 4 && b == 1 || a == 0 && b == 1)
+		{
+			flipmode2 = 1;
+			setLayout();
+			a = cornerPLL()[0];
+			b = cornerPLL()[1];
+		}
 		for(let i = 0; i < 4; i++)
 		{
 			flipmode = i;
@@ -2811,11 +2961,8 @@ function stepFive()
 			else if(a == 0 && b == 4)
 			{
 				changeArr("R' U R' F2 R F' U R' F2 R F' R");
-			}
-			else
-			{
-				changeArr("z2");
-				color = opposite[color];
+
+				
 			}
 			if(arr.length > 0)break;
 		}
@@ -4174,7 +4321,8 @@ function multipleCross3(nb) {
 		flipmode2 = 0;
 		return;
 	}
-	flipmode2=0;
+	if(DIM == "50")
+		flipmode2=0;
 	setLayout();
 	if (nb < arr.length) {
 		canMan = false;
@@ -4253,13 +4401,83 @@ function multipleCross(nb) {
 		console.log("done");
 	}
 }
+function greenLayer(){
+	for(let i = 0; i < 6; i++)
+	{
+		if(layout[i][0][0][0] == "g" && layout[i][0][2][0] == "g" && layout[i][2][0][0] == "g" && layout[i][2][2][0] == "g")
+		{
+			if((layout[i][0][0].includes(layout[i][0][2][5]) || layout[i][0][0].includes(layout[i][0][2][7]))
+				&&(layout[i][0][0].includes(layout[i][2][0][5]) || layout[i][0][0].includes(layout[i][2][0][7]))
+				&&(layout[i][2][2].includes(layout[i][0][2][5]) || layout[i][2][2].includes(layout[i][0][2][7]))
+				&&(layout[i][2][2].includes(layout[i][2][0][5]) || layout[i][2][2].includes(layout[i][2][0][7]))
+				&&(layout[i][0][0]))
+				{
+					if(i == 0 && layout[5][0][0][0] == layout[5][2][0][0]) return true;
+					if(i == 1 && layout[5][0][2][0] == layout[5][2][2][0]) return true;
+					if(i == 2 && layout[5][0][0][0] == layout[5][0][2][0]) return true;
+					if(i == 3 && layout[5][2][0][0] == layout[5][2][2][0]) return true;
+					if(i == 4 && layout[2][0][0][0] == layout[2][0][2][0]) return true;
+					if(i == 5 && layout[2][2][0][0] == layout[2][2][2][0]) return true;
+					
+				}
+		}
+	}
+	return false;
+}
+function cornerCross(){
+	setLayout();
+	let max = 1;
+	let maxarr = [];
+	let maxcolor = layout[2][0][0][0];
+	let maxpos = 2;
+	for(let i = 2;; i--)
+	{
+		maxarr = [];
+		maxarr["g"] = 0;
+		maxarr["b"] = 0;
+		maxarr["w"] = 0;
+		maxarr["y"] = 0;
+		maxarr["r"] = 0;
+		maxarr["o"] = 0;
+		maxarr[layout[i][0][0][0]]++;
+		maxarr[layout[i][0][2][0]]++;
+		maxarr[layout[i][2][0][0]]++;
+		maxarr[layout[i][2][2][0]]++;
+		let colors = ["g", "b", "w", "y", "r", "o"];
+		for(let j = 0; j < 6; j++)
+		{
+			if(maxarr[colors[j]] > max)
+			{
+				max = maxarr[colors[j]];
+				maxcolor = colors[j];
+				maxpos = i;
+			}
+		}
+		if(i == 0)
+		i = 6;
+		if(i == 3)
+		break;
+	}
+	return [max, maxcolor, maxpos];
+}
+function Inverse(bad){
+	if(bad.slice(-1) == "'")
+	{
+		bad = bad.substring(0, bad.length-1);
+	}
+	else
+	{
+		bad = bad + "'";
+	}
+	return bad;
+}
 function crossColor(){
 	setLayout();
 	let max = 0;
 	let maxpos = 2;
 	let maxcolor = layout[2][1][1][0];
 	let cnt = [];
-	for(let i = 2;; i++)
+	for(let i = 2;; i--)
 	{
 		let total = 0;
 		let curcolor = layout[i][1][1][0];
@@ -4274,9 +4492,9 @@ function crossColor(){
 			maxpos = i;
 			maxcolor = curcolor;
 		}
-		if(i == 5)
-		i = -1;
-		if(i == 1)
+		if(i == 0)
+		i = 6;
+		if(i == 3)
 		break;
 	}
 	return [maxpos, maxcolor, max];
@@ -5218,7 +5436,7 @@ window.addEventListener('keydown', (e) => {
 //69.16
 //66.60
 //66.04
-//Mo50 virtual 2x2: 34.34, 33.08
+//Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
 //Jaden WR 3x3: 25.4s, 20.9s, 19.7s, 16.6s
 //Jaden WR 2x2: 3.88s
 //PLL Practice: 6.9s, 6.84s, 6.2s, 5.01s
@@ -5237,6 +5455,7 @@ window.addEventListener('keydown', (e) => {
 // B' L' B D L' R U' L' B' U' F L' U' L F R' U' F L' D' (53)
 // F' R' B D' B' R F B' R' U F L' D' B' U' R B F' U' F (53)
 // L U2 B' R L F R2 B' F2 D' B R' D' B' L2 R (53)
+// D' R B L' R F' B L R B R' U L' D' B2 R' U' L' F' (53)
 //B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
 //F' D' F R F' U D' F' B R L' D' B' F' L' B D' R' B' D' (52)
 // U' L2 U2 B L' F' B' U' R' U R2 B' F' U B' U' F' (52)
@@ -5267,7 +5486,8 @@ window.addEventListener('keydown', (e) => {
 // L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (50, was 52)
 // L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (70, was 48)
 // R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (41)
-
+//WORLD RECORD SCRAMBLES 2x2
+//L' R B L' D L R' U F' B L R' F U L F' B' F R2(4)
 /*Mr Sunshine give us your rays
 You're the one who brightens our days
 Without your warmth there'll be no tommorow

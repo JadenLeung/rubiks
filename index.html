@@ -105,6 +105,10 @@
 	
 	<div class="row">
 		<div class = "col-lg-2 noselect" style = "padding-left:30px; padding-right:0px">
+			<div class = "noselect" id = "type3" style = "padding-top:5px">
+				<p id="type" style = "display: inline;"><span>Cube Type: &nbsp;</span></p>
+				<span style = "display: inline;" id = "type2"></span>
+			</div>	
 			<p id = "or_instruct" style = "font-size:20px; text-align:center; padding-left:0px; padding-top:20px;"><b>How this Works:</b></p>
 			<p id = "or_instruct2" style = "font-size:15px;">Drag your mouse in the gray area to turn the camera, and drag your mouse on a cube layer to turn it. Alternatively, you can use the 
 			keyboard to turn the cube. <a href="FAQ.html" target="_blank">FAQs</a></p>
@@ -129,10 +133,6 @@
 				<span>Test Algorithm:</span>
 			</p>
 			<div class = "normal noselect" style = "padding-bottom:7px">
-				<p id="type" style = "display: inline;"><span>Cube Type: &nbsp;</span></p>
-				<span style = "display: inline;" id = "type2"></span>
-			</div>	
-			<div class = "normal noselect" style = "padding-bottom:7px">
 				<p id="size" style = "display: inline;"><span>Cube Size: &nbsp;</span></p>
 				<span style = "display: inline;" id = "size2">4</span>
 			</div>	
@@ -150,6 +150,7 @@
 				<p id="solve" style = "display: inline;"  class = "normal"></p>
 				<p id="reset_div" style = "display: inline;"  class = "normal"></p>
 				<p id="reset2_div" style = "display: inline;"  class = "normal"></p>
+				<p id="reset3_div" style = "display: inline;"  class = "normal"></p>
 				<p id="undo" style = "display: inline;"  class = "normal"></p>
 				<p id="redo" style = "display: inline;"  class = "normal"></p>
 				<p id="hint" style = "display: inline;"  class = "normal"></p>
@@ -166,9 +167,10 @@
 				 <td><sup>&rarr;</sup><sub>y'</sub></td>
 				 <td><sup>&uarr;</sup><sub>x</sub></td>
 				 <td><sup>&darr;</sup><sub>x'</sub></td>
+				 <td><sup>`</sup><sub>Quit</sub></td>
 				  <td colspan = "2"><sup>Escape</sup><sub>reset</sub></td>
 				  <td><sup>=</sup><sub>redo</sub></td>
-				 <td colspan = "3"><sup>Backspace</sup><sub>undo</sub></td>
+				 <td colspan = "2"><sup>Bspace</sup><sub>undo</sub></td>
 				</tr>
 				<tr><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
 				<tr><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
