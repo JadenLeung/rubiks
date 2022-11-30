@@ -390,7 +390,7 @@ setInterval(() => {
 					}	
 				}
 			}
-			else if(greenLayer())
+			else if(greenLayer() && DIM == 100)
 			{
 				timer.stop();
 				ao5.push(Math.round(timer.getTime() / 10)/100.0);
@@ -400,7 +400,7 @@ setInterval(() => {
 		}
 		else if(easystep == 7)
 		{
-			if(twoLines() && DIM == 50 || isSolved() && DIM == 100)
+			if((twoLines() && DIM == 50) || (isSolved() && DIM == 100))
 			{
 				timer.stop();
 				ao5.push(Math.round(timer.getTime() / 10)/100.0);
@@ -1055,7 +1055,6 @@ function easy()
 	}
 	else if(easystep == 6)
 	{
-		quickSolve();
 		let numsc = 0;
 		if(DIM == 50)
 		{
@@ -1065,6 +1064,7 @@ function easy()
 		}
 		else
 		{
+			quickSolve();
 			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Solve the Cube";
 			document.getElementById("s_instruct").innerHTML = "This is a 3 move scramble, good luck!";
 			numsc = 3;
@@ -2381,7 +2381,7 @@ p.keyPressed = (event) => {
 			.then((obj) => (setPLL(obj)));*/
 			setLayout();
 			let i = 2;
-			console.log(undo);
+			console.log(easystep);
 			break;
 			
 		}
@@ -5485,7 +5485,7 @@ window.addEventListener('keydown', (e) => {
 // D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (64, was 55)
 // L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (50, was 52)
 // L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (70, was 48)
-// R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (41)
+// R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (was 41, 61)
 //WORLD RECORD SCRAMBLES 2x2
 //L' R B L' D L R' U F' B L R' F U L F' B' F R2(4)
 /*Mr Sunshine give us your rays
