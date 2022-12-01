@@ -30,9 +30,11 @@ export default function (p) {
 	let easystep = 0;
 	let medstep = 0;
 	let pllstep = 0;
+	let ollstep = 0;
 	let m_34step = 0;
 	let m_type = 0;
 	let m_4step = 0;
+	let PLL;
 	let scramblemoves = 0;
 	let edgeback = false;
 	let edgeleft = false;
@@ -42,6 +44,8 @@ export default function (p) {
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
 	let arr = [];
 	let obj2 = [];
+	let pbls = [];
+	let olls = [];
 	let m_points = 0;
 	let link1 = document.getElementById("link1");
 	let m_scramble = [];
@@ -55,6 +59,14 @@ export default function (p) {
 	fetch('src/PLL.json')
 	.then((response) => response.json())
 	.then((obj) => (setPLL(obj)));
+
+	fetch('src/PBL.json')
+	.then((response) => response.json())
+	.then((obj0) => (setPBL(obj0)));
+
+	fetch('src/OLL.json')
+	.then((response) => response.json())
+	.then((obj9) => (setOLL(obj9)));
 	let canMan = true;
 	let shuffleNB;
 	let undo = [];
@@ -306,8 +318,13 @@ p.setup = () => {
 	MED.style("height:60px; width:180px; text-align:center; font-size:20px;")
 	MED.parent("s_medium");
 	MED.mousePressed(medium.bind(null, 0));
+
+	const OLL = p.createButton('OLL Practice');
+	OLL.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	OLL.parent("s_OLL");
+	OLL.mousePressed(speedOLL.bind(null, 0));
 	
-	const PLL = p.createButton('PLL Practice');
+	PLL = p.createButton('PLL/PBL Practice');
 	PLL.style("height:60px; width:180px; text-align:center; font-size:20px;")
 	PLL.parent("s_PLL");
 	PLL.mousePressed(speedPLL.bind(null, 0));
@@ -429,6 +446,17 @@ setInterval(() => {
 			pllstep++;
 			speedPLL();
 		}
+		else if(sideSolved("b") && ollstep % 2 == 1)
+		{
+			timer.stop();
+			if(ao5 == 0)
+			ao5 = [Math.round(timer.getTime() / 10)/100.0];
+			else
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			console.log("you", ao5);
+			ollstep++;
+			speedOLL();
+		}
 		
 	}
 	else if(MODE == "moves")
@@ -486,6 +514,7 @@ function reSetup() {
 	medstep = 0;
 	bruh = 0;
 	m_34step = 0;
+	ollstep = 0;
 	pllstep = 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -507,6 +536,7 @@ function reSetup() {
 	document.getElementById("s_instruct").innerHTML = "";
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
+	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
@@ -588,6 +618,8 @@ function speedSetup()
 		multipleEasy(0,1.5);
 	else if(pllstep > 0)
 		multipleEasy(0,2.5);
+	else if(ollstep > 0)
+		multipleEasy(0,5.5);
 }
 function moveSetup()
 {
@@ -832,6 +864,7 @@ function regular(){
 	document.getElementById("keymap").style.display = "table";
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
+	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
@@ -843,6 +876,7 @@ function regular(){
 	document.getElementById("hint").style.display = "none";
 	easystep = 0;
 	medstep = 0;
+	ollstep = 0;
 	pllstep = 0;
 	m_34step = 0;
 	m_4step = 0;
@@ -900,12 +934,19 @@ function speedmode()
 		elements[i].style.display='none';
 	}
 	document.getElementById("s_easy").style.display = "inline";
+	if(DIM == 50)
 	document.getElementById("s_medium").style.display = "inline";
+	document.getElementById("s_OLL").style.display = "inline";
 	document.getElementById("s_PLL").style.display = "inline";
 	easystep = 0;
 	medstep = 0;
+	ollstep = 0;
 	pllstep = 0;
-	
+	if(DIM == 50)
+		PLL.html("PLL Practice");
+	else
+		PLL.html("PBL Practice");
+
 }
 function movesmode()
 {
@@ -944,6 +985,7 @@ function showSpeed()
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
+	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("keymap").style.display = "table";
 	document.getElementById("speed").style.display = "inline";
@@ -1116,7 +1158,7 @@ function easy()
 		let scores = [2, 3, 6, 10, 15, 25, 40, 60, 90, 120, 200, 300, 400, 500, 600];
 		if(medstep == 8)
 		scores = [20, 25, 30, 40, 50, 60, 80, 100, 120, 150, 200, 300, 400, 500, 600];
-		if(pllstep == 8)
+		if(pllstep == 8 || ollstep == 8)
 		scores = [9, 12, 15, 20, 30, 45, 60, 80, 100, 120, 200, 300, 400, 500, 600];
 		for(let i = 0; i < grades.length; i++)
 		{
@@ -1131,10 +1173,12 @@ function easy()
 		document.getElementById("s_instruct").innerHTML = "Your final time is " + total + " seconds, granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
 		document.getElementById("s_easy").style.display = "inline";
 		document.getElementById("s_medium").style.display = "inline";
+		document.getElementById("s_OLL").style.display = "inline";
 		document.getElementById("s_PLL").style.display = "inline";
 		easystep = 0;
 		medstep = 0;
 		pllstep = 0;
+		ollstep = 0;
 		timer.reset();
 	}
 	
@@ -1248,12 +1292,20 @@ function speedPLL()
 		let possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
 		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"];
 		if(DIM == 100)
-			possible = ["Jb", "Jb", "Y"];
+			possible = ["AA", "AD", "DD", "Jb", "Y"];
 		let rnd = p.random(possible);
-		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + obj2[rnd][0] +  " </p>";
-		
-		console.log(obj2, rnd, obj2[rnd][1]);
-		changeArr(obj2[rnd][1])
+		let str = "";
+		if(DIM == 50) 
+		{
+			changeArr(obj2[rnd][1])
+			str = obj2[rnd][0];
+		}
+		else
+		{
+			changeArr(pbls[rnd][1])
+			str = pbls[rnd][0];
+		}
+		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + str +  " </p>";
 		shufflespeed = 2;
 		let rnd2 = Math.floor(Math.random()*4);
 		for(let i = 0; i < rnd2; i++)
@@ -1263,6 +1315,50 @@ function speedPLL()
 		multipleEasy(0, 2);
 	}
 	else if(pllstep == 8)
+	{
+		timer.reset();
+		easystep = 8;
+		easy();
+	}
+}
+function speedOLL()
+{
+	undo = [];
+	redo = [];
+	if(ollstep == 0) reCam();
+	if(ollstep % 2 == 0 && ollstep != 8)
+	{
+		timer.reset();
+		if(ollstep == 0)
+		ao5 = 0;
+		quickSolve();
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
+		showSpeed();
+		timer.stop();
+		timer.reset();
+		let possible = ["21", "51", "45", "33", "37", "26", "27"];
+		if(DIM == 50)
+		{
+			possible = [];
+			for(let i = 1; i < 58; i++)
+			{
+				possible.push(i);
+			}
+		}
+		let rnd = p.random(possible);
+		let str = "";
+		changeArr(olls[rnd][1])
+		str = olls[rnd][0];
+		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + str +  " </p>";
+		shufflespeed = 2;
+		let rnd2 = Math.floor(Math.random()*4);
+		for(let i = 0; i < rnd2; i++)
+		{
+			arr.push("U");
+		}
+		multipleEasy(0, 5);
+	}
+	else if(ollstep == 8)
 	{
 		timer.reset();
 		easystep = 8;
@@ -1511,6 +1607,16 @@ function multipleEasy(nb, dificil) {
 		else if(dificil == 4.5)
 		{
 			m_4();
+		}
+		else if(dificil == 5)
+		{
+			if(!isSolved())
+			ollstep++;
+			speedOLL();
+		}
+		else if(dificil == 5.5)
+		{
+			speedOLL();
 		}
 		canMan = true;
 	}
@@ -2370,18 +2476,18 @@ p.keyPressed = (event) => {
 			break;
 			case 32: //space
 			//flipmode = 0;
-			setLayout();
-			console.log(layout);
-			console.log(CUBE)
-			console.log(cubyColors);
+			let str = "";
+			for(let i = undo.length-1; i >= 0; i--)
+			{
+				str += Inverse(undo[i]) + " ";
+			}
+			alert(str);
 			break;
 			case 16: //shift
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			setLayout();
-			let i = 2;
-			console.log(easystep);
+			console.log(sideSolved("b"));
 			break;
 			
 		}
@@ -2418,6 +2524,14 @@ p.keyPressed = (event) => {
 function setPLL(obj)
 {
 	obj2 = obj;
+}
+function setPBL(obj)
+{
+	pbls = obj;
+}
+function setOLL(obj)
+{
+	olls = obj;
 }
 function multiple(nb) {
 	if((MODE == "speed" || MODE == "moves") && arr.length > 1)
@@ -5316,6 +5430,36 @@ function renderCube() {
 			}
 		}
 	}
+function sideSolved(color)
+{
+	if(DIM == 50)
+	{
+		for(let i = 0; i < 6; i++)
+		{
+			let compare = layout[i][1][1][0];
+			let isSolved = (compare == color);
+			for(let x = 0; x < 3; x++)
+			{
+				for(let y= 0; y < 3; y++)
+				{
+					if(layout[i][x][y][0] != compare)
+						isSolved = false;
+				}
+			}
+			if(isSolved) return true;
+		}
+	}
+	else
+	{
+		for(let i = 0; i < 6; i++)
+		{
+			let compare = layout[i][0][0][0];
+			if(compare == color && layout[i][0][2][0] == compare && layout[i][2][0][0] == compare && layout[i][2][2][0] == compare)
+				return true;
+		}
+	}
+	return false;
+}
 function isSolved()
 {
 	//console.log("called");
@@ -5437,7 +5581,7 @@ window.addEventListener('keydown', (e) => {
 //66.60
 //66.04
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
-//Jaden WR 3x3: 25.4s, 20.9s, 19.7s, 16.6s
+//Jaden WR 3x3: 25.4s, 20.9s, 19.7s, 16.6s, 16.07s
 //Jaden WR 2x2: 3.88s
 //PLL Practice: 6.9s, 6.84s, 6.2s, 5.01s
 //Easy: 0.8, 0.52s
