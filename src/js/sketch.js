@@ -834,6 +834,10 @@ function regular(){
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='block';
 	}
+	elements = document.getElementsByClassName('pictures');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
 	document.getElementById("or_instruct").style.display = "block";
 	document.getElementById("or_instruct2").style.display = "block";
 	document.getElementById("or_instruct4").style.display = "block";
@@ -971,6 +975,7 @@ function movesmode()
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	}
+	
 	document.getElementById("m_34").style.display = "inline";
 	document.getElementById("m_4").style.display = "inline";
 	m_34step = 0;
@@ -1022,6 +1027,25 @@ function easy()
 {
 	undo = [];
 	redo = [];
+	let pics = ["pic1", "pic2", "pic3", "pic4"];
+	if(DIM == 100)
+		pics = ["pic11", "pic12", "pic13","pic14"]
+	if(easystep % 2 == 0)
+	{
+		var elements = document.getElementsByClassName('pictures');
+		for(var i=0; i<elements.length; i++) { 
+			elements[i].style.display='none';
+		}
+		if(easystep < 7)
+		{
+			document.getElementById(pics[easystep/2]).style.display = "inline";
+			if(easystep == 6 && DIM == 50)
+			document.getElementById("pic5").style.display = "inline";
+			if(easystep == 4 && DIM == 100)
+			document.getElementById("pic15").style.display = "inline";
+		}
+
+	}
 	if(easystep == 0)
 	{
 		ao5 = 0;
@@ -1029,6 +1053,7 @@ function easy()
 		reCam();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve the Cube";
 		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it.";
+		
 		showSpeed();
 		timer.stop();
 		timer.reset();
@@ -1186,6 +1211,21 @@ function easy()
 function medium(){ 
 	undo = [];
 	redo = [];
+	let pics = ["pic6", "pic7", "pic8", "pic9"];
+	if(medstep % 2 == 0)
+	{
+		var elements = document.getElementsByClassName('pictures');
+		for(var i=0; i<elements.length; i++) { 
+			elements[i].style.display='none';
+		}
+		if(medstep < 7)
+		{
+			document.getElementById(pics[medstep/2]).style.display = "inline";
+			if(medstep == 4)
+			document.getElementById("pic10").style.display = "inline";
+		}
+
+	}
 	if(medstep == 0)
 	{
 		reCam();
@@ -2308,16 +2348,22 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
+	if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) //escape
+	{
+		reSetup();
+		return;
+	}
 	if(canMan == true)
 	{
 		setLayout();
 		console.log("here");
 		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89";
 		let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89";
+		let bad3 = "88 90";
 		if(DIM == 100)
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81";
 		if(bad2.includes(p.keyCode) && DIM == 100 && p.keyCode > 9) return;
-
+		if(bad3.includes(p.keyCode) && p.keyCode > 9) return;
 		if(Math.round(timer.getTime() / 10)/100.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -2465,6 +2511,8 @@ p.keyPressed = (event) => {
 			speedSetup();
 			break;
 			case 192: //`
+			if(MODE == "normal")
+				shuffleCube();
 			if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
 			regular();
 			if(MODE == "moves")
@@ -2850,7 +2898,7 @@ function stepFour()
 	else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color)
 	{
 		document.getElementById("step").innerHTML = "Solving Corners on Bottom";
-		document.getElementById("fraction").innerHTML = "1/10):";
+		document.getElementById("fraction").innerHTML = "1/4):";
 		flipmode = 0;
 		console.log("color is " + color);
 		for(let i = 0; i < 4; i++)
@@ -2978,7 +3026,7 @@ function stepFive()
 	if(cornerOLL2() != 4)
 	{
 		document.getElementById("step").innerHTML = "Solving Corners on Top";
-		document.getElementById("fraction").innerHTML = "2/10):";
+		document.getElementById("fraction").innerHTML = "2/4):";
 		flipmode = 0;
 		for(let i = 0; i < 4; i++)
 		{
@@ -3018,7 +3066,7 @@ function stepFive()
 	else if(layout[5][0][0][0] != layout[5][0][2][0] || layout[0][0][0][0] != layout[0][0][2][0] || layout[5][2][0][0] != layout[5][2][2][0] || layout[0][2][0][0] != layout[0][2][2][0])
 	{
 		document.getElementById("step").innerHTML = "Permutation of Both Layers (PBL)";
-		document.getElementById("fraction").innerHTML = "3/10):";
+		document.getElementById("fraction").innerHTML = "3/4):";
 		arr = [];
 		setLayout();
 		let a = cornerPLL()[0];
@@ -3058,19 +3106,11 @@ function stepFive()
 			{
 				if(layout[5][0][0][0] == layout[5][0][2][0])
 					changeArr("R U' R F2 R' U R'")
-				else if(layout[0][0][0][0] == layout[0][0][2][0])
-					changeArr("U'");
-				else
-					changeArr("U");
 			}
 			else if(a == 1 && b == 4)
 			{
 				if(layout[0][0][0][0] == layout[0][0][2][0])
 					changeArr("B U2 R U' B' U B U R' U B'");
-				else if(layout[4][0][0][0] == layout[4][0][2][0])
-					changeArr("U'");
-				else
-					changeArr("U");
 			}
 			else if(a == 0 && b == 4)
 			{
@@ -3087,7 +3127,7 @@ function stepFive()
 	else if(!isSolved())
 	{
 		document.getElementById("step").innerHTML = "Adjust Upper Face (AUF)";
-		document.getElementById("fraction").innerHTML = "3/10):";
+		document.getElementById("fraction").innerHTML = "4/4):";
 		if(layout[0][0][0][0] == layout[5][2][0][0])
 			changeArr("U'");
 		else
@@ -5581,9 +5621,10 @@ window.addEventListener('keydown', (e) => {
 //66.60
 //66.04
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
-//Jaden WR 3x3: 25.4s, 20.9s, 19.7s, 16.6s, 16.07s
-//Jaden WR 2x2: 3.88s
-//PLL Practice: 6.9s, 6.84s, 6.2s, 5.01s
+//Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
+//Jaden WR 2x2: 3.88
+//PLL Practice: 6.9, 6.84, 6.2, 5.01
+//OLL Practice: 4.66, 4.31, 3.2
 //Easy: 0.8, 0.52s
 //Medium: 15.4s, 13.58s
 //FMC: 193
@@ -5631,7 +5672,7 @@ window.addEventListener('keydown', (e) => {
 // L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (70, was 48)
 // R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (was 41, 61)
 //WORLD RECORD SCRAMBLES 2x2
-//L' R B L' D L R' U F' B L R' F U L F' B' F R2(4)
+//L' R B L' D L R' U F' B L R' F U L F' B' F R2 (4)
 /*Mr Sunshine give us your rays
 You're the one who brightens our days
 Without your warmth there'll be no tommorow

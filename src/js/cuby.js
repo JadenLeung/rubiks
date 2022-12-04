@@ -296,6 +296,7 @@ export default class Cuby {
   
   show() {
     let arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
+    //arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
     if(arr.includes(this.index) && this.cubysize == 100) return;
     let r = this.cubysize / 2;
     this.p.push();
