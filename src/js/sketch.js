@@ -12,6 +12,7 @@ export default function (p) {
 	let PICKER;
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
+	let DIM2 = 50;
 	let RND_COLORS;
 	let GAP = 0;
 	let SIZE = 3;
@@ -22,6 +23,8 @@ export default function (p) {
 	let DELAY_SLIDER;
 	let TWOBYTWO;
 	let THREEBYTHREE;
+	let NBYN;
+	let custom = 0;
 	let inp;
 	let MODE = "normal";
 	let SPEED = 0.01;
@@ -53,7 +56,11 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
+
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6;
+
 	// attach event
+
 	link1.onclick = function(e) { return myHandler(e); };
 
 	fetch('src/PLL.json')
@@ -266,6 +273,88 @@ p.setup = () => {
 	THREEBYTHREE.parent("type2");
 	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
 	THREEBYTHREE.style('background-color', "#f5f573");
+
+	NBYN = p.createButton('Other');
+	NBYN.parent("type4");
+	NBYN.mousePressed(cubemode.bind(null, 0));
+
+	SEL = p.createSelect(); //Top
+	SEL.parent("select1")
+	SEL.option('blue'); SEL.option('white'); SEL.option('red'); SEL.option('green'); SEL.option('yellow'); SEL.option('orange');
+	SEL.selected('blue');
+
+	SEL2 = p.createSelect(); //Left
+	SEL2.parent("select2")
+	SEL2.option('blue'); SEL2.option('white'); SEL2.option('red'); SEL2.option('green'); SEL2.option('yellow'); SEL2.option('orange');
+	SEL2.selected('orange');
+
+	SEL3 = p.createSelect(); //front
+	SEL3.parent("select3")
+	SEL3.option('blue'); SEL3.option('white'); SEL3.option('red'); SEL3.option('green'); SEL3.option('yellow'); SEL3.option('orange');
+	SEL3.selected('white');
+
+	SEL4 = p.createSelect(); //right
+	SEL4.parent("select4")
+	SEL4.option('blue'); SEL4.option('white'); SEL4.option('red'); SEL4.option('green'); SEL4.option('yellow'); SEL4.option('orange');
+	SEL4.selected('red');
+
+	SEL5 = p.createSelect(); //bottom
+	SEL5.parent("select5")
+	SEL5.option('blue'); SEL5.option('white'); SEL5.option('red'); SEL5.option('green'); SEL5.option('yellow'); SEL5.option('orange');
+	SEL5.selected('green');
+
+	SEL6 = p.createSelect(); //right
+	SEL6.parent("select6")
+	SEL6.option('blue'); SEL6.option('white'); SEL6.option('red'); SEL6.option('green'); SEL6.option('yellow'); SEL6.option('orange');
+	SEL6.selected('yellow');
+
+  	SEL.changed(change9.bind(null, 0));
+	SEL2.changed(change9.bind(null, 0));
+	SEL3.changed(change9.bind(null, 0));
+	SEL4.changed(change9.bind(null, 0));
+	SEL5.changed(change9.bind(null, 0));
+	SEL6.changed(change9.bind(null, 0));
+
+	const DEAFULT = p.createButton('Restore Defaults');
+	DEAFULT.parent("select7");
+	DEAFULT.mousePressed(changeZero.bind(null, 0));
+	DEAFULT.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const ONEBYTHREE = p.createButton('1x3x3');
+	ONEBYTHREE.parent("cube1");
+	ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
+	ONEBYTHREE.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const SANDWICH = p.createButton('Sandwich Cube');
+	SANDWICH.parent("cube2");
+	SANDWICH.mousePressed(changeFive.bind(null, 0));
+	SANDWICH.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const CUBE3 = p.createButton('Plus Cube');
+	CUBE3.parent("cube3");
+	CUBE3.mousePressed(changeSix.bind(null, 0));
+	CUBE3.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const CUBE4 = p.createButton('Christmas 3x3');
+	CUBE4.parent("cube4");
+	CUBE4.mousePressed(changeSeven.bind(null, 0));
+	CUBE4.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const CUBE5 = p.createButton('Christmas 2x2');
+	CUBE5.parent("cube5");
+	CUBE5.mousePressed(change8.bind(null, 0));
+	CUBE5.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const CUSTOM = p.createButton('Custom Mod');
+	CUSTOM.parent("custom");
+	CUSTOM.mousePressed(Custom.bind(null, 0));
+	CUSTOM.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	const BACK = p.createButton('Back');
+	BACK.parent("custom3");
+	BACK.mousePressed(cubemode.bind(null, 0));
+	BACK.style("height:50px; width:180px; text-align:center; font-size:20px;");
+	
 	
 	const RESET = p.createButton('Reset');
 	RESET.parent("reset_div");
@@ -336,6 +425,8 @@ p.setup = () => {
 	const GO_BTN = p.createButton('Go!');
 	GO_BTN.parent("test_alg_div");
 	GO_BTN.mousePressed(testAlg.bind(null, 0));	
+
+	regular();
 }
 setInterval(() => {
 	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
@@ -712,6 +803,7 @@ function giveUp()
 }
 function changeTwo()
 {
+	DIM2 = 100;
 	DIM = 100;
 	CAMZOOM = 0;
 	THREEBYTHREE.remove();
@@ -732,6 +824,7 @@ function changeTwo()
 }
 function changeThree()
 {
+	DIM2 = 50;
 	DIM = 50;
 	CAMZOOM = -150;
 	THREEBYTHREE.style('background-color', "#f5f573");
@@ -749,6 +842,81 @@ function changeThree()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
+}
+function changeCam(dim)
+{
+	SIZE_SLIDER2.remove();
+	if(dim == 3)
+	{
+		SIZE_SLIDER2 = p.createSlider(0, 300, 150, 5);
+		SIZE_SLIDER2.input(sliderUpdate2);
+		SIZE_SLIDER2.parent("size");
+		SIZE_SLIDER2.style('width', '100px');
+	}
+	else
+	{
+		SIZE_SLIDER2 = p.createSlider(-150, 150, 0, 5);
+		SIZE_SLIDER2.input(sliderUpdate2);
+		SIZE_SLIDER2.parent("size");
+		SIZE_SLIDER2.style('width', '100px');
+	}
+	reSetup();
+}
+function changeZero()
+{
+	SEL.selected("blue");
+	SEL2.selected("orange");
+	SEL3.selected("white");
+	SEL4.selected("red");
+	SEL5.selected("green");
+	SEL6.selected("yellow");
+	change9();
+}
+function changeFour(){
+	DIM = 1;
+	CAMZOOM = -150;
+	changeCam(3);
+}
+function changeFive(){
+	DIM = 2;
+	CAMZOOM = -150;
+	changeCam(3);
+}
+function changeSix(){
+	DIM = 3;
+	CAMZOOM = -150;
+	changeCam(3);
+}
+function changeSeven(){
+	DIM = 4;
+	CAMZOOM = -150;
+	changeCam(3);
+}
+function change8(){
+	DIM = 5;
+	CAMZOOM = 0;
+	changeCam(2);
+}
+function change9()
+{
+	DIM = [];
+	DIM[0] = SEL.value();
+	DIM[1] = SEL2.value();
+	DIM[2] = SEL3.value();
+	DIM[3] = SEL4.value();
+	DIM[4] = SEL5.value();
+	DIM[5] = SEL6.value();
+	CAMZOOM = -150;
+	changeCam(3);
+	reSetup();
+}
+function Custom()
+{
+	custom = 1;
+	document.getElementById("cube").style.display = "none";
+	document.getElementById("or_instruct3").style.display = "none";
+	document.getElementById("custom2").style.display = "block";
+	change9();
 }
 function Reverse(move)
 {
@@ -828,6 +996,11 @@ function regular(){
 	document.getElementById("scramble").innerHTML = "N/A";
 	DELAY = DELAY_SLIDER.value();
 	canMan = true;
+	DIM = DIM2;
+	if(DIM == 100)
+		CAMZOOM = 0;
+	else
+		CAMZOOM = -150;
 	reSetup();
 	MODE = "normal"
 	var elements = document.getElementsByClassName('normal');
@@ -842,6 +1015,7 @@ function regular(){
 	document.getElementById("or_instruct2").style.display = "block";
 	document.getElementById("or_instruct4").style.display = "block";
 	document.getElementById("test_alg_div").style.display = "block";
+	document.getElementById("type3").style.display = "block";
 	document.getElementById("shuffle_div").style.display = "inline";
 	document.getElementById("reset_div").style.display = "inline";
 	document.getElementById("solve").style.display = "inline";
@@ -878,6 +1052,8 @@ function regular(){
 	document.getElementById("giveup").style.display = "none";
 	document.getElementById("giveup2").style.display = "none";
 	document.getElementById("hint").style.display = "none";
+	document.getElementById("cube").style.display = "none";
+	document.getElementById("custom2").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -896,6 +1072,7 @@ function timedmode()
 		scrambles = [];
 		regular();
 	}
+	DIM = DIM2;
 	DELAY = 0;
 	MODE = "timed";
 	reSetup();
@@ -916,12 +1093,45 @@ function timedmode()
 	document.getElementById("alltimes").style.display = "block";
 	document.getElementById("link1").style.display = "block";
 }
+function cubemode()
+{
+	ao5 = [];
+	mo5 = [];
+	custom = 0;
+	movesarr = [];
+	scrambles = [];
+	regular();
+	DELAY = 0;
+	MODE = "cube";
+	reSetup();
+	document.getElementById("mode").style.display = "none";
+	document.getElementById("mode2").style.display = "none";
+	document.getElementById("mode3").style.display = "none";
+	document.getElementById("mode7").style.display = "none";
+	document.getElementById("solve").style.display = "none";
+	//document.getElementById("outermoves").style.display = "none";
+	//document.getElementById("outertime").style.display = "none";
+	//document.getElementById("times_par").style.display = "none";
+	//document.getElementById("moves_par").style.display = "none";
+	document.getElementById("mode4").style.display = "inline";
+	document.getElementById("mode5").style.display = "inline";
+	document.getElementById("mode6").style.display = "inline";
+	document.getElementById("mode8").style.display = "inline";
+	document.getElementById("type3").style.display = "none";
+	document.getElementById("or_instruct").style.display = "none";
+	document.getElementById("or_instruct2").style.display = "none";
+	document.getElementById("or_instruct3").style.display = "block";
+	document.getElementById("or_instruct4").style.display = "none";
+	document.getElementById("or_instruct3").innerHTML = "Select a cube to try it out!";
+	document.getElementById("cube").style.display = "block";
+}
 function speedmode()
 {
 	regular();
 	DELAY = 0;
 	canMan = false;
 	MODE = "speed"
+	DIM = DIM2;
 	reSetup();
 	ao5 = [];
 	mo5 = [];
@@ -960,6 +1170,7 @@ function movesmode()
 	m_offset = 0;
 	canMan = false;
 	MODE = "moves"
+	DIM = DIM2;
 	reSetup();
 	ao5 = [];
 	mo5 = [];
@@ -1372,7 +1583,7 @@ function speedOLL()
 		if(ollstep == 0)
 		ao5 = 0;
 		quickSolve();
-		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
+		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Top Layer";
 		showSpeed();
 		timer.stop();
 		timer.reset();
@@ -2503,7 +2714,7 @@ p.keyPressed = (event) => {
 			Redo();
 			break;
 			case 27: //escape
-			if(MODE == "normal" || MODE == "timed") 
+			if(MODE == "normal" || MODE == "timed" || MODE == "cube") 
 			reSetup();
 			if(MODE == "moves")
 			moveSetup();
@@ -2519,23 +2730,48 @@ p.keyPressed = (event) => {
 			movesmode();
 			if(MODE == "speed")
 			speedmode();
-			if(MODE == "timed")
+			if(MODE == "timed" || (MODE == "cube" && custom == 0))
 			regular();
+			if(MODE == "cube" && custom == 1)
+			{
+				cubemode();
+				custom = 0
+			}
 			break;
 			case 32: //space
+			if(MODE == "cube")
+			{
+				if(timer.isRunning && moves > 0)
+				{
+					timer.stop();
+					movesarr.push(moves);
+					if(ao5.length<5)
+					{
+						ao5.push(Math.round(timer.getTime() / 10)/100.0);
+						mo5.push(Math.round(timer.getTime() / 10)/100.0);
+					}
+					else
+					{
+						ao5.push(Math.round(timer.getTime() / 10)/100.0);
+						mo5.push(Math.round(timer.getTime() / 10)/100.0);
+						ao5.shift()
+					}
+					displayAverage();
+				}
+			}
 			//flipmode = 0;
 			let str = "";
 			for(let i = undo.length-1; i >= 0; i--)
 			{
 				str += Inverse(undo[i]) + " ";
 			}
-			alert(str);
+			console.log(layout)
 			break;
 			case 16: //shift
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(sideSolved("b"));
+			console.log(DIM, DIM2, "din");
 			break;
 			
 		}
@@ -4784,6 +5020,7 @@ function goodF2L2(){
 function setLayout(){
 	//nora
 	let cnt = 0;
+	if(MODE == "cube")return;
 	let temp = [];
 	//left, right, top, bottom, back, front
 	let axis = ["z", "z", "x", "x", "y", "y"];
@@ -5037,7 +5274,8 @@ function testAlg(){
 //   *************************************
 
 p.mousePressed = () => {
-	startAction();
+	if(MODE != "cube")
+		startAction();
 }
 
 p.touchStarted = () => {

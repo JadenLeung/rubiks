@@ -7,7 +7,7 @@ export default class Cuby {
     this.z = z;
     this.picker = picker;
     this.p = p;
-	this.index = index;
+	  this.index = index;
 
 	/*
     this.colors = {
@@ -36,6 +36,21 @@ export default class Cuby {
     this.back = this.colors.orange;
     this.left = this.colors.green;
     
+    if(size == 4 || size == 5)
+    {
+      this.bottom = this.colors.white;
+      this.right = this.colors.green;
+      this.back = this.colors.red;
+    }
+    if(Array.isArray(size) == true)
+    {
+      this.top = this.colors[size[2]];
+      this.bottom = this.colors[size[5]];
+      this.front = this.colors[size[3]];
+      this.right = this.colors[size[0]];
+      this.back = this.colors[size[1]];
+      this.left = this.colors[size[4]];
+    }
     this.buff_top = buff[2];
     this.buff_bottom = buff[3];
     this.buff_front = buff[0];
@@ -295,12 +310,21 @@ export default class Cuby {
   }
   
   show() {
-    let arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
-    //arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-    if(arr.includes(this.index) && this.cubysize == 100) return;
-    let r = this.cubysize / 2;
+    let arr = [];
+    if(this.cubysize == 100 || this.cubysize == 5)
+      arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
+    if(this.cubysize == 1)
+      arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+    if(this.cubysize == 2)
+      arr = [9,10,11,12,13,14,15,16,17];
+    if(this.cubysize == 3)
+      arr = [0,2,6,8,18,20,24,26];
+
+    if(arr.includes(this.index) && this.cubysize != 50) return;
+    let r = 25;
+    if(this.cubysize == 100 || this.cubysize == 5)
+      r = 50;
     this.p.push();
-    
 	this.p.translate(this.x, this.y, this.z);
 	this.p.strokeWeight(0.5);
 	this.p.stroke('black');
