@@ -24,6 +24,7 @@ export default function (p) {
 	let TWOBYTWO;
 	let THREEBYTHREE;
 	let NBYN;
+	let CHECK = [];
 	let custom = 0;
 	let inp;
 	let MODE = "normal";
@@ -315,10 +316,32 @@ p.setup = () => {
 	SEL5.changed(change9.bind(null, 0));
 	SEL6.changed(change9.bind(null, 0));
 
-	const DEAFULT = p.createButton('Restore Defaults');
+	for(let i = 0; i < 27; i++)
+	{
+		if(i < 9)
+			CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
+		else if(i < 18)
+			CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
+		else
+			CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
+		if(i < 9)
+			CHECK[i].parent("check1");
+		else if(i < 18)
+			CHECK[i].parent("check2");
+		else
+			CHECK[i].parent("check3");
+		CHECK[i].style("display:inline; padding-right:5px")
+		CHECK[i].changed(change9.bind(null, 0));
+	}
+	const BACK = p.createButton('Back');
+	BACK.parent("custom3");
+	BACK.mousePressed(cubemode.bind(null, 0));
+	BACK.style("height:40px; width:85px; text-align:center; font-size:15px;");
+
+	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
 	DEAFULT.mousePressed(changeZero.bind(null, 0));
-	DEAFULT.style("height:50px; width:180px; text-align:center; font-size:20px;");
+	DEAFULT.style("height:40px; width:85px; text-align:center; font-size:15px;");
 
 	const ONEBYTHREE = p.createButton('1x3x3');
 	ONEBYTHREE.parent("cube1");
@@ -350,11 +373,6 @@ p.setup = () => {
 	CUSTOM.mousePressed(Custom.bind(null, 0));
 	CUSTOM.style("height:50px; width:180px; text-align:center; font-size:20px;");
 
-	const BACK = p.createButton('Back');
-	BACK.parent("custom3");
-	BACK.mousePressed(cubemode.bind(null, 0));
-	BACK.style("height:50px; width:180px; text-align:center; font-size:20px;");
-	
 	
 	const RESET = p.createButton('Reset');
 	RESET.parent("reset_div");
@@ -870,6 +888,27 @@ function changeZero()
 	SEL4.selected("red");
 	SEL5.selected("green");
 	SEL6.selected("yellow");
+	for(let i = 0; i < 27; i++)
+	{
+		CHECK[i].remove();
+	}
+	for(let i = 0; i < 27; i++)
+	{
+		if(i < 9)
+			CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
+		else if(i < 18)
+			CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
+		else
+			CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
+		if(i < 9)
+			CHECK[i].parent("check1");
+		else if(i < 18)
+			CHECK[i].parent("check2");
+		else
+			CHECK[i].parent("check3");
+		CHECK[i].style("display:inline; padding-right:5px")
+		CHECK[i].changed(change9.bind(null, 0));
+	}
 	change9();
 }
 function changeFour(){
@@ -907,6 +946,14 @@ function change9()
 	DIM[4] = SEL5.value();
 	DIM[5] = SEL6.value();
 	CAMZOOM = -150;
+
+	let checked = [];
+	for(let i = 0; i < 27; i++)
+	{
+		if(!CHECK[i].checked())
+			checked.push(i);
+	}
+	DIM[6] = checked; 
 	changeCam(3);
 	reSetup();
 }
