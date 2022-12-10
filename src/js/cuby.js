@@ -312,9 +312,7 @@ export default class Cuby {
   show() {
     let arr = [];
     if(Array.isArray(this.cubysize) == true)
-    {
       arr = this.cubysize[6];
-    }
     else if(this.cubysize == 100 || this.cubysize == 5)
       arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
     else if(this.cubysize == 1)
@@ -326,7 +324,7 @@ export default class Cuby {
 
     if(arr.includes(this.index) && this.cubysize != 50) return;
     let r = 25;
-    if(this.cubysize == 100 || this.cubysize == 5 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
+    if(this.cubysize == 100 || this.cubysize == 5)
       r = 50;
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);

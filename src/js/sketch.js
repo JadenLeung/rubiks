@@ -13,7 +13,6 @@ export default function (p) {
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
 	let DIM2 = 50;
-	let DIM3 = 3;
 	let RND_COLORS;
 	let GAP = 0;
 	let SIZE = 3;
@@ -59,7 +58,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6;
 
 	// attach event
 
@@ -334,23 +333,15 @@ p.setup = () => {
 		CHECK[i].style("display:inline; padding-right:5px")
 		CHECK[i].changed(change9.bind(null, 0));
 	}
-	SEL7 = p.createSelect();
-	SEL7.option("2x2");
-	SEL7.option("3x3");
-	SEL7.parent("select8")
-	SEL7.selected('3x3');
-	SEL7.changed(change9.bind(null, 0));
-
-
 	const BACK = p.createButton('Back');
 	BACK.parent("custom3");
 	BACK.mousePressed(cubemode.bind(null, 0));
-	BACK.style("height:30px; width:85px; text-align:center; font-size:15px;");
+	BACK.style("height:40px; width:85px; text-align:center; font-size:15px;");
 
 	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
 	DEAFULT.mousePressed(changeZero.bind(null, 0));
-	DEAFULT.style("height:30px; width:85px; text-align:center; font-size:15px;");
+	DEAFULT.style("height:40px; width:85px; text-align:center; font-size:15px;");
 
 	const ONEBYTHREE = p.createButton('1x3x3');
 	ONEBYTHREE.parent("cube1");
@@ -954,46 +945,7 @@ function change9()
 	DIM[3] = SEL4.value();
 	DIM[4] = SEL5.value();
 	DIM[5] = SEL6.value();
-	if(SEL7.value() == "3x3")
-	{
-		CAMZOOM = -150;
-		if(DIM3 == 2)
-		{
-			for(let i = 0; i < 27; i++)
-			{
-				CHECK[i].remove();
-			}
-			for(let i = 0; i < 27; i++)
-			{
-				if(i < 9)
-					CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
-				else if(i < 18)
-					CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
-				else
-					CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
-				if(i < 9)
-					CHECK[i].parent("check1");
-				else if(i < 18)
-					CHECK[i].parent("check2");
-				else
-					CHECK[i].parent("check3");
-				CHECK[i].style("display:inline; padding-right:5px")
-				CHECK[i].changed(change9.bind(null, 0));
-			}
-			DIM3 = 3;
-		}
-	}
-	else
-	{
-		DIM3 = 2;
-		let arr3 = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
-		for(let i = 0; i < 27; i++)
-		{
-			if(arr3.includes(i))
-				CHECK[i].remove();
-		}
-		CAMZOOM = 0;
-	}
+	CAMZOOM = -150;
 
 	let checked = [];
 	for(let i = 0; i < 27; i++)
@@ -1001,20 +953,8 @@ function change9()
 		if(!CHECK[i].checked())
 			checked.push(i);
 	}
-	if(DIM3 == 2)
-		checked.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
 	DIM[6] = checked; 
-	DIM[7] = DIM3;
-	if(SEL7.value() == "3x3")
-	{
-		document.getElementById("selectm").style.display = "block";
-		changeCam(3);
-	}
-	else
-	{
-		document.getElementById("selectm").style.display = "none";
-		changeCam(2);
-	}
+	changeCam(3);
 	reSetup();
 }
 function Custom()
@@ -2872,13 +2812,13 @@ p.keyPressed = (event) => {
 			{
 				str += Inverse(undo[i]) + " ";
 			}
-			console.log(layout, cubyColors, CUBE)
+			console.log(layout)
 			break;
 			case 16: //shift
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(CHECK[1], DIM);
+			console.log(DIM, DIM2, "din");
 			break;
 			
 		}
@@ -5158,7 +5098,7 @@ function setLayout(){
 		{
 			for(let y = 0; y < SIZE; y++)
 			{
-				if(temp2[x][y] > 9)
+				if(temp2[x][y] > SIZE * SIZE)
 				layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " " + temp2[x][y];
 				else
 				layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " 0" + temp2[x][y];
