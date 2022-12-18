@@ -27,6 +27,8 @@ export default class Cuby {
       orange:p.color(219 + this.x*0.02, 125 + this.y*0.02, 25 + this.z*0.02),
       green: p.color(25 + this.x*0.02,  219 + this.y*0.02, 31 + this.z*0.02),
       yellow:p.color(209 + this.x*0.02, 219 + this.y*0.02, 25 + this.z*0.02),
+      black:p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
+      magenta:p.color("magenta"),
     };
 	
     this.top = this.colors.white;
@@ -312,7 +314,9 @@ export default class Cuby {
   show() {
     let arr = [];
     if(Array.isArray(this.cubysize) == true)
+    {
       arr = this.cubysize[6];
+    }
     else if(this.cubysize == 100 || this.cubysize == 5)
       arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
     else if(this.cubysize == 1)
@@ -324,7 +328,7 @@ export default class Cuby {
 
     if(arr.includes(this.index) && this.cubysize != 50) return;
     let r = 25;
-    if(this.cubysize == 100 || this.cubysize == 5)
+    if(this.cubysize == 100 || this.cubysize == 5 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
       r = 50;
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);

@@ -119,7 +119,7 @@ class EasyCam {
     // mouse action speed
     this.scale_rotation  = 0.001;
     this.scale_pan       = 0.0002;
-    //this.scale_zoom      = 0.001;
+    this.scale_zoom      = 0.001;
     //this.scale_zoomwheel = 20.0;
 
     // zoom limits
@@ -288,12 +288,12 @@ class EasyCam {
 
       dblclick : function(event){
         // Account for canvas shift:
-        /*var offX = cam.offset[0] - window.scrollX,
+        var offX = cam.offset[0] - window.scrollX,
             offY = cam.offset[1] - window.scrollY;
 
         if(cam.mouse.insideViewport(event.x - offX, event.y - offY)){
           cam.reset();
-        }*/
+        }
       },
 
       wheel : function(event){
@@ -352,7 +352,7 @@ class EasyCam {
         mouse.istouchdown = mouse.insideViewport(mouse.curr[0], mouse.curr[1]);
         mouse.isPressed = (cam.mouse.istouchdown || cam.mouse.ismousedown);
 
-        mouse.dbltap(event);
+        //mouse.dbltap(event);
       },
 
       touchmove : function(event){

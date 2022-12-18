@@ -13,6 +13,7 @@ export default function (p) {
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
 	let DIM2 = 50;
+	let DIM3 = 3;
 	let RND_COLORS;
 	let GAP = 0;
 	let SIZE = 3;
@@ -58,7 +59,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
 
 	// attach event
 
@@ -281,32 +282,37 @@ p.setup = () => {
 
 	SEL = p.createSelect(); //Top
 	SEL.parent("select1")
-	SEL.option('blue'); SEL.option('white'); SEL.option('red'); SEL.option('green'); SEL.option('yellow'); SEL.option('orange');
-	SEL.selected('blue');
 
 	SEL2 = p.createSelect(); //Left
 	SEL2.parent("select2")
-	SEL2.option('blue'); SEL2.option('white'); SEL2.option('red'); SEL2.option('green'); SEL2.option('yellow'); SEL2.option('orange');
-	SEL2.selected('orange');
 
 	SEL3 = p.createSelect(); //front
 	SEL3.parent("select3")
-	SEL3.option('blue'); SEL3.option('white'); SEL3.option('red'); SEL3.option('green'); SEL3.option('yellow'); SEL3.option('orange');
-	SEL3.selected('white');
 
 	SEL4 = p.createSelect(); //right
 	SEL4.parent("select4")
-	SEL4.option('blue'); SEL4.option('white'); SEL4.option('red'); SEL4.option('green'); SEL4.option('yellow'); SEL4.option('orange');
-	SEL4.selected('red');
 
 	SEL5 = p.createSelect(); //bottom
 	SEL5.parent("select5")
-	SEL5.option('blue'); SEL5.option('white'); SEL5.option('red'); SEL5.option('green'); SEL5.option('yellow'); SEL5.option('orange');
-	SEL5.selected('green');
 
 	SEL6 = p.createSelect(); //right
 	SEL6.parent("select6")
-	SEL6.option('blue'); SEL6.option('white'); SEL6.option('red'); SEL6.option('green'); SEL6.option('yellow'); SEL6.option('orange');
+
+	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
+	for(let i = 0; i < colors2.length; i++)
+	{
+		SEL.option(colors2[i]);
+		SEL2.option(colors2[i]);
+		SEL3.option(colors2[i]);
+		SEL4.option(colors2[i]);
+		SEL5.option(colors2[i]);
+		SEL6.option(colors2[i]);
+	}
+	SEL.selected('blue');
+	SEL2.selected('orange');
+	SEL3.selected('white');
+	SEL4.selected('red');
+	SEL5.selected('green');
 	SEL6.selected('yellow');
 
   	SEL.changed(change9.bind(null, 0));
@@ -333,15 +339,23 @@ p.setup = () => {
 		CHECK[i].style("display:inline; padding-right:5px")
 		CHECK[i].changed(change9.bind(null, 0));
 	}
+	SEL7 = p.createSelect();
+	SEL7.option("2x2");
+	SEL7.option("3x3");
+	SEL7.parent("select8")
+	SEL7.selected('3x3');
+	SEL7.changed(change9.bind(null, 0));
+
+
 	const BACK = p.createButton('Back');
 	BACK.parent("custom3");
 	BACK.mousePressed(cubemode.bind(null, 0));
-	BACK.style("height:40px; width:85px; text-align:center; font-size:15px;");
+	BACK.style("height:30px; width:85px; text-align:center; font-size:15px;");
 
 	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
 	DEAFULT.mousePressed(changeZero.bind(null, 0));
-	DEAFULT.style("height:40px; width:85px; text-align:center; font-size:15px;");
+	DEAFULT.style("height:30px; width:85px; text-align:center; font-size:15px;");
 
 	const ONEBYTHREE = p.createButton('1x3x3');
 	ONEBYTHREE.parent("cube1");
@@ -465,8 +479,9 @@ setInterval(() => {
 	{
 		timer.stop();
 		flipmode2 = 0;
+		console.log("okk " + canMan + " k")
 		movesarr.push(moves);
-		if(canMan == true)
+		if(true == true)
 		{
 			if(ao5.length<5)
 			{
@@ -945,7 +960,46 @@ function change9()
 	DIM[3] = SEL4.value();
 	DIM[4] = SEL5.value();
 	DIM[5] = SEL6.value();
-	CAMZOOM = -150;
+	if(SEL7.value() == "3x3")
+	{
+		CAMZOOM = -150;
+		if(DIM3 == 2)
+		{
+			for(let i = 0; i < 27; i++)
+			{
+				CHECK[i].remove();
+			}
+			for(let i = 0; i < 27; i++)
+			{
+				if(i < 9)
+					CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
+				else if(i < 18)
+					CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
+				else
+					CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
+				if(i < 9)
+					CHECK[i].parent("check1");
+				else if(i < 18)
+					CHECK[i].parent("check2");
+				else
+					CHECK[i].parent("check3");
+				CHECK[i].style("display:inline; padding-right:5px")
+				CHECK[i].changed(change9.bind(null, 0));
+			}
+			DIM3 = 3;
+		}
+	}
+	else
+	{
+		DIM3 = 2;
+		let arr3 = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
+		for(let i = 0; i < 27; i++)
+		{
+			if(arr3.includes(i))
+				CHECK[i].remove();
+		}
+		CAMZOOM = 0;
+	}
 
 	let checked = [];
 	for(let i = 0; i < 27; i++)
@@ -953,8 +1007,20 @@ function change9()
 		if(!CHECK[i].checked())
 			checked.push(i);
 	}
+	if(DIM3 == 2)
+		checked.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
 	DIM[6] = checked; 
-	changeCam(3);
+	DIM[7] = DIM3;
+	if(SEL7.value() == "3x3")
+	{
+		document.getElementById("selectm").style.display = "block";
+		changeCam(3);
+	}
+	else
+	{
+		document.getElementById("selectm").style.display = "none";
+		changeCam(2);
+	}
 	reSetup();
 }
 function Custom()
@@ -1033,7 +1099,7 @@ function sliderUpdate2(){
 }
 //Henry
 function regular(){
-	if(MODE != "timed")
+	if(MODE != "timed" && MODE != "cube")
 	{
 		ao5 = [];
 		mo5 = [];
@@ -1111,14 +1177,15 @@ function regular(){
 }
 function timedmode()
 {
-	if(MODE != "normal")
+	if(MODE != "normal" && MODE != "cube")
 	{
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
 		scrambles = [];
-		regular();
 	}
+	if(MODE != "normal")
+		regular();
 	DIM = DIM2;
 	DELAY = 0;
 	MODE = "timed";
@@ -1139,16 +1206,23 @@ function timedmode()
 	document.getElementById("or_instruct3").innerHTML = "Stats Mode";
 	document.getElementById("alltimes").style.display = "block";
 	document.getElementById("link1").style.display = "block";
+	document.getElementById("custom2").style.display = "none";
+	document.getElementById("cube").style.display = "none";
+	document.getElementById("type3").style.display = "block";
 }
 function cubemode()
 {
-	ao5 = [];
-	mo5 = [];
-	custom = 0;
-	movesarr = [];
-	scrambles = [];
-	regular();
+	if(MODE != "cube" && MODE != "normal" && MODE != "timed")
+	{
+		ao5 = [];
+		mo5 = [];
+		custom = 0;
+		movesarr = [];
+		scrambles = [];
+	}
 	DELAY = 0;
+	if(MODE != "normal")
+	regular();
 	MODE = "cube";
 	reSetup();
 	document.getElementById("mode").style.display = "none";
@@ -1169,6 +1243,7 @@ function cubemode()
 	document.getElementById("or_instruct2").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "block";
 	document.getElementById("or_instruct4").style.display = "none";
+	document.getElementById("custom2").style.display = "none";
 	document.getElementById("or_instruct3").innerHTML = "Select a cube to try it out!";
 	document.getElementById("cube").style.display = "block";
 }
@@ -2812,13 +2887,13 @@ p.keyPressed = (event) => {
 			{
 				str += Inverse(undo[i]) + " ";
 			}
-			console.log(layout)
+			console.log(layout, cubyColors, CUBE)
 			break;
 			case 16: //shift
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(DIM, DIM2, "din");
+			console.log(movesarr);
 			break;
 			
 		}
@@ -3284,20 +3359,6 @@ function stepFour()
 		document.getElementById("step").innerHTML = "";
 		document.getElementById("fraction").innerHTML = "";
 		document.getElementById("stepbig").innerHTML = "";
-		timer.stop();
-		movesarr.push(moves);
-		scrambles.push(document.getElementById('scramble').innerText)
-		if(ao5.length<5)
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		}
-		else
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-			ao5.shift()
-		}
 		canMan = true;
 		saystep = 0;
 	}
@@ -3421,20 +3482,6 @@ function stepFive()
 		document.getElementById("step").innerHTML = "";
 		document.getElementById("fraction").innerHTML = "";
 		document.getElementById("stepbig").innerHTML = "";
-		timer.stop();
-		movesarr.push(moves);
-		scrambles.push(document.getElementById('scramble').innerText)
-		if(ao5.length<5)
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		}
-		else
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-			ao5.shift()
-		}
 		saystep = 0;
 		canMan = true;
 	}
@@ -4323,20 +4370,6 @@ else
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("stepbig").innerHTML = "";
-	timer.stop();
-	movesarr.push(moves);
-	scrambles.push(document.getElementById('scramble').innerText)
-	if(ao5.length<5)
-	{
-		ao5.push(Math.round(timer.getTime() / 10)/100.0);
-		mo5.push(Math.round(timer.getTime() / 10)/100.0);
-	}
-	else
-	{
-		ao5.push(Math.round(timer.getTime() / 10)/100.0);
-		mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		ao5.shift()
-	}
 	canMan = true;
 	saystep = 0;
 }
@@ -4359,21 +4392,9 @@ if(isSolved())
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
-	timer.stop();
 	movesarr.push(moves);
 	scrambles.push(document.getElementById('scramble').innerText)
 	flipmode = 0;
-	if(ao5.length<5)
-	{
-		ao5.push(Math.round(timer.getTime() / 10)/100.0);
-		mo5.push(Math.round(timer.getTime() / 10)/100.0);
-	}
-	else
-	{
-		ao5.push(Math.round(timer.getTime() / 10)/100.0);
-		mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		ao5.shift()
-	}
 	saystep = 0;
 	canMan = true;
 	return;
@@ -4732,20 +4753,6 @@ else
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("stepbig").innerHTML = "";
-	timer.stop();
-	movesarr.push(moves);
-	scrambles.push(document.getElementById('scramble').innerText)
-	if(ao5.length<5)
-	{
-		ao5.push(Math.round(timer.getTime() / 10)/100.0);
-		mo5.push(Math.round(timer.getTime() / 10)/100.0);
-	}
-	else
-	{
-		ao5.push(Math.round(timer.getTime() / 10)/100.0);
-		mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		ao5.shift()
-	}
 	saystep = 0;
 	canMan = true;
 }
@@ -5098,7 +5105,7 @@ function setLayout(){
 		{
 			for(let y = 0; y < SIZE; y++)
 			{
-				if(temp2[x][y] > SIZE * SIZE)
+				if(temp2[x][y] > 9)
 				layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " " + temp2[x][y];
 				else
 				layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " 0" + temp2[x][y];
@@ -5926,6 +5933,7 @@ window.addEventListener('keydown', (e) => {
 // F' R' B D' B' R F B' R' U F L' D' B' U' R B F' U' F (53)
 // L U2 B' R L F R2 B' F2 D' B R' D' B' L2 R (53)
 // D' R B L' R F' B L R B R' U L' D' B2 R' U' L' F' (53)
+//  D' U B R' U' L' B D R2 D B' L D' R' U' F R' D' F' (53)
 //B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
 //F' D' F R F' U D' F' B R L' D' B' F' L' B D' R' B' D' (52)
 // U' L2 U2 B L' F' B' U' R' U R2 B' F' U B' U' F' (52)
