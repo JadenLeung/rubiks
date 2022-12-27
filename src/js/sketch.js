@@ -44,6 +44,7 @@ export default function (p) {
 	let edgeback = false;
 	let edgeleft = false;
 	let edgebackleft = false;
+	let easytime;
 	let mindist;
 	let minaction;
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
@@ -400,6 +401,10 @@ p.setup = () => {
 	RESET3.parent("reset3_div");
 	RESET3.mousePressed(speedSetup.bind(null, 0));
 
+	const STOP = p.createButton('Stop Time');
+	STOP.parent("stop_div");
+	STOP.mousePressed(stopTime.bind(null, 0));
+
 	const HINT = p.createButton('Hint');
 	HINT.parent("hint");
 	HINT.mousePressed(Hint.bind(null, 0));
@@ -474,12 +479,13 @@ setInterval(() => {
 	if(secs < 20)
 	secs = 20;
 	if(scrambles.length < mo5.length)
-		scrambles.push(document.getElementById('scramble').innerText)
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed"))
+		scrambles.push(document.getElementById('scramble').innerText);
+	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1);
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime)))
 	{
 		timer.stop();
 		flipmode2 = 0;
-		console.log("okk " + canMan + " k")
+		console.log("okk " + canMan + " k");
 		movesarr.push(moves);
 		if(true == true)
 		{
@@ -492,7 +498,7 @@ setInterval(() => {
 			{
 				ao5.push(timeInSeconds);
 				mo5.push(timeInSeconds);
-				ao5.shift()
+				ao5.shift();
 			}
 		}
 		console.log(isSolved(), MODE);
@@ -797,6 +803,25 @@ function Hint()
 		giveups -= 0.5;
 	}
 }
+function stopTime(){
+	if(timer.isRunning && moves > 0)
+	{
+		timer.stop();
+		movesarr.push(moves);
+		if(ao5.length<5)
+		{
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(Math.round(timer.getTime() / 10)/100.0);
+		}
+		else
+		{
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(Math.round(timer.getTime() / 10)/100.0);
+			ao5.shift()
+		}
+		displayAverage();
+	}
+}
 function giveUp()
 {
 	if(m_4step > 0 && m_4step % 2 == 1)
@@ -1026,9 +1051,11 @@ function change9()
 function Custom()
 {
 	custom = 1;
+	document.getElementById("spacetime").style.display = "block";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
+	document.getElementById("stop_div").style.display = "inline";
 	change9();
 }
 function Reverse(move)
@@ -1167,6 +1194,8 @@ function regular(){
 	document.getElementById("hint").style.display = "none";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
+	document.getElementById("spacetime").style.display = "none";
+	document.getElementById("stop_div").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -2412,11 +2441,11 @@ function displayTimes()
 	if(mo5.length > 4)
 	{
 		let sum1 = 0;
-		let min = mo5[0];
-		let max = mo5[0];
+		let min = mo5[mo5.length-5];
+		let max = mo5[mo5.length-5];
 		let sum2 = 0;
-		let min2 = movesarr[0];
-		let max2 = movesarr[0];
+		let min2 = movesarr[movesarr.length-5];
+		let max2 = movesarr[movesarr.length-5];
 		for(let i = mo5.length-5; i < mo5.length; i++)
 		{
 			sum1 += mo5[i];
@@ -2695,8 +2724,10 @@ p.keyPressed = (event) => {
 		let bad3 = "88 90";
 		if(DIM == 100)
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81";
-		if(bad2.includes(p.keyCode) && DIM == 100 && p.keyCode > 9) return;
+		if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
 		if(bad3.includes(p.keyCode) && p.keyCode > 9) return;
+		if(DIM == 2 && isSolved() && (p.keyCode == 186 || p.keyCode == 65) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
+		if(DIM == 2 && isSolved() && (p.keyCode == 188 || p.keyCode == 190) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
 		if(Math.round(timer.getTime() / 10)/100.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -2861,25 +2892,9 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 32: //space
-			if(MODE == "cube")
+			if(MODE == "cube" && (typeof DIM == "object"))
 			{
-				if(timer.isRunning && moves > 0)
-				{
-					timer.stop();
-					movesarr.push(moves);
-					if(ao5.length<5)
-					{
-						ao5.push(Math.round(timer.getTime() / 10)/100.0);
-						mo5.push(Math.round(timer.getTime() / 10)/100.0);
-					}
-					else
-					{
-						ao5.push(Math.round(timer.getTime() / 10)/100.0);
-						mo5.push(Math.round(timer.getTime() / 10)/100.0);
-						ao5.shift()
-					}
-					displayAverage();
-				}
+				stopTime();
 			}
 			//flipmode = 0;
 			let str = "";
@@ -2893,7 +2908,7 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(movesarr);
+			console.log(isSolved(), DIM);
 			break;
 			
 		}
@@ -5072,9 +5087,8 @@ function goodF2L2(){
 	return 0;
 }
 function setLayout(){
-	//nora
 	let cnt = 0;
-	if(MODE == "cube")return;
+	if(MODE == "cube" && !easytime)return;
 	let temp = [];
 	//left, right, top, bottom, back, front
 	let axis = ["z", "z", "x", "x", "y", "y"];
@@ -5113,6 +5127,8 @@ function setLayout(){
 		}
 		temp = [];
 	}
+	if(DIM == 4 || DIM == 5)
+	return;
 	for(let i = 0; i < 6; i++)
 	{
 		for(let x = 0; x < 3; x++)
@@ -5328,7 +5344,7 @@ function testAlg(){
 //   *************************************
 
 p.mousePressed = () => {
-	if(MODE != "cube")
+	if(MODE != "cube" || (MODE == "cube" && DIM == 2))
 		startAction();
 }
 
@@ -5795,7 +5811,7 @@ function sideSolved(color)
 function isSolved()
 {
 	//console.log("called");
-	if(DIM == 100)
+	if(DIM == 100 || DIM == 5)
 	{
 		for(let i = 0; i < 6; i++)
 		{
@@ -5803,6 +5819,111 @@ function isSolved()
 			if(layout[i][0][2][0] != curcolor) return false;
 			if(layout[i][2][0][0] != curcolor) return false;
 			if(layout[i][2][2][0] != curcolor) return false;
+		}
+		return true;
+	}
+	if(DIM == 1)
+	{
+		let isgood = true;
+		if(layout[2][1][1][0] == "b" || layout[2][1][1][0] == "g")
+		{
+			if(layout[0][1][0][0] != layout[0][1][1][0] || layout[0][1][2][0] != layout[0][1][1][0])
+				isgood = false;
+			if(layout[5][1][0][0] != layout[5][1][1][0] || layout[5][1][2][0] != layout[5][1][1][0])
+				isgood = false;
+			if(layout[1][1][0][0] != layout[1][1][1][0] || layout[1][1][2][0] != layout[1][1][1][0])
+				isgood = false;
+			if(layout[4][1][0][0] != layout[4][1][1][0] || layout[4][1][2][0] != layout[4][1][1][0])
+				isgood = false;
+			let cuby1 = getColor(CUBE[+(layout[5][1][1][2] + layout[5][1][1][3])].right.levels);
+			let cuby2 = getColor(CUBE[+(layout[0][1][1][2] + layout[0][1][1][3])].right.levels);
+			let cuby3 = getColor(CUBE[+(layout[4][1][1][2] + layout[4][1][1][3])].right.levels);
+			let cuby4 = getColor(CUBE[+(layout[1][1][1][2] + layout[1][1][1][3])].right.levels);
+			let cuby5 = getColor(CUBE[+(layout[1][1][2][2] + layout[1][1][2][3])].right.levels);
+			//console.log(cuby1, cuby2, cuby3, cuby4, cuby5);
+			if(cuby1 != cuby5 || cuby2 != cuby5 || cuby3 != cuby5 || cuby4 != cuby5)
+				isgood = false;
+		}
+		else if(layout[5][1][1][0] == "b" || layout[5][1][1][0] == "g")
+		{
+			if(layout[2][1][0][0] != layout[2][1][1][0] || layout[2][1][2][0] != layout[2][1][1][0])
+				isgood = false;
+			if(layout[3][1][0][0] != layout[3][1][1][0] || layout[3][1][2][0] != layout[3][1][1][0])
+				isgood = false;
+			if(layout[1][0][1][0] != layout[1][1][1][0] || layout[1][2][1][0] != layout[1][1][1][0])
+				isgood = false;
+			if(layout[0][0][1][0] != layout[0][1][1][0] || layout[0][2][1][0] != layout[0][1][1][0])
+				isgood = false;
+			let cuby1 = getColor(CUBE[+(layout[2][1][1][2] + layout[2][1][1][3])].top.levels);
+			let cuby2 = getColor(CUBE[+(layout[1][1][1][2] + layout[1][1][1][3])].top.levels);
+			let cuby3 = getColor(CUBE[+(layout[3][1][1][2] + layout[3][1][1][3])].top.levels);
+			let cuby4 = getColor(CUBE[+(layout[0][1][1][2] + layout[0][1][1][3])].top.levels);
+			let cuby5 = getColor(CUBE[+(layout[2][1][2][2] + layout[2][1][2][3])].top.levels);
+			//console.log(cuby1, cuby2, cuby3, cuby4, cuby5);
+			if(cuby1 != cuby5 || cuby2 != cuby5 || cuby3 != cuby5 || cuby4 != cuby5)
+				isgood = false;
+		}
+		else{
+			if(layout[2][0][1][0] != layout[2][1][1][0] || layout[2][2][1][0] != layout[2][1][1][0])
+				isgood = false;
+			if(layout[3][0][1][0] != layout[3][1][1][0] || layout[3][2][1][0] != layout[3][1][1][0])
+				isgood = false;
+			if(layout[5][0][1][0] != layout[5][1][1][0] || layout[5][2][1][0] != layout[5][1][1][0])
+				isgood = false;
+			if(layout[4][0][1][0] != layout[4][1][1][0] || layout[4][2][1][0] != layout[4][1][1][0])
+				isgood = false;
+			let cuby1 = getColor(CUBE[+(layout[2][1][1][2] + layout[2][1][1][3])].front.levels);
+			let cuby2 = getColor(CUBE[+(layout[5][1][1][2] + layout[5][1][1][3])].front.levels);
+			let cuby3 = getColor(CUBE[+(layout[3][1][1][2] + layout[3][1][1][3])].front.levels);
+			let cuby4 = getColor(CUBE[+(layout[4][1][1][2] + layout[4][1][1][3])].front.levels);
+			let cuby5 = getColor(CUBE[+(layout[5][0][1][2] + layout[5][0][1][3])].front.levels);
+			//console.log(cuby1, cuby2, cuby3, cuby4, cuby5);
+			if(cuby1 != cuby5 || cuby2 != cuby5 || cuby3 != cuby5 || cuby4 != cuby5)
+				isgood = false;
+		}
+		return isgood;
+	}
+	if(DIM == 3)
+	{
+		for(let i = 0; i < 6; i++)
+		{
+			let curcolor = layout[i][1][1][0];
+			if(layout[i][0][1][0] != curcolor) return false;
+			if(layout[i][1][0][0] != curcolor) return false;
+			if(layout[i][1][2][0] != curcolor) return false;
+			if(layout[i][2][1][0] != curcolor) return false;
+		}
+		return true;
+	}
+	if(DIM == 2)
+	{
+		for(let i = 0; i < 6; i++)
+		{
+			let curcolor = layout[i][1][1][0];
+			if(curcolor == "b" || curcolor == "g")
+			{
+				for(let x = 0; x < 3; x++)
+				{
+					for(let y = 0; y < 3; y++)
+					{
+						if(layout[i][x][y][0] != curcolor)
+							return false;
+					}
+				}
+			}
+			else
+			{
+				let possible = layout[i][0][0][0];
+				let bool = false;
+				if(layout[i][0][1][0] == possible && layout[i][0][2][0] == possible && layout[i][2][0][0] == possible 
+					&& layout[i][2][1][0] == possible && layout[i][2][2][0] == possible && (layout[i][0][1].includes("g") || layout[i][0][1].includes("b")))
+					bool = true;
+				if(layout[i][1][0][0] == possible && layout[i][2][0][0] == possible && layout[i][0][2][0] == possible 
+					&& layout[i][1][2][0] == possible && layout[i][2][2][0] == possible && (layout[i][1][0].includes("g") || layout[i][1][0].includes("b")))
+					bool = true;
+				if(bool == false)
+					return false;
+			}
 		}
 		return true;
 	}
@@ -5934,6 +6055,7 @@ window.addEventListener('keydown', (e) => {
 // L U2 B' R L F R2 B' F2 D' B R' D' B' L2 R (53)
 // D' R B L' R F' B L R B R' U L' D' B2 R' U' L' F' (53)
 //  D' U B R' U' L' B D R2 D B' L D' R' U' F R' D' F' (53)
+//  R' L D U R' F' B' D' R' B' L' D F' B' D' U F L' R U'
 //B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
 //F' D' F R F' U D' F' B R L' D' B' F' L' B D' R' B' D' (52)
 // U' L2 U2 B L' F' B' U' R' U R2 B' F' U B' U' F' (52)
