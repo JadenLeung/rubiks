@@ -179,7 +179,12 @@ class Timer {
 const timer = new Timer();
 p.setup = () => {
 	let cnv_div = document.getElementById("cnv_div");
-	p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
+	if (/Mobi|Android/i.test(navigator.userAgent)) {
+		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.5, p.WEBGL);
+	}
+	else{
+		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
+	}
 	p.pixelDensity(1);
 	p.frameRate(60);
 	p.smooth();
@@ -2908,7 +2913,7 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(isSolved(), DIM);
+			console.log(p.windowWidth);
 			break;
 			
 		}
@@ -5686,8 +5691,14 @@ function dragCube(cuby1, color1, cuby2, color2)
 }
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
-	p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
-	PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
+	if (/Mobi|Android/i.test(navigator.userAgent)) {
+		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.5, p.WEBGL);
+		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.5);
+	}
+	else{
+		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
+		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
+	}
 } 
 
 p.draw = () => {
