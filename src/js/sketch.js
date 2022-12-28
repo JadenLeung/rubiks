@@ -184,14 +184,11 @@ p.setup = () => {
 	{
 		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.4);
-		alert("phone")
 	}
 	else
 	{
 		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
-		alert("nophone")
-
 	}
 	p.pixelDensity(1);
 	p.frameRate(60);
