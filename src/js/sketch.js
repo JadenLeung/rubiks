@@ -179,7 +179,7 @@ class Timer {
 const timer = new Timer();
 p.setup = () => {
 	let cnv_div = document.getElementById("cnv_div");
-	if (/Mobi|Android/i.test(navigator.userAgent)) {
+	if (/Mobi|Android/i.test(navigator.userAgent) ||(window.matchMedia("(max-width: 767px)").matches)) {
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.5, p.WEBGL);
 	}
 	else{
@@ -5691,7 +5691,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 }
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
-	if (/Mobi|Android/i.test(navigator.userAgent)) {
+	if (/Mobi|Android/i.test(navigator.userAgent) ||(window.matchMedia("(max-width: 767px)").matches)) {
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.5, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.5);
 	}
