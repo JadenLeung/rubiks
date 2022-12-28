@@ -178,16 +178,17 @@ class Timer {
 }
 const timer = new Timer();
 p.setup = () => {
+	PICKER = new Picker(p, DEBUG);
 	let cnv_div = document.getElementById("cnv_div");
 	if (window.matchMedia("(max-width: 767px)").matches)
 	{
-		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
+		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.4);
 		alert("phone")
 	}
 	else
 	{
-		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
+		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
 		alert("nophone")
 
@@ -196,7 +197,6 @@ p.setup = () => {
 	p.frameRate(60);
 	p.smooth();
 	
-	PICKER = new Picker(p, DEBUG);
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM);
