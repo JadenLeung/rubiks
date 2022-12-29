@@ -311,7 +311,7 @@ p.setup = () => {
 	SEL6 = p.createSelect(); //right
 	SEL6.parent("select6")
 
-	INPUT = p.createSelect(); //right
+	INPUT = p.createSelect(); 
 	INPUT.parent("input")
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -406,7 +406,10 @@ p.setup = () => {
 
 	INPUT.option("Keyboard");
 	INPUT.option("Button");
-	INPUT.selected('Keyboard');
+	if(window.matchMedia("(max-width: 767px)").matches)
+		INPUT.selected('Button');
+	else
+		INPUT.selected('Keyboard');
 	INPUT.changed(changeInput.bind(null, 0));
 
 
@@ -1134,13 +1137,42 @@ function inputPressed(move)
 			return;
 		}
 	}
+	let bad4 = ["U", "U'", "D", "D'"];
+	let bad5 = ["L", "L'", "R", "R'"];
+	let bad6 = ["F", "F'", "B", "B'"];
+	if(DIM == 1 && isSolved() && bad4.includes(move) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
+	if(DIM == 1 && isSolved() && bad5.includes(move) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
+	if(DIM == 1 && isSolved() && bad6.includes(move) && (layout[5][1][1][0] == "g" || layout[5][1][1][0] == "b")) return;
 	console.log("momve is " + move);
 	if(canMan)
 	{
 		if(Math.round(timer.getTime() / 10)/100.0 == 0)
 			timer.start();
-		moves++;
 		notation(move);
+		let bad = -1;
+		if(undo.length > 0)
+		{
+			let rnd = undo[undo.length-1];
+			if(rnd.slice(-1) == "'")
+				bad = rnd.substring(0, rnd.length-1);
+			else
+				bad = rnd + "'";
+		}
+		if(timer.isRunning && MODE != "moves")
+		{
+			moves++
+		}
+		else if(MODE == "moves")
+		{
+			if(undo[undo.length-2] == bad)
+			{
+				undo.pop();
+				undo.pop();
+					moves--;
+			}
+			else
+				moves++;
+		}
 	}
 }
 function Custom()
@@ -2831,6 +2863,12 @@ p.keyPressed = (event) => {
 		if(bad3.includes(p.keyCode) && p.keyCode > 9) return;
 		if(DIM == 2 && isSolved() && (p.keyCode == 186 || p.keyCode == 65) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
 		if(DIM == 2 && isSolved() && (p.keyCode == 188 || p.keyCode == 190) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
+		let bad4 = "74 70 76 83";
+		let bad5 = "73 75 69 68";
+		let bad6 = "71 72 87 79";
+		if(DIM == 1 && isSolved() && bad4.includes(p.keyCode) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
+		if(DIM == 1 && isSolved() && bad5.includes(p.keyCode) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
+		if(DIM == 1 && isSolved() && bad6.includes(p.keyCode) && (layout[5][1][1][0] == "g" || layout[5][1][1][0] == "b")) return;
 		if(Math.round(timer.getTime() / 10)/100.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
 		timer.start();
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
