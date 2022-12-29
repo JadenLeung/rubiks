@@ -29,6 +29,7 @@ export default function (p) {
 	let custom = 0;
 	let inp;
 	let MODE = "normal";
+	let INPUT;
 	let SPEED = 0.01;
 	let DELAY = 0;
 	let shufflespeed = 5;
@@ -40,6 +41,7 @@ export default function (p) {
 	let m_type = 0;
 	let m_4step = 0;
 	let PLL;
+	let input = "keyboard";
 	let scramblemoves = 0;
 	let edgeback = false;
 	let edgeleft = false;
@@ -61,6 +63,7 @@ export default function (p) {
 	let giveups = 0;
 
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
+	let INPUT2 = [];
 
 	// attach event
 
@@ -308,6 +311,9 @@ p.setup = () => {
 	SEL6 = p.createSelect(); //right
 	SEL6.parent("select6")
 
+	INPUT = p.createSelect(); //right
+	INPUT.parent("input")
+
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
 	for(let i = 0; i < colors2.length; i++)
 	{
@@ -332,6 +338,48 @@ p.setup = () => {
 	SEL5.changed(change9.bind(null, 0));
 	SEL6.changed(change9.bind(null, 0));
 
+	INPUT2[0] = p.createButton("L'", "L'");
+	INPUT2[1] = p.createButton("U'", "U'");
+	INPUT2[2] = p.createButton("U", "U");
+	INPUT2[3] = p.createButton("R", "R");
+	for(let i = 0; i < 4; i++)
+	{
+		INPUT2[i].parent("mover1")
+		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
+	}
+	INPUT2[4] = p.createButton("B", "B");
+	INPUT2[5] = p.createButton("F'", "F'");
+	INPUT2[6] = p.createButton("F", "F");
+	INPUT2[7] = p.createButton("B'", "B'");
+	for(let i = 4; i < 8; i++)
+	{
+		INPUT2[i].parent("mover2")
+		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
+	}
+	INPUT2[8] = p.createButton("L", "L");
+	INPUT2[9] = p.createButton("D", "D");
+	INPUT2[10] = p.createButton("D'", "D'");
+	INPUT2[11] = p.createButton("R'", "R'");
+	for(let i = 8; i < 12; i++)
+	{
+		INPUT2[i].parent("mover3")
+		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
+	}
+	INPUT2[8] = p.createButton("&larr;", "y");
+	INPUT2[9] = p.createButton("&rarr;", "y'");
+	INPUT2[10] = p.createButton("&uarr;", "x");
+	INPUT2[11] = p.createButton("&darr;", "x'");
+	for(let i = 8; i < 12; i++)
+	{
+		INPUT2[i].parent("mover4")
+		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
+	}
+	
+
 	for(let i = 0; i < 27; i++)
 	{
 		if(i < 9)
@@ -355,6 +403,11 @@ p.setup = () => {
 	SEL7.parent("select8")
 	SEL7.selected('3x3');
 	SEL7.changed(change9.bind(null, 0));
+
+	INPUT.option("Keyboard");
+	INPUT.option("Button");
+	INPUT.selected('Keyboard');
+	INPUT.changed(changeInput.bind(null, 0));
 
 
 	const BACK = p.createButton('Back');
@@ -685,6 +738,7 @@ function reSetup() {
 	document.getElementById("giveup").style.display = "none";
 	document.getElementById("giveup2").style.display = "none";
 	document.getElementById("hint").style.display = "none";
+	
 	let cnt = 0;
 	
 	for (let i = 0; i < SIZE; i++) {
@@ -1057,9 +1111,42 @@ function change9()
 	}
 	reSetup();
 }
+function changeInput()
+{
+	input = INPUT.value();
+	if(input == "Button"){
+		document.getElementById("keymap").style.display = "none";
+		document.getElementById("test_alg_div").style.display = "none";
+		document.getElementById("input2").style.display = "block";
+	}
+	else{
+		document.getElementById("keymap").style.display = "table";
+		if(MODE == "normal" || MODE == "timed" || MODE == "cube")
+			document.getElementById("test_alg_div").style.display = "block";
+		document.getElementById("input2").style.display = "none";
+	}
+
+}
+function inputPressed(move)
+{
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		if (CUBE[i].animating()) {
+			return;
+		}
+	}
+	console.log("momve is " + move);
+	if(canMan)
+	{
+		if(Math.round(timer.getTime() / 10)/100.0 == 0)
+			timer.start();
+		moves++;
+		notation(move);
+	}
+}
 function Custom()
 {
 	custom = 1;
+	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("spacetime").style.display = "block";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "none";
@@ -1188,7 +1275,8 @@ function regular(){
 	document.getElementById("s_INSTRUCT").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
 	document.getElementById("s_difficulty").innerHTML = "";
-	document.getElementById("keymap").style.display = "table";
+	changeInput();
+	document.getElementById("input").style.display = "inline";
 	document.getElementById("s_easy").style.display = "none";
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_OLL").style.display = "none";
@@ -1268,6 +1356,7 @@ function cubemode()
 	document.getElementById("mode3").style.display = "none";
 	document.getElementById("mode7").style.display = "none";
 	document.getElementById("solve").style.display = "none";
+	document.getElementById("allmodes").style.display = "block";
 	//document.getElementById("outermoves").style.display = "none";
 	//document.getElementById("outertime").style.display = "none";
 	//document.getElementById("times_par").style.display = "none";
@@ -1300,6 +1389,8 @@ function speedmode()
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
 	document.getElementById("solve").style.display = "none";
+	document.getElementById("input").style.display = "none";
+	document.getElementById("input2").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for Speed Mode";
 	document.getElementById("s_instruct").innerHTML = "In one game of speed mode, there will be <b>4</b> stages, each requiring you to complete a challenge. Your score will be the time it takes to do all the tasks.";
 	document.getElementById("s_difficulty").innerHTML = "Select Difficulty/Mode";
@@ -1339,6 +1430,8 @@ function movesmode()
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
 	document.getElementById("solve").style.display = "none";
+	document.getElementById("input").style.display = "none";
+	document.getElementById("input2").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for the Fewest Moves Challenge";
 	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
 	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
@@ -1363,7 +1456,8 @@ function showSpeed()
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
-	document.getElementById("keymap").style.display = "table";
+	changeInput();
+	document.getElementById("input").style.display = "inline";
 	document.getElementById("speed").style.display = "inline";
 	document.getElementById("slider_div").style.display = "inline";
 	document.getElementById("undo").style.display = "inline";
@@ -6062,16 +6156,7 @@ window.addEventListener('keydown', (e) => {
 //Bad
 //R D' L U R' B R U' L2 D F L D' B' L' D B2 L'
 //U R' L B F L' U' D' R2 L' F2 L' R' U L' B' F' B (2x2)
-//BELOW 54 MOVES
-// R F' D' F U L' B2 R' B' L' R B2 F2 B' R' D' U' (53)
-// L U R U' L R' U D2 U L' B' F' B D U' D' R F L' (53)
-// L' F U' B2 R F L B' D R' U F B L B' R' D B U (53)
-// B' L' B D L' R U' L' B' U' F L' U' L F R' U' F L' D' (53)
-// F' R' B D' B' R F B' R' U F L' D' B' U' R B F' U' F (53)
-// L U2 B' R L F R2 B' F2 D' B R' D' B' L2 R (53)
-// D' R B L' R F' B L R B R' U L' D' B2 R' U' L' F' (53)
-//  D' U B R' U' L' B D R2 D B' L D' R' U' F R' D' F' (53)
-//  R' L D U R' F' B' D' R' B' L' D F' B' D' U F L' R U'
+//BELOW 53 MOVES
 //B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
 //F' D' F R F' U D' F' B R L' D' B' F' L' B D' R' B' D' (52)
 // U' L2 U2 B L' F' B' U' R' U R2 B' F' U B' U' F' (52)

@@ -112,8 +112,12 @@
 				<span style = "display: inline;" id = "type2"></span>
 				<span style = "display: inline;" id = "type4"></span>
 			</div>	
+			<div class = "noselect" id = "input" style = "font-size:14px; padding-top: 5px;">
+				<p style = "text-align:center; display: inline; padding-top: 5px;" id = "type5"><b>Move Input:</b></p>
+				
+			</div>	
 			<p id = "or_instruct" style = "font-size:20px; text-align:center; padding-left:0px; padding-top:20px;"><b>How this Works:</b></p>
-			<p id = "or_instruct2" style = "font-size:15px;">Drag your mouse in the gray area to turn the camera, and drag your mouse on a cube layer to turn it. Alternatively, you can use the 
+			<p id = "or_instruct2" style = "font-size:14px;">Drag your mouse in the gray area to turn the camera, and drag your mouse on a cube layer to turn it. Alternatively, you can use the 
 			keyboard to turn the cube. <a href="FAQ.html" target="_blank">FAQs</a></p>
 			<p id = "or_instruct4" style = "font-size:20px; text-align:center; padding-left:0px;"><b>Select Modes:</b></p>
 			<p id="mode" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
@@ -121,7 +125,7 @@
 			<p id="mode2" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="mode7" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="link1" style = "text-align: center; font-size:15px; margin-top: 0px; margin-bottom: 0px;"><a href="#">Download data</a></p>
-			<div>
+			<div id = "allmodes">
 				<p id="mode4" style = "display: inline; text-align:center; margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode6" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode5" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
@@ -163,10 +167,28 @@
 		</div>
 		<div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div" ></div>
 		<div class="col-lg-4" style = "padding-left:35px;">
+			<div id = "input2" style = "margin-top:4px; font-size: 20px; text-align:left">
+				<p id = "mover1" style = "margin-bottom:2px;"></p>
+				<p id = "mover2" style = "margin-bottom:2px;"></p>
+				<p id = "mover3" style = "margin-bottom:2px;"></p>
+				<p id = "mover4" style = "margin-bottom:2px;"></p>
+			</div>
 			<p id="test_alg_div" style="margin-top:4px;"  class = "noselect">
 				<span>Test Algorithm:</span>
 			</p>
-			<div class = "normal noselect" style = "padding-bottom:7px">
+			<div class = "noselect" style="margin-top:4px;">
+				<p id="shuffle_div" style = "display: inline;"  class = "normal"></p>
+				<p id="solve" style = "display: inline;"  class = "normal"></p>
+				<p id="stop_div" style = "display: inline;"  class = "normal"></p>
+				<p id="reset_div" style = "display: inline;"  class = "normal"></p>
+				<p id="reset2_div" style = "display: inline;"  class = "normal"></p>
+				<p id="reset3_div" style = "display: inline;"  class = "normal"></p>
+				<p id="undo" style = "display: inline;"  class = "normal"></p>
+				<p id="redo" style = "display: inline;"  class = "normal"></p>
+				<p id="hint" style = "display: inline;"  class = "normal"></p>
+				<p id="giveup" style = "display: inline;"  class = "normal"></p>
+			</div>
+			<div class = "normal noselect" style = "padding-bottom:7px; margin-top:8px;">
 				<p id="size" style = "display: inline;"><span>Cube Size: &nbsp;</span></p>
 				<span style = "display: inline;" id = "size2">4</span>
 			</div>	
@@ -179,18 +201,7 @@
 				<span style = "display: inline;" id = "delay2">4</span>
 				<p style = "display: inline">&nbsp; (For autosolve/alg test)</p>
 			</div>	
-			<div  class = "noselect">
-				<p id="shuffle_div" style = "display: inline;"  class = "normal"></p>
-				<p id="solve" style = "display: inline;"  class = "normal"></p>
-				<p id="stop_div" style = "display: inline;"  class = "normal"></p>
-				<p id="reset_div" style = "display: inline;"  class = "normal"></p>
-				<p id="reset2_div" style = "display: inline;"  class = "normal"></p>
-				<p id="reset3_div" style = "display: inline;"  class = "normal"></p>
-				<p id="undo" style = "display: inline;"  class = "normal"></p>
-				<p id="redo" style = "display: inline;"  class = "normal"></p>
-				<p id="hint" style = "display: inline;"  class = "normal"></p>
-				<p id="giveup" style = "display: inline;"  class = "normal"></p>
-			</div>
+			
 			<div style = "padding-top:5px;"  class = "noselect">
 				<p style = "display: inline;"  class = "normal" id = "outermoves">Move Count: <span id = "moves">0</span>&emsp;</p>
 				<p style = "display: inline;" class = "normal" id = "outertime">Elapsed time: <span id="time">0</span>s</p>
