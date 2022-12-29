@@ -345,7 +345,7 @@ p.setup = () => {
 	for(let i = 0; i < 4; i++)
 	{
 		INPUT2[i].parent("mover1")
-		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
 	INPUT2[4] = p.createButton("B", "B");
@@ -355,7 +355,7 @@ p.setup = () => {
 	for(let i = 4; i < 8; i++)
 	{
 		INPUT2[i].parent("mover2")
-		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
 	INPUT2[8] = p.createButton("L", "L");
@@ -365,7 +365,7 @@ p.setup = () => {
 	for(let i = 8; i < 12; i++)
 	{
 		INPUT2[i].parent("mover3")
-		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
 	INPUT2[8] = p.createButton("&larr;", "y");
@@ -375,7 +375,7 @@ p.setup = () => {
 	for(let i = 8; i < 12; i++)
 	{
 		INPUT2[i].parent("mover4")
-		INPUT2[i].style("margin-right:4px; width:80px; text-align:center;");
+		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
 	
