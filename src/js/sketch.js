@@ -1146,7 +1146,7 @@ function inputPressed(move)
 	console.log("momve is " + move);
 	if(canMan)
 	{
-		if(Math.round(timer.getTime() / 10)/100.0 == 0)
+		if(Math.round(timer.getTime() / 10)/100.0 == 0 && move != "y" && move != "y'" && move != "x" && move != "x'")
 			timer.start();
 		notation(move);
 		let bad = -1;
@@ -1168,10 +1168,12 @@ function inputPressed(move)
 			{
 				undo.pop();
 				undo.pop();
+				if(move != "y" && move != "y'" && move != "x" && move != "x'")
 					moves--;
 			}
 			else
-				moves++;
+				if(move != "y" && move != "y'" && move != "x" && move != "x'")
+					moves++;
 		}
 	}
 }

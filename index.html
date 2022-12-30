@@ -237,7 +237,7 @@
 			<div>
 				<p style = "display: inline; font-size:12px;"><span id = "stepbig"></span><span id = "fraction"></span></h5>
 				<p style = "display: inline; font-size:12px;" id = "step"></p>
-				<p style = "font-size:15px;" id = "spacetime"> <b>You can also press Space to stop the timer.</b></p>
+				<p style = "font-size:15px;" id = "spacetime"> <b>Press "Stop Time" or press space to stop the timer.</b></p>
 			</div>
 			<h5 id = "s_INSTRUCT" class = "noselect"></h5>
 			<p id = "s_instruct" class = "noselect"></p>
@@ -253,24 +253,35 @@
 				<p style = "display: inline;" id = "s_PLL"></p>
 			</div>
 			<div style = "text-align: center;">
-				<img src="solved.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic1"></img>
-				<img src="IMG_1868.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic2"></img>
-				<img src="IMG_1863.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic3"></img>
-				<img src="IMG_1864.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic4"></img>
-				<img src="IMG_1865.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic5"></img>
-				<img src="IMG_1867.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic6"></img>
-				<img src="solved.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic7"></img>
-				<img src="IMG_1871.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic8"></img>
-				<img src="IMG_1870.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic9"></img>
-				<img src="IMG_1872.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic10"></img>
-				<img src="IMG_1874.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic11"></img>
-				<img src="IMG_1875.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic12"></img>
-				<img src="IMG_1876.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic13"></img>
-				<img src="IMG_1874.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic14"></img>
-				<img src="IMG_1877.JPG" class = "pictures" style = "width:40%; display: none;" id = "pic15"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic1"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic2"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic3"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic4"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic5"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic6"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic7"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic8"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic9"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic10"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic11"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic12"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic13"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic14"></img>
+				<img class = "pictures" style = "width:40%; display: none;" id = "pic15"></img>
 			</div>
 			
 		</div>
 	</div>
+	<script>
+		window.onload = function() {
+			let arr = ["solved.JPG", "IMG_1868.JPG", "IMG_1863.JPG", "IMG_1864.JPG", "IMG_1865.JPG", "IMG_1867.JPG",
+			"solved.JPG", "IMG_1871.JPG", "IMG_1870.JPG", "IMG_1872.JPG", "IMG_1874.JPG", "IMG_1875.JPG"
+			,"IMG_1876.JPG", "IMG_1874.JPG", "IMG_1877.JPG"];
+			for(let i = 1; i <= 15; i++)
+			{
+				document.getElementById("pic" + i).src = arr[i-1];  //example function call.
+			}
+		}
+	</script>
 </body>
 </html>
