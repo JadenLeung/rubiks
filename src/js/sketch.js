@@ -14,6 +14,7 @@ export default function (p) {
 	let DIM = 50; //50 means 3x3, 100 means 2x2
 	let DIM2 = 50;
 	let DIM3 = 3;
+	let DIM4 = 3;
 	let RND_COLORS;
 	let GAP = 0;
 	let SIZE = 3;
@@ -403,14 +404,18 @@ p.setup = () => {
 	const BACK = p.createButton('Back');
 	BACK.parent("custom3");
 	BACK.mousePressed(cubemode.bind(null, 0));
-	BACK.style("height:30px; width:85px; text-align:center; font-size:15px;");
+	BACK.style("height:30px; width:50px; text-align:center; font-size:15px;");
 
 	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
 	DEAFULT.mousePressed(changeZero.bind(null, 0));
-	DEAFULT.style("height:30px; width:85px; text-align:center; font-size:15px;");
+	DEAFULT.style("height:30px; width:70px; text-align:center; font-size:15px;");
 
 
+	const RNG = p.createButton(String.fromCharCode(0x2684));
+	RNG.parent("rng");
+	RNG.mousePressed(changeRandom.bind(null, 0));
+	RNG.style("height:30px; width:40px; text-align:center; font-size:15px;");
 
 	const CUSTOM = p.createButton('Custom Mod');
 	CUSTOM.parent("custom");
@@ -663,6 +668,23 @@ setInterval(() => {
 			document.getElementById("s_instruct").innerHTML = "Even though the cube might be solved, you used too many moves! Tip: You can press the 'reset' button to reset the scramble.";
 		}
 	}
+	if(MODE != "cube")
+	{
+		if(DIM == 50)
+			DIM4 = 3;
+		else
+			DIM4 = 2;
+	}
+	else{
+		if(Array.isArray(DIM))
+			DIM4 = DIM3;
+		else if(DIM == 5)
+			DIM4 = 2;
+		else
+			DIM4 = 3;
+	}
+	
+
 }, 10)
 function reSetup() {
 	m_points = 0;
@@ -1020,8 +1042,9 @@ function change8(){
 	refreshButtons();
 	CUBE5.style('background-color', "#8ef5ee");
 }
-function change9()
+function change9(cubies)
 {
+
 	DIM = [];
 	DIM[0] = SEL.value();
 	DIM[1] = SEL2.value();
@@ -1040,12 +1063,23 @@ function change9()
 			}
 			for(let i = 0; i < 27; i++)
 			{
-				if(i < 9)
-					CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
-				else if(i < 18)
-					CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
-				else
-					CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
+				if(Array.isArray(cubies))
+				{
+					if(i < 9)
+						CHECK[i] = p.createCheckbox('a' + ((i%9)+1), cubies[i]);
+					else if(i < 18)
+						CHECK[i] = p.createCheckbox('b' + ((i%9)+1),  cubies[i]);
+					else
+						CHECK[i] = p.createCheckbox('c' + ((i%9)+1),  cubies[i]);
+				}
+				else{
+					if(i < 9)
+						CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
+					else if(i < 18)
+						CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
+					else
+						CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
+				}
 				if(i < 9)
 					CHECK[i].parent("check1");
 				else if(i < 18)
@@ -1091,6 +1125,64 @@ function change9()
 		changeCam(2);
 	}
 	reSetup();
+}
+function changeRandom()
+{
+	let cube;
+	if(Math.random() > 0.66)
+		cube = 2;
+	else
+		cube = 3;
+	let face = [];
+	let cubies = [];
+	let colors = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
+	for(let i = 0; i < 6; i++)
+	{
+		face.push(colors[Math.floor(Math.random()*colors.length)]);
+	}
+	let close = 8;
+	let pick = Math.random()
+	if(pick > 0.65)
+	close = 6;
+	else if(pick > 0.3)
+	close = 5;
+
+	if(cube == 2)
+	{
+		for(let i = 0; i < 8; i++)
+		{
+			cubies.push(!(Math.random() > (close/8)));
+		}
+	}
+	else
+	{
+		for(let i = 0; i < 27; i++)
+		{
+			cubies.push(!(Math.random() > (close/8)));
+		}
+	}
+	if(cube == 2)
+	SEL7.selected('2x2');
+	else
+	SEL7.selected('3x3');
+	SEL.selected(face[0]); SEL2.selected(face[1]); SEL3.selected(face[2]); 
+	SEL4.selected(face[3]); SEL5.selected(face[4]); SEL6.selected(face[5]);
+	let twos = [0, 2, 6, 8, 18, 20, 24, 26];
+	if(cube == 3)
+	{
+		for(let i = 0; i < 27; i++)
+		{
+			CHECK[i].checked(cubies[i]);
+		}
+	}
+	else{
+		for(let i = 0; i < 8; i++)
+		{
+			CHECK[twos[i]].checked(cubies[i]);
+		}
+	}
+	console.log(cube, cubies);
+	change9(cubies);
 }
 function changeInput()
 {
@@ -3105,7 +3197,7 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(isSolved(), DIM);
+			console.log(DIM4);
 			break;
 			
 		}
