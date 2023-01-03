@@ -292,7 +292,7 @@ class EasyCam {
             offY = cam.offset[1] - window.scrollY;
 
         if(cam.mouse.insideViewport(event.x - offX, event.y - offY)){
-          cam.reset();
+         // cam.reset();
         }
       },
 

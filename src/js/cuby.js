@@ -20,7 +20,7 @@ export default class Cuby {
       yellow: p.color(209, 219, 18, 255),
     }; */
 	 this.colors = {
-      def:   p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
+      def:   p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02,),
       white: p.color(250 + this.x*0.02, 250 + this.y*0.02, 250 + this.z*0.02),
       red:   p.color(219 + this.x*0.02, 25 + this.y*0.02,  25 + this.z*0.02),
       blue:  p.color(25 + this.x*0.02,  105 + this.y*0.02, 219 + this.z*0.02),
@@ -28,7 +28,7 @@ export default class Cuby {
       green: p.color(25 + this.x*0.02,  219 + this.y*0.02, 31 + this.z*0.02),
       yellow:p.color(209 + this.x*0.02, 219 + this.y*0.02, 25 + this.z*0.02),
       black:p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
-      magenta:p.color("magenta"),
+      magenta:p.color(245 + this.x*0.02,  25 + this.y*0.02, 245 + this.z*0.02),
     };
 	
     this.top = this.colors.white;

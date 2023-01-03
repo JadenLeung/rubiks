@@ -41,6 +41,15 @@ export default function (p) {
 	let m_type = 0;
 	let m_4step = 0;
 	let PLL;
+	let REGULAR;
+	let SPEEDMODE;
+	let TIMEDMODE;
+	let MOVESMODE;
+	let REGULAR2;
+	let SPEEDMODE2;
+	let TIMEDMODE2;
+	let MOVESMODE2;
+	let TIMEGONE;
 	let input = "keyboard";
 	let scramblemoves = 0;
 	let edgeback = false;
@@ -61,7 +70,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
 	let INPUT2 = [];
 
@@ -225,56 +234,34 @@ p.setup = () => {
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
 
-		SIZE_SLIDER2 = p.createSlider(0, 300, 150, 5);
+		SIZE_SLIDER2 = p.createSlider(-1000, 300, 150, 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
 	}
-	const REGULAR = p.createButton('Normal Mode');
-	REGULAR.parent("mode").class("mode1");
-	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	REGULAR.mousePressed(regular.bind(null, 0));
+	REGULAR = p.createButton('Normal Mode');
+	SPEEDMODE = p.createButton('Speed Mode');
+	TIMEDMODE = p.createButton('Stats Mode');
+	MOVESMODE = p.createButton('Fewest Moves');
+	REGULAR2 = p.createButton('Normal');
+	SPEEDMODE2 = p.createButton('Speed');
+	TIMEDMODE2 = p.createButton('Stat');
+	MOVESMODE2 = p.createButton('FMC');
 	
-	const SPEEDMODE = p.createButton('Speed Mode');
-	SPEEDMODE.parent("mode2").class("mode1");
-	SPEEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	SPEEDMODE.mousePressed(speedmode.bind(null, 0));
+	ONEBYTHREE = p.createButton('1x3x3');
+	SANDWICH = p.createButton('Sandwich Cube');
+	CUBE3 = p.createButton('Plus Cube');
+	CUBE4 = p.createButton('Christmas 3x3');
+	CUBE5 = p.createButton('Christmas 2x2');
+	refreshButtons();
 
-	const TIMEDMODE = p.createButton('Stats Mode');
-	TIMEDMODE.parent("mode3").class("mode1");
-	TIMEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	TIMEDMODE.mousePressed(timedmode.bind(null, 0));
-	
-	const MOVESMODE = p.createButton('Fewest Moves');
-	MOVESMODE.parent("mode7").class("mode1");
-	MOVESMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	MOVESMODE.mousePressed(movesmode.bind(null, 0));
-
-	const REGULAR2 = p.createButton('Normal');
-	REGULAR2.parent("mode4").class("mode1");
-	REGULAR2.style("height:20px; width:50px; text-align:center; font-size:10px;")
-	REGULAR2.mousePressed(regular.bind(null, 0));
-	
-	const SPEEDMODE2 = p.createButton('Speed');
-	SPEEDMODE2.parent("mode5").class("mode1");
-	SPEEDMODE2.style("height:20px; width:42px; text-align:center; font-size:10px;")
-	SPEEDMODE2.mousePressed(speedmode.bind(null, 0));
-
-	const TIMEDMODE2 = p.createButton('Stat');
-	TIMEDMODE2.parent("mode6").class("mode1");
-	TIMEDMODE2.style("height:20px; width:35px; text-align:center; font-size:10px;")
-	TIMEDMODE2.mousePressed(timedmode.bind(null, 0));
-
-	const MOVESMODE2 = p.createButton('FMC');
-	MOVESMODE2.parent("mode8").class("mode1");
-	MOVESMODE2.style("height:20px; width:40px; text-align:center; font-size:10px;")
-	MOVESMODE2.mousePressed(movesmode.bind(null, 0));
 
 	document.getElementById("mode4").style.display = "none";
 	document.getElementById("mode5").style.display = "none";
 	document.getElementById("mode6").style.display = "none";
 	document.getElementById("mode8").style.display = "none";
 	document.getElementById("link1").style.display = "none";
+	document.getElementById("timegone").style.display = "none";
 
 	const SHUFFLE_BTN = p.createButton('Scramble');
 	SHUFFLE_BTN.parent("shuffle_div");
@@ -423,30 +410,7 @@ p.setup = () => {
 	DEAFULT.mousePressed(changeZero.bind(null, 0));
 	DEAFULT.style("height:30px; width:85px; text-align:center; font-size:15px;");
 
-	const ONEBYTHREE = p.createButton('1x3x3');
-	ONEBYTHREE.parent("cube1");
-	ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
-	ONEBYTHREE.style("height:50px; width:180px; text-align:center; font-size:20px;");
 
-	const SANDWICH = p.createButton('Sandwich Cube');
-	SANDWICH.parent("cube2");
-	SANDWICH.mousePressed(changeFive.bind(null, 0));
-	SANDWICH.style("height:50px; width:180px; text-align:center; font-size:20px;");
-
-	const CUBE3 = p.createButton('Plus Cube');
-	CUBE3.parent("cube3");
-	CUBE3.mousePressed(changeSix.bind(null, 0));
-	CUBE3.style("height:50px; width:180px; text-align:center; font-size:20px;");
-
-	const CUBE4 = p.createButton('Christmas 3x3');
-	CUBE4.parent("cube4");
-	CUBE4.mousePressed(changeSeven.bind(null, 0));
-	CUBE4.style("height:50px; width:180px; text-align:center; font-size:20px;");
-
-	const CUBE5 = p.createButton('Christmas 2x2');
-	CUBE5.parent("cube5");
-	CUBE5.mousePressed(change8.bind(null, 0));
-	CUBE5.style("height:50px; width:180px; text-align:center; font-size:20px;");
 
 	const CUSTOM = p.createButton('Custom Mod');
 	CUSTOM.parent("custom");
@@ -491,32 +455,32 @@ p.setup = () => {
 	SOLVE.mousePressed(solveCube.bind(null, 0));
 	
 	const EASY = p.createButton('Easy');
-	EASY.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	EASY.style("height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58")
 	EASY.parent("s_easy");
 	EASY.mousePressed(easy.bind(null, 0));
 
 	const M_34 = p.createButton('3 to 5 Movers');
-	M_34.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	M_34.style("height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58")
 	M_34.parent("m_34");
 	M_34.mousePressed(m_34.bind(null, 0));
 
 	const M_4 = p.createButton('Endless (Medium)');
-	M_4.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	M_4.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8;")
 	M_4.parent("m_4");
 	M_4.mousePressed(m_4.bind(null, 0));
 	
 	const MED = p.createButton('Medium');
-	MED.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	MED.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8;")
 	MED.parent("s_medium");
 	MED.mousePressed(medium.bind(null, 0));
 
 	const OLL = p.createButton('OLL Practice');
-	OLL.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	OLL.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163;")
 	OLL.parent("s_OLL");
 	OLL.mousePressed(speedOLL.bind(null, 0));
 	
 	PLL = p.createButton('PLL/PBL Practice');
-	PLL.style("height:60px; width:180px; text-align:center; font-size:20px;")
+	PLL.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163;")
 	PLL.parent("s_PLL");
 	PLL.mousePressed(speedPLL.bind(null, 0));
 	
@@ -527,6 +491,10 @@ p.setup = () => {
 	const GO_BTN = p.createButton('Go!');
 	GO_BTN.parent("test_alg_div");
 	GO_BTN.mousePressed(testAlg.bind(null, 0));	
+
+	TIMEGONE = p.createButton('Remove previous time');
+	TIMEGONE.parent("timegone");
+	TIMEGONE.mousePressed(removeTime.bind(null, 0));	
 
 	regular();
 }
@@ -936,7 +904,7 @@ function changeTwo()
 	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
 	TWOBYTWO.style('background-color', "#f5f573");
 	SIZE_SLIDER2.remove();
-	SIZE_SLIDER2 = p.createSlider(-150, 150, 0, 5);
+	SIZE_SLIDER2 = p.createSlider(-1000, 150, 0, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
@@ -957,7 +925,7 @@ function changeThree()
 	TWOBYTWO.parent("type");
 	TWOBYTWO.mousePressed(changeTwo.bind(null, 0));
 	SIZE_SLIDER2.remove();
-	SIZE_SLIDER2 = p.createSlider(0, 300, 150, 5);
+	SIZE_SLIDER2 = p.createSlider(-1000, 300, 150, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
@@ -972,14 +940,14 @@ function changeCam(dim)
 	SIZE_SLIDER2.remove();
 	if(dim == 3)
 	{
-		SIZE_SLIDER2 = p.createSlider(0, 300, 150, 5);
+		SIZE_SLIDER2 = p.createSlider(-1000, 300, 150, 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
 	}
 	else
 	{
-		SIZE_SLIDER2 = p.createSlider(-150, 150, 0, 5);
+		SIZE_SLIDER2 = p.createSlider(-1000, 150, 0, 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
@@ -1021,26 +989,36 @@ function changeFour(){
 	DIM = 1;
 	CAMZOOM = -150;
 	changeCam(3);
+	refreshButtons();
+	ONEBYTHREE.style('background-color', "#8ef5ee");
 }
 function changeFive(){
 	DIM = 2;
 	CAMZOOM = -150;
 	changeCam(3);
+	refreshButtons();
+	SANDWICH.style('background-color', "#8ef5ee");
 }
 function changeSix(){
 	DIM = 3;
 	CAMZOOM = -150;
 	changeCam(3);
+	refreshButtons();
+	CUBE3.style('background-color', "#8ef5ee");
 }
 function changeSeven(){
 	DIM = 4;
 	CAMZOOM = -150;
 	changeCam(3);
+	refreshButtons();
+	CUBE4.style('background-color', "#8ef5ee");
 }
 function change8(){
 	DIM = 5;
 	CAMZOOM = 0;
 	changeCam(2);
+	refreshButtons();
+	CUBE5.style('background-color', "#8ef5ee");
 }
 function change9()
 {
@@ -1267,10 +1245,13 @@ function regular(){
 	DELAY = DELAY_SLIDER.value();
 	canMan = true;
 	DIM = DIM2;
-	if(DIM == 100)
-		CAMZOOM = 0;
-	else
-		CAMZOOM = -150;
+	if(MODE == "cube")
+	{
+		if(DIM == 100)
+			changeTwo();
+		else
+			changeThree();
+	}
 	reSetup();
 	MODE = "normal"
 	var elements = document.getElementsByClassName('normal');
@@ -1281,6 +1262,10 @@ function regular(){
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	}
+
+	refreshButtons();
+	REGULAR.style('background-color', "#8ef5ee");
+
 	document.getElementById("or_instruct").style.display = "block";
 	document.getElementById("or_instruct2").style.display = "block";
 	document.getElementById("or_instruct4").style.display = "block";
@@ -1318,6 +1303,7 @@ function regular(){
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("link1").style.display = "none";
+	document.getElementById("timegone").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
 	document.getElementById("reset3_div").style.display = "none";
 	document.getElementById("giveup").style.display = "none";
@@ -1350,25 +1336,33 @@ function timedmode()
 	DELAY = 0;
 	MODE = "timed";
 	reSetup();
-	
+
+	refreshButtons();
+	TIMEDMODE2.style('background-color', "#8ef5ee");
+
 	document.getElementById("mode").style.display = "none";
 	document.getElementById("mode2").style.display = "none";
 	document.getElementById("mode3").style.display = "none";
 	document.getElementById("mode7").style.display = "none";
 	document.getElementById("or_instruct").style.display = "none";
 	document.getElementById("or_instruct2").style.display = "none";
-	document.getElementById("or_instruct3").style.display = "block";
+	document.getElementById("or_instruct3").style.display = "none";
 	document.getElementById("or_instruct4").style.display = "none";
 	document.getElementById("mode4").style.display = "inline";
 	document.getElementById("mode5").style.display = "inline";
 	document.getElementById("mode6").style.display = "inline";
 	document.getElementById("mode8").style.display = "inline";
-	document.getElementById("or_instruct3").innerHTML = "Stats Mode";
+	document.getElementById("or_instruct3").innerHTML = "";
 	document.getElementById("alltimes").style.display = "block";
-	document.getElementById("link1").style.display = "block";
+
+	document.getElementById("timegone").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
 	document.getElementById("cube").style.display = "none";
+
 	document.getElementById("type3").style.display = "block";
+
+	document.getElementById("input").style.display = "none";
+	document.getElementById("input2").style.display = "none";
 }
 function cubemode()
 {
@@ -1419,6 +1413,10 @@ function speedmode()
 	ao5 = [];
 	mo5 = [];
 	scrambles = [];
+
+	refreshButtons();
+	SPEEDMODE.style('background-color', "#8ef5ee");
+
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
@@ -1460,6 +1458,10 @@ function movesmode()
 	ao5 = [];
 	mo5 = [];
 	scrambles = [];
+
+	refreshButtons();
+	MOVESMODE.style('background-color', "#8ef5ee");
+
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
@@ -1696,6 +1698,7 @@ function easy()
 		document.getElementById("times_par").style.display = "block";
 		document.getElementById("s_instruct").innerHTML = "Your final time is " + total + " seconds, granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
 		document.getElementById("s_easy").style.display = "inline";
+		if(DIM == 50)
 		document.getElementById("s_medium").style.display = "inline";
 		document.getElementById("s_OLL").style.display = "inline";
 		document.getElementById("s_PLL").style.display = "inline";
@@ -2411,6 +2414,46 @@ function getCubyByColor(arr1) {
 }
 function getCubyIndexByColor2(arr1) //original
 {
+	//console.log(arr1);
+	let realcolor = getColor(arr1);
+	//console.log(realcolor);
+	let allcolors = [];
+	allcolors["w"] = [250, 250, 250];
+	allcolors["r"] = [219, 25, 25];
+	allcolors["b"] = [25, 105, 219];
+	allcolors["o"] = [219, 125, 25];
+	allcolors["g"] = [25, 219, 31];
+	allcolors["y"] = [209, 219, 25];
+	allcolors["k"] = [25, 25, 25];
+	allcolors["m"] = [245, 25, 245];
+
+	let distcolor = [];
+
+	distcolor[0] = allcolors[realcolor][0] - arr1[0];
+	distcolor[1] = allcolors[realcolor][1] - arr1[1];
+	distcolor[2] = allcolors[realcolor][2] - arr1[2];
+
+	console.log(distcolor);
+
+	let addon = 0;
+	if(distcolor[0] == 0) addon += 9;
+	else if(distcolor[0] == -1) addon += 18;
+	else if(distcolor[0] == 1) addon += 0;
+	else return false;
+
+	if(distcolor[1] == 0) addon += 3;
+	else if(distcolor[1] == -1) addon += 6;
+	else if(distcolor[1] == 1) addon += 0;
+	else return false;
+
+	if(distcolor[2] == 0) addon += 1;
+	else if(distcolor[2] == -1) addon += 2;
+	else if(distcolor[2] == 1) addon += 0;
+	else return false;
+
+	//if(addon >= 0 && addon <= 26) return addon;
+	//return false;
+
 	if(JSON.stringify(arr1) == "[218,124,24,255]") return 0;
 	if(JSON.stringify(arr1) == "[218,125,24,255]") return 3;
 	if(JSON.stringify(arr1) == "[218,126,24,255]") return 6;
@@ -2547,7 +2590,14 @@ function displayTimes()
 	if(mo5.length == 0)
 	{
 		document.getElementById('alltimes').innerHTML = "Your times/moves will be displayed here";
+		document.getElementById("timegone").style.display = "none";
+		document.getElementById("link1").style.display = "none";
 		return;
+	}
+	else
+	{
+		document.getElementById("timegone").style.display = "block";
+		document.getElementById("link1").style.display = "block";
 	}
 	document.getElementById("or_instruct3").style.display = "none";
 	let alltimes = "";
@@ -2757,13 +2807,14 @@ function getIndex(cuby)
 	}
 	return null;
 }
-function startAction() {	 
+function startAction() {	
+	if(MODE == "cube" && DIM != 2) return; 
 	const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
 	setLayout();
 	console.log(hoveredColor);
 	if (hoveredColor !== false && hoveredColor[0] != BACKGROUND_COLOR) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
-		
+		console.log(cuby);
 		if (cuby !== false) {
 			//console.log(hoveredColor, getIndex(getCubyByColor(hoveredColor)), getCubyIndexByColor2(hoveredColor), getPos(cuby), cubyColors[getCubyIndexByColor2(hoveredColor)]);
 			selectedCuby = cuby;
@@ -2865,6 +2916,7 @@ p.keyPressed = (event) => {
 		if(bad3.includes(p.keyCode) && p.keyCode > 9) return;
 		if(DIM == 2 && isSolved() && (p.keyCode == 186 || p.keyCode == 65) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
 		if(DIM == 2 && isSolved() && (p.keyCode == 188 || p.keyCode == 190) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
+		if(DIM == 2 && isSolved() && (p.keyCode == 81 || p.keyCode == 80) && (layout[4][1][1][0] == "g" || layout[4][1][1][0] == "b")) return;
 		let bad4 = "74 70 76 83";
 		let bad5 = "73 75 69 68";
 		let bad6 = "71 72 87 79";
@@ -3018,8 +3070,10 @@ p.keyPressed = (event) => {
 			speedSetup();
 			break;
 			case 192: //`
-			if(MODE == "normal")
+			if(MODE == "normal" || MODE == "cube" || MODE == "timed")
 				shuffleCube();
+			break;
+			case 49:
 			if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
 			regular();
 			if(MODE == "moves")
@@ -3279,6 +3333,88 @@ function Redo()
 	}
 	arr = [move];
 	multiple2(0);
+}
+function refreshButtons()
+{
+	SPEEDMODE.remove();
+	REGULAR.remove();
+	TIMEDMODE.remove();
+	MOVESMODE.remove();
+	SPEEDMODE2.remove();
+	REGULAR2.remove();
+	TIMEDMODE2.remove();
+	MOVESMODE2.remove();
+	ONEBYTHREE.remove();
+	SANDWICH.remove();
+	CUBE3.remove();
+	CUBE4.remove();
+	CUBE5.remove();
+
+	REGULAR = p.createButton('Normal Mode');
+	REGULAR.parent("mode").class("mode1");
+	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
+	REGULAR.mousePressed(regular.bind(null, 0));
+
+	TIMEDMODE = p.createButton('Stats Mode');
+	TIMEDMODE.parent("mode3").class("mode1");
+	TIMEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
+	TIMEDMODE.mousePressed(timedmode.bind(null, 0));
+	
+	MOVESMODE = p.createButton('Fewest Moves');
+	MOVESMODE.parent("mode7").class("mode1");
+	MOVESMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
+	MOVESMODE.mousePressed(movesmode.bind(null, 0));
+
+	SPEEDMODE = p.createButton('Speed Mode');
+	SPEEDMODE.parent("mode2").class("mode1");
+	SPEEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
+	SPEEDMODE.mousePressed(speedmode.bind(null, 0));
+
+	REGULAR2 = p.createButton('Normal');
+	REGULAR2.parent("mode4").class("mode1");
+	REGULAR2.style("height:20px; width:50px; text-align:center; font-size:10px;")
+	REGULAR2.mousePressed(regular.bind(null, 0));
+	
+	SPEEDMODE2 = p.createButton('Speed');
+	SPEEDMODE2.parent("mode5").class("mode1");
+	SPEEDMODE2.style("height:20px; width:42px; text-align:center; font-size:10px;")
+	SPEEDMODE2.mousePressed(speedmode.bind(null, 0));
+
+	TIMEDMODE2 = p.createButton('Stat');
+	TIMEDMODE2.parent("mode6").class("mode1");
+	TIMEDMODE2.style("height:20px; width:35px; text-align:center; font-size:10px;")
+	TIMEDMODE2.mousePressed(timedmode.bind(null, 0));
+
+	MOVESMODE2 = p.createButton('FMC');
+	MOVESMODE2.parent("mode8").class("mode1");
+	MOVESMODE2.style("height:20px; width:40px; text-align:center; font-size:10px;")
+	MOVESMODE2.mousePressed(movesmode.bind(null, 0));
+
+	ONEBYTHREE = p.createButton('1x3x3');
+	ONEBYTHREE.parent("cube1");
+	ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
+	ONEBYTHREE.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	SANDWICH = p.createButton('Sandwich Cube');
+	SANDWICH.parent("cube2");
+	SANDWICH.mousePressed(changeFive.bind(null, 0));
+	SANDWICH.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	CUBE3 = p.createButton('Plus Cube');
+	CUBE3.parent("cube3");
+	CUBE3.mousePressed(changeSix.bind(null, 0));
+	CUBE3.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	CUBE4 = p.createButton('Christmas 3x3');
+	CUBE4.parent("cube4");
+	CUBE4.mousePressed(changeSeven.bind(null, 0));
+	CUBE4.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	CUBE5 = p.createButton('Christmas 2x2');
+	CUBE5.parent("cube5");
+	CUBE5.mousePressed(change8.bind(null, 0));
+	CUBE5.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
 }
 function solveCube()
 {
@@ -5461,16 +5597,21 @@ function getColor(color)
 	return "o";
 	if(minpos == 4)
 	return "y";
+	if(minpos == 5)
 	return "g";
+}
+function removeTime()
+{
+	movesarr.pop();
+	mo5.pop();
+	ao5.pop();
 }
 function testAlg(){
 	if(canMan)
 	{
 		if(inp.value() == "time")
 		{
-			movesarr.pop();
-			mo5.pop();
-			ao5.pop();
+			removeTime();
 			return;
 		}
 		else if(inp.value()[0] == "p")
@@ -5487,7 +5628,7 @@ function testAlg(){
 //   *************************************
 
 p.mousePressed = () => {
-	if(MODE != "cube" || (MODE == "cube" && DIM == 2))
+	//if(MODE != "cube" || (MODE == "cube" && DIM == 2))
 		startAction();
 }
 

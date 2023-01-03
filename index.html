@@ -127,15 +127,20 @@
 			<p id="mode3" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="mode2" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
 			<p id="mode7" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
-			<p id="link1" style = "text-align: center; font-size:15px; margin-top: 0px; margin-bottom: 0px;"><a href="#">Download data</a></p>
+			
 			<div id = "allmodes">
 				<p id="mode4" style = "display: inline; text-align:center; margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode6" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode5" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode8" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 			</div>
+			
 			<h5 id = "or_instruct3" style = "margin-top: 10px; font-size:15px; text-align: center;"></h5>
 			<p id = "alltimes" style = "margin-top: 10px; font-size:10px; text-align: left;"></p>
+			<p id="link1" style = "text-align: center; font-size:15px; margin-top: 0px; margin-bottom: 0px;"><a href="#">Download data</a></p>
+			
+			<p id="timegone" style = "text-align:center;  margin-top: 5px; margin-bottom: 5px;"></p>
+			
 			<div id = "cube">
 				<p style = "font-size:12px;">(Disclaimer: Mouse inputs are turned off.)</p>
 				<p id="cube1" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;"></p>
@@ -159,7 +164,7 @@
 				<p id = "select5" style = " font-size:13px; margin: 0px; padding:2px;">Bottom face: </p>
 				<p id = "select6" style = " font-size:13px; margin: 0px; padding:2px;">Back face: </p>
 				<p style = " font-size:12px; margin: 0px; padding:0px;"><b>Select visibility for each cuby:</b></p>
-				<p style = " font-size:12px; margin: 0px; padding:0px;"><i>1=back-left, 3=back-right, 4=middle-left, 6=middle-right, 7=front-left, 9=front-right</i></p>
+				<p style = " font-size:12px; margin: 0px; padding:0px;"><i>1=back-left, 3=back-right, 7=front-left, 9=front-right</i></p>
 				<p style = " font-size:13px; margin: 0px; padding:0px; text-align:center;">Top Layer</p>
 				<p id = "check1" style = "font-size:14px; display:inline;"></p>
 				<p id = "selectm" style = " font-size:13px; margin: 0px; padding:0px; text-align:center;">Middle Layer</p>
@@ -209,21 +214,19 @@
 				<p style = "display: inline;"  class = "normal" id = "outermoves">Move Count: <span id = "moves">0</span>&emsp;</p>
 				<p style = "display: inline;" class = "normal" id = "outertime">Elapsed time: <span id="time">0</span>s</p>
 			</div>
-			<table style="padding:2px" class = "normal noselect" id = "keymap">
+			<table style="padding:2px; border:1px solid black;" class = "normal noselect" id = "keymap" >
 				<th colspan="10">Virtual Cube Key Map</th>
 				<tr>
-				 <td><sup>&larr;</sup><sub>y</sub></td>
-				 <td><sup>&rarr;</sup><sub>y'</sub></td>
-				 <td><sup>&uarr;</sup><sub>x</sub></td>
-				 <td><sup>&darr;</sup><sub>x'</sub></td>
-				 <td><sup>`</sup><sub>Quit</sub></td>
-				  <td colspan = "2"><sup>Escape</sup><sub>reset</sub></td>
-				  <td><sup>=</sup><sub>redo</sub></td>
-				 <td colspan = "2"><sup>Bspace</sup><sub>undo</sub></td>
+				<td colspan = "2"><sup>~</sup><sub>shuffle</sub></td>
+				 <td><sup>1</sup><sub>quit</sub></td>
+				  <td colspan = "2"><sup>Esc</sup><sub>reset</sub></td>
+				  <td colspan = "2"><sup>=</sup><sub>redo</sub></td>
+				 <td colspan = "3"><sup>Bspace</sup><sub>undo</sub></td>
 				</tr>
 				<tr><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
 				<tr><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
 				<tr><td><sup>Z</sup> <sub></sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub></sub></td></tr>
+				<tr><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td></tr>
 			</table>
 			<div>
 				<p id = "scramble_par" class = "normal">Scramble: <span id = "scramble" style = "font-size:12px;">N/A</span></p>
