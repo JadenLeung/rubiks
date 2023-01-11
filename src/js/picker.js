@@ -7,7 +7,7 @@ export default class Picker {
   }
   
   initBuffer() {
-    const p = this.p;
+  const p = this.p;
 	let cnv_div = document.getElementById("cnv_div");
     const buffer = p.createGraphics(this.debug ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight * 0.9, p.WEBGL);
     buffer.pixelDensity(1);

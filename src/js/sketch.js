@@ -3010,6 +3010,34 @@ p.keyPressed = (event) => {
 		reSetup();
 		return;
 	}
+	if(p.keyCode == 50) //2 //two
+	{
+		if(SPEED != 2)
+		{
+			SPEED_SLIDER.value(2);
+			SPEED = 2;
+		}
+		else{
+			SPEED_SLIDER.value(0.01);
+			SPEED = 0.01;
+		}
+		return;
+	}
+	if(p.keyCode == 51)
+	{
+		CAM = p.createEasyCam(p._renderer);
+		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+		CAM.zoom(CAMZOOM);
+		CAM.rotateX(-p.PI / 2.7);
+		CAM.rotateY(-p.PI / 7);
+		CAM.rotateZ(-p.PI / 2);
+		return;
+	}
+	if(p.keyCode == 16)
+	{
+		inp.elt.focus();
+		return;
+	}
 	if(canMan == true)
 	{
 		setLayout();
@@ -6176,6 +6204,12 @@ function renderCube() {
 			}
 		}
 	}
+$(document).on("keypress", "input", function(e){
+	if(e.which == 13){
+		var inputVal = $(this).val();
+		testAlg();
+	}
+});
 function sideSolved(color)
 {
 	if(DIM == 50)
