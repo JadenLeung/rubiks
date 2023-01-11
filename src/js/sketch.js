@@ -108,6 +108,16 @@ opposite["y"] = "w";
 opposite["w"] = "y";
 opposite["o"] = "r";
 opposite["r"] = "o";
+
+let opposite2 = [];
+opposite2["L"] = "R";
+opposite2["R"] = "L";
+opposite2["F"] = "B";
+opposite2["B"] = "F";
+opposite2["U"] = "D";
+opposite2["D"] = "U";
+
+
 let selectedCuby = -1;
 let selectedColor = [];
 let dev = 0;
@@ -2620,13 +2630,16 @@ function shuffleCube(nb) {
 	moves = 0;
 	timer.reset();
 	timer.stop();
-	const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
+	const possible = ["R", "L", "U", "D", "B", "F"];
 	//const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'", "M", "M'", 
 	//"E", "E'", "Lw'", "Lw'", "Uw", "Uw'", "Rw", "Rw'", "Dw", "Dw'", "Bw", "Bw'", "Fw", "Fw'"];
 	arr = [];
 	let bad = "";
 	let total = "";
-	for(let i = 0; i < 20; i++)
+	let s = 15;
+	if(DIM4 == 2)
+		s = 10;
+	for(let i = 0; i < s; i++)
 	{
 		while(true)
 		{
@@ -2634,30 +2647,32 @@ function shuffleCube(nb) {
 			console.log("rnd is " + rnd);
 			if(rnd == bad || (arr.length>1 && rnd == arr[i-2]))
 			continue;
+
+			if(rnd == opposite2[bad])
+				continue;
 			
-			if(rnd.slice(-1) == "'")
+			let rnd2 = Math.random();
+			if(rnd2 < 0.25)
 			{
-				bad = rnd.substring(0, rnd.length-1);
+				arr.push(rnd);
+				total += rnd + " ";
 			}
-			else
+			else if(rnd2 < 0.75)
 			{
-				bad = rnd + "'";
+				arr.push(rnd);
+				arr.push(rnd);
+				total += rnd + "2 ";
+			}else
+			{
+				arr.push(rnd + "'");
+				total += rnd + "' ";
 			}
-			arr.push(rnd);
+			
+			bad = rnd;
+
 			console.log("bad is " + bad);
 			break;
 		}
-		if(i > 0 && arr[i] == arr[i-1])
-		{
-			total = total.substring(0, total.length-1);
-			if(arr[i].includes("'"))
-			{
-				total = total.substring(0, total.length-1);
-			}
-			total += "2 ";
-		}
-		else
-		total += (arr[i] + " ");
 	}
 	document.getElementById("scramble").innerHTML = total;
 	multiple2(0);
@@ -3197,7 +3212,7 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(DIM4);
+			console.log(opposite2["L"]);
 			break;
 			
 		}
