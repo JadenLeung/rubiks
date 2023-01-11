@@ -3035,6 +3035,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16)
 	{
+		console.log("hello")
 		inp.elt.focus();
 		return;
 	}
