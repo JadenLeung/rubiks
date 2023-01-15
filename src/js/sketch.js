@@ -6378,6 +6378,7 @@ window.addEventListener('keydown', (e) => {
 //66.60
 //66.04
 //65.56
+//64.48
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
 //Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
 //Jaden WR 2x2: 3.88
@@ -6387,10 +6388,13 @@ window.addEventListener('keydown', (e) => {
 //Medium: 15.4s, 13.58s
 //FMC: 193
 
-//BELOW 57 MOVES
-// R2 B2 L' F2 L' U2 L2 B2 R' U2 L2 D' F2 R2 F2 (56)
-// D2 B2 U2 B2 U F2 R' F' R2 F L2 D' R U L2 (55)
+//BELOW 54 MOVES
+// L D2 R U2 B2 D' B R D' R2 D R2 B2 R2 B' (54)
 // U2 F L2 D R2 U' F' U F L2 F2 R B' R' B' (54)
+// R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53)
+// D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
+// F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
+//?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!!
 
 //WORLD RECORD SCRAMBLES
 // D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(was 60, 69)
