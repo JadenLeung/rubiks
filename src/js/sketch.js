@@ -3700,7 +3700,7 @@ function stepFour()
 			{
 				if(layout[2][2][2][0] != color){
 					if(layout[2][0][2][0] != color) changeArr2("R", 1);
-					else changeArr2("F,  D, F'", 3)
+					else changeArr2("F, D, F'", 3)
 				}
 				if(layout[2][2][0][0] != color){
 					if(layout[2][2][2][0] != color) changeArr2("D' F", 2);
@@ -3918,6 +3918,7 @@ function stepFive()
 }
 function stepTwo(){
 	flipmode2 = 1;
+	//dev
 	//dev = 1;
 	if(dev == 1)
 	flipmode2 = 0;
@@ -3951,219 +3952,129 @@ function stepTwo(){
 		document.getElementById("fraction").innerHTML = "2/10):";
 		saystep = 2;
 		arr = [];
-		let edgenorth = false;
-		let edgewest = false;
-		let edgesouth = false;
-		let edgeeast = false;
-		if(layout[2][0][1][0] == color) edgenorth = true;
-		if(layout[2][1][0][0] == color) edgewest = true;
-		if(layout[2][1][2][0] == color) edgeeast = true;
-		if(layout[2][2][1][0] == color) edgesouth = true;
-		if(layout[5][1][0][0] == color && layout[2][1][0][0] != color)
-		arr = ["L'"];
-		else if(layout[5][1][2][0] == color && layout[2][1][2][0] != color)
-		arr = ["R"];
-		else if(layout[4][1][0][0] == color && layout[2][1][0][0] != color)
-		arr = ["L"];
-		else if(layout[4][1][2][0] == color && layout[2][1][2][0] != color)
-		arr = ["R'"];
-		else if(layout[0][1][0][0] == color && layout[2][0][1][0] != color)
-		arr = ["B'"];
-		else if(layout[1][1][0][0] == color && layout[2][0][1][0] != color)
-		arr = ["B"];
-		else if(layout[1][1][2][0] == color && layout[2][2][1][0] != color)
+		flipmode = 0;
+		let whichmode = 0;
+		let whichlength = 99;
+		console.log("color is " + color);
+		for(let i = 0; i < 4; i++)
 		{
-			arr = ["F'"];
-		}
-		else if(layout[0][1][2][0] == color && layout[2][2][1][0] != color)
-		arr = ["F"];
-		else if(layout[3][0][1][0] == color && layout[2][0][1][0] != color)
-		arr = ["B", "B"];
-		else if(layout[3][1][0][0] == color && layout[2][1][0][0] != color)
-		arr = ["L", "L"];
-		else if(layout[3][1][2][0] == color && layout[2][1][2][0] != color)
-		arr = ["R", "R"];
-		else if(layout[3][2][1][0] == color && layout[2][2][1][0] != color)
-		arr = ["F", "F"];
-		if((layout[3][0][1].includes(color) || layout[3][1][0].includes(color) || layout[3][1][2].includes(color) || layout[3][2][1].includes(color)))
-		{
-			if(layout[5][2][1].includes(color))
-			{
-				if(layout[5][2][1][0] == color){
-					if(!edgesouth){
-						if(!edgewest) changeArr2("F L'", 2);
-						else if(!edgeeast) changeArr2("F' R", 2);
-						else changeArr2("F U R", 3);
-					}else{
-						if(!edgewest) changeArr2("F L' F'", 3);
-						else if(!edgeeast) changeArr2("F' R F", 3);
-						else changeArr2("U F' R F", 4);
-					}
-				}else{
-					if(!edgewest) changeArr2("D' L2", 3);
-					else if(!edgeeast) changeArr2("D R2", 3)
-					else changeArr2("D2 B2", 4);
-				}
+			flipmode = i;
+			if(flipmode == 1)defineFlipper();
+			if(flipmode == 2)defineFlipper3();
+			if(flipmode == 3)defineFlipper4();
+			setLayout();
+			let color2 = layout[5][1][1][0];
+			console.log(flipmode);
+			/*if(flipmode == 2) 
+			{ 
+				//console.log("lol");
+				console.log("lol, " + (layout[2][0][1][0] == color && layout[2][0][1][5] == color2));
+				return;
+			}*/
+			
+			let edgenorth = false;
+			let edgewest = false;
+			let edgesouth = false;
+			let edgeeast = false;
+			if(layout[2][0][1][0] == color && layout[4][0][1][0] == layout[4][1][1][0]) edgenorth = true;
+			if(layout[2][1][0][0] == color && layout[0][0][1][0] == layout[0][1][1][0]) edgewest = true;
+			if(layout[2][1][2][0] == color && layout[1][0][1][0] == layout[1][1][1][0]) edgeeast = true;
+			if(layout[2][2][1][0] == color && layout[5][0][1][0] == color2) edgesouth = true;
+			
+			if(edgesouth) continue;
+			if(layout[2][1][0][0] == color && layout[2][1][0][5] == color2){
+				if(edgenorth || edgewest || edgesouth) changeArr2("L U L' U'", 4)
+				else changeArr2("U'", 0);
 			}
-			if(layout[0][2][1].includes(color))
-			{
-				if(layout[0][2][1][0] == color){
-					if(!edgewest){
-						if(!edgesouth) changeArr2("L' F", 2);
-						else if(!edgenorth) changeArr2("L B'", 2);
-						else changeArr2("L' U' F", 3);
-					}else{
-						if(!edgesouth) changeArr2("L' F L", 3);
-						else if(!edgenorth) changeArr2("L B' L'", 3);
-						else changeArr2("U L' F L", 4);
-					}
-				} else {
-					if(!edgesouth) changeArr2("D F2", 3);
-					else if(!edgenorth) changeArr2("D' B2", 3)
-					else changeArr2("D2 R2", 4);
-				}
+			else if(layout[2][1][2][0] == color && layout[2][1][2][5] == color2){
+				if(edgenorth || edgewest || edgesouth) changeArr2("R' U' R U", 4)
+				else changeArr2("U", 0);
 			}
-			if(layout[1][2][1].includes(color))
-			{
-				if(layout[1][2][1][0] == color){
-					if(!edgeeast){
-						if(!edgesouth) changeArr2("R F'", 2);
-						else if(!edgenorth) changeArr2("R' B", 2);
-						else changeArr2("R U F'", 3);
-					}else{
-						if(!edgesouth) changeArr2("R F' R'", 3);
-						else if(!edgenorth) changeArr2("R' B R", 3);
-						else changeArr2("U R' B R", 4);
-					}
-				} else {
-					if(!edgesouth) changeArr2("D' F2", 3);
-					else if(!edgenorth) changeArr2("D B2", 3)
-					else changeArr2("D2 L2", 4);
-				}
+			else if(layout[2][0][1][0] == color && layout[2][0][1][5] == color2){
+				console.log("here5")
+				if(edgenorth || edgewest || edgesouth) changeArr2("B2 D2 F2", 6)
+				else changeArr2("U2", 0);
 			}
-			if(layout[4][2][1].includes(color))
-			{
-				if(layout[4][2][1][0] == color){
-					if(!edgenorth){
-						if(!edgeeast) changeArr2("B' L", 2);
-						else if(!edgenorth) changeArr2("B R'", 2);
-						else changeArr2("B' U' L", 3);
-					}else{
-						if(!edgeeast) changeArr2("B' L B", 3);
-						else if(!edgenorth) changeArr2("B R' B'", 3);
-						else changeArr2("U B' L B", 4);
-					}
-				} else {
-					if(!edgewest) changeArr2("D L2", 3);
-					else if(!edgeeast) changeArr2("D' R2", 3)
-					else changeArr2("D2 F2", 4);
-				}
+			else if(layout[5][0][1][0] == color && layout[5][0][1][5] == color2){
+				changeArr2("F U' R U", 4);
 			}
-		}
-		if((layout[0][1][0].includes(color) || layout[0][1][2].includes(color) || layout[1][1][0].includes(color) || layout[1][1][2].includes(color)))
-		{
-			if(layout[5][1][0][0] == color){
-				if(!edgesouth) changeArr2("U L'", 2);
-				else if(!edgenorth) changeArr2("U' L'", 2);
-				else changeArr2("U2 L'", 3);
+			else if(layout[0][0][1][0] == color && layout[0][0][1][5] == color2){
+				changeArr2("L F", 2);
 			}
-			if(layout[5][1][2][0] == color){
-				if(!edgesouth) changeArr2("U' R", 2);
-				else if(!edgenorth) changeArr2("U R", 2);
-				else changeArr2("U2 R", 3);
+			else if(layout[1][0][1][0] == color && layout[1][0][1][5] == color2){
+				changeArr2("R' F'", 2);
 			}
-			if(layout[0][1][0][0] == color){
-				if(!edgeeast) changeArr2("U' B'", 2);
-				else if(!edgewest) changeArr2("U B'", 2);
-				else changeArr2("U2 B'", 3);
+			else if(layout[4][0][1][0] == color && layout[4][0][1][5] == color2){
+				changeArr2("B' U' R' U", 4);
 			}
-			if(layout[0][1][2][0] == color){
-				if(!edgewest) changeArr2("U' F", 2);
-				else if(!edgeeast) changeArr2("U F", 2);
-				else changeArr2("U2 F'", 3);
+			else if(layout[5][1][0][0] == color && layout[5][1][0][5] == color2){ //Middle layer
+				changeArr2("U L' U'", 3);
 			}
-			if(layout[1][1][0][0] == color){
-				if(!edgeeast) changeArr2("U B", 2);
-				else if(!edgewest) changeArr2("U' B", 2);
-				else changeArr2("U2 B", 3);
+			else if(layout[5][1][0][0] == color2 && layout[5][1][0][5] == color){ 
+				changeArr2("F", 1);
 			}
-			if(layout[1][1][2][0] == color){
-				if(!edgewest) changeArr2("U' F'", 2);
-				else if(!edgeeast) changeArr2("U F'", 2);
-				else changeArr2("U2 F'", 3);
+			else if(layout[5][1][2][0] == color && layout[5][1][2][5] == color2){ 
+				changeArr2("U' R U", 3);
 			}
-			if(layout[4][1][0][0] == color){
-				if(!edgenorth) changeArr2("U' L", 2);
-				else if(!edgesouth) changeArr2("U L", 2);
-				else changeArr2("U2 L", 3);
+			else if(layout[5][1][2][5] == color && layout[5][1][2][0] == color2){ 
+				changeArr2("F'", 1);
 			}
-			if(layout[4][1][2][0] == color){
-				if(!edgenorth) changeArr2("U R'", 2);
-				else if(!edgesouth) changeArr2("U' R'", 2);
-				else changeArr2("U2 R'", 3);
+			else if(layout[0][1][0][0] == color && layout[0][1][0][5] == color2){ 
+				if(edgeeast) changeArr2("L2 F L2", 5);
+				else changeArr2("L2 F", 3)
+			}
+			else if(layout[0][1][0][5] == color && layout[0][1][0][0] == color2){ 
+				changeArr2("U L U'", 3);
+			}
+			else if(layout[1][1][0][0] == color && layout[1][1][0][5] == color2){ 
+				if(edgeeast) changeArr2("R2 F' R2", 5);
+				else changeArr2("R2 F'", 3)
+			}
+			else if(layout[1][1][0][5] == color && layout[1][1][0][0] == color2){ 
+				changeArr2("U' R' U", 3);
+			}
+			else if(layout[5][2][1][0] == color && layout[5][2][1][5] == color2){ //bottom layer
+				if(!edgeeast) changeArr2("D' L' F", 3);
+				else if(!edgewest) changeArr2("D R F'", 3);
+				else changeArr2("F' U' R U", 4);
+			}
+			else if(layout[5][2][1][5] == color && layout[5][2][1][0] == color2){ 
+				changeArr2("F2", 2);
+			}
+			else if(layout[0][2][1][0] == color && layout[0][2][1][5] == color2){ 
+				if(!edgeeast) changeArr2("L' F", 2);
+				else changeArr2("L' F L", 3);
+			}
+			else if(layout[0][2][1][5] == color && layout[0][2][1][0] == color2){ 
+				changeArr2("D F2", 3);
+			}
+			else if(layout[1][2][1][0] == color && layout[1][2][1][5] == color2){ 
+				if(!edgewest) changeArr2("R F'", 2);
+				else changeArr2("R F' R'", 3);
+			}
+			else if(layout[1][2][1][5] == color && layout[1][2][1][0] == color2){ 
+				changeArr2("D' F2", 3);
+			}
+			else if(layout[4][2][1][0] == color && layout[4][2][1][5] == color2){ 
+				if(!edgeeast) changeArr2("D L' F", 3)
+				else if(!edgewest) changeArr2("D' R F'", 3);
+				else changeArr2("D' R F' R'", 4);
+			}
+			else if(layout[4][2][1][5] == color && layout[4][2][1][0] == color2){ 
+				changeArr2("D2 F2", 4);
+			}
+			
+			if(arr.length != 0 && arr.length < whichlength){
+				whichlength = arr.length;
+				whichmode = i;
 			}
 		}
-		if(layout[5][0][1][0] == color || layout[4][0][1][0] == color || layout[0][0][1][0] == color || layout[1][0][1][0] == color)
-		{
-			if(layout[5][0][1][0] == color)
-			{
-				if(!edgewest) changeArr2("F' L'", 2);
-				else if(!edgeeast) changeArr2("F R", 2);
-				else changeArr2("F U' R", 3);
-			}
-			if(layout[0][0][1][0] == color)
-			{
-				if(!edgenorth) changeArr2("L' B'", 2);
-				else if(!edgesouth) changeArr2("L F", 2);
-				else changeArr2("L U' F", 3);
-			}
-			if(layout[1][0][1][0] == color)
-			{
-				if(!edgenorth) changeArr2("R B", 2);
-				else if(!edgesouth) changeArr2("R' F'", 2);
-				else changeArr2("R' U F'", 3);
-			}
-			if(layout[4][0][1][0] == color)
-			{
-				if(!edgewest) changeArr2("B L", 2);
-				else if(!edgeeast) changeArr2("B' R'", 2)
-				else changeArr2("B U' L", 3);
-			}
-		}
-		multipleCross2(0);	
-	}
-	else if(numPFL() < 3 && saystep < 7)
-	{
-		//return;
-		console.log(numPFL());
-		document.getElementById("step").innerHTML = "Permuting edges";
-		document.getElementById("fraction").innerHTML = "3/10):";
-		saystep = 3;
-		arr = [];
-		if(numPFL() < 2)
-		{
-			if((layout[4][0][1][0] == layout[0][1][1][0]) + (layout[0][0][1][0] == layout[5][1][1][0]) +
-			(layout[5][0][1][0] == layout[1][1][1][0]) + (layout[1][0][1][0] == layout[4][1][1][0]) > 1)
-			arr = ["U'"];
-			else
-			arr = ["U"];
-		}
-		else if(layout[4][0][1][0] == layout[4][1][1][0] && layout[0][0][1][0] == layout[0][1][1][0])
-		{
-			changeArr("R' U' R U R'");
-		}
-		else if(layout[5][0][1][0] == layout[5][1][1][0] && layout[1][0][1][0] == layout[1][1][1][0])
-		changeArr("L' U' L U L'");
-		else if(layout[5][0][1][0] == layout[5][1][1][0] && layout[0][0][1][0] == layout[0][1][1][0])
-		changeArr("R' U R U' R'");
-		else if(opposite[layout[4][0][1][0]] == layout[4][1][1][0] && opposite[layout[5][0][1][0]] == layout[5][1][1][0])
-		changeArr("S2 U2 S2");
-		else if(opposite[layout[0][0][1][0]] == layout[0][1][1][0] && opposite[layout[1][0][1][0]] == layout[1][1][1][0])
-		{
-			changeArr("M2 U2 M2");
-		}
-		else
-		changeArr("F U' F' U F");
+		flipmode = whichmode;
+		if(flipmode == 1)defineFlipper();
+		if(flipmode == 2)defineFlipper3();
+		if(flipmode == 3)defineFlipper4();
+		setLayout();
+		if(arr.length == 0) arr = ["y"];
 		multipleCross2(0);
 	}
 	else if(cornerPFL() < 210) 	//f2l2
@@ -5347,31 +5258,31 @@ function Inverse(bad){
 }
 function crossColor(){
 	setLayout();
-	let max = 0;
-	let maxpos = 2;
-	let maxcolor = layout[2][1][1][0];
-	let cnt = [];
 	for(let i = 2;; i--)
 	{
 		let total = 0;
+		let total2 = 0;
 		let curcolor = layout[i][1][1][0];
 		if(layout[i][0][1][0] == curcolor) total++;
 		if(layout[i][1][0][0] == curcolor) total++;
 		if(layout[i][1][2][0] == curcolor) total++;
 		if(layout[i][2][1][0] == curcolor) total++;
+
+		if(layout[2][0][1][0] == color && layout[4][0][1][0] == layout[4][1][1][0]) total2++;
+		if(layout[2][1][0][0] == color && layout[0][0][1][0] == layout[0][1][1][0]) total2++;
+		if(layout[2][1][2][0] == color && layout[1][0][1][0] == layout[1][1][1][0]) total2++;
+		if(layout[2][2][1][0] == color && layout[5][0][1][0] == layout[5][1][1][0]) total2++;
 		
-		if(total > max)
+		if(total > 0)
 		{
-			max = total;
-			maxpos = i;
-			maxcolor = curcolor;
+			return [i, layout[i][1][1][0], total2];
 		}
 		if(i == 0)
 		i = 6;
 		if(i == 3)
 		break;
 	}
-	return [maxpos, maxcolor, max];
+	return [2, layout[2][1][1][0], 0];
 }
 function correctPFL() //Permutation of the First Layer, assuming all headlights
 {
@@ -6466,6 +6377,7 @@ window.addEventListener('keydown', (e) => {
 //69.16
 //66.60
 //66.04
+//65.56
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
 //Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
 //Jaden WR 2x2: 3.88
@@ -6474,42 +6386,20 @@ window.addEventListener('keydown', (e) => {
 //Easy: 0.8, 0.52s
 //Medium: 15.4s, 13.58s
 //FMC: 193
-//TODO: Make more efficient:  F R' B' U R L F B' D' B2 L R U D F B' L2 F' (10) dev on
-//D' R F' L' U2 R B' D' R U F' D2 F' B D U F' R' same thing
-//Bad
-//R D' L U R' B R U' L2 D F L D' B' L' D B2 L'
-//U R' L B F L' U' D' R2 L' F2 L' R' U L' B' F' B (2x2)
-//BELOW 53 MOVES
-//B' L D' B F' D' R L U' R2 D2 L' U' B' D L' F' U (52)
-//F' D' F R F' U D' F' B R L' D' B' F' L' B D' R' B' D' (52)
-// U' L2 U2 B L' F' B' U' R' U R2 B' F' U B' U' F' (52)
-// U D F B F' R' D' L U D' R' L' B L U R L U' L' B' (51)
-// F' U B' R U F D' L' R B2 R L B2 D R B' R' F (51)
-// F' U B' L' B L2 F B2 L B R' L' F' B' R2 B' U' (51)
-// R F' U' D' U F' L' D U' L' F D' U' B' L F B R D F (51)
-// L F2 R B' D B R2 D F R' L' B' U' R' F' R U R' (50)
-// L' F U B' U' F L' R' U' B2 D' U' L' D' B' F' U B D' (50)
-// D F2 U' D' L B U' F B' F' L' U' F R U R' F L U (49)
-// B U F' U' L' D2 B U' B' L' D R F B' F' L B' U R (48)
-// D' R' D2 F B' U B2 R' F D R' L2 F D R' L F' y y x x (48)
-// F R L F' D B' L U2 R2 D2 B2 L2 F2 B' D2 R2 U2 D2 L' D' (48) (Cool scramble)
-// R2 D U' R' U L' F' L R' F' U B' D' U2 F L B2 (48)
-// B' U' B2 F R' B U' D B R D B' U2 F U B L F' (48)
-// U' L F' D R2 L F2 B2 U R U' L B' D2 B' U' (48)
-//  L' R F' B2 F' L' U' B' R L' D U' F L B' F L' U2 (47)
-// D2 F' D' B R' L' U D F' L B' R' F2 B L R F2 (46)
-//  B R B' D R L F D L' F B' D F' L R B' L' D' F' U' (46)
-// R' L' D U' F U F' B' R L' F' R B2 L' R F' L D R' (46)
-// R' U' D' F' L R B' D2 F2 D L' B F' B2 R' L D' (43)
-// L' F R' D F D' R' B U R D U F' D' B F' U2 L R (43)
+
+//BELOW 57 MOVES
+// R2 B2 L' F2 L' U2 L2 B2 R' U2 L2 D' F2 R2 F2 (56)
+// D2 B2 U2 B2 U F2 R' F' R2 F L2 D' R U L2 (55)
+// U2 F L2 D R2 U' F' U F L2 F2 R B' R' B' (54)
+
 //WORLD RECORD SCRAMBLES
-// D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(was 60, 63)
-// B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 61)
-// L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y x x (54, was 58)
-// D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (64, was 55)
-// L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (50, was 52)
-// L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (70, was 48)
-// R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (was 41, 61)
+// D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(was 60, 69)
+// B2 U' R U F' B' U' B F L D R U' B' L' F D' R' U y y (was 59, 68)
+// L D' B' D B2 R' D' F' U' L' B U D L' F B D' F' U' y y x x (was 58, 61)
+// D' R' U' L R F' L2 D' U B' D U F D F2 L' D2 (was 55, 66)
+// L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (was 52, 69)
+// L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (was 48, 71)
+// R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (was 41, 56)
 //WORLD RECORD SCRAMBLES 2x2
 //L' R B L' D L R' U F' B L R' F U L F' B' F R2 (4)
 /*Mr Sunshine give us your rays
