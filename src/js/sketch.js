@@ -3116,7 +3116,7 @@ p.keyPressed = (event) => {
 		if(DIM == 100)
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81";
 		if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
-		if(bad3.includes(p.keyCode) && p.keyCode > 9) return;
+		if(bad3.includes(p.keyCode) && p.keyCode > 9 || p.keyCode == 18) return;
 		let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
 		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
 		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
@@ -3342,7 +3342,7 @@ p.keyPressed = (event) => {
 			if(MODE == "normal" || MODE == "cube" || MODE == "timed")
 				shuffleCube();
 			break;
-			case 49:
+			case 49: //1
 			if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
 			regular();
 			if(MODE == "moves")
@@ -3358,11 +3358,10 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 32: //space
-			if(MODE == "cube" && (typeof DIM == "object"))
+			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
 			}
-			//flipmode = 0;
 			let str = "";
 			for(let i = undo.length-1; i >= 0; i--)
 			{
@@ -3376,7 +3375,9 @@ p.keyPressed = (event) => {
 			.then((obj) => (setPLL(obj)));*/
 			console.log("erger");
 			break;
-			
+			case 52: //4
+			removeTime();
+			break;
 		}
 		let bad = -1;
 		if(undo.length > 0)
@@ -6267,7 +6268,6 @@ function renderCube() {
 	}
 $(document).on("keypress", "input", function(e){
 	if(e.which == 13){
-		var inputVal = $(this).val();
 		testAlg();
 	}
 });
