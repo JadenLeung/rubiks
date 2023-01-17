@@ -74,6 +74,7 @@ export default function (p) {
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
 	let INPUT2 = [];
+	let CUBE6;
 
 	// attach event
 
@@ -264,6 +265,7 @@ p.setup = () => {
 	CUBE3 = p.createButton('Plus Cube');
 	CUBE4 = p.createButton('Christmas 3x3');
 	CUBE5 = p.createButton('Christmas 2x2');
+	CUBE6 = p.createButton('The Jank 2x2');
 	refreshButtons();
 
 
@@ -528,7 +530,7 @@ setInterval(() => {
 	secs = 20;
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
-	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1);
+	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1 || DIM == 6 || (Array.isArray(DIM) && DIM4 == 2) || (Array.isArray(DIM) && DIM[6].length == 0));
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime)))
 	{
 		timer.stop();
@@ -693,6 +695,18 @@ setInterval(() => {
 		else
 			DIM4 = 3;
 	}
+	if(MODE == "cube" && Array.isArray(DIM))
+	{
+		if(DIM4 == 3 && DIM[6].length != 0){
+			document.getElementById("spacetime").style.display = "block";
+			document.getElementById("stop_div").style.display = "inline";
+		}
+		else{
+			document.getElementById("spacetime").style.display = "none";
+			document.getElementById("stop_div").style.display = "none";
+		}
+	}
+	
 	
 
 }, 10)
@@ -1052,6 +1066,13 @@ function change8(){
 	refreshButtons();
 	CUBE5.style('background-color', "#8ef5ee");
 }
+function change10(){
+	DIM = 6;
+	CAMZOOM = -150;
+	changeCam(3);
+	refreshButtons();
+	CUBE6.style('background-color', "#8ef5ee");
+}
 function change9(cubies)
 {
 
@@ -1217,17 +1238,65 @@ function inputPressed(move)
 			return;
 		}
 	}
-	let bad4 = ["U", "U'", "D", "D'"];
-	let bad5 = ["L", "L'", "R", "R'"];
-	let bad6 = ["F", "F'", "B", "B'"];
-	if(DIM == 1 && isSolved() && bad4.includes(move) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
-	if(DIM == 1 && isSolved() && bad5.includes(move) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
-	if(DIM == 1 && isSolved() && bad6.includes(move) && (layout[5][1][1][0] == "g" || layout[5][1][1][0] == "b")) return;
+	let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
+	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
+	if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
+	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+	if(Array.isArray(DIM))
+	{
+		cubies = [];
+		for(let i = 0; i < 27; i++)
+		{
+			if(!DIM[6].includes(i))
+				cubies.push(i);
+		}
+	}
+	let onedown = false;
+	let alldown = false;
+	if((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM))){
+		alldown = true;
+		if(move == "D" || move == "D'"){ //D
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
+			}
+		if(move == "U" || move == "U'"){ //U
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
+			}
+		if(move == "L" || move == "L'"){ //L
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
+			}
+		if(move == "R" || move == "R'"){ //R
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
+			}
+		if(move == "F" || move == "F'"){ //F
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
+			}
+		if(move == "B" || move == "B'"){ //B
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == -50);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
+			}
+		if(move == "E" || move == "E'"){ //E
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
+		}
+		if(move == "M" || move == "M'"){ //M
+			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
+			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
+			}
+		if(onedown == false) return;
+	}
 	console.log("momve is " + move);
 	if(canMan)
 	{
 		if(Math.round(timer.getTime() / 10)/100.0 == 0 && move != "y" && move != "y'" && move != "x" && move != "x'")
-			timer.start();
+		{
+			if(!(MODE == "cube" && alldown == true))
+				timer.start();
+		}
 		notation(move);
 		let bad = -1;
 		if(undo.length > 0)
@@ -1261,11 +1330,9 @@ function Custom()
 {
 	custom = 1;
 	document.getElementById("allmodes").style.display = "none";
-	document.getElementById("spacetime").style.display = "block";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
-	document.getElementById("stop_div").style.display = "inline";
 	change9();
 }
 function Reverse(move)
@@ -3050,17 +3117,83 @@ p.keyPressed = (event) => {
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81";
 		if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
 		if(bad3.includes(p.keyCode) && p.keyCode > 9) return;
-		if(DIM == 2 && isSolved() && (p.keyCode == 186 || p.keyCode == 65) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
-		if(DIM == 2 && isSolved() && (p.keyCode == 188 || p.keyCode == 190) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
-		if(DIM == 2 && isSolved() && (p.keyCode == 81 || p.keyCode == 80) && (layout[4][1][1][0] == "g" || layout[4][1][1][0] == "b")) return;
-		let bad4 = "74 70 76 83";
-		let bad5 = "73 75 69 68";
-		let bad6 = "71 72 87 79";
-		if(DIM == 1 && isSolved() && bad4.includes(p.keyCode) && (layout[2][1][1][0] == "g" || layout[2][1][1][0] == "b")) return;
-		if(DIM == 1 && isSolved() && bad5.includes(p.keyCode) && (layout[0][1][1][0] == "g" || layout[0][1][1][0] == "b")) return;
-		if(DIM == 1 && isSolved() && bad6.includes(p.keyCode) && (layout[5][1][1][0] == "g" || layout[5][1][1][0] == "b")) return;
+		let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
+		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
+		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
+		if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+		if(Array.isArray(DIM))
+		{
+			cubies = [];
+			for(let i = 0; i < 27; i++)
+			{
+				if(!DIM[6].includes(i))
+					cubies.push(i);
+			}
+		}
+		let onedown = false;
+		let alldown = false;
+		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84];
+		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM))){
+			alldown = true;
+			if(p.keyCode == 83 || p.keyCode == 76){ //D
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
+				}
+			if(p.keyCode == 70 || p.keyCode == 74){ //U
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
+				}
+			if(p.keyCode == 69 || p.keyCode == 68){ //L
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
+				}
+			if(p.keyCode == 73 || p.keyCode == 75){ //R
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
+				}
+			if(p.keyCode == 71 || p.keyCode == 72){ //F
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
+				}
+			if(p.keyCode == 87 || p.keyCode == 79){ //B
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == -50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
+				}
+			if(p.keyCode == 65 || p.keyCode == 186){ //E
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
+			}
+			if(p.keyCode == 188 || p.keyCode == 190){ //M
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
+				}
+			if(p.keyCode == 81 || p.keyCode == 80){ //S
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 0);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 0);
+				}
+			if(p.keyCode == 85 || p.keyCode == 77){ //Rw
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50 || (CUBE[cubies[i]].z == 0));
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
+			}
+			if(p.keyCode == 82 || p.keyCode == 86){ //Lw
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50 || (CUBE[cubies[i]].z == 0));
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
+			}
+			if(p.keyCode == 89 || p.keyCode == 84){ //Uw
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50 || CUBE[cubies[i]].x == 0);
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
+			}
+			if(onedown == false) return;
+		}
+		
 		if(Math.round(timer.getTime() / 10)/100.0 == 0 && p.keyCode > 9 && include.includes(p.keyCode) && (p.keyCode < 37 || p.keyCode > 40))
-		timer.start();
+		{
+			if(!(MODE == "cube" && alldown == true))
+				timer.start();
+		}
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 			if (CUBE[i].animating()) {
 				return;
@@ -3237,11 +3370,11 @@ p.keyPressed = (event) => {
 			}
 			console.log(layout, cubyColors, CUBE)
 			break;
-			case 16: //shift
+			case 13: //enter
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
-			console.log(opposite2["L"]);
+			console.log("erger");
 			break;
 			
 		}
@@ -3485,6 +3618,7 @@ function refreshButtons()
 	CUBE3.remove();
 	CUBE4.remove();
 	CUBE5.remove();
+	CUBE6.remove();
 
 	REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
@@ -3550,6 +3684,11 @@ function refreshButtons()
 	CUBE5.parent("cube5");
 	CUBE5.mousePressed(change8.bind(null, 0));
 	CUBE5.style("height:50px; width:180px; text-align:center; font-size:20px;");
+
+	CUBE6 = p.createButton('The Jank 2x2');
+	CUBE6.parent("cube6");
+	CUBE6.mousePressed(change10.bind(null, 0));
+	CUBE6.style("height:50px; width:180px; text-align:center; font-size:20px;");
 
 }
 function solveCube()
@@ -5455,6 +5594,7 @@ function setLayout(){
 	}
 	if(DIM == 4 || DIM == 5)
 	return;
+	if(Array.isArray(DIM)) return;
 	for(let i = 0; i < 6; i++)
 	{
 		for(let x = 0; x < 3; x++)
@@ -5626,8 +5766,10 @@ function getColor(color)
 	cl[3] = Math.abs(color[0] - 219) + Math.abs(color[1] - 125) + Math.abs(color[2] - 18);
 	cl[4] = Math.abs(color[0] - 209) + Math.abs(color[1] - 219) + Math.abs(color[2] - 18);
 	cl[5] = Math.abs(color[0] - 18) + Math.abs(color[1] - 219) + Math.abs(color[2] - 31);
+	cl[6] = Math.abs(color[0] - 25) + Math.abs(color[1] - 25) + Math.abs(color[2] - 25);
+	cl[7] = Math.abs(color[0] - 245) + Math.abs(color[1] - 25) + Math.abs(color[2] - 245);
 	let minpos = 0;
-	for(let i = 0; i < 6; i++)
+	for(let i = 0; i < 8; i++)
 	{
 		if(cl[i] < cl[minpos])
 		{
@@ -5646,6 +5788,13 @@ function getColor(color)
 	return "y";
 	if(minpos == 5)
 	return "g";
+	if(MODE == "cube")
+	{
+		if(minpos == 6)
+		return "k";
+		if(minpos == 7)
+		return "m"
+	}
 }
 function removeTime()
 {
@@ -6270,6 +6419,47 @@ function isSolved()
 			}
 		}
 		return true;
+	}
+	if(DIM == 6 || (Array.isArray(DIM) && DIM4 == 2))
+	{
+		let top = getColor(CUBE[13].right.levels);
+		let bottom = getColor(CUBE[13].left.levels);
+		let back = getColor(CUBE[13].bottom.levels);
+		let front = getColor(CUBE[13].top.levels);
+		let right = getColor(CUBE[13].front.levels);
+		let left = getColor(CUBE[13].back.levels);
+		let cubies = [4,5,7,8,13,14,16,17];
+		if((Array.isArray(DIM) && DIM4 == 2))
+		{
+			cubies = [];
+			for(let i = 0; i < 27; i++)
+			{
+				if(!DIM[6].includes(i))
+					cubies.push(i);
+			}
+			top = getColor(CUBE[cubies[0]].right.levels);
+			bottom = getColor(CUBE[cubies[0]].left.levels);
+			back = getColor(CUBE[cubies[0]].bottom.levels);
+			front = getColor(CUBE[cubies[0]].top.levels);
+			right = getColor(CUBE[cubies[0]].front.levels);
+			left = getColor(CUBE[cubies[0]].back.levels);
+		}
+		//console.log(cubies);
+		//let cubies = [4];
+		for(let i = 0; i < cubies.length; i++)
+		{
+			let curindex = cubies[i];
+			let top2 = getColor(CUBE[curindex].right.levels);
+			let bottom2 = getColor(CUBE[curindex].left.levels);
+			let back2 = getColor(CUBE[curindex].bottom.levels);
+			let front2 = getColor(CUBE[curindex].top.levels);
+			let right2 = getColor(CUBE[curindex].front.levels);
+			let left2 = getColor(CUBE[curindex].back.levels);
+			if(top != top2 || bottom != bottom2 || left != left2|| right != right2 || back != back2 || front != front2)
+                return false;
+        }
+		return true;
+        
 	}
 	for(let i = 0; i < 6; i++)
 	{

@@ -325,6 +325,8 @@ export default class Cuby {
       arr = [9,10,11,12,13,14,15,16,17];
     else if(this.cubysize == 3)
       arr = [0,2,6,8,18,20,24,26];
+    else if(this.cubysize == 6)
+      arr = [0,1,2,3,6,9,10,11,12,15,18,19,20,21,22,23,24,25,26];
 
     if(arr.includes(this.index) && this.cubysize != 50) return;
     let r = 25;
