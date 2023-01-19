@@ -73,6 +73,7 @@ export default function (p) {
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
+	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6;
 
@@ -313,6 +314,13 @@ p.setup = () => {
 
 	INPUT = p.createSelect(); 
 	INPUT.parent("input")
+
+	SCRAM = p.createSelect(); 
+	SCRAM.parent("scram");
+	SCRAM.option("Normal");
+	SCRAM.option("Middle Slices");
+	SCRAM.option("Double Turns");
+	SCRAM.option("Pattern");
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
 	for(let i = 0; i < colors2.length; i++)
@@ -1492,6 +1500,7 @@ function regular(){
 	document.getElementById("custom2").style.display = "none";
 	document.getElementById("spacetime").style.display = "none";
 	document.getElementById("stop_div").style.display = "none";
+	document.getElementById("scram").style.display = "block";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -1533,7 +1542,7 @@ function timedmode()
 	document.getElementById("mode8").style.display = "inline";
 	document.getElementById("or_instruct3").innerHTML = "";
 	document.getElementById("alltimes").style.display = "block";
-
+	document.getElementById("scram").style.display = "none";
 	document.getElementById("timegone").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
 	document.getElementById("cube").style.display = "none";
@@ -1563,6 +1572,7 @@ function cubemode()
 	document.getElementById("mode3").style.display = "none";
 	document.getElementById("mode7").style.display = "none";
 	document.getElementById("solve").style.display = "none";
+	document.getElementById("scram").style.display = "none";
 	document.getElementById("allmodes").style.display = "block";
 	//document.getElementById("outermoves").style.display = "none";
 	//document.getElementById("outertime").style.display = "none";
@@ -1602,6 +1612,7 @@ function speedmode()
 	document.getElementById("solve").style.display = "none";
 	document.getElementById("input").style.display = "none";
 	document.getElementById("input2").style.display = "none";
+	document.getElementById("scram").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for Speed Mode";
 	document.getElementById("s_instruct").innerHTML = "In one game of speed mode, there will be <b>4</b> stages, each requiring you to complete a challenge. Your score will be the time it takes to do all the tasks.";
 	document.getElementById("s_difficulty").innerHTML = "Select Difficulty/Mode";
@@ -1647,6 +1658,7 @@ function movesmode()
 	document.getElementById("solve").style.display = "none";
 	document.getElementById("input").style.display = "none";
 	document.getElementById("input2").style.display = "none";
+	document.getElementById("scram").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for the Fewest Moves Challenge";
 	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
 	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
@@ -2707,17 +2719,59 @@ function shuffleCube(nb) {
 	moves = 0;
 	timer.reset();
 	timer.stop();
-	const possible = ["R", "L", "U", "D", "B", "F"];
+	let possible = ["R", "L", "U", "D", "B", "F"];
 	//const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'", "M", "M'", 
 	//"E", "E'", "Lw'", "Lw'", "Uw", "Uw'", "Rw", "Rw'", "Dw", "Dw'", "Bw", "Bw'", "Fw", "Fw'"];
+	let doubly = false;
+	let dontdo = false;
 	arr = [];
 	let bad = "";
 	let total = "";
+	if(MODE == "normal" || MODE == "cube" || MODE == "timed")
+	{
+		if(SCRAM.value() == "Middle Slices")
+			possible = ["E", "M", "S"];
+		else if(SCRAM.value() == "Double Turns")
+			doubly = true;
+		else if(SCRAM.value() == "Pattern")
+		{
+			quickSolve();
+			dontdo = true;
+			let rnd = Math.random();
+			if(DIM4 == 3)
+			{
+				if(rnd < 0.2)
+					total = "R2 L' D F2 R' D' R' L U' D R D B2 R' U D2";
+				else if(rnd < 0.4)
+					total = "F L F U' R U F2 L2 U' L' B D' B' L2 U";
+				else if(rnd < 0.6)
+					total = "L U B' U' R L' B R' F B' D R D' F'";
+				else if(rnd < 0.8)
+					total = "F B2 R' D2 B R U D' R L' D' F' R2 D F2 B'";
+				else
+					total = "F2 R’ B’ U R’ L F’ L F’ B D’ R B L2";
+			}
+			else{
+				if(rnd < 0.2)
+					total = "F2 R2 U' F' U R' U2 R U' F'";
+				else if(rnd < 0.4)
+					total = "F2 R2 U2 F2";
+				else if(rnd < 0.6)
+					total = "U F2 U2 R2 U";
+				else if(rnd < 0.8)
+					total = "U R F2 U R F2 R U F' R";
+				else
+					total = "U R U' R2 U' R' F' U F2 R F'"
+			}
+			changeArr(total);
+		}
+	}
 	let s = 18;
 	if(DIM4 == 2)
 		s = 10;
 	for(let i = 0; i < s; i++)
 	{
+		if(dontdo) break;
 		while(true)
 		{
 			let rnd = p.random(possible);
@@ -2729,7 +2783,13 @@ function shuffleCube(nb) {
 				continue;
 			
 			let rnd2 = Math.random();
-			if(rnd2 < 0.25)
+			if(doubly)
+			{
+				arr.push(rnd);
+				arr.push(rnd);
+				total += rnd + "2 ";
+			}
+			else if(rnd2 < 0.25)
 			{
 				arr.push(rnd);
 				total += rnd + " ";
