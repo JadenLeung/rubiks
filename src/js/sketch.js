@@ -2703,7 +2703,7 @@ function shuffleCube(nb) {
 	arr = [];
 	let bad = "";
 	let total = "";
-	let s = 15;
+	let s = 18;
 	if(DIM4 == 2)
 		s = 10;
 	for(let i = 0; i < s; i++)
