@@ -368,13 +368,23 @@ p.setup = () => {
 		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
-	INPUT2[8] = p.createButton("&larr;", "y");
-	INPUT2[9] = p.createButton("&rarr;", "y'");
-	INPUT2[10] = p.createButton("&uarr;", "x");
-	INPUT2[11] = p.createButton("&darr;", "x'");
-	for(let i = 8; i < 12; i++)
+	INPUT2[12] = p.createButton("&larr;", "y");
+	INPUT2[13] = p.createButton("&rarr;", "y'");
+	INPUT2[14] = p.createButton("&uarr;", "x");
+	INPUT2[15] = p.createButton("&darr;", "x'");
+	for(let i = 12; i < 16; i++)
 	{
 		INPUT2[i].parent("mover4")
+		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
+		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
+	}
+	INPUT2[16] = p.createButton("M", "M");
+	INPUT2[17] = p.createButton("M'", "M'");
+	INPUT2[18] = p.createButton("E", "E");
+	INPUT2[19] = p.createButton("E'", "E'");
+	for(let i = 16; i < 20; i++)
+	{
+		INPUT2[i].parent("mover5")
 		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
@@ -1531,7 +1541,7 @@ function timedmode()
 	document.getElementById("type3").style.display = "block";
 
 	document.getElementById("input").style.display = "none";
-	document.getElementById("input2").style.display = "none";
+	changeInput();
 }
 function cubemode()
 {
@@ -3512,8 +3522,16 @@ function changeArr(str)
 		if(str[end] == "2")
 		{
 			end++;
-			arr.push(temp + "'");
-			arr.push(temp + "'");
+			if(str[end] == "'")
+			{
+				end++;
+				arr.push(temp + "'");
+				arr.push(temp + "'");
+			}
+			else{
+				arr.push(temp + "");
+				arr.push(temp + "");
+			}
 		}
 		else
 		{
