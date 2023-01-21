@@ -343,8 +343,8 @@ class EasyCam {
 
 
       touchstart : function(event){
-        event.preventDefault();
-		    event.stopPropagation();
+        //event.preventDefault();
+		    //event.stopPropagation();
 
         var mouse = cam.mouse;
 
@@ -352,12 +352,12 @@ class EasyCam {
         mouse.istouchdown = mouse.insideViewport(mouse.curr[0], mouse.curr[1]);
         mouse.isPressed = (cam.mouse.istouchdown || cam.mouse.ismousedown);
 
-        //mouse.dbltap(event);
+        mouse.dbltap(event);
       },
 
       touchmove : function(event){
         event.preventDefault();
-		    event.stopPropagation();
+		    //event.stopPropagation();
 
         var mouse = cam.mouse;
 
@@ -376,8 +376,8 @@ class EasyCam {
       },
 
       touchend : function(event){
-        event.preventDefault();
-		    event.stopPropagation();
+        //event.preventDefault();
+		    //event.stopPropagation();
 
         var mouse = cam.mouse;
 

@@ -59,6 +59,7 @@ export default function (p) {
 	let easytime;
 	let mindist;
 	let minaction;
+	let WINDOW = 0.9
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
 	let arr = [];
 	let obj2 = [];
@@ -207,11 +208,13 @@ p.setup = () => {
 	let cnv_div = document.getElementById("cnv_div");
 	if (window.matchMedia("(max-width: 767px)").matches)
 	{
+		WINDOW = 0.4;
 		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.4);
 	}
 	else
 	{
+		WINDOW = 0.9
 		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
 	}
@@ -3053,7 +3056,17 @@ function getIndex(cuby)
 }
 function startAction() {	
 	if(MODE == "cube" && DIM != 2) return; 
-	const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
+	let hoveredColor;
+	if(p.touches.length == 0)
+		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
+	else
+	{
+		let xx = p.touches[0].x;
+		let yy = p.touches[0].y;
+		hoveredColor = p.get(xx, p.windowHeight * 0.4 - yy);
+	}
+	//if(layout[2][1][1][0] == "w")
+	//alert(getColor(hoveredColor));
 	setLayout();
 	console.log(hoveredColor);
 	if (hoveredColor !== false && hoveredColor[0] != BACKGROUND_COLOR) { 
@@ -5908,6 +5921,15 @@ p.mousePressed = () => {
 }
 
 p.touchStarted = () => {
+	//if(layout[2][1][1][0] != "w") return;
+	let xx = p.touches[0].x;
+	let yy = p.touches[0].y;
+	//alert(xx + " " + yy + " length is " + p.touches.length);
+	let deez = p.get(xx, p.windowHeight * 0.4 - yy);
+	
+	//alert(deez);
+	//alert(getColor(deez));
+	
 	startAction();
 }
 
@@ -5919,7 +5941,15 @@ p.touchMoved = () => {
 }
 function dragAction()
 {
-	const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
+	let hoveredColor;
+	if(p.touches.length == 0)
+		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
+	else
+	{
+		let xx = p.touches[0].x;
+		let yy = p.touches[0].y;
+		hoveredColor = p.get(xx, p.windowHeight * 0.4 - yy);
+	}
 	if (hoveredColor) {
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		if (cuby !== false) {
@@ -6247,24 +6277,37 @@ p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
 	if (window.matchMedia("(max-width: 767px)").matches)
 	{
+		WINDOW = 0.4;
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.4);
 	}
 	else{
+		WINDOW = 0.9;
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
 	}
 } 
 
 p.draw = () => {
-	const hoveredColor = PICKER.getColor(p.mouseX, p.mouseY);
-	//if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {	
+	let hoveredColor;
+	if(p.touches.length == 0)
+		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
+	else
+	{
+		let xx = p.touches[0].x;
+		let yy = p.touches[0].y;
+		hoveredColor = p.get(xx, p.windowHeight * 0.4 - yy);
+		CAM.removeMouseListeners();
+	}
 	
-	if (hoveredColor && getCubyByColor(hoveredColor) && !p.mouseIsPressed) {
+	if (hoveredColor && getCubyByColor(hoveredColor) && !(p.mouseIsPressed && p.touches.length == 0)) {
 		CAM.removeMouseListeners();
 	} else {
 		if(hoveredColor[0] == BACKGROUND_COLOR)
-		CAM.attachMouseListeners();
+		{
+			if(p.touches.length == 0)
+			CAM.attachMouseListeners();
+		}
 	}
 	
 	CAM_PICKER.setState(CAM.getState(), 0);
