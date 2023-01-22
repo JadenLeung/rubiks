@@ -8,7 +8,7 @@ export default function (p) {
 	let bruh = 0;
 	let CAM;
 	let CAM_PICKER;
-	let CAMZOOM = -180;
+	let CAMZOOM = -170;
 	let PICKER;
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
@@ -29,7 +29,7 @@ export default function (p) {
 	let ROTX = 2.8
 	let ROTY = 7;
 	let ROTZ = 2;
-	let ZOOM3 = -180;
+	let ZOOM3 = -170;
 	let ZOOM2 = -25;
 	let CHECK = [];
 	let custom = 0;
