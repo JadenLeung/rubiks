@@ -8,7 +8,7 @@ export default function (p) {
 	let bruh = 0;
 	let CAM;
 	let CAM_PICKER;
-	let CAMZOOM = -150;
+	let CAMZOOM = -180;
 	let PICKER;
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
@@ -26,10 +26,10 @@ export default function (p) {
 	let TWOBYTWO;
 	let THREEBYTHREE;
 	let NBYN;
-	let ROTX = 2.7
+	let ROTX = 2.8
 	let ROTY = 7;
 	let ROTZ = 2;
-	let ZOOM3 = -150;
+	let ZOOM3 = -180;
 	let ZOOM2 = 0;
 	let CHECK = [];
 	let custom = 0;
@@ -766,7 +766,7 @@ function reSetup() {
 		ROTZ = 2;
 	}
 	else{
-		ROTX = 2.7;
+		ROTX = 2.8;
 		ROTY = 7;
 		ROTZ = 2;
 	}
@@ -5946,7 +5946,7 @@ p.touchStarted = () => {
 	let xx = p.touches[0].x;
 	let yy = p.touches[0].y;
 	//alert(xx + " " + yy + " length is " + p.touches.length);
-	let deez = p.get(xx, p.windowHeight * 0.4 - yy);
+	let deez = p.get(xx, p.windowHeight * WINDOW - yy);
 	
 	//alert(deez);
 	//alert(getColor(deez));
