@@ -26,6 +26,11 @@ export default function (p) {
 	let TWOBYTWO;
 	let THREEBYTHREE;
 	let NBYN;
+	let ROTX = 2.7
+	let ROTY = 7;
+	let ROTZ = 2;
+	let ZOOM3 = -150;
+	let ZOOM2 = 0;
 	let CHECK = [];
 	let custom = 0;
 	let inp;
@@ -81,7 +86,6 @@ export default function (p) {
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
-
 	fetch('src/PLL.json')
 	.then((response) => response.json())
 	.then((obj) => (setPLL(obj)));
@@ -208,15 +212,15 @@ p.setup = () => {
 	let cnv_div = document.getElementById("cnv_div");
 	if (window.matchMedia("(max-width: 767px)").matches)
 	{
-		WINDOW = 0.4;
-		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.4);
+		WINDOW = 0.6;
+		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
+		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
 	}
 	else
 	{
 		WINDOW = 0.9
-		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
+		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
+		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
 	}
 	p.pixelDensity(1);
 	p.frameRate(60);
@@ -225,9 +229,9 @@ p.setup = () => {
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM);
-	CAM.rotateX(-p.PI / 2.7);
-	CAM.rotateY(-p.PI / 7);
-	CAM.rotateZ(-p.PI / 2);
+	CAM.rotateX(-p.PI / ROTX);
+	CAM.rotateY(-p.PI / ROTY);
+	CAM.rotateZ(-p.PI / ROTZ);
 	
 	reSetup();
 	
@@ -250,7 +254,12 @@ p.setup = () => {
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
 
-		SIZE_SLIDER2 = p.createSlider(-1000, 300, 150, 5);
+		if(window.matchMedia("(max-width: 767px)").matches)
+		{
+			ZOOM3 = -250;
+			CAMZOOM = ZOOM3;
+		}
+		SIZE_SLIDER2 = p.createSlider(-1000, 300, -(ZOOM3), 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
@@ -533,7 +542,6 @@ p.setup = () => {
 	TIMEGONE = p.createButton('Remove previous time');
 	TIMEGONE.parent("timegone");
 	TIMEGONE.mousePressed(removeTime.bind(null, 0));	
-
 	regular();
 }
 setInterval(() => {
@@ -749,9 +757,21 @@ function reSetup() {
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM);
-	CAM.rotateX(-p.PI / 2.7);
-	CAM.rotateY(-p.PI / 7);
-	CAM.rotateZ(-p.PI / 2);
+
+	if(window.matchMedia("(max-width: 767px)").matches)
+	{
+		ROTX = 3;
+		ROTY = 6;
+		ROTZ = 2;
+	}
+	else{
+		ROTX = 2.7;
+		ROTY = 7;
+		ROTZ = 2;
+	}
+	CAM.rotateX(-p.PI / ROTX);
+	CAM.rotateY(-p.PI / ROTY);
+	CAM.rotateZ(-p.PI / ROTZ);
 	//undo = [];
 	//redo = [];
 	moves = 0;
@@ -827,9 +847,9 @@ function speedSetup()
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 		CAM.zoom(CAMZOOM);
-		CAM.rotateX(-p.PI / 2.7);
-		CAM.rotateY(-p.PI / 7);
-		CAM.rotateZ(-p.PI / 2);
+		CAM.rotateX(-p.PI / ROTX);
+		CAM.rotateY(-p.PI / ROTY);
+		CAM.rotateZ(-p.PI / ROTZ);
 		quickSolve();
 		return;
 	}
@@ -860,9 +880,9 @@ function moveSetup()
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 		CAM.zoom(CAMZOOM);
-		CAM.rotateX(-p.PI / 2.7);
-		CAM.rotateY(-p.PI / 7);
-		CAM.rotateZ(-p.PI / 2);
+		CAM.rotateX(-p.PI / ROTX);
+		CAM.rotateY(-p.PI / ROTY);
+		CAM.rotateZ(-p.PI / ROTZ);
 		quickSolve();
 		return;
 	}
@@ -964,14 +984,14 @@ function changeTwo()
 {
 	DIM2 = 100;
 	DIM = 100;
-	CAMZOOM = 0;
+	CAMZOOM = ZOOM2;
 	THREEBYTHREE.remove();
 	THREEBYTHREE = p.createButton('3x3');
 	THREEBYTHREE.parent("type2");
 	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
 	TWOBYTWO.style('background-color', "#f5f573");
 	SIZE_SLIDER2.remove();
-	SIZE_SLIDER2 = p.createSlider(-1000, 150, 0, 5);
+	SIZE_SLIDER2 = p.createSlider(-1000, 150, -ZOOM2, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
@@ -985,14 +1005,14 @@ function changeThree()
 {
 	DIM2 = 50;
 	DIM = 50;
-	CAMZOOM = -150;
+	CAMZOOM = ZOOM3;
 	THREEBYTHREE.style('background-color', "#f5f573");
 	TWOBYTWO.remove();
 	TWOBYTWO = p.createButton('2x2');
 	TWOBYTWO.parent("type");
 	TWOBYTWO.mousePressed(changeTwo.bind(null, 0));
 	SIZE_SLIDER2.remove();
-	SIZE_SLIDER2 = p.createSlider(-1000, 300, 150, 5);
+	SIZE_SLIDER2 = p.createSlider(-1000, 300, -ZOOM3, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
@@ -1007,14 +1027,14 @@ function changeCam(dim)
 	SIZE_SLIDER2.remove();
 	if(dim == 3)
 	{
-		SIZE_SLIDER2 = p.createSlider(-1000, 300, 150, 5);
+		SIZE_SLIDER2 = p.createSlider(-1000, 300, -ZOOM3, 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
 	}
 	else
 	{
-		SIZE_SLIDER2 = p.createSlider(-1000, 150, 0, 5);
+		SIZE_SLIDER2 = p.createSlider(-1000, 150, -ZOOM2, 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
@@ -1054,42 +1074,42 @@ function changeZero()
 }
 function changeFour(){
 	DIM = 1;
-	CAMZOOM = -150;
+	CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	ONEBYTHREE.style('background-color', "#8ef5ee");
 }
 function changeFive(){
 	DIM = 2;
-	CAMZOOM = -150;
+	CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	SANDWICH.style('background-color', "#8ef5ee");
 }
 function changeSix(){
 	DIM = 3;
-	CAMZOOM = -150;
+	CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	CUBE3.style('background-color', "#8ef5ee");
 }
 function changeSeven(){
 	DIM = 4;
-	CAMZOOM = -150;
+	CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	CUBE4.style('background-color', "#8ef5ee");
 }
 function change8(){
 	DIM = 5;
-	CAMZOOM = 0;
+	CAMZOOM = ZOOM2;
 	changeCam(2);
 	refreshButtons();
 	CUBE5.style('background-color', "#8ef5ee");
 }
 function change10(){
 	DIM = 6;
-	CAMZOOM = -150;
+	CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	CUBE6.style('background-color', "#8ef5ee");
@@ -1106,7 +1126,7 @@ function change9(cubies)
 	DIM[5] = SEL6.value();
 	if(SEL7.value() == "3x3")
 	{
-		CAMZOOM = -150;
+		CAMZOOM = ZOOM3;
 		if(DIM3 == 2)
 		{
 			for(let i = 0; i < 27; i++)
@@ -1153,7 +1173,7 @@ function change9(cubies)
 			if(arr3.includes(i))
 				CHECK[i].remove();
 		}
-		CAMZOOM = 0;
+		CAMZOOM = ZOOM2;
 	}
 
 	let checked = [];
@@ -1417,9 +1437,9 @@ function sliderUpdate2(){
 	let rotation = CAM.getRotation();
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.rotateX(-p.PI / 2.7);
-	CAM.rotateY(-p.PI / 7);
-	CAM.rotateZ(-p.PI / 2);
+	CAM.rotateX(-p.PI / ROTX);
+	CAM.rotateY(-p.PI / ROTY);
+	CAM.rotateZ(-p.PI / ROTZ);
 	CAM.zoom(CAMZOOM);
 }
 //Henry
@@ -1714,9 +1734,9 @@ function reCam()
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM);
-	CAM.rotateX(-p.PI / 2.7);
-	CAM.rotateY(-p.PI / 7);
-	CAM.rotateZ(-p.PI / 2);
+	CAM.rotateX(-p.PI / ROTX);
+	CAM.rotateY(-p.PI / ROTY);
+	CAM.rotateZ(-p.PI / ROTZ);
 }
 function easy() 
 {
@@ -3178,9 +3198,9 @@ p.keyPressed = (event) => {
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 		CAM.zoom(CAMZOOM);
-		CAM.rotateX(-p.PI / 2.7);
-		CAM.rotateY(-p.PI / 7);
-		CAM.rotateZ(-p.PI / 2);
+		CAM.rotateX(-p.PI / ROTX);
+		CAM.rotateY(-p.PI / ROTY);
+		CAM.rotateZ(-p.PI / ROTZ);
 		return;
 	}
 	if(p.keyCode == 16)
@@ -6277,14 +6297,14 @@ p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
 	if (window.matchMedia("(max-width: 767px)").matches)
 	{
-		WINDOW = 0.4;
-		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.4, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.4);
+		WINDOW = 0.6;
+		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
+		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
 	}
 	else{
 		WINDOW = 0.9;
-		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*0.9, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * 0.9);
+		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
+		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
 	}
 } 
 
