@@ -257,6 +257,7 @@ p.setup = () => {
 		if(window.matchMedia("(max-width: 767px)").matches)
 		{
 			ZOOM3 = -250;
+			ZOOM2 = -100;
 			CAMZOOM = ZOOM3;
 		}
 		SIZE_SLIDER2 = p.createSlider(-1000, 300, -(ZOOM3), 5);
@@ -3083,7 +3084,7 @@ function startAction() {
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
-		hoveredColor = p.get(xx, p.windowHeight * 0.4 - yy);
+		hoveredColor = p.get(xx, p.windowHeight * WINDOW - yy);
 	}
 	//if(layout[2][1][1][0] == "w")
 	//alert(getColor(hoveredColor));
@@ -5968,7 +5969,7 @@ function dragAction()
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
-		hoveredColor = p.get(xx, p.windowHeight * 0.4 - yy);
+		hoveredColor = p.get(xx, p.windowHeight * WINDOW - yy);
 	}
 	if (hoveredColor) {
 		const cuby = getCubyIndexByColor2(hoveredColor);
@@ -6316,7 +6317,7 @@ p.draw = () => {
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
-		hoveredColor = p.get(xx, p.windowHeight * 0.4 - yy);
+		hoveredColor = p.get(xx, p.windowHeight * WINDOW - yy);
 		CAM.removeMouseListeners();
 	}
 	
