@@ -30,7 +30,7 @@ export default function (p) {
 	let ROTY = 7;
 	let ROTZ = 2;
 	let ZOOM3 = -180;
-	let ZOOM2 = 0;
+	let ZOOM2 = -25;
 	let CHECK = [];
 	let custom = 0;
 	let inp;
