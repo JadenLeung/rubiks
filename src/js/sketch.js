@@ -3204,7 +3204,7 @@ p.keyPressed = (event) => {
 		CAM.rotateZ(-p.PI / ROTZ);
 		return;
 	}
-	if(p.keyCode == 16)
+	if(p.keyCode == 45)
 	{
 		console.log("hello")
 		inp.elt.focus();
@@ -6727,6 +6727,7 @@ window.addEventListener('keydown', (e) => {
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!!
+//U2 B D' R2 U L2 D F D B R B2 U2 B' U B' L U' (41)
 
 //WORLD RECORD SCRAMBLES
 // D L' D' F2 U' L F U' B D' U' B' F2 D U' L' U D y y(was 60, 69)
