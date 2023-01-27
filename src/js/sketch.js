@@ -593,7 +593,7 @@ setInterval(() => {
 			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			easy();
 		}
-		else if(((crossColor()[2] == 4 && DIM == 50) || (cornerCross()[0] == 4 && DIM == 100)) && easystep == 3)
+		else if(((numCross() == 4 && DIM == 50) || (cornerCross()[0] == 4 && DIM == 100)) && easystep == 3)
 		{
 			timer.stop();
 			easystep++;
@@ -3482,6 +3482,9 @@ p.keyPressed = (event) => {
 			case 52: //4
 			removeTime();
 			break;
+			case 16: //shift
+			console.log(numCross());
+			break;
 		}
 		let bad = -1;
 		if(undo.length > 0)
@@ -5510,6 +5513,7 @@ function Inverse(bad){
 }
 function crossColor(){
 	setLayout();
+	let totalmax = 0;
 	for(let i = 2;; i--)
 	{
 		let total = 0;
@@ -5524,7 +5528,6 @@ function crossColor(){
 		if(layout[2][1][0][0] == color && layout[0][0][1][0] == layout[0][1][1][0]) total2++;
 		if(layout[2][1][2][0] == color && layout[1][0][1][0] == layout[1][1][1][0]) total2++;
 		if(layout[2][2][1][0] == color && layout[5][0][1][0] == layout[5][1][1][0]) total2++;
-		
 		if(total > 0)
 		{
 			return [i, layout[i][1][1][0], total2];
@@ -5535,6 +5538,21 @@ function crossColor(){
 		break;
 	}
 	return [2, layout[2][1][1][0], 0];
+}
+function numCross()
+{
+	let totalmax = 0;
+	for(let i = 0; i < 6; i++)
+	{
+		let curcolor = layout[i][1][1][0];
+		let total = 0;
+		if(layout[i][0][1][0] == curcolor) total++;
+		if(layout[i][1][0][0] == curcolor) total++;
+		if(layout[i][1][2][0] == curcolor) total++;
+		if(layout[i][2][1][0] == curcolor) total++;
+		totalmax = Math.max(total, totalmax);
+	}
+	return totalmax;
 }
 function correctPFL() //Permutation of the First Layer, assuming all headlights
 {
