@@ -335,7 +335,7 @@ p.setup = () => {
 	SCRAM.option("Last Layer");
 	SCRAM.option("Double Turns");
 	SCRAM.option("Middle Slices");
-	SCRAM.option("M U Moves");
+	SCRAM.option("Like a 3x3x2")
 	SCRAM.option("Pattern");
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -1384,6 +1384,7 @@ function Custom()
 	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "none";
+	document.getElementById("scram").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	change9();
 }
@@ -1606,7 +1607,7 @@ function cubemode()
 	document.getElementById("mode3").style.display = "none";
 	document.getElementById("mode7").style.display = "none";
 	document.getElementById("solve").style.display = "none";
-	document.getElementById("scram").style.display = "none";
+	document.getElementById("scram").style.display = "block";
 	document.getElementById("allmodes").style.display = "block";
 	//document.getElementById("outermoves").style.display = "none";
 	//document.getElementById("outertime").style.display = "none";
@@ -2804,8 +2805,6 @@ function shuffleCube(nb) {
 			randomLL();
 			dontdo = true;
 		}
-		else if(SCRAM.value() == "M U Moves")
-			possible = ["M", "U"];
 		else if(SCRAM.value() == "Pattern")
 		{
 			quickSolve();
@@ -2813,16 +2812,21 @@ function shuffleCube(nb) {
 			let rnd = Math.random();
 			if(DIM4 == 3)
 			{
-				if(rnd < 0.2)
-					total = "R2 L' D F2 R' D' R' L U' D R D B2 R' U D2";
-				else if(rnd < 0.4)
-					total = "F L F U' R U F2 L2 U' L' B D' B' L2 U";
-				else if(rnd < 0.6)
-					total = "L U B' U' R L' B R' F B' D R D' F'";
-				else if(rnd < 0.8)
-					total = "F B2 R' D2 B R U D' R L' D' F' R2 D F2 B'";
-				else
-					total = "F2 R’ B’ U R’ L F’ L F’ B D’ R B L2";
+				let random = ["R2 L' D F2 R' D' R' L U' D R D B2 R' U D2",
+							"F L F U' R U F2 L2 U' L' B D' B' L2 U",
+							"L U B' U' R L' B R' F B' D R D' F'",
+							"F B2 R' D2 B R U D' R L' D' F' R2 D F2 B'",
+							"F2 R' B' U R' L F' L F' B D' R B L2",
+							"M2 E2 S2",
+							"M S M' S' M2 E2 S2",
+							"U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2",
+						"L R F B U' D' L' R'",
+						"R L U2 F' U2 D2 R2 L2 F' D2 F2 D R2 L2 F2 B2 D B2 L2",
+					"U' B2 U L2 D L2 R2 D' B' R D' L R' B2 U2 F' L' U'",
+				"F U F R L2 B D' R D2 L D' B R2 L F U F",
+				"M S M' S'"];
+				let rnd = parseInt(Math.random()*random.length);
+				total = random[rnd];
 			}
 			else{
 				if(rnd < 0.2)
@@ -2851,14 +2855,14 @@ function shuffleCube(nb) {
 		{
 			let rnd = p.random(possible);
 			console.log("rnd is " + rnd);
-			if((rnd == bad || (arr.length>1 && rnd == arr[i-2]  && SCRAM.value() != "M U Moves")))
+			if(rnd == bad || (arr.length>1 && rnd == arr[i-2] ))
 			continue;
 
 			if(rnd == opposite2[bad])
 				continue;
 			
 			let rnd2 = Math.random();
-			if(doubly)
+			if(doubly || (SCRAM.value() == "Like a 3x3x2" && rnd != "U" && rnd != "D"))
 			{
 				arr.push(rnd);
 				arr.push(rnd);
@@ -4236,8 +4240,8 @@ function stepTwo(){
 	arr = [];
 	if(pos != 2 && saystep < 3)
 	{
-		document.getElementById("step").innerHTML = "Putting most solved side on top";
-		document.getElementById("fraction").innerHTML = "1/10):";
+		document.getElementById("step").innerHTML = 'Putting "best" solved side on top';
+		document.getElementById("fraction").innerHTML = "1/8):";
 		arr = [];
 		if(pos == 0)
 		arr = ["z"];
@@ -4256,7 +4260,7 @@ function stepTwo(){
 	else if(crossColor()[2] < 4) 
 	{
 		document.getElementById("step").innerHTML = "Putting in remaining edge pieces";
-		document.getElementById("fraction").innerHTML = "2/10):";
+		document.getElementById("fraction").innerHTML = "2/8):";
 		saystep = 2;
 		arr = [];
 		flipmode = 0;
@@ -4389,7 +4393,7 @@ function stepTwo(){
 		console.log("cornerPFL " + cornerPFL());
 		saystep = 7;
 		document.getElementById("step").innerHTML = "Putting corner pieces on bottom";
-		document.getElementById("fraction").innerHTML = "4/10):";
+		document.getElementById("fraction").innerHTML = "3/8):";
 		arr = [];
 		let color2 = layout[5][0][1][0];
 		let color3 = layout[1][0][1][0];
@@ -4626,7 +4630,7 @@ function stepTwo(){
 				changeArr("F' D' F2 D F'")
 			}
 			else if(layout[1][2][2][0] == layout[5][1][0][0] && layout[3][2][2][0] == layout[0][1][2][0]){
-				changeArr("L D L' D' F D F'");
+				changeArr("R U F U' R'");
 			}
 			else if(layout[1][2][2][0] == layout[4][1][0][0] && layout[3][2][2][0] == layout[0][1][0][0]){
 				changeArr("L' D' L D' F D' F'");
@@ -4688,7 +4692,7 @@ function stepTwo(){
 				else changeArr("R D' R2 D' R");
 			}
 			else if(layout[5][2][2][0] == layout[1][1][0][0] && layout[3][2][2][0] == layout[4][1][2][0])
-			changeArr("B' D' B D R' D' R");
+			changeArr("F' U' R' U F");
 			else if(layout[5][2][2][0] == layout[4][1][2][0] && layout[3][2][2][0] == layout[1][1][0][0])
 			changeArr("R D R2 D' R")
 			else if(layout[5][2][2][0] == layout[0][1][0][0] && layout[3][2][2][0] == layout[4][1][0][0] )
@@ -4878,7 +4882,7 @@ multipleCross2(0);
 }
 else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color && saystep < 9){
 document.getElementById("step").innerHTML = "Orienting remaining Corners";
-document.getElementById("fraction").innerHTML = "5/10):";
+document.getElementById("fraction").innerHTML = "4/8):";
 saystep = 8;
 arr = [];
 if(layout[2][2][2][0] == color)
@@ -4958,7 +4962,7 @@ else if(!( layout[5][1][0][0] == layout[5][1][1][0] && layout[5][1][1][0] == lay
 && layout[1][1][0][0] == layout[1][1][1][0] && layout[1][1][1][0] == layout[1][1][2][0]) && saystep < 12 && DIM == 50)
 {
 	document.getElementById("step").innerHTML = "Solving middle layer";
-	document.getElementById("fraction").innerHTML = "6/10):";
+	document.getElementById("fraction").innerHTML = "5/8):";
 	saystep = 11;
 	arr = [];
 	console.log("sdfds " + (layout[3][0][1].includes(opposite[color]) && layout[3][1][0].includes(opposite[color]) && 
@@ -5054,7 +5058,7 @@ if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][
 	setLayout();
 	console.log(layout);
 	document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
-	document.getElementById("fraction").innerHTML = "8/10):";
+	document.getElementById("fraction").innerHTML = "7/8):";
 	saystep = 13;
 	flipmode = 0;
 	arr = [];
@@ -5230,7 +5234,7 @@ else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][
 	flipmode2 = 0;
 	setLayout();
 	document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
-	document.getElementById("fraction").innerHTML = "8/10):";
+	document.getElementById("fraction").innerHTML = "7/8):";
 	flipmode = 0;
 	saystep = 14;
 	arr = [];
@@ -5273,7 +5277,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 	flipmode2 = 0;
 	setLayout();
 	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
-	document.getElementById("fraction").innerHTML = "9/10):";
+	document.getElementById("fraction").innerHTML = "8/8):";
 	saystep = 15;
 	arr = [];
 	flipmode = 0;
@@ -5339,7 +5343,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 else if(correctPFL() < 3 && DIM == 50)
 {
 	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
-	document.getElementById("fraction").innerHTML = "9/10):";
+	document.getElementById("fraction").innerHTML = "9/9):";
 	flipmode2 = 0;
 	flipmode = 0;
 	setLayout();
