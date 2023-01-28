@@ -123,6 +123,7 @@ opposite2["F"] = "B";
 opposite2["B"] = "F";
 opposite2["U"] = "D";
 opposite2["D"] = "U";
+opposite2["M"] = "bruh"
 
 
 let selectedCuby = -1;
@@ -331,8 +332,10 @@ p.setup = () => {
 	SCRAM = p.createSelect(); 
 	SCRAM.parent("scram");
 	SCRAM.option("Normal");
-	SCRAM.option("Middle Slices");
+	SCRAM.option("Last Layer");
 	SCRAM.option("Double Turns");
+	SCRAM.option("Middle Slices");
+	SCRAM.option("M U Moves");
 	SCRAM.option("Pattern");
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -399,16 +402,19 @@ p.setup = () => {
 		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
 		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
-	INPUT2[16] = p.createButton("M", "M");
-	INPUT2[17] = p.createButton("M'", "M'");
-	INPUT2[18] = p.createButton("E", "E");
-	INPUT2[19] = p.createButton("E'", "E'");
+	INPUT2[16] = p.createButton("M'", "M'");
+	INPUT2[17] = p.createButton("M", "M");
+	INPUT2[18] = p.createButton("Undo", "Undo");
+	INPUT2[19] = p.createButton("Redo", "Redo");
 	for(let i = 16; i < 20; i++)
 	{
 		INPUT2[i].parent("mover5")
 		INPUT2[i].style("margin-right:4px; width:75px; text-align:center;");
-		INPUT2[i].mousePressed(inputPressed.bind(null, INPUT2[i].value()));
 	}
+	INPUT2[16].mousePressed(inputPressed.bind(null, INPUT2[16].value()));
+	INPUT2[17].mousePressed(inputPressed.bind(null, INPUT2[17].value()));
+	INPUT2[18].mousePressed(Undo.bind(null, 0));
+	INPUT2[19].mousePressed(Redo.bind(null, 0));
 	
 
 	for(let i = 0; i < 27; i++)
@@ -1263,6 +1269,8 @@ function changeInput()
 	if(input == "Button"){
 		document.getElementById("keymap").style.display = "none";
 		document.getElementById("test_alg_div").style.display = "none";
+		document.getElementById("undo").style.display = "none";
+		document.getElementById("redo").style.display = "none";
 		document.getElementById("input2").style.display = "block";
 	}
 	else{
@@ -1270,6 +1278,8 @@ function changeInput()
 		if(MODE == "normal" || MODE == "timed" || MODE == "cube")
 			document.getElementById("test_alg_div").style.display = "block";
 		document.getElementById("input2").style.display = "none";
+		document.getElementById("undo").style.display = "inline";
+		document.getElementById("redo").style.display = "inline";
 	}
 
 }
@@ -1707,12 +1717,12 @@ function showSpeed()
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
-	changeInput();
 	document.getElementById("input").style.display = "inline";
 	document.getElementById("speed").style.display = "inline";
 	document.getElementById("slider_div").style.display = "inline";
 	document.getElementById("undo").style.display = "inline";
 	document.getElementById("redo").style.display = "inline";
+	changeInput();
 	if(MODE == "speed")
 	{
 		document.getElementById("reset3_div").style.display = "inline";
@@ -1760,7 +1770,6 @@ function easy()
 			if(easystep == 4 && DIM == 100)
 			document.getElementById("pic15").style.display = "inline";
 		}
-
 	}
 	if(easystep == 0)
 	{
@@ -2736,7 +2745,40 @@ function getActionStartCuby() {
 	
 	return null;
 }
-
+function stringArray()
+{
+	let str = "";
+	for(let i = 0; i < arr.length; i++){
+		if(i < arr.length - 1 && arr[i] == arr[i+1])
+		{
+			str += arr[i][0] + "2 ";
+			i += 1;
+		}
+		else
+			str += arr[i] + " ";
+	}
+	return str;
+}
+function randomLL()
+{
+	let possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
+		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"];
+	if(DIM == 100)
+		possible = ["Jb", "Y"];
+	let rnd = p.random(possible);
+	let possible2 = ["21", "51", "45", "33", "37", "26", "27"];
+	if(DIM == 50)
+	{
+		possible2 = [];
+		for(let i = 1; i < 58; i++)
+		{
+			possible2.push(i);
+		}
+	}
+	let rnd2 = p.random(possible2);
+	changeArr(obj2[rnd][1] + " " + olls[rnd2][1])
+	document.getElementById("scramble").innerHTML = (stringArray());
+}
 function shuffleCube(nb) { 
 	if(canMan == false)return;
 	shufflespeed = 2;
@@ -2757,6 +2799,13 @@ function shuffleCube(nb) {
 			possible = ["E", "M", "S"];
 		else if(SCRAM.value() == "Double Turns")
 			doubly = true;
+		else if(SCRAM.value() == "Last Layer")
+		{
+			randomLL();
+			dontdo = true;
+		}
+		else if(SCRAM.value() == "M U Moves")
+			possible = ["M", "U"];
 		else if(SCRAM.value() == "Pattern")
 		{
 			quickSolve();
@@ -2791,6 +2840,8 @@ function shuffleCube(nb) {
 		}
 	}
 	let s = 18;
+	if(SCRAM.value() == "M U Moves")
+	s = 15;
 	if(DIM4 == 2)
 		s = 10;
 	for(let i = 0; i < s; i++)
@@ -2800,7 +2851,7 @@ function shuffleCube(nb) {
 		{
 			let rnd = p.random(possible);
 			console.log("rnd is " + rnd);
-			if(rnd == bad || (arr.length>1 && rnd == arr[i-2]))
+			if((rnd == bad || (arr.length>1 && rnd == arr[i-2]  && SCRAM.value() != "M U Moves")))
 			continue;
 
 			if(rnd == opposite2[bad])
@@ -2835,6 +2886,7 @@ function shuffleCube(nb) {
 			break;
 		}
 	}
+	if(SCRAM.value() != "Last Layer")
 	document.getElementById("scramble").innerHTML = total;
 	multiple2(0);
 }
