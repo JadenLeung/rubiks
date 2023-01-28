@@ -547,8 +547,12 @@ p.setup = () => {
 	GO_BTN.mousePressed(testAlg.bind(null, 0));	
 
 	TIMEGONE = p.createButton('Remove previous time');
-	TIMEGONE.parent("timegone");
+	TIMEGONE.parent("timegone2");
 	TIMEGONE.mousePressed(removeTime.bind(null, 0));	
+
+	let TIMEGONE2 = p.createButton('Remove all times');
+	TIMEGONE2.parent("timegone3");
+	TIMEGONE2.mousePressed(removeAllTimes.bind(null, 0));	
 	regular();
 }
 setInterval(() => {
@@ -5982,6 +5986,12 @@ function getColor(color)
 		if(minpos == 7)
 		return "m"
 	}
+}
+function removeAllTimes()
+{
+	movesarr = [];
+	mo5 = [];
+	ao5 = [];
 }
 function removeTime()
 {
