@@ -15,6 +15,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let goodsolved = false;
 	let RND_COLORS;
 	let GAP = 0;
 	let SIZE = 3;
@@ -442,6 +443,8 @@ p.setup = () => {
 	SEL7.changed(change9.bind(null, 0));
 
 	INPUT.option("Keyboard");
+	INPUT.option("Key-Double");
+	INPUT.option("Key-3x3x2");
 	INPUT.option("Button");
 	if(window.matchMedia("(max-width: 767px)").matches)
 		INPUT.selected('Button');
@@ -570,7 +573,13 @@ setInterval(() => {
 	secs = 20;
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
-	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1 || DIM == 6 || (Array.isArray(DIM) && DIM4 == 2) || (Array.isArray(DIM) && DIM[6].length == 0));
+	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1 || DIM == 6 || (Array.isArray(DIM) && (DIM4 == 2 || goodsolved || DIM[6].length == 0)));
+	if(Array.isArray(DIM) && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
+	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22))
+		goodsolved = true;
+	else
+		goodsolved = false;
+	
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime)))
 	{
 		timer.stop();
@@ -737,7 +746,7 @@ setInterval(() => {
 	}
 	if(MODE == "cube" && Array.isArray(DIM))
 	{
-		if(DIM4 == 3 && DIM[6].length != 0){
+		if(DIM4 == 3 && DIM[6].length != 0 && !goodsolved){
 			document.getElementById("spacetime").style.display = "block";
 			document.getElementById("stop_div").style.display = "inline";
 		}
@@ -1269,6 +1278,11 @@ function changeRandom()
 }
 function changeInput()
 {
+	if(MODE == "normal")
+	{
+		DELAY_SLIDER.value(0);
+		DELAY = 0;
+	}
 	input = INPUT.value();
 	if(input == "Button"){
 		document.getElementById("keymap").style.display = "none";
@@ -1309,7 +1323,7 @@ function inputPressed(move)
 	}
 	let onedown = false;
 	let alldown = false;
-	if((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM))){
+	if(((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM))) && move[0] !="x" && move[0] != "y"){
 		alldown = true;
 		if(move == "D" || move == "D'"){ //D
 			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
@@ -1388,7 +1402,7 @@ function Custom()
 	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("or_instruct3").style.display = "none";
-	document.getElementById("scram").style.display = "none";
+	document.getElementById("input").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	change9();
 }
@@ -1444,7 +1458,7 @@ function sliderUpdate() {
 	//SIZE = SIZE_SLIDER.value();
 	GAP = GAP_SLIDER.value();
 	SPEED = SPEED_SLIDER.value();
-	if(MODE == "normal")
+	if(MODE == "normal" || MODE == "timed" || MODE == "cube")
 	DELAY = DELAY_SLIDER.value();
 	//reSetup();
 }
@@ -1468,7 +1482,8 @@ function regular(){
 		scrambles = [];
 	}
 	document.getElementById("scramble").innerHTML = "N/A";
-	DELAY = DELAY_SLIDER.value();
+	DELAY_SLIDER.value(0);
+	DELAY = 0;
 	canMan = true;
 	DIM = DIM2;
 	if(MODE == "cube")
@@ -1560,7 +1575,6 @@ function timedmode()
 	if(MODE != "normal")
 		regular();
 	DIM = DIM2;
-	DELAY = 0;
 	MODE = "timed";
 	reSetup();
 
@@ -1601,7 +1615,6 @@ function cubemode()
 		movesarr = [];
 		scrambles = [];
 	}
-	DELAY = 0;
 	if(MODE != "normal")
 	regular();
 	MODE = "cube";
@@ -1612,6 +1625,7 @@ function cubemode()
 	document.getElementById("mode7").style.display = "none";
 	document.getElementById("solve").style.display = "none";
 	document.getElementById("scram").style.display = "block";
+	document.getElementById("input").style.display = "block";
 	document.getElementById("allmodes").style.display = "block";
 	//document.getElementById("outermoves").style.display = "none";
 	//document.getElementById("outertime").style.display = "none";
@@ -1633,6 +1647,7 @@ function cubemode()
 function speedmode()
 {
 	regular();
+	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = false;
 	MODE = "speed"
@@ -1672,11 +1687,14 @@ function speedmode()
 		PLL.html("PLL Practice");
 	else
 		PLL.html("PBL Practice");
+	if(INPUT.value()[0] == "K")
+		INPUT.selected("Keyboard");
 
 }
 function movesmode()
 {
 	regular();
+	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	m_points = 0;
 	m_offset = 0;
@@ -1710,9 +1728,12 @@ function movesmode()
 	document.getElementById("m_4").style.display = "inline";
 	m_34step = 0;
 	m_4step = 0;
+	if(INPUT.value()[0] == "K")
+		INPUT.selected("Keyboard");
 }
 function showSpeed()
 {
+	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
@@ -2656,7 +2677,7 @@ function getCubyIndexByColor2(arr1) //original
 	allcolors["k"] = [25, 25, 25];
 	allcolors["m"] = [245, 25, 245];
 
-	let distcolor = [];
+	/*let distcolor = [];
 
 	distcolor[0] = allcolors[realcolor][0] - arr1[0];
 	distcolor[1] = allcolors[realcolor][1] - arr1[1];
@@ -2681,7 +2702,7 @@ function getCubyIndexByColor2(arr1) //original
 	else return false;
 
 	//if(addon >= 0 && addon <= 26) return addon;
-	//return false;
+	//return false;*/
 
 	if(JSON.stringify(arr1) == "[218,124,24,255]") return 0;
 	if(JSON.stringify(arr1) == "[218,125,24,255]") return 3;
@@ -3296,7 +3317,7 @@ p.keyPressed = (event) => {
 		}
 		let onedown = false;
 		let alldown = false;
-		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84];
+		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66];
 		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM))){
 			alldown = true;
 			if(p.keyCode == 83 || p.keyCode == 76){ //D
@@ -3350,6 +3371,11 @@ p.keyPressed = (event) => {
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50 || CUBE[cubies[i]].x == 0);
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
 			}
+			if(p.keyCode == 78 || p.keyCode == 66){ //Fw
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50 || CUBE[cubies[i]].y == 0);
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 0);
+			}
 			if(onedown == false) return;
 		}
 		
@@ -3362,6 +3388,49 @@ p.keyPressed = (event) => {
 			if (CUBE[i].animating()) {
 				return;
 			}
+		}
+		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80]
+		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
+		if(Array.isArray(DIM) == false || true)
+		{
+			if(setup[0] == -50 || setup[0] == 50) //top
+				bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
+			else if(setup[2] == -50 || setup[2] == 50) //left
+				bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65];
+			else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65]; // front
+			
+		}
+		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
+			if(p.keyCode == 83) changeArr("D2")
+			if(p.keyCode == 76) changeArr("D2'")
+			if(p.keyCode == 74) changeArr("U2")
+			if(p.keyCode == 70) changeArr("U2'")
+			if(p.keyCode == 69) changeArr("L2'")
+			if(p.keyCode == 68) changeArr("L2")
+			if(p.keyCode == 73) changeArr("R2")
+			if(p.keyCode == 75) changeArr("R2'")
+			if(p.keyCode == 72) changeArr("F2")
+			if(p.keyCode == 71) changeArr("F2'")
+			if(p.keyCode == 87) changeArr("B2")
+			if(p.keyCode == 79) changeArr("B2'")
+			if(p.keyCode == 65) changeArr("E2")
+			if(p.keyCode == 186) changeArr("E2'")
+			if(p.keyCode == 190) changeArr("M2")
+			if(p.keyCode == 188) changeArr("M2'")
+			if(p.keyCode == 80) changeArr("S2")
+			if(p.keyCode == 81) changeArr("S2'")
+			if(p.keyCode == 85) changeArr("Rw2")
+			if(p.keyCode == 77) changeArr("Rw2'")
+			if(p.keyCode == 86) changeArr("Lw2")
+			if(p.keyCode == 82) changeArr("Lw2'")
+			if(p.keyCode == 89) changeArr("Uw2")
+			if(p.keyCode == 84) changeArr("Uw2'")
+			if(p.keyCode == 78) changeArr("Fw2")
+			if(p.keyCode == 66) changeArr("Fw2'")
+			if(p.keyCode == 38) changeArr("x2")
+			if(p.keyCode == 40) changeArr("x2'")
+			multiple(0);	
+			return;
 		}
 		switch (p.keyCode) {	
 			case 37:
@@ -3543,7 +3612,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(numCross());
+			console.log(DELAY_SLIDER.value());
 			break;
 		}
 		let bad = -1;
@@ -3589,7 +3658,7 @@ function setOLL(obj)
 	olls = obj;
 }
 function multiple(nb) {
-	if((MODE == "speed" || MODE == "moves") && arr.length > 1)
+	if((MODE == "speed" || MODE == "moves") && arr.length > 2)
 	return;
 	if (nb < arr.length) {
 		canMan = false;
@@ -3841,7 +3910,7 @@ function refreshButtons()
 	ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
 	ONEBYTHREE.style("height:50px; width:180px; text-align:center; font-size:20px;");
 
-	SANDWICH = p.createButton('Sandwich Cube');
+	SANDWICH = p.createButton('3x3x2');
 	SANDWICH.parent("cube2");
 	SANDWICH.mousePressed(changeFive.bind(null, 0));
 	SANDWICH.style("height:50px; width:180px; text-align:center; font-size:20px;");
@@ -6646,7 +6715,7 @@ function isSolved()
 		}
 		return true;
 	}
-	if(DIM == 6 || (Array.isArray(DIM) && DIM4 == 2))
+	if(DIM == 6 || (Array.isArray(DIM) && (DIM4 == 2 || goodsolved)))
 	{
 		let top = getColor(CUBE[13].right.levels);
 		let bottom = getColor(CUBE[13].left.levels);
@@ -6655,7 +6724,7 @@ function isSolved()
 		let right = getColor(CUBE[13].front.levels);
 		let left = getColor(CUBE[13].back.levels);
 		let cubies = [4,5,7,8,13,14,16,17];
-		if((Array.isArray(DIM) && DIM4 == 2))
+		if((Array.isArray(DIM) && (DIM4 == 2 || goodsolved)))
 		{
 			cubies = [];
 			for(let i = 0; i < 27; i++)
@@ -6765,6 +6834,10 @@ function defineFlipper4(){ //Counterclockwise rotation around z axis
 	flipper["Bw'"] = "Lw'"; flipper["Dw"] = "Dw"; flipper["Dw'"] = "Dw'"; flipper["x"] = "z'"; flipper["x'"] = "z";
 	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "x'"; flipper["z"] = "x";  
 }
+document.onkeydown = function (e) {
+	console.log("here67")
+	INPUT.elt.blur();
+  };
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
 		switch (e.keyCode) {
