@@ -573,7 +573,7 @@ setInterval(() => {
 	secs = 20;
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
-	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1 || DIM == 6 || (Array.isArray(DIM) && (DIM4 == 2 || goodsolved || DIM[6].length == 0)));
+	easytime = (DIM == 50 || DIM == 100 || DIM == 3 || DIM == 2 || DIM == 4 || DIM == 5 || DIM == 1 || DIM == 6 || (Array.isArray(DIM) && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22))
 		goodsolved = true;
@@ -746,7 +746,7 @@ setInterval(() => {
 	}
 	if(MODE == "cube" && Array.isArray(DIM))
 	{
-		if(DIM4 == 3 && DIM[6].length != 0 && !goodsolved){
+		if(!((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)){
 			document.getElementById("spacetime").style.display = "block";
 			document.getElementById("stop_div").style.display = "inline";
 		}
@@ -943,6 +943,21 @@ function Hint()
 		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
 		giveups -= 0.5;
 	}
+}
+function difColors()
+{
+	if(!Array.isArray(DIM)) return false;
+	const colors = new Set();
+	colors.add(DIM[0]);
+	colors.add(DIM[1]);
+	colors.add(DIM[2]);
+	colors.add(DIM[3]);
+	colors.add(DIM[4]);
+	colors.add(DIM[5]);
+	//console.log(colors);
+	if(colors.size > 4 && DIM4 == 2) return true;
+	if(colors.size > 5 && DIM4 == 3) return true;
+	return false;
 }
 function stopTime(){
 	if(timer.isRunning && moves > 0)
@@ -3612,7 +3627,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(DELAY_SLIDER.value());
+			console.log(DIM, easytime, difColors());
 			break;
 		}
 		let bad = -1;
@@ -6715,7 +6730,7 @@ function isSolved()
 		}
 		return true;
 	}
-	if(DIM == 6 || (Array.isArray(DIM) && (DIM4 == 2 || goodsolved)))
+	if(DIM == 6 || (Array.isArray(DIM) && goodsolved && difColors()))
 	{
 		let top = getColor(CUBE[13].right.levels);
 		let bottom = getColor(CUBE[13].left.levels);
