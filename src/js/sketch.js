@@ -910,9 +910,9 @@ function moveSetup()
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM);
-	CAM.rotateX(-p.PI / 2.7);
-	CAM.rotateY(-p.PI / 7);
-	CAM.rotateZ(-p.PI / 2);
+	CAM.rotateX(-p.PI / ROTX);
+	CAM.rotateY(-p.PI / ROTY);
+	CAM.rotateZ(-p.PI / ROTZ);
 	quickSolve();
 	arr = m_scramble;
 	shufflespeed = 2;
@@ -3627,7 +3627,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(DIM, easytime, difColors());
+			console.log(ROTX, ROTY, ROTZ);
 			break;
 		}
 		let bad = -1;
