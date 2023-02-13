@@ -8,6 +8,7 @@ export default class Cuby {
     this.picker = picker;
     this.p = p;
 	  this.index = index;
+    this.stroke = 0.5;
 
 	/*
     this.colors = {
@@ -334,8 +335,19 @@ export default class Cuby {
       r = 50;
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
-	this.p.strokeWeight(0.5);
-	this.p.stroke('black');
+  let bandaged = [];
+  if(this.cubysize == 7)
+    bandaged = [3,4,5,6,7,8]
+  if(bandaged.includes(this.index)){
+    this.p.strokeWeight(0);
+	  this.p.stroke('black');
+    this.stroke = 0;
+  }
+  else{
+    this.p.strokeWeight(0.5);
+	  this.p.stroke('black');
+    this.stroke = 0.5;
+  }
 	// p1, p2, p3, p4 coordinates
 	
 	this.p.fill(this.back);
