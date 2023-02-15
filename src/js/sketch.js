@@ -2661,7 +2661,7 @@ function animate(axis, row, dir, time) {
 		return;
 	}
 
-	if(Math.round(timer.getTime() / 10)/100.0 == 0)
+	if(Math.round(timer.getTime() / 10)/100.0 == 0 && time)
 	{
 		if(!(MODE == "cube" && alldown == true))
 			timer.start();
@@ -3780,11 +3780,11 @@ function multiple(nb, timed) {
 		canMan = true;
 	}
 }
-function multiple2(nb) {
+function multiple2(nb, timed) {
 	if (nb < arr.length) {
 		shufflespeed = 2;
 		canMan = false;
-		notation(arr[nb]);
+		notation(arr[nb], timed);
 		console.log(nb);
 		setTimeout(multiple2.bind(null, nb + 1), 20);
 	}
@@ -6170,7 +6170,7 @@ function testAlg(){
 		}
 		else
 		changeArr(inp.value());
-		multiple(0);	
+		multiple(0, false);	
 	}
 }  
 //   *************************************
