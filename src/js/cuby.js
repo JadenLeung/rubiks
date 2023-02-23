@@ -336,8 +336,8 @@ export default class Cuby {
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
   let bandaged = [];
-  if(this.cubysize == 7)
-    bandaged = [3,4,5,6,7,8]
+  if(this.cubysize == 7) bandaged = [3,4,5,6,7,8];
+  if(this.cubysize == 8) bandaged = [0,2,3,5,6,8];
   if(bandaged.includes(this.index)){
     this.p.strokeWeight(0);
 	  this.p.stroke('black');

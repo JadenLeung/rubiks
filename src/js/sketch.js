@@ -83,8 +83,13 @@ export default function (p) {
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7;
-
+	let CUBE6, CUBE7, CUBE8;
+	let bandaged = [];
+	bandaged = [];
+	let LEFTMOD;
+	let RIGHTMOD;
+	let modnum = 0;
+	let CUSTOM
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -283,7 +288,8 @@ p.setup = () => {
 	CUBE4 = p.createButton('Christmas 3x3');
 	CUBE5 = p.createButton('Christmas 2x2');
 	CUBE6 = p.createButton('The Jank 2x2');
-	CUBE7 = p.createButton('Bandaged 3x3');
+	CUBE7 = p.createButton('Block Bandage');
+	CUBE8 = p.createButton('The Pillars');
 	refreshButtons();
 
 
@@ -471,7 +477,7 @@ p.setup = () => {
 	RNG.mousePressed(changeRandom.bind(null, 0));
 	RNG.style("height:30px; width:40px; text-align:center; font-size:15px;");
 
-	const CUSTOM = p.createButton('Custom Mod');
+	CUSTOM = p.createButton('Custom Shape');
 	CUSTOM.parent("custom");
 	CUSTOM.mousePressed(Custom.bind(null, 0));
 	CUSTOM.style("height:45px; width:180px; text-align:center; font-size:20px;");
@@ -559,6 +565,16 @@ p.setup = () => {
 	TIMEGONE2.parent("timegone3");
 	TIMEGONE2.mousePressed(removeAllTimes.bind(null, 0));	
 	regular();
+
+	LEFTMOD = p.createButton('←');
+	LEFTMOD.style("font-size:15px; width:70px; height:30px; margin-right:5px;")
+	LEFTMOD.parent("leftmod");
+	LEFTMOD.mousePressed(changeMod.bind(null, 0));	
+
+	RIGHTMOD = p.createButton('→');
+	RIGHTMOD.style("font-size:15px; width: 70px; height:30px; margin-right:5px;")
+	RIGHTMOD.parent("leftmod");
+	RIGHTMOD.mousePressed(changeMod.bind(null, 0));	
 }
 setInterval(() => {
 	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
@@ -575,7 +591,7 @@ setInterval(() => {
 	secs = 20;
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
-	let easyarr = [50,100,3,2,4,7,5,1,6];
+	let easyarr = [50,100,3,2,4,7,5,1,6,8,9,10,11,12];
 	easytime = (easyarr.includes(DIM) || (Array.isArray(DIM) && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22))
@@ -758,10 +774,8 @@ setInterval(() => {
 			document.getElementById("stop_div").style.display = "none";
 		}
 	}
-	if(MODE == "cube" && DIM != 7 && DIM != 2) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && DIM != 2 && DIM != 7 && DIM != 8) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
-	
-
 }, 10)
 function reSetup() {
 	m_points = 0;
@@ -1153,12 +1167,27 @@ function change10(){
 	refreshButtons();
 	CUBE6.style('background-color', "#8ef5ee");
 }
-function change11(){
-	DIM = 7;
+function changeBan(dim, b)
+{
+	bandaged = b;
+	DIM = dim;
 	CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
+}
+function change11(dim, b){
+	changeBan(dim, b)
 	CUBE7.style('background-color', "#8ef5ee");
+}
+function change12(dim, b){
+	changeBan(dim, b)
+	CUBE8.style('background-color', "#8ef5ee");
+}
+function changeMod(){
+	modnum = 1 - modnum;
+	if(modnum == 0) document.getElementById("custom").style.display = "block"; 
+	else document.getElementById("custom").style.display = "none"; 
+	refreshButtons();
 }
 function change9(cubies)
 {
@@ -1422,7 +1451,7 @@ function Custom()
 	custom = 1;
 	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("cube").style.display = "none";
-	document.getElementById("or_instruct3").style.display = "none";
+	document.getElementById("modarrow").style.display = "none";
 	document.getElementById("input").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	change9();
@@ -1524,7 +1553,7 @@ function regular(){
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	}
-
+	bandaged = [];
 	refreshButtons();
 	REGULAR.style('background-color', "#8ef5ee");
 
@@ -1576,6 +1605,7 @@ function regular(){
 	document.getElementById("spacetime").style.display = "none";
 	document.getElementById("stop_div").style.display = "none";
 	document.getElementById("scram").style.display = "block";
+	document.getElementById("modarrow").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -1659,10 +1689,9 @@ function cubemode()
 	document.getElementById("type3").style.display = "none";
 	document.getElementById("or_instruct").style.display = "none";
 	document.getElementById("or_instruct2").style.display = "none";
-	document.getElementById("or_instruct3").style.display = "block";
+	document.getElementById("modarrow").style.display = "block";
 	document.getElementById("or_instruct4").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
-	document.getElementById("or_instruct3").innerHTML = "Select a cube to try it out!";
 	document.getElementById("cube").style.display = "block";
 }
 function speedmode()
@@ -2646,21 +2675,22 @@ function animate(axis, row, dir, time) {
 		}
 	}
 	let total = 0;
-	for(let i = 0; i < 27; i++)
-		total += +(CUBE[i].stroke == 0);
-	let sum = 0;
-	for(let i = 0; i < 27; i++){
-		if(CUBE[i][axis] == row){
-			if(CUBE[i].stroke == 0)
-				sum++;
+	let cuthrough = false;
+	if(bandaged.length > 0){
+		for(let i = 0; i < bandaged.length; i++){
+			total = 0;
+			for(let j = 0; j < bandaged[i].length; j++){
+				if(CUBE[bandaged[i][j]][axis] == row)
+					total++
+			}
+			if(total > 0 && total < bandaged[i].length)
+				cuthrough = true;
+		}
+		if(cuthrough){
+			undo.pop();
+			return;
 		}
 	}
-	console.log(total, "sum is " + sum, CUBE[0][axis], CUBE[0].stroke, axis, row);
-	if(sum > 0 && sum < total){
-		undo.pop();
-		return;
-	}
-
 	if(Math.round(timer.getTime() / 10)/100.0 == 0 && time)
 	{
 		if(!(MODE == "cube" && alldown == true))
@@ -3201,7 +3231,7 @@ function getIndex(cuby)
 	return null;
 }
 function startAction() {	
-	if(MODE == "cube" && DIM != 2 && DIM != 7) return; 
+	if(MODE == "cube" && DIM != 2 && DIM != 7 && DIM != 8) return; 
 	let hoveredColor;
 	if(p.touches.length == 0)
 		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
@@ -3278,19 +3308,21 @@ function animateWide(axis, row, dir) {
 	}
 	
 	let total = 0;
-	for(let i = 0; i < 27; i++)
-		total += +(CUBE[i].stroke == 0);
-	let sum = 0;
-	for(let i = 0; i < 27; i++){
-		if(CUBE[i][axis] == row || CUBE[i][axis] == 0){
-			if(CUBE[i].stroke == 0)
-				sum++;
+	let cuthrough = false;
+	if(bandaged.length > 0){
+		for(let i = 0; i < bandaged.length; i++){
+			total = 0;
+			for(let j = 0; j < bandaged[i].length; j++){
+				if(CUBE[bandaged[i][j]][axis] == row || CUBE[bandaged[i][j]][axis] == 0)
+					total++
+			}
+			if(total > 0 && total < bandaged[i].length)
+				cuthrough = true;
 		}
-	}
-	console.log(total, "sum is " + sum, CUBE[0][axis], CUBE[0].stroke, axis, row);
-	if(sum > 0 && sum < total){
-		undo.pop();
-		return;
+		if(cuthrough){
+			undo.pop();
+			return;
+		}
 	}
 
 	if(Math.round(timer.getTime() / 10)/100.0 == 0)
@@ -3693,7 +3725,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(CUBE[0].stroke, "hello");
+			console.log(bandaged, "hello");
 			break;
 		}
 		let bad = -1;
@@ -3931,6 +3963,10 @@ function Redo()
 }
 function refreshButtons()
 {
+	if(modnum == 0)
+		document.getElementById("or_instruct5").innerHTML = "Shape Mods";
+	else
+		document.getElementById("or_instruct5").innerHTML = "Bandaged Mods";
 	SPEEDMODE.remove();
 	REGULAR.remove();
 	TIMEDMODE.remove();
@@ -3946,6 +3982,7 @@ function refreshButtons()
 	CUBE5.remove();
 	CUBE6.remove();
 	CUBE7.remove();
+	CUBE8.remove();
 	REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
 	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
@@ -3986,40 +4023,49 @@ function refreshButtons()
 	MOVESMODE2.style("height:20px; width:40px; text-align:center; font-size:10px;")
 	MOVESMODE2.mousePressed(movesmode.bind(null, 0));
 
-	ONEBYTHREE = p.createButton('1x3x3');
-	ONEBYTHREE.parent("cube1");
-	ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
-	ONEBYTHREE.style("height:45px; width:180px; text-align:center; font-size:20px;");
+	if(modnum == 0)
+	{
+		ONEBYTHREE = p.createButton('1x3x3');
+		ONEBYTHREE.parent("cube1");
+		ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
+		ONEBYTHREE.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-	SANDWICH = p.createButton('3x3x2');
-	SANDWICH.parent("cube2");
-	SANDWICH.mousePressed(changeFive.bind(null, 0));
-	SANDWICH.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		SANDWICH = p.createButton('3x3x2');
+		SANDWICH.parent("cube2");
+		SANDWICH.mousePressed(changeFive.bind(null, 0));
+		SANDWICH.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-	CUBE3 = p.createButton('Plus Cube');
-	CUBE3.parent("cube3");
-	CUBE3.mousePressed(changeSix.bind(null, 0));
-	CUBE3.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		CUBE3 = p.createButton('Plus Cube');
+		CUBE3.parent("cube3");
+		CUBE3.mousePressed(changeSix.bind(null, 0));
+		CUBE3.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-	CUBE4 = p.createButton('Christmas 3x3');
-	CUBE4.parent("cube4");
-	CUBE4.mousePressed(changeSeven.bind(null, 0));
-	CUBE4.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		CUBE4 = p.createButton('Christmas 3x3');
+		CUBE4.parent("cube4");
+		CUBE4.mousePressed(changeSeven.bind(null, 0));
+		CUBE4.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-	CUBE5 = p.createButton('Christmas 2x2');
-	CUBE5.parent("cube5");
-	CUBE5.mousePressed(change8.bind(null, 0));
-	CUBE5.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		CUBE5 = p.createButton('Christmas 2x2');
+		CUBE5.parent("cube5");
+		CUBE5.mousePressed(change8.bind(null, 0));
+		CUBE5.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-	CUBE6 = p.createButton('The Jank 2x2');
-	CUBE6.parent("cube6");
-	CUBE6.mousePressed(change10.bind(null, 0));
-	CUBE6.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		CUBE6 = p.createButton('The Jank 2x2');
+		CUBE6.parent("cube6");
+		CUBE6.mousePressed(change10.bind(null, 0));
+		CUBE6.style("height:45px; width:180px; text-align:center; font-size:20px;");
+	}
+	else{
+		CUBE7 = p.createButton('Block Bandage');
+		CUBE7.parent("cube7");
+		CUBE7.mousePressed(change11.bind(null, 7, [[3,4,5,6,7,8]]));
+		CUBE7.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-	CUBE7 = p.createButton('Bandaged 3x3');
-	CUBE7.parent("cube7");
-	CUBE7.mousePressed(change11.bind(null, 0));
-	CUBE7.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		CUBE8 = p.createButton('The Pillars');
+		CUBE8.parent("cube8");
+		CUBE8.mousePressed(change12.bind(null, 8, [[0,3,6], [2,5,8]]));
+		CUBE8.style("height:45px; width:180px; text-align:center; font-size:20px;");
+	}
 
 }
 function solveCube()
@@ -4100,13 +4146,13 @@ function notation(move, timed){
 	if(move == "z'")
 	animateRotate("y", 1);
 	if(move == "E")
-	animate('x', 0, 1, false);
+	animate('x', 0, 1, timed);
 	if(move == "E'")
-	animate('x', 0, -1, false);
+	animate('x', 0, -1, timed);
 	if(move == "S")
-	animate('y', 0, -1, false);
+	animate('y', 0, -1, timed);
 	if(move == "S'")
-	animate('y', 0, 1, false);
+	animate('y', 0, 1, timed);
 	if(move == "Lw")
 	animateWide('z', -50, -1);
 	if(move == "Lw'")
@@ -6958,6 +7004,7 @@ window.addEventListener('keydown', (e) => {
 //BELOW 54 MOVES
 // L D2 R U2 B2 D' B R D' R2 D R2 B2 R2 B' (54)
 // U2 F L2 D R2 U' F' U F L2 F2 R B' R' B' (54)
+//B2 R2 F' R2 D' L2 D2 F2 L' U2 B R F L D R2 F2 D2 (53)
 // R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53)
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
