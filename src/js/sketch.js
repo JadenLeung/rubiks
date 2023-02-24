@@ -4175,7 +4175,7 @@ function refreshButtons()
 
 		CUBE9 = p.createButton('Twosquare');
 		CUBE9.parent("cube9");
-		CUBE9.mousePressed(change13.bind(null, 9, [[3,4,6,7], [21,22,24,25]]));
+		CUBE9.mousePressed(change13.bind(null, 9, [[0,1,3,4], [16,17,25,26]]));
 		CUBE9.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
 		CUBE10 = p.createButton('Bandaged 2x2');

@@ -338,7 +338,7 @@ export default class Cuby {
   let bandaged = [];
   if(this.cubysize == 7) bandaged = [3,4,5,6,7,8];
   if(this.cubysize == 8) bandaged = [0,2,3,5,6,8];
-  if(this.cubysize == 9) bandaged = [3,4,6,7,21,22,24,25];
+  if(this.cubysize == 9) bandaged = [0,1,3,4,16,17,25,26];
   if(this.cubysize == 10) bandaged = [6,8];
   if(this.cubysize == 11) bandaged = [0,20,24,8,9,11,15,17];
   if(this.cubysize == 12) bandaged = [0,9,2,11,24,15,26,17];
