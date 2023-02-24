@@ -83,13 +83,14 @@ export default function (p) {
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12;
 	let bandaged = [];
 	bandaged = [];
 	let LEFTMOD;
 	let RIGHTMOD;
 	let modnum = 0;
-	let CUSTOM
+	let CUSTOM;
+	let MODDIM = [7,8,9,10,11,12];
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -290,6 +291,10 @@ p.setup = () => {
 	CUBE6 = p.createButton('The Jank 2x2');
 	CUBE7 = p.createButton('Block Bandage');
 	CUBE8 = p.createButton('The Pillars');
+	CUBE9 = p.createButton('Twosquare');
+	CUBE10 = p.createButton('Bandaged 2x2');
+	CUBE11 = p.createButton('Z Perm');
+	CUBE12 = p.createButton('T Perm');
 	refreshButtons();
 
 
@@ -758,7 +763,7 @@ setInterval(() => {
 	else{
 		if(Array.isArray(DIM))
 			DIM4 = DIM3;
-		else if(DIM == 5)
+		else if(DIM == 5 || DIM == 10)
 			DIM4 = 2;
 		else
 			DIM4 = 3;
@@ -774,8 +779,9 @@ setInterval(() => {
 			document.getElementById("stop_div").style.display = "none";
 		}
 	}
-	if(MODE == "cube" && DIM != 2 && DIM != 7 && DIM != 8) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
+	if(MODE == "cube" && modnum != 1)bandaged = [];
 }, 10)
 function reSetup() {
 	m_points = 0;
@@ -1182,6 +1188,26 @@ function change11(dim, b){
 function change12(dim, b){
 	changeBan(dim, b)
 	CUBE8.style('background-color', "#8ef5ee");
+}
+function change13(dim, b){
+	changeBan(dim, b)
+	CUBE9.style('background-color', "#8ef5ee");
+}
+function change14(dim, b){
+	bandaged = b;
+	DIM = dim;
+	CAMZOOM = ZOOM2;
+	changeCam(2);
+	refreshButtons();
+	CUBE10.style('background-color', "#8ef5ee");
+}
+function change15(dim, b){
+	changeBan(dim, b)
+	CUBE11.style('background-color', "#8ef5ee");
+}
+function change16(dim, b){
+	changeBan(dim, b)
+	CUBE12.style('background-color', "#8ef5ee");
 }
 function changeMod(){
 	modnum = 1 - modnum;
@@ -2688,6 +2714,8 @@ function animate(axis, row, dir, time) {
 		}
 		if(cuthrough){
 			undo.pop();
+			if(timer.isRunning())
+				moves--;
 			return;
 		}
 	}
@@ -2877,8 +2905,81 @@ function randomLL()
 	changeArr(obj2[rnd][1] + " " + olls[rnd2][1])
 	document.getElementById("scramble").innerHTML = (stringArray());
 }
+function shufflePossible(len, total2, prev){
+	document.getElementById("scramble").innerHTML = total2;
+	console.log("total is " + total2);
+	if(canMan == false || len < 1)return;
+	arr = [];
+	shufflespeed = 2;
+	let possible = [['x', 50, 'D'], ['x', -50, 'U'], ['y', 50, 'F'], ['y', -50, 'B'], ['z', 50, 'R']
+, ['z', -50, 'L'], ['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
+	if(SCRAM.value() == "Middle Slices")
+		possible = [['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
+	if(DIM4 == 2)
+		possible = [['x', 50, 'D'], ['x', -50, 'U'], ['y', 50, 'F'], ['y', -50, 'B'], ['z', 50, 'R']
+		, ['z', -50, 'L']];
+	let possible2 = [];
+	for(let h = 0; h < possible.length; h++){
+		let total = 0;
+		let cuthrough = false;
+		let axis = possible[h][0];
+		let row = possible[h][1];
+		let move = possible[h][2];
+
+		for(let i = 0; i < bandaged.length; i++){
+			total = 0;
+			for(let j = 0; j < bandaged[i].length; j++){
+				if(CUBE[bandaged[i][j]][axis] == row)
+					total++
+			}
+			if(total > 0 && total < bandaged[i].length)
+				cuthrough = true;
+		}
+		if(!cuthrough){
+			possible2.push(move);
+		}
+	}
+	let actualmove = p.random(possible2);
+	if(prev[0] == actualmove[0] && possible2.length > 1)
+	{
+		shufflePossible(len, total2, prev);
+		return;
+	}
+	let rnd2 = Math.random();
+	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "Like a 3x3x2" && actualmove != "U" && actualmove != "D" && actualmove != "E"))
+	{
+		arr.push(actualmove);
+		arr.push(actualmove);
+		total2 += actualmove + "2 ";
+	}
+	else if(rnd2 < 0.25)
+	{
+		arr.push(actualmove);
+		total2 += actualmove + " ";
+	}
+	else if(rnd2 < 0.75)
+	{
+		arr.push(actualmove);
+		arr.push(actualmove);
+		total2 += actualmove + "2 ";
+	}else
+	{
+		arr.push(actualmove + "'");
+		total2 += actualmove + "' ";
+	}
+	prev = actualmove;
+	canMan = false;
+	multipleMod(0, len, total2, prev);
+}
 function shuffleCube(nb) { 
 	if(canMan == false)return;
+	if(MODDIM.includes(DIM)){
+		if(DIM4 == 3)
+			shufflePossible(35, "", "  ");
+		else
+			shufflePossible(15, "", "  ");
+		return;
+	}
 	shufflespeed = 2;
 	moves = 0;
 	timer.reset();
@@ -3231,7 +3332,7 @@ function getIndex(cuby)
 	return null;
 }
 function startAction() {	
-	if(MODE == "cube" && DIM != 2 && DIM != 7 && DIM != 8) return; 
+	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM)) return; 
 	let hoveredColor;
 	if(p.touches.length == 0)
 		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
@@ -3321,6 +3422,8 @@ function animateWide(axis, row, dir) {
 		}
 		if(cuthrough){
 			undo.pop();
+			if(timer.isRunning())
+				moves--;
 			return;
 		}
 	}
@@ -3983,6 +4086,10 @@ function refreshButtons()
 	CUBE6.remove();
 	CUBE7.remove();
 	CUBE8.remove();
+	CUBE9.remove();
+	CUBE10.remove();
+	CUBE11.remove();
+	CUBE12.remove();
 	REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
 	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
@@ -4065,6 +4172,26 @@ function refreshButtons()
 		CUBE8.parent("cube8");
 		CUBE8.mousePressed(change12.bind(null, 8, [[0,3,6], [2,5,8]]));
 		CUBE8.style("height:45px; width:180px; text-align:center; font-size:20px;");
+
+		CUBE9 = p.createButton('Twosquare');
+		CUBE9.parent("cube9");
+		CUBE9.mousePressed(change13.bind(null, 9, [[3,4,6,7], [21,22,24,25]]));
+		CUBE9.style("height:45px; width:180px; text-align:center; font-size:20px;");
+
+		CUBE10 = p.createButton('Bandaged 2x2');
+		CUBE10.parent("cube10");
+		CUBE10.mousePressed(change14.bind(null, 10, [[6,8]]));
+		CUBE10.style("height:45px; width:180px; text-align:center; font-size:20px;");
+
+		CUBE11 = p.createButton('Z Perm');
+		CUBE11.parent("cube11");
+		CUBE11.mousePressed(change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]));
+		CUBE11.style("height:45px; width:180px; text-align:center; font-size:20px;");
+
+		CUBE12 = p.createButton('T Perm');
+		CUBE12.parent("cube12");
+		CUBE12.mousePressed(change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
+		CUBE12.style("height:45px; width:180px; text-align:center; font-size:20px;");
 	}
 
 }
@@ -5681,6 +5808,25 @@ function multipleCross2(nb) {
 		console.log("done");
 	}
 }
+function multipleMod(nb, len, total2, prev)
+{
+	if(canMan == true)return;
+	if (nb < arr.length) {
+		canMan = false;
+		notation(arr[nb]);
+		setTimeout(multipleMod.bind(null, nb + 1, len, total2, prev), 20);
+	}
+	else{
+		if(arr.length > 1)
+		{
+			undo = [];
+			redo = [];
+		}
+		shufflespeed = 5;
+		canMan = true;
+		shufflePossible(len-1, total2, prev);
+	}
+}
 function multipleCross(nb) {
 	setLayout();
 	if (crossColor() == "nope") {
@@ -6723,7 +6869,7 @@ function sideSolved(color)
 function isSolved()
 {
 	//console.log("called");
-	if(DIM == 100 || DIM == 5)
+	if(DIM == 100 || DIM == 5 || DIM == 10)
 	{
 		for(let i = 0; i < 6; i++)
 		{

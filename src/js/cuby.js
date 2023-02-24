@@ -318,7 +318,7 @@ export default class Cuby {
     {
       arr = this.cubysize[6];
     }
-    else if(this.cubysize == 100 || this.cubysize == 5)
+    else if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10)
       arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
     else if(this.cubysize == 1)
       arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
@@ -331,13 +331,17 @@ export default class Cuby {
 
     if(arr.includes(this.index) && this.cubysize != 50) return;
     let r = 25;
-    if(this.cubysize == 100 || this.cubysize == 5 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
+    if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
       r = 50;
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
   let bandaged = [];
   if(this.cubysize == 7) bandaged = [3,4,5,6,7,8];
   if(this.cubysize == 8) bandaged = [0,2,3,5,6,8];
+  if(this.cubysize == 9) bandaged = [3,4,6,7,21,22,24,25];
+  if(this.cubysize == 10) bandaged = [6,8];
+  if(this.cubysize == 11) bandaged = [0,20,24,8,9,11,15,17];
+  if(this.cubysize == 12) bandaged = [0,9,2,11,24,15,26,17];
   if(bandaged.includes(this.index)){
     this.p.strokeWeight(0);
 	  this.p.stroke('black');
