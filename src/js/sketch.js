@@ -95,6 +95,7 @@ export default function (p) {
 	let customb = 0;
 	let bandaged2 = [];
 	let bannum = 1;
+	let rotation = [];
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -830,7 +831,7 @@ setInterval(() => {
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 }, 10)
-function reSetup() {
+function reSetup(rot) {
 	m_points = 0;
 	CUBE = {};
 	arr = [];
@@ -860,9 +861,16 @@ function reSetup() {
 		ROTY = 7;
 		ROTZ = 2;
 	}
-	CAM.rotateX(-p.PI / ROTX);
-	CAM.rotateY(-p.PI / ROTY);
-	CAM.rotateZ(-p.PI / ROTZ);
+	if(rot)
+	{
+		console.log(rot, "doing int")
+		CAM.setRotation(rot, 0);
+	}
+	else{
+		CAM.rotateX(-p.PI / ROTX);
+		CAM.rotateY(-p.PI / ROTY);
+		CAM.rotateZ(-p.PI / ROTZ);
+	}
 	//undo = [];
 	//redo = [];
 	moves = 0;
@@ -1363,14 +1371,15 @@ function change9(cubies)
 	if(SEL7.value() == "3x3")
 	{
 		document.getElementById("selectm").style.display = "block";
-		changeCam(3);
+		//changeCam(3);
 	}
 	else
 	{
 		document.getElementById("selectm").style.display = "none";
-		changeCam(2);
+		//changeCam(2);
 	}
-	reSetup();
+	rotation = CAM.getRotation();
+	reSetup(rotation);
 }
 function changeRandom()
 {
@@ -1432,7 +1441,6 @@ function changeRandom()
 }
 function changeInput()
 {
-	if(customb > 0) return;
 	if(MODE == "normal")
 	{
 		DELAY_SLIDER.value(0);
@@ -1461,7 +1469,8 @@ function ban9(){
 	DIM[0] = "adding";
 	DIM[1] = bandaged2;
 	DIM[2] = bandaged;
-	reSetup();
+	rotation = CAM.getRotation();
+	reSetup(rotation);
 }
 function viewBandage(){
 	customb = 2;
@@ -1532,6 +1541,7 @@ function deleteBan(){
 }
 function inputPressed(move)
 {
+	if(customb > 0) return;
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].animating()) {
 			return;
@@ -1704,7 +1714,7 @@ function sliderUpdate() {
 }
 function sliderUpdate2(){
 	CAMZOOM = SIZE_SLIDER2.value() * -1;
-	let rotation = CAM.getRotation();
+	//let rotation = CAM.getRotation();
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.rotateX(-p.PI / ROTX);
@@ -3114,6 +3124,7 @@ function shufflePossible(len, total2, prev){
 			possible2.push(move);
 		}
 	}
+	if(possible2.length == 0) return;
 	let actualmove = p.random(possible2);
 	if(prev[0] == actualmove[0] && possible2.length > 1)
 	{
@@ -4020,7 +4031,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(bandaged, bandaged2, customb, DIM, canMan);
+			console.log(CAM.getRotation());
 			break;
 		}
 		let bad = -1;
