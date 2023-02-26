@@ -85,12 +85,16 @@ export default function (p) {
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12;
 	let bandaged = [];
-	bandaged = [];
 	let LEFTMOD;
 	let RIGHTMOD;
+	let LEFTBAN, RIGHTBAN;
 	let modnum = 0;
-	let CUSTOM;
+	let CUSTOM, CUSTOM2;
 	let MODDIM = [7,8,9,10,11,12];
+	let ADDBANDAGE, VIEWBANDAGE;
+	let customb = 0;
+	let bandaged2 = [];
+	let bannum = 1;
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -471,11 +475,20 @@ p.setup = () => {
 	BACK.mousePressed(cubemode.bind(null, 0));
 	BACK.style("height:30px; width:50px; text-align:center; font-size:15px;");
 
+	const BACK2 = p.createButton('Back');
+	BACK2.parent("custom5");
+	BACK2.mousePressed(cubemode.bind(null, 0));
+	BACK2.style("height:30px; width:50px; text-align:center; font-size:15px;");
+
 	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
 	DEAFULT.mousePressed(changeZero.bind(null, 0));
 	DEAFULT.style("height:30px; width:70px; text-align:center; font-size:15px;");
 
+	const DEAFULT2 = p.createButton('Restore');
+	DEAFULT2.parent("select9");
+	DEAFULT2.mousePressed(bandageZero.bind(null, 0));
+	DEAFULT2.style("height:30px; width:70px; text-align:center; font-size:15px;");
 
 	const RNG = p.createButton(String.fromCharCode(0x2684));
 	RNG.parent("rng");
@@ -487,6 +500,10 @@ p.setup = () => {
 	CUSTOM.mousePressed(Custom.bind(null, 0));
 	CUSTOM.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
+	CUSTOM2 = p.createButton('Custom Bandage');
+	CUSTOM2.parent("customb");
+	CUSTOM2.mousePressed(Custom2.bind(null, 0));
+	CUSTOM2.style("height:45px; width:180px; text-align:center; font-size:20px;");
 	
 	const RESET = p.createButton('Reset');
 	RESET.parent("reset_div");
@@ -580,6 +597,36 @@ p.setup = () => {
 	RIGHTMOD.style("font-size:15px; width: 70px; height:30px; margin-right:5px;")
 	RIGHTMOD.parent("leftmod");
 	RIGHTMOD.mousePressed(changeMod.bind(null, 0));	
+
+	LEFTBAN = p.createButton('←');
+	LEFTBAN.style("font-size:15px; width:70px; height:30px; margin-right:5px;")
+	LEFTBAN.parent("leftban");
+	LEFTBAN.mousePressed(leftBan.bind(null, 0));	
+
+	RIGHTBAN = p.createButton('→');
+	RIGHTBAN.style("font-size:15px; width: 70px; height:30px; margin-right:5px;")
+	RIGHTBAN.parent("rightban");
+	RIGHTBAN.mousePressed(rightBan.bind(null, 0));	
+
+	ADDBANDAGE = p.createButton('Add Bandage Group');
+	ADDBANDAGE.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:15px;")
+	ADDBANDAGE.parent("addbandage");
+	ADDBANDAGE.mousePressed(addBandage.bind(null, 0));	
+
+	VIEWBANDAGE = p.createButton('View/Delete Groups');
+	VIEWBANDAGE.style("font-size:18px; width: 180px; height:40px; margin-right:5px;")
+	VIEWBANDAGE.parent("addbandage4");
+	VIEWBANDAGE.mousePressed(viewBandage.bind(null, 0));	
+
+	const OKBAN = p.createButton('Done');
+	OKBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:5px; background-color:green;")
+	OKBAN.parent("okban");
+	OKBAN.mousePressed(doneBandage.bind(null, 0));	
+
+	const DELETEBAN = p.createButton('Delete');
+	DELETEBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:0px; background-color:red;")
+	DELETEBAN.parent("deleteban");
+	DELETEBAN.mousePressed(deleteBan.bind(null, 0));	
 }
 setInterval(() => {
 	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
@@ -597,8 +644,8 @@ setInterval(() => {
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
 	let easyarr = [50,100,3,2,4,7,5,1,6,8,9,10,11,12];
-	easytime = (easyarr.includes(DIM) || (Array.isArray(DIM) && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
-	if(Array.isArray(DIM) && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
+	easytime = (easyarr.includes(DIM) || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
+	if(Array.isArray(DIM) && DIM[0] != "adding" && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22))
 		goodsolved = true;
 	else
@@ -761,14 +808,14 @@ setInterval(() => {
 			DIM4 = 2;
 	}
 	else{
-		if(Array.isArray(DIM))
+		if(Array.isArray(DIM) && DIM[0] != "adding")
 			DIM4 = DIM3;
 		else if(DIM == 5 || DIM == 10)
 			DIM4 = 2;
 		else
 			DIM4 = 3;
 	}
-	if(MODE == "cube" && Array.isArray(DIM))
+	if(MODE == "cube" && Array.isArray(DIM) && DIM[0] != "adding")
 	{
 		if(!((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)){
 			document.getElementById("spacetime").style.display = "block";
@@ -1100,6 +1147,10 @@ function changeCam(dim)
 	}
 	reSetup();
 }
+function bandageZero(){
+	bandaged = [];
+	doneBandage();
+}
 function changeZero()
 {
 	SEL.selected("blue");
@@ -1211,9 +1262,31 @@ function change16(dim, b){
 }
 function changeMod(){
 	modnum = 1 - modnum;
-	if(modnum == 0) document.getElementById("custom").style.display = "block"; 
-	else document.getElementById("custom").style.display = "none"; 
+	if(modnum == 0){ 
+		document.getElementById("custom").style.display = "block"; 
+		document.getElementById("customb").style.display = "none"; 
+	}
+	else {
+		document.getElementById("custom").style.display = "none"; 
+		document.getElementById("customb").style.display = "block"; 
+	}
 	refreshButtons();
+}
+function leftBan(){
+	if(bannum == 1) bannum = 13;
+	else bannum--;
+	if(bandaged.length >= bannum) document.getElementById("deleteban").style.display = "block";
+	else document.getElementById("deleteban").style.display = "none";
+
+	viewBandage();
+}
+function rightBan(){
+	if(bannum == 13) bannum = 1;
+	else bannum++;
+	if(bandaged.length >= bannum) document.getElementById("deleteban").style.display = "block";
+	else document.getElementById("deleteban").style.display = "none";
+	viewBandage();
+
 }
 function change9(cubies)
 {
@@ -1359,6 +1432,7 @@ function changeRandom()
 }
 function changeInput()
 {
+	if(customb > 0) return;
 	if(MODE == "normal")
 	{
 		DELAY_SLIDER.value(0);
@@ -1382,6 +1456,80 @@ function changeInput()
 	}
 
 }
+function ban9(){
+	DIM = [];
+	DIM[0] = "adding";
+	DIM[1] = bandaged2;
+	DIM[2] = bandaged;
+	reSetup();
+}
+function viewBandage(){
+	customb = 2;
+	document.getElementById("okban").style.display = "block";
+	document.getElementById("addbandage").style.display = "none";
+	document.getElementById("addbandage4").style.display = "none";
+	document.getElementById("custom5").style.display = "none";
+	document.getElementById("select9").style.display = "none";
+	document.getElementById("leftban").style.display = "inline";
+	document.getElementById("rightban").style.display = "inline";
+	document.getElementById("input").style.display = "none";
+	document.getElementById("scram").style.display = "none";
+	if(bandaged.length >= bannum)
+		document.getElementById("deleteban").style.display = "block";
+	document.getElementById("addbandage2").innerHTML= "<b>Bandaged Group #" + bannum + "</b>";
+	if(bandaged.length >= bannum)
+		document.getElementById("addbandage3").innerHTML= "Size: " + bandaged[bannum-1].length + " (shown in pink)";
+	else
+		document.getElementById("addbandage3").innerHTML= "Group is empty";
+	if(bandaged.length >= bannum) bandaged2 = bandaged[bannum - 1];
+	else bandaged2 = [-2];
+	
+	ban9();
+	canMan = false;
+	
+}
+function addBandage(){
+	customb = 1;
+	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
+	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
+	
+	document.getElementById("okban").style.display = "block";
+	document.getElementById("addbandage").style.display = "none";
+	document.getElementById("addbandage4").style.display = "none";
+	document.getElementById("custom5").style.display = "none";
+	document.getElementById("select9").style.display = "none";
+	document.getElementById("input").style.display = "none";
+	document.getElementById("scram").style.display = "none";
+	document.getElementById("deleteban").style.display = "none";
+	bandaged2 = [-1];
+	ban9();
+}
+function doneBandage(){
+	document.getElementById("addbandage2").innerHTML= "";
+	document.getElementById("addbandage3").innerHTML= "";
+	document.getElementById("okban").style.display = "none";
+	document.getElementById("addbandage").style.display = "block";
+	document.getElementById("addbandage4").style.display = "block";
+	document.getElementById("leftban").style.display = "none";
+	document.getElementById("rightban").style.display = "none";
+	document.getElementById("custom5").style.display = "inline";
+	document.getElementById("select9").style.display = "inline";
+	document.getElementById("input").style.display = "inline";
+	document.getElementById("scram").style.display = "inline";
+	document.getElementById("deleteban").style.display = "none";
+	if(bandaged2.length > 1 && customb == 1)
+		bandaged.push(bandaged2);
+	bandaged2 = [];
+	customb = 0;
+	ban9();
+}
+function deleteBan(){
+	if(bandaged.length >= bannum)
+	{
+		bandaged.splice(bannum-1, 1);
+	}
+	doneBandage();
+}
 function inputPressed(move)
 {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -1393,7 +1541,7 @@ function inputPressed(move)
 	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
 	if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
 	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-	if(Array.isArray(DIM))
+	if(Array.isArray(DIM)  && DIM[0] != "adding")
 	{
 		cubies = [];
 		for(let i = 0; i < 27; i++)
@@ -1472,6 +1620,21 @@ function inputPressed(move)
 		}
 	}
 }
+function Custom2(){
+	custom = 2;
+	customb = 0;
+	document.getElementById("allmodes").style.display = "none";
+	document.getElementById("cube").style.display = "none";
+	document.getElementById("modarrow").style.display = "none";
+	document.getElementById("custom2").style.display = "none";
+	document.getElementById("custom4").style.display = "block";
+	document.getElementById("okban").style.display = "none";
+	document.getElementById("leftban").style.display = "none";
+	document.getElementById("rightban").style.display = "none";
+	CAMZOOM = ZOOM3;
+	changeCam(3);
+	bandageZero()
+}
 function Custom()
 {
 	custom = 1;
@@ -1480,6 +1643,7 @@ function Custom()
 	document.getElementById("modarrow").style.display = "none";
 	document.getElementById("input").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
+	document.getElementById("custom4").style.display = "none";
 	change9();
 }
 function Reverse(move)
@@ -1628,6 +1792,7 @@ function regular(){
 	document.getElementById("hint").style.display = "none";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
+	document.getElementById("custom4").style.display = "none";
 	document.getElementById("spacetime").style.display = "none";
 	document.getElementById("stop_div").style.display = "none";
 	document.getElementById("scram").style.display = "block";
@@ -1675,6 +1840,7 @@ function timedmode()
 	document.getElementById("scram").style.display = "none";
 	document.getElementById("timegone").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
+	document.getElementById("custom4").style.display = "none";
 	document.getElementById("cube").style.display = "none";
 
 	document.getElementById("type3").style.display = "block";
@@ -1718,7 +1884,10 @@ function cubemode()
 	document.getElementById("modarrow").style.display = "block";
 	document.getElementById("or_instruct4").style.display = "none";
 	document.getElementById("custom2").style.display = "none";
+	document.getElementById("custom4").style.display = "none";
 	document.getElementById("cube").style.display = "block";
+	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
+	else document.getElementById("customb").style.display = "none"; 
 }
 function speedmode()
 {
@@ -2714,7 +2883,7 @@ function animate(axis, row, dir, time) {
 		}
 		if(cuthrough){
 			undo.pop();
-			if(timer.isRunning())
+			if(timer.isRunning)
 				moves--;
 			return;
 		}
@@ -2777,32 +2946,35 @@ function getCubyIndexByColor2(arr1) //original
 	allcolors["k"] = [25, 25, 25];
 	allcolors["m"] = [245, 25, 245];
 
-	/*let distcolor = [];
+	if(customb == 1)
+	{
+		let distcolor = [];
+		allcolors["k"] = [0,0,0];
+		distcolor[0] = allcolors[realcolor][0] - arr1[0];
+		distcolor[1] = allcolors[realcolor][1] - arr1[1];
+		distcolor[2] = allcolors[realcolor][2] - arr1[2];
 
-	distcolor[0] = allcolors[realcolor][0] - arr1[0];
-	distcolor[1] = allcolors[realcolor][1] - arr1[1];
-	distcolor[2] = allcolors[realcolor][2] - arr1[2];
+		console.log(distcolor);
 
-	console.log(distcolor);
+		let addon = 0;
+		if(distcolor[0] == 0) addon += 9;
+		else if(distcolor[0] == -1) addon += 18;
+		else if(distcolor[0] == 1) addon += 0;
+		else return false;
 
-	let addon = 0;
-	if(distcolor[0] == 0) addon += 9;
-	else if(distcolor[0] == -1) addon += 18;
-	else if(distcolor[0] == 1) addon += 0;
-	else return false;
+		if(distcolor[1] == 0) addon += 3;
+		else if(distcolor[1] == -1) addon += 6;
+		else if(distcolor[1] == 1) addon += 0;
+		else return false;
 
-	if(distcolor[1] == 0) addon += 3;
-	else if(distcolor[1] == -1) addon += 6;
-	else if(distcolor[1] == 1) addon += 0;
-	else return false;
-
-	if(distcolor[2] == 0) addon += 1;
-	else if(distcolor[2] == -1) addon += 2;
-	else if(distcolor[2] == 1) addon += 0;
-	else return false;
-
-	//if(addon >= 0 && addon <= 26) return addon;
-	//return false;*/
+		if(distcolor[2] == 0) addon += 1;
+		else if(distcolor[2] == -1) addon += 2;
+		else if(distcolor[2] == 1) addon += 0;
+		else return false;
+		if(addon == 13) return false;
+		if(addon >= 0 && addon <= 26) return addon;
+		return false;
+	}
 
 	if(JSON.stringify(arr1) == "[218,124,24,255]") return 0;
 	if(JSON.stringify(arr1) == "[218,125,24,255]") return 3;
@@ -2911,6 +3083,9 @@ function shufflePossible(len, total2, prev){
 	if(canMan == false || len < 1)return;
 	arr = [];
 	shufflespeed = 2;
+	moves = 0;
+	timer.reset();
+	timer.stop();
 	let possible = [['x', 50, 'D'], ['x', -50, 'U'], ['y', 50, 'F'], ['y', -50, 'B'], ['z', 50, 'R']
 , ['z', -50, 'L'], ['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
 	if(SCRAM.value() == "Middle Slices")
@@ -2972,8 +3147,8 @@ function shufflePossible(len, total2, prev){
 	multipleMod(0, len, total2, prev);
 }
 function shuffleCube(nb) { 
-	if(canMan == false)return;
-	if(MODDIM.includes(DIM)){
+	if(canMan == false || customb == 1)return;
+	if(MODDIM.includes(DIM) || custom == 2){
 		if(DIM4 == 3)
 			shufflePossible(35, "", "  ");
 		else
@@ -3332,7 +3507,7 @@ function getIndex(cuby)
 	return null;
 }
 function startAction() {	
-	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM)) return; 
+	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
 	let hoveredColor;
 	if(p.touches.length == 0)
 		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
@@ -3350,10 +3525,26 @@ function startAction() {
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log(cuby);
 		if (cuby !== false) {
+
+			if(customb == 1){
+				console.log("here5", cuby)
+				if(!bandaged2.includes(cuby))
+				{
+					if(bandaged2[0] == -1) bandaged2 = [];
+					bandaged2.push(cuby);
+					
+				}
+				else{
+					bandaged2 = bandaged2.filter(item => item != cuby)
+					if(bandaged2.length == 0) bandaged2 = [-1];
+				}
+				ban9();
+				return;
+			} 
 			//console.log(hoveredColor, getIndex(getCubyByColor(hoveredColor)), getCubyIndexByColor2(hoveredColor), getPos(cuby), cubyColors[getCubyIndexByColor2(hoveredColor)]);
 			selectedCuby = cuby;
 			selectedColor = hoveredColor;
-		} 
+		}
 	} else {
 		selectedCuby = -1;
 		selectedColor = [];
@@ -3470,6 +3661,7 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
+	if(customb > 0) return;
 	if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) //escape
 	{
 		reSetup();
@@ -3526,7 +3718,7 @@ p.keyPressed = (event) => {
 			}
 		}
 		console.log("cubies is " + cubies);
-		if(Array.isArray(DIM))
+		if(Array.isArray(DIM) && DIM[0] != "adding")
 		{
 			cubies = [];
 			for(let i = 0; i < 27; i++)
@@ -3828,7 +4020,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(bandaged, "hello");
+			console.log(bandaged, bandaged2, customb, DIM, canMan);
 			break;
 		}
 		let bad = -1;
@@ -6132,7 +6324,7 @@ function setLayout(){
 	}
 	if(DIM == 4 || DIM == 5)
 	return;
-	if(Array.isArray(DIM)) return;
+	if(Array.isArray(DIM) && DIM[0] != "adding") return;
 	for(let i = 0; i < 6; i++)
 	{
 		for(let x = 0; x < 3; x++)
@@ -6985,7 +7177,7 @@ function isSolved()
 		}
 		return true;
 	}
-	if(DIM == 6 || (Array.isArray(DIM) && goodsolved && difColors()))
+	if(DIM == 6 || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
 	{
 		let top = getColor(CUBE[13].right.levels);
 		let bottom = getColor(CUBE[13].left.levels);
@@ -6994,7 +7186,7 @@ function isSolved()
 		let right = getColor(CUBE[13].front.levels);
 		let left = getColor(CUBE[13].back.levels);
 		let cubies = [4,5,7,8,13,14,16,17];
-		if((Array.isArray(DIM) && (DIM4 == 2 || goodsolved)))
+		if((Array.isArray(DIM)  && DIM[0] != "adding" && (DIM4 == 2 || goodsolved)))
 		{
 			cubies = [];
 			for(let i = 0; i < 27; i++)

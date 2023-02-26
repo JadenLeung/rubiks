@@ -38,6 +38,33 @@ export default class Cuby {
     this.right = this.colors.blue;
     this.back = this.colors.orange;
     this.left = this.colors.green;
+
+    if(Array.isArray(size) && size[0] == "adding")
+    {
+      if(size[1].includes(index))
+      {
+        this.top = this.colors.magenta;
+        this.bottom = this.colors.magenta;
+        this.front = this.colors.magenta;
+        this.right = this.colors.magenta;
+        this.back = this.colors.magenta;
+        this.left = this.colors.magenta;
+      }
+      else if(size[1].length > 0){
+        for(let i = 0; i < size[2].length; i++)
+        {
+          if(size[2][i].includes(index))
+          {
+            this.top = this.colors.black;
+            this.bottom = this.colors.black;
+            this.front = this.colors.black;
+            this.right = this.colors.black;
+            this.back = this.colors.black;
+            this.left = this.colors.black;
+          }
+        }
+      }
+    }
     
     if(size == 4 || size == 5)
     {
@@ -45,7 +72,7 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if(Array.isArray(size) == true)
+    if(Array.isArray(size) && size[0] != "adding")
     {
       this.top = this.colors[size[2]];
       this.bottom = this.colors[size[5]];
@@ -314,7 +341,7 @@ export default class Cuby {
   
   show() {
     let arr = [];
-    if(Array.isArray(this.cubysize) == true)
+    if(Array.isArray(this.cubysize) && this.cubysize[0] != "adding")
     {
       arr = this.cubysize[6];
     }
@@ -336,6 +363,16 @@ export default class Cuby {
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
   let bandaged = [];
+  if(Array.isArray(this.cubysize) && this.cubysize[0] == "adding")
+  {
+    for(let i = 0; i < this.cubysize[2].length; i++)
+    {
+      for(let j = 0; j < this.cubysize[2][i].length; j++)
+      {
+        bandaged.push(this.cubysize[2][i][j]);
+      }
+    }
+  }
   if(this.cubysize == 7) bandaged = [3,4,5,6,7,8];
   if(this.cubysize == 8) bandaged = [0,2,3,5,6,8];
   if(this.cubysize == 9) bandaged = [0,1,3,4,16,17,25,26];
