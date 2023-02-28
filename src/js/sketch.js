@@ -1541,7 +1541,7 @@ function deleteBan(){
 }
 function inputPressed(move)
 {
-	if(customb > 0) return;
+	if(customb > 0 && move[0] != "y" && move[0] != "x") return;
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].animating()) {
 			return;
