@@ -20,6 +20,7 @@ export default function (p) {
 	let RND_COLORS;
 	let GAP = 0;
 	let SIZE = 3;
+	let nextcuby = [];
 	let SIZE_SLIDER;
 	let SIZE_SLIDER2;
 	let GAP_SLIDER;
@@ -268,7 +269,7 @@ p.setup = () => {
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
 
-		if(window.matchMedia("(max-width: 767px)").matches)
+		if(window.matchMedia("(max-width: 767px)").matches) //phone computer
 		{
 			ZOOM3 = -250;
 			ZOOM2 = -100;
@@ -496,6 +497,11 @@ p.setup = () => {
 	RNG.mousePressed(changeRandom.bind(null, 0));
 	RNG.style("height:30px; width:40px; text-align:center; font-size:15px;");
 
+	const RNG2 = p.createButton(String.fromCharCode(0x2684));
+	RNG2.parent("rng2");
+	RNG2.mousePressed(randomBandage.bind(null, 0));
+	RNG2.style("height:30px; width:40px; text-align:center; font-size:15px;");
+
 	CUSTOM = p.createButton('Custom Shape');
 	CUSTOM.parent("custom");
 	CUSTOM.mousePressed(Custom.bind(null, 0));
@@ -623,6 +629,11 @@ p.setup = () => {
 	OKBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:5px; background-color:green;")
 	OKBAN.parent("okban");
 	OKBAN.mousePressed(doneBandage.bind(null, 0));	
+
+	const CANCELBAN = p.createButton('Cancel');
+	CANCELBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:5px; background-color:red;")
+	CANCELBAN.parent("cancelban");
+	CANCELBAN.mousePressed(cancelBandage.bind(null, 0));	
 
 	const DELETEBAN = p.createButton('Delete');
 	DELETEBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:0px; background-color:red;")
@@ -912,6 +923,18 @@ function reSetup(rot) {
 				}else
 				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt);
 				cnt++;
+			}
+		}
+	}
+
+	for(let i = 0; i < 27; i++){ //sets up nextcuby
+		nextcuby[i] = [];
+		for(let j = 0; j < 27; j++){
+			if(j == i) continue;
+			let sum = Math.abs(CUBE[i].x - CUBE[j].x) + Math.abs(CUBE[i].y - CUBE[j].y) + Math.abs(CUBE[i].z - CUBE[j].z);
+			if(sum == 50){
+				if(nextcuby[i].length == 0) nextcuby[i] = [j];
+				else nextcuby[i].push(j);
 			}
 		}
 	}
@@ -1286,14 +1309,14 @@ function leftBan(){
 	if(bandaged.length >= bannum) document.getElementById("deleteban").style.display = "block";
 	else document.getElementById("deleteban").style.display = "none";
 
-	viewBandage();
+	viewBandage(true);
 }
 function rightBan(){
 	if(bannum == 13) bannum = 1;
 	else bannum++;
 	if(bandaged.length >= bannum) document.getElementById("deleteban").style.display = "block";
 	else document.getElementById("deleteban").style.display = "none";
-	viewBandage();
+	viewBandage(true);
 
 }
 function change9(cubies)
@@ -1472,17 +1495,21 @@ function ban9(){
 	rotation = CAM.getRotation();
 	reSetup(rotation);
 }
-function viewBandage(){
+function viewBandage(def){
 	customb = 2;
+	if(!def)
+		bannum = 1;
 	document.getElementById("okban").style.display = "block";
 	document.getElementById("addbandage").style.display = "none";
 	document.getElementById("addbandage4").style.display = "none";
 	document.getElementById("custom5").style.display = "none";
 	document.getElementById("select9").style.display = "none";
+	document.getElementById("rng2").style.display = "none";
 	document.getElementById("leftban").style.display = "inline";
 	document.getElementById("rightban").style.display = "inline";
 	document.getElementById("input").style.display = "none";
 	document.getElementById("scram").style.display = "none";
+	document.getElementById("cancelban").style.display = "none";
 	if(bandaged.length >= bannum)
 		document.getElementById("deleteban").style.display = "block";
 	document.getElementById("addbandage2").innerHTML= "<b>Bandaged Group #" + bannum + "</b>";
@@ -1501,7 +1528,7 @@ function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
-	
+	document.getElementById("rng2").style.display = "none";
 	document.getElementById("okban").style.display = "block";
 	document.getElementById("addbandage").style.display = "none";
 	document.getElementById("addbandage4").style.display = "none";
@@ -1510,6 +1537,7 @@ function addBandage(){
 	document.getElementById("input").style.display = "none";
 	document.getElementById("scram").style.display = "none";
 	document.getElementById("deleteban").style.display = "none";
+	document.getElementById("cancelban").style.display = "block";
 	bandaged2 = [-1];
 	ban9();
 }
@@ -1523,20 +1551,72 @@ function doneBandage(){
 	document.getElementById("rightban").style.display = "none";
 	document.getElementById("custom5").style.display = "inline";
 	document.getElementById("select9").style.display = "inline";
-	document.getElementById("input").style.display = "inline";
-	document.getElementById("scram").style.display = "inline";
+	document.getElementById("rng2").style.display = "inline";
+	document.getElementById("input").style.display = "block";
+	document.getElementById("scram").style.display = "block";
 	document.getElementById("deleteban").style.display = "none";
+	document.getElementById("cancelban").style.display = "none";
 	if(bandaged2.length > 1 && customb == 1)
 		bandaged.push(bandaged2);
 	bandaged2 = [];
 	customb = 0;
 	ban9();
 }
-function deleteBan(){
-	if(bandaged.length >= bannum)
-	{
-		bandaged.splice(bannum-1, 1);
+function cancelBandage(){
+	customb = 0;
+	bandaged2 = [];
+	doneBandage();
+}
+function allBandaged(){
+	let possible = [];
+	let allbandaged = [];
+	for(let j = 0; j < bandaged.length; j++){
+		for(let k = 0; k < bandaged[j].length; k++){
+			console.log(bandaged[j][k]);
+			allbandaged[allbandaged.length] = bandaged[j][k];
+		}
 	}
+	console.log("allbandaged is", allbandaged);
+	for(let j = 0; j < 27; j++){
+		if(!allbandaged.includes(j) && j != 13) possible.push(j);
+	}
+	return possible;
+}
+function randomBandage(){
+	let numB = parseInt(Math.random()*4)+1;
+	let possible = [];
+	let possible2 = [];
+	bandaged = [];
+	let size = 3;
+	if(numB == 3) size = 4
+	if(numB == 2) size == 5
+	for(let i = 0; i < numB; i++){
+		possible = allBandaged();
+		possible2 = [];
+		let sizeB = parseInt(Math.random()*size)+2;
+		let rnd = p.random(possible);
+		bandaged[i] = [rnd];
+		for(let j = 1; j < sizeB; j++){
+			possible = allBandaged();
+			for(let k = 0; k < possible.length; k++){ //loops through non bandaged selected cubies
+				let bool = false;
+				for(let l = 0; l < bandaged[i].length; l++){
+					if(nextcuby[bandaged[i][l]].includes(possible[k])) //if non-b cuby is next to current b
+						bool = true;
+				}
+				if(bool) possible2[possible2.length] = possible[k]
+			}
+			rnd = p.random(possible2);
+			bandaged[i].push(rnd);
+		}
+	}
+	bandaged2 = [];
+	ban9();
+	
+}
+function deleteBan(){
+	if(bandaged.length >= bannum) 
+		bandaged.splice(bannum-1, 1);
 	doneBandage();
 }
 function inputPressed(move)
@@ -3545,7 +3625,7 @@ function startAction() {
 					bandaged2.push(cuby);
 					
 				}
-				else{
+				else if(!window.matchMedia("(max-width: 767px)").matches){
 					bandaged2 = bandaged2.filter(item => item != cuby)
 					if(bandaged2.length == 0) bandaged2 = [-1];
 				}
@@ -4031,7 +4111,7 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 16: //shift
-			console.log(CAM.getRotation());
+			console.log(bandaged, bandaged2, nextcuby);
 			break;
 		}
 		let bad = -1;
