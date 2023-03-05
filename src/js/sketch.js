@@ -1521,7 +1521,7 @@ function viewBandage(def){
 	else bandaged2 = [-2];
 	
 	ban9();
-	canMan = false;
+	//canMan = false;
 	
 }
 function addBandage(){
@@ -1583,7 +1583,7 @@ function allBandaged(){
 	return possible;
 }
 function randomBandage(){
-	let numB = parseInt(Math.random()*4)+1;
+	let numB = parseInt(Math.random()*3)+2;
 	let possible = [];
 	let possible2 = [];
 	bandaged = [];
@@ -3680,7 +3680,7 @@ function animateRotate(axis, dir) {
 		}
 	}
 }
-function animateWide(axis, row, dir) {
+function animateWide(axis, row, dir, timed) {
 	let rows = [row, 0];
 	
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -3710,7 +3710,7 @@ function animateWide(axis, row, dir) {
 		}
 	}
 
-	if(Math.round(timer.getTime() / 10)/100.0 == 0)
+	if(Math.round(timer.getTime() / 10)/100.0 == 0 && timed)
 	{
 		if(!(MODE == "cube" && alldown == true))
 			timer.start();
@@ -3752,7 +3752,8 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
-	if(customb > 0) return;
+	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
+
 	if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) //escape
 	{
 		reSetup();
@@ -4026,35 +4027,35 @@ p.keyPressed = (event) => {
 			break;
 			case 77:
 			undo.push("Rw'");
-			animateWide('z', 50, -1);
+			animateWide('z', 50, -1, true);
 			break;
 			case 85:
 			undo.push("Rw");
-			animateWide('z', 50, 1);
+			animateWide('z', 50, 1, true);
 			break;
 			case 86:
 			undo.push("Lw");
-			animateWide('z', -50, -1);
+			animateWide('z', -50, -1, true);
 			break;
 			case 82:
 			undo.push("Lw'");
-			animateWide('z', -50, 1);
+			animateWide('z', -50, 1, true);
 			break;
 			case 78:
 			undo.push("Fw");
-			animateWide('y', 50, -1);
+			animateWide('y', 50, -1, true);
 			break;
 			case 66:
 			undo.push("Fw'");
-			animateWide('y', 50, 1);
+			animateWide('y', 50, 1, true);
 			break;
 			case 84:
 			undo.push("Uw'")
-			animateWide('x', -50, 1);
+			animateWide('x', -50, 1, true);
 			break;
 			case 89:
 			undo.push("Uw")
-			animateWide('x', -50, -1);
+			animateWide('x', -50, -1, true);
 			break;
 			case 8: //backspace
 			Undo();
@@ -4564,29 +4565,29 @@ function notation(move, timed){
 	if(move == "S'")
 	animate('y', 0, 1, timed);
 	if(move == "Lw")
-	animateWide('z', -50, -1);
+	animateWide('z', -50, -1, timed);
 	if(move == "Lw'")
-	animateWide('z', -50, 1);
+	animateWide('z', -50, 1, timed);
 	if(move == "Rw'")
-	animateWide('z', 50, -1);
+	animateWide('z', 50, -1, timed);
 	if(move == "Rw")
-	animateWide('z', 50, 1);
+	animateWide('z', 50, 1, timed);
 	if(move == "Fw")
-	animateWide('y', 50, -1);
+	animateWide('y', 50, -1, timed);
 	if(move == "Fw'")
-	animateWide('y', 50, 1);
+	animateWide('y', 50, 1, timed);
 	if(move == "Bw'")
-	animateWide('y', -50, -1);
+	animateWide('y', -50, -1, timed);
 	if(move == "Bw")
-	animateWide('y', -50, 1);
+	animateWide('y', -50, 1, timed);
 	if(move == "Uw")
-	animateWide('x', -50, -1);
+	animateWide('x', -50, -1, timed);
 	if(move == "Uw'")
-	animateWide('x', -50, 1);
+	animateWide('x', -50, 1, timed);
 	if(move == "Dw'")
-	animateWide('x', 50, -1);
+	animateWide('x', 50, -1, timed);
 	if(move == "Dw")
-	animateWide('x', 50, 1);
+	animateWide('x', 50, 1, timed);
 }
 function stepFour()
 {
