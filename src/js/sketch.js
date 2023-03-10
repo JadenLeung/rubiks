@@ -297,7 +297,7 @@ p.setup = () => {
 	CUBE6 = p.createButton('The Jank 2x2');
 	CUBE7 = p.createButton('Block Bandage');
 	CUBE8 = p.createButton('The Pillars');
-	CUBE9 = p.createButton('Twosquare');
+	CUBE9 = p.createButton('Triple Quad');
 	CUBE10 = p.createButton('Bandaged 2x2');
 	CUBE11 = p.createButton('Z Perm');
 	CUBE12 = p.createButton('T Perm');
@@ -4457,9 +4457,9 @@ function refreshButtons()
 		CUBE8.mousePressed(change12.bind(null, 8, [[0,3,6], [2,5,8]]));
 		CUBE8.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
-		CUBE9 = p.createButton('Twosquare');
+		CUBE9 = p.createButton('Triple Quad');
 		CUBE9.parent("cube9");
-		CUBE9.mousePressed(change13.bind(null, 9, [[0,1,3,4], [16,17,25,26]]));
+		CUBE9.mousePressed(change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]));
 		CUBE9.style("height:45px; width:180px; text-align:center; font-size:20px;");
 
 		CUBE10 = p.createButton('Bandaged 2x2');
