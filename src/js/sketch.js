@@ -97,6 +97,8 @@ export default function (p) {
 	let bandaged2 = [];
 	let bannum = 1;
 	let rotation = [];
+	let rotationx = 0;
+	let rotationz = 0;
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -872,16 +874,7 @@ function reSetup(rot) {
 		ROTY = 7;
 		ROTZ = 2;
 	}
-	if(rot)
-	{
-		console.log(rot, "doing int")
-		CAM.setRotation(rot, 0);
-	}
-	else{
-		CAM.rotateX(-p.PI / ROTX);
-		CAM.rotateY(-p.PI / ROTY);
-		CAM.rotateZ(-p.PI / ROTZ);
-	}
+	
 	//undo = [];
 	//redo = [];
 	moves = 0;
@@ -926,7 +919,35 @@ function reSetup(rot) {
 			}
 		}
 	}
-
+	if(rot)
+	{
+		arr = [];
+		CAM.setRotation(rot, 0);
+		if(rotationx * rotationz == 0){
+			if(rotationx == 1) arr = ["y'"];
+			if(rotationx == 2) arr = ["y", "y"];
+			if(rotationx == 3) arr = ["y"];
+			if(rotationz == 1) arr.push("x");
+			if(rotationz == 2){
+				arr.push("x");
+				arr.push("x");
+			}
+			if(rotationz == 3) arr.push("x'");
+			console.log("Arr is ", arr);
+			multiple2(0);
+		}
+		else{
+			rotationx = 0;
+			rotationz = 0;
+		}
+	}
+	else{
+		CAM.rotateX(-p.PI / ROTX);
+		CAM.rotateY(-p.PI / ROTY);
+		CAM.rotateZ(-p.PI / ROTZ);
+		rotationx = 0;
+		rotationz = 0;
+	}
 	for(let i = 0; i < 27; i++){ //sets up nextcuby
 		nextcuby[i] = [];
 		for(let j = 0; j < 27; j++){
@@ -1540,6 +1561,7 @@ function addBandage(){
 	document.getElementById("cancelban").style.display = "block";
 	bandaged2 = [-1];
 	ban9();
+	reSetup();
 }
 function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
@@ -1626,6 +1648,24 @@ function inputPressed(move)
 		if (CUBE[i].animating()) {
 			return;
 		}
+	}
+	if(move[0] == "y" && customb == 1 && rotationz != 0) return;
+	if(move[0] == "x" && customb == 1 && rotationx != 0) return;
+	if(move == "y'"){
+		rotationx++;
+		if(rotationx == 4) rotationx = 0;
+	}
+	if(move == "y"){
+		rotationx--;
+        if(rotationx == -1) rotationx = 3;
+	}
+	if(move == "x"){
+		rotationz++;
+		if(rotationz == 4) rotationz = 0;
+	}
+	if(move == "x'"){
+		rotationz--;
+        if(rotationz == -1) rotationz = 3;
 	}
 	let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
 	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
@@ -3665,7 +3705,8 @@ function animateRotate(axis, dir) {
 	if(sum % 2 == 1)
 		return;
 	
-	
+
+
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		for (let j = 0; j < SIZE; j++) {
 			if (CUBE[i].get(axis) === rows[j]) {
@@ -3752,6 +3793,13 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
+	if(p.keyCode == 16){ //shift
+		console.log(rotationx, rotationz, arr);
+	}
+	if(p.keyCode == 32){ //space
+		console.log("here")
+		multiple2(0);
+	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
 	if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) //escape
@@ -3934,24 +3982,36 @@ p.keyPressed = (event) => {
 		}
 		switch (p.keyCode) {	
 			case 37:
+			if(customb > 0 && rotationz != 0) break;
 			console.log("Left Arrow/y");
 			undo.push("y");
 			animateRotate("x", -1);
+			rotationx--;
+			if(rotationx == -1) rotationx = 3;
 			break;
 			case 39:
+			if(customb > 0 && rotationz != 0) break;
 			console.log("Right Arrow/y'");
 			undo.push("y'");
 			animateRotate("x", 1);
+			rotationx++;
+			if(rotationx == 4) rotationx = 0;
 			break;	
 			case 40:
 			console.log("Down Arrow/x'");
+			if(customb > 0 && rotationx != 0) break;
 			undo.push("x'");
 			animateRotate("z", -1);
+			rotationz--;
+			if(rotationz == -1) rotationz = 3;
 			break;
 			case 38:
 			console.log("Up Arrow/x");
+			if(customb > 0 && rotationx != 0) break;
 			undo.push("x");
 			animateRotate("z", 1);
+			rotationz++;
+			if(rotationz == 4) rotationz = 0;
 			break;	
 			case 76:
 			undo.push("D'");
@@ -4110,9 +4170,6 @@ p.keyPressed = (event) => {
 			break;
 			case 52: //4
 			removeTime();
-			break;
-			case 16: //shift
-			console.log(bandaged, bandaged2, nextcuby);
 			break;
 		}
 		let bad = -1;
@@ -6631,7 +6688,7 @@ function removeTime()
 	ao5.pop();
 }
 function testAlg(){
-	if(canMan)
+	if(canMan && customb == 0)
 	{
 		if(inp.value() == "time")
 		{
