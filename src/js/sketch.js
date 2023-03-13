@@ -4144,7 +4144,7 @@ p.keyPressed = (event) => {
 			speedmode();
 			if(MODE == "timed" || (MODE == "cube" && custom == 0))
 			regular();
-			if(MODE == "cube" && custom == 1)
+			if(MODE == "cube" && custom > 0)
 			{
 				cubemode();
 				custom = 0
@@ -4170,6 +4170,10 @@ p.keyPressed = (event) => {
 			break;
 			case 52: //4
 			removeTime();
+			break;
+			case 53: //5
+			window.open(
+				"https://classroom.google.com/u/0/", "_blank");
 			break;
 		}
 		let bad = -1;
