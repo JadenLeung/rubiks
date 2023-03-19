@@ -3820,7 +3820,7 @@ p.keyPressed = (event) => {
 		}
 		return;
 	}
-	if(p.keyCode == 51)
+	if(p.keyCode == 52)
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -3829,6 +3829,20 @@ p.keyPressed = (event) => {
 		CAM.rotateY(-p.PI / ROTY);
 		CAM.rotateZ(-p.PI / ROTZ);
 		return;
+	}
+	if(p.keyCode == 54){
+		if(BACKGROUND_COLOR != 5){
+			BACKGROUND_COLOR = 5;
+			document.body.style.backgroundColor = "black";
+			document.body.style.color = "lightblue";
+			
+		}
+		else{
+			BACKGROUND_COLOR = 230;
+			document.body.style.backgroundColor = "#c9ffda";
+			document.body.style.color = "#0a1970";
+		}
+		reSetup();
 	}
 	if(p.keyCode == 45)
 	{
@@ -4168,10 +4182,10 @@ p.keyPressed = (event) => {
 			.then((obj) => (setPLL(obj)));*/
 			console.log("erger");
 			break;
-			case 52: //4
+			case 53: //4
 			removeTime();
 			break;
-			case 53: //5
+			case 51: //5
 			window.open(
 				"https://classroom.google.com/u/0/", "_blank");
 			break;
@@ -7497,6 +7511,8 @@ window.addEventListener('keydown', (e) => {
 // U2 F L2 D R2 U' F' U F L2 F2 R B' R' B' (54)
 //B2 R2 F' R2 D' L2 D2 F2 L' U2 B R F L D R2 F2 D2 (53)
 // R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53)
+// R D' L2 B2 D2 R F2 R2 F' R2 F' L2 B' U2 F' L2 U F2 (52)
+// U R2 D' F2 L2 B U B R2 U2 R2 B2 R F2 D' F2 R' D' (52)
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
