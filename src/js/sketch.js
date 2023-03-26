@@ -95,6 +95,7 @@ export default function (p) {
 	let ADDBANDAGE, VIEWBANDAGE;
 	let customb = 0;
 	let bandaged2 = [];
+	let bandaged3 = [];
 	let bannum = 1;
 	let rotation = [];
 	let rotationx = 0;
@@ -1763,7 +1764,9 @@ function Custom2(){
 	document.getElementById("rightban").style.display = "none";
 	CAMZOOM = ZOOM3;
 	changeCam(3);
-	bandageZero()
+	doneBandage()
+	bandaged = bandaged3;
+	ban9();
 }
 function Custom()
 {
@@ -1980,6 +1983,7 @@ function timedmode()
 }
 function cubemode()
 {
+	bandaged3 = bandaged;
 	if(MODE != "cube" && MODE != "normal" && MODE != "timed")
 	{
 		ao5 = [];
@@ -3794,7 +3798,7 @@ p.keyPressed = (event) => {
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
 	if(p.keyCode == 16){ //shift
-		console.log(rotationx, rotationz, arr);
+		console.log(bandaged, bandaged3);
 	}
 	if(p.keyCode == 32){ //space
 		console.log("here")
