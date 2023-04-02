@@ -1984,6 +1984,7 @@ function timedmode()
 function cubemode()
 {
 	bandaged3 = bandaged;
+	custom = 0;
 	if(MODE != "cube" && MODE != "normal" && MODE != "timed")
 	{
 		ao5 = [];
@@ -3798,7 +3799,7 @@ p.keyPressed = (event) => {
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
 	if(p.keyCode == 16){ //shift
-		console.log(bandaged, bandaged3);
+		console.log(DIM, MODDIM, custom);
 	}
 	if(p.keyCode == 32){ //space
 		console.log("here")
@@ -3835,18 +3836,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 54){
-		if(BACKGROUND_COLOR != 5){
-			BACKGROUND_COLOR = 5;
-			document.body.style.backgroundColor = "black";
-			document.body.style.color = "lightblue";
-			
-		}
-		else{
-			BACKGROUND_COLOR = 230;
-			document.body.style.backgroundColor = "#c9ffda";
-			document.body.style.color = "#0a1970";
-		}
-		reSetup();
+		darkMode();
 	}
 	if(p.keyCode == 45)
 	{
@@ -6211,6 +6201,20 @@ function multipleCross(nb) {
 		console.log("done");
 	}
 }
+function darkMode(){
+	if(BACKGROUND_COLOR != 5){
+		BACKGROUND_COLOR = 5;
+		document.body.style.backgroundColor = "black";
+		document.body.style.color = "lightblue";
+		
+	}
+	else{
+		BACKGROUND_COLOR = 230;
+		document.body.style.backgroundColor = "#c9ffda";
+		document.body.style.color = "#0a1970";
+	}
+	reSetup();
+}
 function greenLayer(){
 	for(let i = 0; i < 6; i++)
 	{
@@ -6716,6 +6720,9 @@ function testAlg(){
 		{
 			removeTime();
 			return;
+		}
+		else if(inp.value() == "dark"){
+			darkMode();
 		}
 		else if(inp.value()[0] == "p")
 		{
