@@ -359,6 +359,7 @@ p.setup = () => {
 	SCRAM.option("Double Turns");
 	SCRAM.option("Middle Slices");
 	SCRAM.option("Like a 3x3x2")
+	SCRAM.option("Gearcube")
 	SCRAM.option("Pattern");
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -467,6 +468,7 @@ p.setup = () => {
 	INPUT.option("Keyboard");
 	INPUT.option("Key-Double");
 	INPUT.option("Key-3x3x2");
+	INPUT.option("Key-Gearcube");
 	INPUT.option("Button");
 	if(window.matchMedia("(max-width: 767px)").matches)
 		INPUT.selected('Button');
@@ -3373,7 +3375,19 @@ function shuffleCube(nb) {
 				continue;
 			
 			let rnd2 = Math.random();
-			if(doubly || (SCRAM.value() == "Like a 3x3x2" && rnd != "U" && rnd != "D"))
+			if(SCRAM.value() == "Gearcube"){
+				if(rnd2 < 0.5){
+					arr.push((rnd + "w"));
+					arr.push(rnd);
+					total += rnd + "w " + rnd + " ";
+				}
+				else{
+					arr.push((rnd + "w'"));
+					arr.push((rnd+"'"));
+					total += rnd + "w' " + rnd + "' ";
+				}
+			}
+			else if(doubly || (SCRAM.value() == "Like a 3x3x2" && rnd != "U" && rnd != "D"))
 			{
 				arr.push(rnd);
 				arr.push(rnd);
@@ -3837,6 +3851,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 54){
 		darkMode();
+		return;
 	}
 	if(p.keyCode == 45)
 	{
@@ -3956,6 +3971,7 @@ p.keyPressed = (event) => {
 			else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65]; // front
 			
 		}
+		let bad6 = [190,188,65,186,80,81];
 		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
 			if(p.keyCode == 83) changeArr("D2")
 			if(p.keyCode == 76) changeArr("D2'")
@@ -3985,6 +4001,24 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 66) changeArr("Fw2'")
 			if(p.keyCode == 38) changeArr("x2")
 			if(p.keyCode == 40) changeArr("x2'")
+			multiple(0, true);	
+			return;
+		}
+		else if(INPUT.value() == "Key-Gearcube" && bad4.includes(p.keyCode)){
+			if(bad6.includes(p.keyCode))
+				return;
+			if(p.keyCode == 83) changeArr("d D")
+			if(p.keyCode == 76) changeArr("d' D'")
+			if(p.keyCode == 74) changeArr("u U")
+			if(p.keyCode == 70) changeArr("u' U'")
+			if(p.keyCode == 69) changeArr("l' L'")
+			if(p.keyCode == 68) changeArr("l L")
+			if(p.keyCode == 73) changeArr("r R")
+			if(p.keyCode == 75) changeArr("r' R'")
+			if(p.keyCode == 72) changeArr("f F")
+			if(p.keyCode == 71) changeArr("f' F'")
+			if(p.keyCode == 87) changeArr("b B")
+			if(p.keyCode == 79) changeArr("b' B'")
 			multiple(0, true);	
 			return;
 		}
@@ -6213,7 +6247,6 @@ function darkMode(){
 		document.body.style.backgroundColor = "#c9ffda";
 		document.body.style.color = "#0a1970";
 	}
-	reSetup();
 }
 function greenLayer(){
 	for(let i = 0; i < 6; i++)
