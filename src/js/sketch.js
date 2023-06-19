@@ -100,6 +100,10 @@ export default function (p) {
 	let rotation = [];
 	let rotationx = 0;
 	let rotationz = 0;
+	let round = 1;
+	let roundresult = [0, 0]; //left = you, right = bot
+	let race = 0;
+	let shuffling = false;
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -582,6 +586,21 @@ p.setup = () => {
 	PLL.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163;")
 	PLL.parent("s_PLL");
 	PLL.mousePressed(speedPLL.bind(null, 0));
+
+	const RACE = p.createButton('Start Race');
+	RACE.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53;")
+	RACE.parent("s_RACE");
+	RACE.mousePressed(speedRace.bind(null, 0));
+
+	const READYBOT = p.createButton('Ready');
+	READYBOT.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58;")
+	READYBOT.parent("readybot");
+	READYBOT.mousePressed(speedRace2.bind(null, 0));
+
+	const RACE2 = p.createButton('Continue');
+	RACE2.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58;")
+	RACE2.parent("s_RACE2");
+	RACE2.mousePressed(speedRace2.bind(null, 0));
 	
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
@@ -668,7 +687,7 @@ setInterval(() => {
 	else
 		goodsolved = false;
 	
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime)))
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
 	{
 		timer.stop();
 		flipmode2 = 0;
@@ -686,6 +705,23 @@ setInterval(() => {
 				ao5.push(timeInSeconds);
 				mo5.push(timeInSeconds);
 				ao5.shift();
+			}
+		}
+		if(race > 1){ //racedetect
+			console.log("racedetect");
+			round++;
+			roundresult[1]++;
+			if(roundresult[1] < 5){
+				document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
+				document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
+				document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+				document.getElementById("s_RACE2").style.display = "block";
+			}
+			else{
+				document.getElementById("s_INSTRUCT").innerHTML = "You were defeated by the bot :(";
+				document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
+				document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+				document.getElementById("s_RACE").style.display = "block";
 			}
 		}
 		console.log(isSolved(), MODE);
@@ -882,7 +918,9 @@ function reSetup(rot) {
 	//redo = [];
 	moves = 0;
 	timer.stop();
-	timer.reset();
+	if(race < 2){
+		timer.reset();
+	}
 	shufflespeed = 5;
 	RND_COLORS = genRndColors();
 	document.getElementById('scramble').innerText = "N/A";
@@ -894,6 +932,8 @@ function reSetup(rot) {
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
+	document.getElementById("s_bot").style.display = "none";
+	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("points_par").style.display = "none";
@@ -1869,6 +1909,7 @@ function regular(){
 			changeThree();
 	}
 	reSetup();
+	race = 0;
 	MODE = "normal"
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -1898,6 +1939,7 @@ function regular(){
 	document.getElementById("outertime").style.display = "inline";
 	document.getElementById("or_instruct3").style.display = "none";
 	document.getElementById("points_par").style.display = "none";
+	document.getElementById("readybot").style.display = "none";
 	document.getElementById("mode").style.display = "block";
 	document.getElementById("mode2").style.display = "block";
 	document.getElementById("mode3").style.display = "block";
@@ -1909,6 +1951,7 @@ function regular(){
 	document.getElementById("alltimes").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
+	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_difficulty").innerHTML = "";
 	changeInput();
 	document.getElementById("input").style.display = "inline";
@@ -1932,6 +1975,9 @@ function regular(){
 	document.getElementById("stop_div").style.display = "none";
 	document.getElementById("scram").style.display = "block";
 	document.getElementById("modarrow").style.display = "none";
+	document.getElementById("s_bot").style.display = "none";
+	document.getElementById("s_RACE").style.display = "none";
+	document.getElementById("s_RACE2").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -2043,6 +2089,7 @@ function speedmode()
 	SPEEDMODE.style('background-color', "#8ef5ee");
 
 	document.getElementById("test_alg_div").style.display = "none";
+	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
 	document.getElementById("solve").style.display = "none";
@@ -2061,6 +2108,9 @@ function speedmode()
 	document.getElementById("s_medium").style.display = "inline";
 	document.getElementById("s_OLL").style.display = "inline";
 	document.getElementById("s_PLL").style.display = "inline";
+	document.getElementById("s_bot").style.display = "block";
+	document.getElementById("s_RACE").style.display = "block";
+	document.getElementById("s_RACE2").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -2125,6 +2175,8 @@ function showSpeed()
 	document.getElementById("m_4").style.display = "none";
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
+	document.getElementById("s_bot").style.display = "none";
+	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("input").style.display = "inline";
 	document.getElementById("speed").style.display = "inline";
 	document.getElementById("slider_div").style.display = "inline";
@@ -2538,6 +2590,40 @@ function speedOLL()
 		easystep = 8;
 		easy();
 	}
+}
+function speedRace(){
+	race = 1;
+	round = 1;
+	roundresult = [0, 0];
+	showSpeed();
+	document.getElementById("keymap").style.display = "none";
+	document.getElementById("s_instruct2").innerHTML = "";
+	document.getElementById("undo").style.display = "none";
+	document.getElementById("redo").style.display = "none";
+	document.getElementById("reset3_div").style.display = "none";
+	document.getElementById("outermoves").style.display = "none";
+	document.getElementById("outertime").style.display = "none";
+	document.getElementById("times_par").style.display = "none";
+	document.getElementById("s_INSTRUCT").innerHTML = "Pre-Setup";
+	document.getElementById("s_instruct").innerHTML = "Adjust Bot Speed/Difficulty (1 = slow, 200 = fast)";
+	document.getElementById("readybot").style.display = "block";
+	canMan = true;
+}
+function speedRace2(){
+	shuffling = true;
+	race = 2;
+	quickSolve();
+	shuffleCube();
+	document.getElementById("readybot").style.display = "none";
+	document.getElementById("slider_div").style.display = "none";
+	document.getElementById("speed").style.display = "none";
+	document.getElementById("scramble_par").style.display = "block";
+	document.getElementById("outertime").style.display = "block";
+	document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
+	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space to start solving, and press any key to stop. Winner gets a point, first to 5 wins!";
+	document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+	document.getElementById("s_RACE2").style.display = "none";
+	canMan = false;
 }
 function m_34() 
 {
@@ -3305,7 +3391,7 @@ function shuffleCube(nb) {
 	arr = [];
 	let bad = "";
 	let total = "";
-	if(MODE == "normal" || MODE == "cube" || MODE == "timed")
+	if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "speed" && race > 0)
 	{
 		if(SCRAM.value() == "Middle Slices")
 			possible = ["E", "M", "S"];
@@ -3812,18 +3898,43 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
-	if(p.keyCode == 16){ //shift
-		console.log(DIM, MODDIM, custom);
+	if(timer.isRunning && race > 1){ //racedetect
+		timer.stop();
+		arr = [];
+		canMan = true;
+		document.getElementById("stepbig").innerHTML = "";
+		document.getElementById("step").innerHTML = "";
+		document.getElementById("fraction").innerHTML = "";
+		console.log("racedetect2");
+		round++;
+		roundresult[0]++;
+		if(roundresult[0] < 5){
+			document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
+			document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
+			document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+			document.getElementById("s_RACE2").style.display = "block";
+		}
+		else{
+			document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
+			document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
+			document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+			document.getElementById("s_RACE").style.display = "block";
+		}
+		return;
 	}
-	if(p.keyCode == 32){ //space
-		console.log("here")
-		multiple2(0);
+	if(p.keyCode == 16){ //shift
+		console.log(canMan);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
 	if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) //escape
 	{
 		reSetup();
+		return;
+	}
+	if(p.keyCode == 27 && (MODE == "speed" && race == 1)) //escape
+	{
+		quickSolve();
 		return;
 	}
 	if(p.keyCode == 50) //2 //two
@@ -4193,6 +4304,7 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 32: //space
+			console.log(layout, cubyColors, CUBE)
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
@@ -4202,7 +4314,6 @@ p.keyPressed = (event) => {
 			{
 				str += Inverse(undo[i]) + " ";
 			}
-			console.log(layout, cubyColors, CUBE)
 			break;
 			case 13: //enter
 			/*fetch('src/PLL.json')
@@ -4319,6 +4430,10 @@ function multiple2(nb, timed) {
 		}
 		shufflespeed = 5;
 		canMan = true;
+		if(race > 1){
+			canMan = false;
+			shuffling = false;
+		}
 	}
 }
 function changeArr(str)
@@ -4598,8 +4713,9 @@ function solveCube()
 		moves = 0;
 		document.getElementById("stepbig").innerHTML = "Current Solving Step (";
 		canMan = false;
-		if(DIM == 50)
+		if(DIM == 50){
 			stepTwo();
+		}
 		else
 		{
 			color = layout[2][0][0][0];
@@ -4947,12 +5063,14 @@ function stepFive()
 	}
 }
 function stepTwo(){
+	console.log("attempt")
 	flipmode2 = 1;
 	//dev
 	//dev = 1;
 	if(dev == 1)
 	flipmode2 = 0;
 	setLayout();
+	
 	let pos = crossColor()[0];
 	color = crossColor()[1];
 	console.log(color);
@@ -6130,7 +6248,7 @@ else
 }
 function multipleCross3(nb) {
 	if(canMan == true)return;
-	if(MODE != "normal" && MODE != "timed")
+	if(MODE != "normal" && MODE != "timed" && race == 0)
 	{
 		flipmode = 0;
 		flipmode2 = 0;
@@ -6164,7 +6282,7 @@ function multipleCross3(nb) {
 }
 function multipleCross2(nb) {
 	if(canMan == true)return;
-	if(MODE != "normal" && MODE != "timed")
+	if(MODE != "normal" && MODE != "timed" && race == 0)
 	{
 		flipmode = 0;
 		flipmode2 = 0;
@@ -7511,6 +7629,14 @@ document.onkeydown = function (e) {
 	console.log("here67")
 	INPUT.elt.blur();
   };
+  document.onkeyup = function(e) { //space
+	if (e.keyCode == 32) {
+		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
+			canMan = true;
+			solveCube();
+		}
+	}
+  }
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
 		switch (e.keyCode) {
