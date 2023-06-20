@@ -711,17 +711,20 @@ setInterval(() => {
 			console.log("racedetect");
 			round++;
 			roundresult[1]++;
+			roundresult.push([Math.round(timer.getTime() / 10)/100.0, 1]);
 			if(roundresult[1] < 5){
 				document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
 				document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
-				document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+				document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 				document.getElementById("s_RACE2").style.display = "block";
+				raceTimes();
 			}
 			else{
 				document.getElementById("s_INSTRUCT").innerHTML = "You were defeated by the bot :(";
 				document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
-				document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+				document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 				document.getElementById("s_RACE").style.display = "block";
+				raceTimes();
 			}
 		}
 		console.log(isSolved(), MODE);
@@ -1952,6 +1955,7 @@ function regular(){
 	document.getElementById("s_INSTRUCT").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
 	document.getElementById("s_instruct2").innerHTML = "";
+	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("s_difficulty").innerHTML = "";
 	changeInput();
 	document.getElementById("input").style.display = "inline";
@@ -2090,6 +2094,7 @@ function speedmode()
 
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("s_instruct2").innerHTML = "";
+	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
 	document.getElementById("solve").style.display = "none";
@@ -2598,6 +2603,7 @@ function speedRace(){
 	showSpeed();
 	document.getElementById("keymap").style.display = "none";
 	document.getElementById("s_instruct2").innerHTML = "";
+	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("undo").style.display = "none";
 	document.getElementById("redo").style.display = "none";
 	document.getElementById("reset3_div").style.display = "none";
@@ -2621,9 +2627,20 @@ function speedRace2(){
 	document.getElementById("outertime").style.display = "block";
 	document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
 	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space to start solving, and press any key to stop. Winner gets a point, first to 5 wins!";
-	document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	document.getElementById("s_RACE2").style.display = "none";
 	canMan = false;
+}
+function raceTimes(){
+	let str = "";
+	for(let i = 2; i < roundresult.length; i++){
+		if(roundresult[i][1] == 0)
+			str += "<div style = 'color: green; display: inline;'>" + roundresult[i][0] + " </div>";
+		else
+			str += "<div style = 'color: red; display: inline;'>" + roundresult[i][0] + " </div>";
+	}
+	console.log("str is " + str);
+	document.getElementById("s_RACE3").innerHTML = "Winning times: " + str;
 }
 function m_34() 
 {
@@ -3908,22 +3925,25 @@ p.keyPressed = (event) => {
 		console.log("racedetect2");
 		round++;
 		roundresult[0]++;
+		roundresult.push([Math.round(timer.getTime() / 10)/100.0, 0]);
 		if(roundresult[0] < 5){
 			document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
 			document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
-			document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 			document.getElementById("s_RACE2").style.display = "block";
+			raceTimes();
 		}
 		else{
 			document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
 			document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
-			document.getElementById("s_instruct2").innerHTML = "Your points: " + roundresult[0] + "<br>Bot points: " + roundresult[1];
+			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 			document.getElementById("s_RACE").style.display = "block";
+			raceTimes();
 		}
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(canMan);
+		console.log(roundresult);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -3937,7 +3957,7 @@ p.keyPressed = (event) => {
 		quickSolve();
 		return;
 	}
-	if(p.keyCode == 50) //2 //two
+	if(p.keyCode == 50 && race < 1) //2 //two
 	{
 		if(SPEED != 2)
 		{
@@ -5895,7 +5915,7 @@ if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][
 	setLayout();
 	console.log(layout);
 	document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
-	document.getElementById("fraction").innerHTML = "7/8):";
+	document.getElementById("fraction").innerHTML = "6/8):";
 	saystep = 13;
 	flipmode = 0;
 	arr = [];
@@ -6071,7 +6091,7 @@ else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][
 	flipmode2 = 0;
 	setLayout();
 	document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
-	document.getElementById("fraction").innerHTML = "7/8):";
+	document.getElementById("fraction").innerHTML = "6/8):";
 	flipmode = 0;
 	saystep = 14;
 	arr = [];
@@ -6114,7 +6134,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 	flipmode2 = 0;
 	setLayout();
 	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
-	document.getElementById("fraction").innerHTML = "8/8):";
+	document.getElementById("fraction").innerHTML = "7/8):";
 	saystep = 15;
 	arr = [];
 	flipmode = 0;
@@ -6180,7 +6200,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 else if(correctPFL() < 3 && DIM == 50)
 {
 	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
-	document.getElementById("fraction").innerHTML = "9/9):";
+	document.getElementById("fraction").innerHTML = "7/8):";
 	flipmode2 = 0;
 	flipmode = 0;
 	setLayout();
@@ -6227,7 +6247,7 @@ else if(correctPFL() < 3 && DIM == 50)
 else if(layout[5][0][0][0] != layout[5][1][1][0])
 {
 	document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
-	document.getElementById("fraction").innerHTML = "10/10):";
+	document.getElementById("fraction").innerHTML = "8/8):";
 	flipmode2 = 0;
 	flipmode = 0;
 	setLayout();
@@ -7677,12 +7697,11 @@ window.addEventListener('keydown', (e) => {
 //FMC: 193
 
 //BELOW 54 MOVES
-// L D2 R U2 B2 D' B R D' R2 D R2 B2 R2 B' (54)
-// U2 F L2 D R2 U' F' U F L2 F2 R B' R' B' (54)
 //B2 R2 F' R2 D' L2 D2 F2 L' U2 B R F L D R2 F2 D2 (53)
 // R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53)
 // R D' L2 B2 D2 R F2 R2 F' R2 F' L2 B' U2 F' L2 U F2 (52)
 // U R2 D' F2 L2 B U B R2 U2 R2 B2 R F2 D' F2 R' D' (52)
+// U R D L2 B2 R2 U F' D' F L F' R2 F2 D2 B' D2 F (52)
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
