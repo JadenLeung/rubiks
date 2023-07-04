@@ -2626,7 +2626,7 @@ function speedRace2(){
 	document.getElementById("scramble_par").style.display = "block";
 	document.getElementById("outertime").style.display = "block";
 	document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
-	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space to start solving, and press any key to stop. Winner gets a point, first to 5 wins!";
+	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space/touch cube area to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!";
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	document.getElementById("s_RACE2").style.display = "none";
 	canMan = false;
@@ -3761,6 +3761,10 @@ function getIndex(cuby)
 }
 function startAction() {	
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
+	if(timer.isRunning && race > 1){ //racedetect
+		raceDetect();
+		return;
+	}
 	let hoveredColor;
 	if(p.touches.length == 0)
 		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
@@ -3772,6 +3776,15 @@ function startAction() {
 	}
 	//if(layout[2][1][1][0] == "w")
 	//alert(getColor(hoveredColor));
+	if(hoveredColor[0] != false)
+	{
+		console.log("mousePressed");
+		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
+			canMan = true;
+			solveCube();
+		}
+	}
+
 	setLayout();
 	console.log(hoveredColor);
 	if (hoveredColor !== false && hoveredColor[0] != BACKGROUND_COLOR) { 
@@ -3916,30 +3929,7 @@ p.keyPressed = (event) => {
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
 	if(timer.isRunning && race > 1){ //racedetect
-		timer.stop();
-		arr = [];
-		canMan = true;
-		document.getElementById("stepbig").innerHTML = "";
-		document.getElementById("step").innerHTML = "";
-		document.getElementById("fraction").innerHTML = "";
-		console.log("racedetect2");
-		round++;
-		roundresult[0]++;
-		roundresult.push([Math.round(timer.getTime() / 10)/100.0, 0]);
-		if(roundresult[0] < 5){
-			document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
-			document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
-			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-			document.getElementById("s_RACE2").style.display = "block";
-			raceTimes();
-		}
-		else{
-			document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
-			document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
-			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-			document.getElementById("s_RACE").style.display = "block";
-			raceTimes();
-		}
+		raceDetect();
 		return;
 	}
 	if(p.keyCode == 16){ //shift
@@ -6905,6 +6895,33 @@ function testAlg(){
 		changeArr(inp.value());
 		multiple(0, false);	
 	}
+}
+function raceDetect(){
+	timer.stop();
+	arr = [];
+	canMan = true;
+	document.getElementById("stepbig").innerHTML = "";
+	document.getElementById("step").innerHTML = "";
+	document.getElementById("fraction").innerHTML = "";
+	console.log("racedetect2");
+	round++;
+	roundresult[0]++;
+	roundresult.push([Math.round(timer.getTime() / 10)/100.0, 0]);
+	if(roundresult[0] < 5){
+		document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
+		document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
+		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+		document.getElementById("s_RACE2").style.display = "block";
+		raceTimes();
+	}
+	else{
+		document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
+		document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
+		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+		document.getElementById("s_RACE").style.display = "block";
+		raceTimes();
+	}
+	return;
 }  
 //   *************************************
 
