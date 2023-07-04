@@ -1876,7 +1876,7 @@ function sliderUpdate() {
 	//SIZE = SIZE_SLIDER.value();
 	GAP = GAP_SLIDER.value();
 	SPEED = SPEED_SLIDER.value();
-	if(MODE == "normal" || MODE == "timed" || MODE == "cube")
+	if(MODE == "normal" || MODE == "timed" || MODE == "cube" || race > 0)
 	DELAY = DELAY_SLIDER.value();
 	//reSetup();
 }
@@ -1982,6 +1982,7 @@ function regular(){
 	document.getElementById("s_bot").style.display = "none";
 	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("s_RACE2").style.display = "none";
+	document.getElementById("delayuseless").style.display = "inline";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -2611,8 +2612,11 @@ function speedRace(){
 	document.getElementById("outertime").style.display = "none";
 	document.getElementById("times_par").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Pre-Setup";
-	document.getElementById("s_instruct").innerHTML = "Adjust Bot Speed/Difficulty (1 = slow, 200 = fast)";
+	document.getElementById("s_instruct").innerHTML = "First, adjust bot turn speed (1 = slow, 200 = fast)<br>Then, adjust bot turn delay (in seconds)";
 	document.getElementById("readybot").style.display = "block";
+	document.getElementById("delaywhole").style.display = "block";
+	document.getElementById("delayuseless").style.display = "none";
+	document.getElementById("scramble_par").style.display = "none";
 	canMan = true;
 }
 function speedRace2(){
@@ -2621,6 +2625,7 @@ function speedRace2(){
 	quickSolve();
 	shuffleCube();
 	document.getElementById("readybot").style.display = "none";
+	document.getElementById("delaywhole").style.display = "none";
 	document.getElementById("slider_div").style.display = "none";
 	document.getElementById("speed").style.display = "none";
 	document.getElementById("scramble_par").style.display = "block";
@@ -3761,7 +3766,7 @@ function getIndex(cuby)
 }
 function startAction() {	
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
-	if(timer.isRunning && race > 1 && timer.getTime() > 1){ //racedetect
+	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 1){ //racedetect
 		raceDetect();
 		return;
 	}
@@ -3933,7 +3938,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(roundresult);
+		console.log("BRUH", document.getElementById("s_RACE2").style.display);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -4315,6 +4320,10 @@ p.keyPressed = (event) => {
 			break;
 			case 32: //space
 			console.log(layout, cubyColors, CUBE)
+			if(MODE == "speed"){
+				if(document.getElementById("s_RACE2").style.display == "block")
+				speedRace2()
+			}
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
