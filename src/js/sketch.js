@@ -2604,10 +2604,11 @@ function speedRace(){
 	showSpeed();
 	document.getElementById("keymap").style.display = "none";
 	document.getElementById("input").style.display = "none";
+	document.getElementById("input2").style.display = "none";
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("undo").style.display = "none";
-	document.getElementById("scram").style.display = "block";
+	document.getElementById("scram").style.display = "none";
 	document.getElementById("redo").style.display = "none";
 	document.getElementById("reset3_div").style.display = "none";
 	document.getElementById("outermoves").style.display = "none";
