@@ -1,0 +1,561 @@
+<html>
+  <head>
+    <title>Jaden Leung, Lexington High School</title>
+    <script type="text/javascript" src="./webcam-easy.min.js"></script>
+	
+	<style>
+		body{
+			background-color:#c9ffda;
+			color:#0a1970;
+			font:courier;
+			
+		}
+		button{
+			touch-action: manipulation;
+		}
+		button:hover {
+			cursor: pointer;
+			background-color: #FABD44;
+		}
+    .noselect {
+			-webkit-touch-callout: none; /* iOS Safari */
+			-webkit-user-select: none; /* Safari */
+			-khtml-user-select: none; /* Konqueror HTML */
+			-moz-user-select: none; /* Old versions of Firefox */
+			-ms-user-select: none; /* Internet Explorer/Edge */
+			user-select: none; 
+		}
+	</style>	
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <video id="webcam" autoplay playsinline width="320" height="240"></video>
+    <canvas id = "draw" width = "320" height = "240" style = "position: absolute; top: 0; left: 0;"></canvas>
+    <canvas id = "draw2" width = "320" height = "240" style = "position: absolute; top: 0; left: 0;"></canvas>
+    <canvas id="canvas" class="d-none"></canvas>
+    <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
+    <div id = "testcubies">
+        <canvas id="cuby1" style="position: absolute; top: 385; left: 70;"></canvas>
+        <canvas id="cuby4" style="position: absolute; top: 385; left: 170;"></canvas>
+        <canvas id="cuby7" style="position: absolute; top: 385; left: 270;"></canvas>
+        <canvas id="cuby2" style="position: absolute; top: 485; left: 70;"></canvas>
+        <canvas id="cuby5" style="position: absolute; top: 485; left: 170;"></canvas>
+        <canvas id="cuby8" style="position: absolute; top: 485; left: 270;"></canvas>
+        <canvas id="cuby3" style="position: absolute; top: 585; left: 70;"></canvas>
+        <canvas id="cuby6" style="position: absolute; top: 585; left: 170;"></canvas>
+        <canvas id="cuby9" style="position: absolute; top: 585; left: 270;"></canvas>
+    </div>
+    <div id = "allcubies">
+        <canvas id = "cuby10" width = "100" height = "100" style = "position: absolute; top: 385; left: 170;" onclick = "clickCuby(10)"></canvas>
+        <canvas id = "cuby13" width = "100" height = "100" style = "position: absolute; top: 385; left: 270;" onclick = "clickCuby(13)"></canvas>
+        <canvas id = "cuby16" width = "100" height = "100" style = "position: absolute; top: 385; left: 370;" onclick = "clickCuby(16)"></canvas>
+        <canvas id = "cuby11" width = "100" height = "100" style = "position: absolute; top: 485; left: 170;" onclick = "clickCuby(11)"></canvas>
+        <canvas id = "cuby14" width = "100" height = "100" style = "position: absolute; top: 485; left: 270;" onclick = "clickCuby(14)"></canvas>
+        <canvas id = "cuby17" width = "100" height = "100" style = "position: absolute; top: 485; left: 370;" onclick = "clickCuby(17)"></canvas>
+        <canvas id = "cuby12" width = "100" height = "100" style = "position: absolute; top: 585; left: 170;" onclick = "clickCuby(12)"></canvas>
+        <canvas id = "cuby15" width = "100" height = "100" style = "position: absolute; top: 585; left: 270;" onclick = "clickCuby(15)"></canvas>
+        <canvas id = "cuby18" width = "100" height = "100" style = "position: absolute; top: 585; left: 370;" onclick = "clickCuby(18)"></canvas>
+      </div>
+    <button id = "startcal" style = "position: absolute; top: 350; left: 15; font-size: 30px;" onclick = "startCal()">Start Calibration</button>
+    <canvas id = "redcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
+    <canvas id = "orangecuby" style = "position: absolute; top: 420; left: 20;"></canvas>
+    <canvas id = "yellowcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
+    <canvas id = "greencuby" style = "position: absolute; top: 420; left: 20;"></canvas>
+    <canvas id = "bluecuby" style = "position: absolute; top: 420; left: 20;"></canvas>
+    <canvas id = "whitecuby" style = "position: absolute; top: 420; left: 20;"></canvas>
+    <div id = "allcals">
+    </div>
+    <p id = "current">This page will attempt to take a picture of your scrambled cube to generate a POSITION ID, which can be used to set up the same position in the virtual cube.</p>
+    <p id = "current2">Press 'Start Recalibration' to get started.</p>
+    <p id = "current3"></p>
+    <progress id="progress" value="1" max="7" style = "position: absolute; top: 750; left: 200; font-size: 25px;"></progress>
+    <button id = "takepic" style = "position: absolute; top: 220; left: 90; font-size: 25px;" onclick = "takePic()">Read Color</button>
+    <button id = "donerecal" style = "position: absolute; top: 600; left: 315; font-size: 25px;" onclick = "doneCal()">Finish Recalibration</button>
+    <button id = "finishside" style = "position: absolute; top: 700; left: 200; font-size: 25px;" onclick = "nextFace()">Finished White Face</button>
+    <script>
+        /*let arr = 5555555555555555;
+        arr = parseInt(arr, 6);
+        alert(arr);
+        alert(to76(arr));
+        arr = to76(arr);
+        alert(to10(arr));*/
+        let ID = "";
+        let realID = "";
+        let webcamElement = document.getElementById('webcam');
+        let canvasElement = document.getElementById('canvas');
+        let drawElement = document.getElementById('draw');
+        let drawElement2 = document.getElementById('draw2');
+        let snapSoundElement = document.getElementById('snapSound');
+        let numfaces = 0;
+        document.getElementById("draw").style.display = "none";
+        document.getElementById("testcubies").style.display = "none";
+        document.getElementById("allcals").style.display = "none";
+        document.getElementById("redcuby").style.display = "none";
+        document.getElementById("orangecuby").style.display = "none";
+        document.getElementById("yellowcuby").style.display = "none";
+        document.getElementById("greencuby").style.display = "none";
+        document.getElementById("bluecuby").style.display = "none";
+        document.getElementById("whitecuby").style.display = "none";
+        document.getElementById("takepic").style.display = "none";
+        document.getElementById("finishside").style.display = "none";
+        document.getElementById("progress").style.display = "none";
+        document.getElementById("donerecal").style.display = "none";
+        let action = "intro";
+        let action2 = "white";
+        let allcolors = ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#FFFFFF']; 
+        let colororder = ["red", "orange", "yellow", "green", "blue", "white"];
+        let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
+        let ctx;
+        var ColorMap = {
+          white: "#fafafa",
+          red: "#db1919",
+          blue: "#1969db",
+          orange: "#db7d12",
+          green: "#12db1f",
+          yellow: "#d1db12",
+        };
+        drawFace();
+
+
+
+
+       
+
+
+        //    65, 130, 195, 260
+        //15   *    *    *    *
+        //80   *    *    *    *
+        //145  *    *    *    *
+        //210  *    *    *    *
+
+
+        const webcam = new Webcam(webcamElement, 'user', canvasElement, snapSoundElement);
+        webcam.start()
+        .then(result =>{
+            console.log("webcam started");
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+        for(let i = 0; i < 6; i++){
+            let canvas3 = document.getElementById(colororder[i] + "cuby");
+            let ctx2 = canvas3.getContext("2d");
+            ctx2.beginPath();
+            ctx2.rect(0, 0, 100, 100);
+            ctx2.fillStyle = allcolors[i];
+            ctx2.fill();
+            ctx2.strokeRect(0, 0, 100, 100);
+        }
+        document.querySelectorAll("button").forEach( function(item) {
+            item.addEventListener('focus', function() {
+                this.blur();
+            })
+        })
+        function takePic(){
+          let picture = webcam.snap();
+          document.getElementById('canvas').href = picture;
+          document.getElementById("takepic").innerHTML = "Reread Color";
+          if(action == "face"){
+            document.getElementById("takepic").innerHTML = "Retake Picture";
+            document.getElementById("finishside").style.display = "block";
+            document.getElementById("allcubies").style.display = "block";
+            let gfg = canvasElement.getContext("2d");
+            let imageData = new Array(9);
+            let cnt = 0;
+            let color = 0;
+            for(let i = 65; i < 260; i+=65){
+              for(let j = 15; j < 210; j+=65){
+                let colordata = [];
+                colordata["red"] = 0;
+                colordata["orange"] = 0;
+                colordata["yellow"] = 0;
+                colordata["green"] = 0;
+                colordata["blue"] = 0;
+                colordata["white"] = 0;
+                for(let k = i; k < i + 65; k+= 5){
+                  for(let l = j; l < j + 65; l+= 5) {
+                    imageData[cnt] = gfg.getImageData(k, l, 1, 1).data;
+                    color = '#' + ('000000' + rgbToHex(imageData[cnt][0], imageData[cnt][1], imageData[cnt][2])).slice(-6);
+                    if(k == i + 30 && l == j+30){
+                      let canvas2 = document.getElementById("cuby" + (cnt+1));
+                      let ctx = canvas2.getContext("2d");
+                      ctx.beginPath();
+                      ctx.rect(0, 0, 100, 100);
+                      ctx.fillStyle = color;
+                      ctx.fill();
+                    }
+                    color = closestColor(color, true);
+                    colordata[color]++;
+                  }
+                }
+                let max = 0;
+                let mostcolor = "";
+                for(let k in colordata){
+                  if(colordata[k] > max){
+                    max = colordata[k];
+                    mostcolor = k;
+                  }
+                }
+                console.log("colordata is "+ colordata)
+                color = mostcolor;
+                let canvas3 = document.getElementById("cuby" + (cnt+10));
+                ctx = canvas3.getContext("2d");
+                ctx.beginPath();
+                ctx.rect(0, 0, 100, 100);
+                ctx.fillStyle = ColorMap[color];
+                ctx.fill();
+                ctx.strokeRect(0, 0, 100, 100);
+                cnt++;
+              }
+            }
+          }
+          if(action != "face"){
+            document.getElementById("startcal").innerHTML = "Finished " + action + " recalibration";
+            let gfg = canvasElement.getContext("2d");
+            let data = gfg.getImageData(162,112,1,1).data;
+            allcolors[colororder.indexOf(action)] = '#' + ('000000' + rgbToHex(data[0], data[1], data[2])).slice(-6);
+            canvas3 = document.getElementById(action + "cuby");
+            ctx2 = canvas3.getContext("2d");
+            ctx2.beginPath();
+            ctx2.rect(0, 0, 100, 100);
+            ctx2.fillStyle = allcolors[colororder.indexOf(action)];
+            ctx2.fill();
+            ctx2.strokeRect(0, 0, 100, 100);
+          }
+        }
+        document.addEventListener("keypress", function(event) { //space
+        if (event.keyCode == 32 && action != "intro") {
+          takePic();
+        }
+        if (event.keyCode == 13) {
+          console.log(allcolors);
+        }
+        });
+        function startCal(){
+          if(action != "intro")
+            document.getElementById(action + "cuby").style.display = "none";
+          if(action == "intro") 
+            Cal("red");
+          else if(action == "red")
+            Cal("orange");
+          else if(action == "orange")
+            Cal("yellow");
+          else if(action == "yellow")
+            Cal("green");
+          else if(action == "green")
+            Cal("blue");
+          else if(action == "blue")
+            Cal("white");
+          else if(action == "white")
+            doneCal();
+        }
+        function Cal(a){
+            let d = document.getElementById("canvas");
+            let b = d.getContext('2d');
+            b.clearRect(0, 0, d.width, d.height);
+            action = a
+            //document.getElementById("donerecal").style.display = "block";
+            //document.getElementById("current").innerHTML = "Currently taking picture of: " + action + " square";
+            document.getElementById("allcubies").style.display = "none";
+            document.getElementById("takepic").style.display = "block";
+            document.getElementById("takepic").innerHTML = "Read Color";
+            //document.getElementById("current2").style.display = "none";
+            let c = drawElement.getContext('2d');
+            c.clearRect(0, 0, drawElement.width, drawElement.height);
+
+            let context = drawElement2.getContext("2d");
+            context.strokeStyle = action;
+            context.lineWidth = 3;
+            context.rect(130, 80, 65, 65);
+            context.stroke();
+
+            document.getElementById(action + "cuby").style.display = "block";
+            //document.getElementById("startcal").style.display = "none";
+            document.getElementById("current").innerHTML = "Align any " + action + " square on your cube with the " + action + " square in the camera. Press space/click button to take a picture.";
+            document.getElementById("current2").innerHTML = "<br><br><br>";
+            document.getElementById("current3").innerHTML = "This is what we'll define as " + action + ":";
+            document.getElementById("startcal").innerHTML = "Skip " + action + " recalibration";
+            document.getElementById("startcal").style.top = 600;
+            document.getElementById("startcal").style.left = 300;
+        }
+        function doneCal(){
+          if(action == "white"){
+            let a = document.getElementById("canvas");
+            let b = a.getContext('2d');
+            b.clearRect(0, 0, a.width, a.height);
+            document.getElementById("finishside").innerHTML = "Finished White Face";
+            document.getElementById("startcal").style.display = "none";
+            document.getElementById("progress").style.display = "block";
+            document.getElementById("donerecal").style.display = "block";
+            document.getElementById("allcubies").style.display = "none";
+            document.getElementById("donerecal").innerHTML = "Home";
+            document.getElementById("donerecal").style.top = "20";
+            document.getElementById("donerecal").style.left = "700";
+            document.getElementById("takepic").innerHTML = "Take Picture";
+            document.getElementById("current").innerHTML = "We are now going to take a picture of the WHITE FACE, which is the face that contains the white center.";
+            document.getElementById("allcals").style.display = "none";
+            document.getElementById("current2").style.display = "block";
+            document.getElementById("current2").innerHTML = "Orient the cube like this: Green face on top, White face facing camera.";
+            document.getElementById("current3").style.display = "block";
+            document.getElementById("current3").innerHTML = "Take a picture. Then, you can click on the detected squares to edit their color if wrongly depicted.";
+            document.getElementById("draw").style.display = "block";
+            document.getElementById("draw2").style.display = "block";
+            let c = drawElement2.getContext('2d');
+            c.clearRect(0, 0, drawElement2.width, drawElement2.height);
+            let context = drawElement2.getContext("2d");
+            context.strokeStyle = "white";
+            context.lineWidth = 3;
+            context.rect(130, 80, 65, 65);
+            context.stroke();
+            action = "face";
+            drawFace();
+            document.getElementById("donerecal").innerHTML = "Home";
+          }
+          else{
+            numfaces = 0;
+            let c = drawElement2.getContext('2d');
+            c.clearRect(0, 0, drawElement2.width, drawElement2.height);
+            c.lineWidth = 3;
+            document.getElementById("finishside").innerHTML = "Finished White Face";
+            document.getElementById("current").innerHTML = "This page will attempt to take a picture of your scrambled cube to generate a POSITION ID, which can be used to set up the same position in the virtual cube.";
+            document.getElementById("current2").innerHTML = "Press 'Start Recalibration' to get started.";
+            document.getElementById("donerecal").style.top = "600";
+            document.getElementById("donerecal").style.left = "315";
+            document.getElementById("draw").style.display = "none";
+            document.getElementById("progress").style.display = "none";
+            document.getElementById("takepic").style.display = "none";
+            document.getElementById('progress').value = 1;
+            document.getElementById("current").innerHTML = "";
+            document.getElementById("allcubies").style.display = "none";
+            document.getElementById("allcals").style.display = "block";
+            document.getElementById("current3").style.display = "block";
+            document.getElementById("current3").innerHTML = "Click one the recalibration options to start. Align the designated color up with the square in the camera, and press space to take a picture.";
+            action = "intro";
+            ID = "";
+            realID = "";
+            document.getElementById("donerecal").style.display = "none";
+            document.getElementById("startcal").style.display = "block";
+            document.getElementById("startcal").style.top = "350";
+            document.getElementById("startcal").style.left = "15";
+            document.getElementById("startcal").innerHTML = "Start Calibration ";
+            document.getElementById("finishside").style.display = "none";
+          }
+        }
+        function setID(){
+          ID += colororder2.indexOf(getColor(10)) + "" + colororder2.indexOf(getColor(13)) + "" + colororder2.indexOf(getColor(16)) + "" + colororder2.indexOf(getColor(11)) + "" + colororder2.indexOf(getColor(17))
+             + "" + colororder2.indexOf(getColor(12)) + "" + colororder2.indexOf(getColor(15)) + "" + colororder2.indexOf(getColor(18)) + "";
+            console.log("ID is " + ID);
+        }
+        function nextFace(){
+          document.getElementById("takepic").innerHTML = "Take Picture";
+          document.getElementById("finishside").style.display = "none";
+          document.getElementById("allcubies").style.display = "none";
+          let a = document.getElementById("canvas");
+          let b = a.getContext('2d');
+          b.clearRect(0, 0, a.width, a.height);
+
+          numfaces++;
+          document.getElementById('progress').value++;
+          if(numfaces == 1){
+            setID();
+            action2 = "red";
+            document.getElementById("finishside").innerHTML = "Finished Red Face";
+            document.getElementById("current").innerHTML = "We are now going to take a picture of the RED FACE.";
+            document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the red center face the cam.";
+          }
+          if(numfaces == 2){
+            setID();
+            action2 = "yellow";
+            let a = parseInt(ID, 7);
+            a = to76(a);
+            realID += a + " "; 
+            //alert(realID);
+            document.getElementById("finishside").innerHTML = "Finished Yellow Face";
+            document.getElementById("current").innerHTML = "We are now going to take a picture of the YELLOW FACE.";
+            document.getElementById("current2").innerHTML = "Repeating the last step, turn the cube counterclockwise to make the yellow center face the cam.";
+          }
+          if(numfaces == 3){
+            ID = "";
+            setID();
+            action2 = "orange";
+            document.getElementById("finishside").innerHTML = "Finished Orange Face";
+            document.getElementById("current").innerHTML = "We are now going to take a picture of the ORANGE FACE.";
+            document.getElementById("current2").innerHTML = "Repeating the last step, turn the cube counterclockwise to make the orange center face the cam.";
+          }
+          if(numfaces == 4){
+            setID();
+            action2 = "green";
+            let a = parseInt(ID, 7);
+            a = to76(a);
+            realID += a + " "; 
+            //alert(realID);
+            document.getElementById("finishside").innerHTML = "Finished Green Face";
+            document.getElementById("current").innerHTML = "We are now going to take a picture of the GREEN FACE.";
+            document.getElementById("current2").innerHTML = "Keep the yellow face on the left, and turn the cube upwards to make the green center face the cam.";
+          }
+          if(numfaces == 5){
+            ID = "";
+            setID();
+            action2 = "blue";
+            document.getElementById("finishside").innerHTML = "Finished Blue Face";
+            document.getElementById("current").innerHTML = "We are now going to take a picture of the BLUE FACE.";
+            document.getElementById("current2").innerHTML = "Keep the yellow face on the left, and turn the cube upwards twice to make the blue center face the cam.";
+          }
+          if(numfaces == 6){
+            action2 = "black";
+            setID();
+            let a = parseInt(ID, 7);
+            a = to76(a);
+            realID += a + " "; 
+            //alert(realID);
+            action = "done"
+            document.getElementById("finishside").style.display = "none";
+            document.getElementById("current").innerHTML = "Your position ID is:";
+            document.getElementById("current2").innerHTML = "<b>" + realID + "<b>";
+            document.getElementById("current3").innerHTML = "You can copy this ID and use it to generate the same position in the virtual cube!";
+          }
+          let context = drawElement2.getContext("2d");
+          context.strokeStyle = action2;
+          context.rect(130, 80, 65, 65);
+          context.stroke();
+        }
+       
+        function rgbToHex(r, g, b) {
+          return ((r << 16) | (g << 8) | b).toString(16).toUpperCase();
+        }
+        function hexToRGB(hex) {
+          hex = hex.replace("#", "");
+          const r = parseInt(hex.slice(0, 2), 16);
+          const g = parseInt(hex.slice(2, 4), 16);
+          const b = parseInt(hex.slice(4, 6), 16);
+          return [r, g, b];
+        }
+        function drawFace(){
+          ctx = drawElement.getContext("2d");
+          ctx.beginPath();
+          ctx.rect(65, 15, 195, 195);
+          ctx.stroke();
+          ctx.moveTo(130,15);
+          ctx.lineTo(130,80);
+          ctx.stroke();
+          ctx.moveTo(130,145);
+          ctx.lineTo(130,210);
+          ctx.stroke();
+          ctx.moveTo(195,15);
+          ctx.lineTo(195,80);
+          ctx.stroke();
+          ctx.moveTo(195,145);
+          ctx.lineTo(195,210);
+          ctx.stroke();
+          ctx.moveTo(65,80);
+          ctx.lineTo(130,80);
+          ctx.stroke();
+          ctx.moveTo(195,80);
+          ctx.lineTo(260,80);
+          ctx.stroke();
+          ctx.moveTo(65,145);
+          ctx.lineTo(130,145);
+          ctx.stroke();
+          ctx.moveTo(195,145);
+          ctx.lineTo(260,145);
+          ctx.stroke();
+        }
+        function closestColor(color, changedColors){
+          if(changedColors){
+            var colorMap = {
+                red: allcolors[0],
+                orange: allcolors[1],
+                yellow: allcolors[2],
+                green: allcolors[3],
+                blue: allcolors[4],
+                white: allcolors[5]
+            };
+          }
+          else{
+            var colorMap  = {
+              white: "#fafafa",
+              red: "#db1919",
+              blue: "#1969db",
+              orange: "#db7d12",
+              green: "#12db1f",
+              yellow: "#d1db12",
+          };
+          }
+          let distance = 99999999;
+          let accolor = "";
+          for(var key in colorMap){
+            let dist = 0;
+            console.log("Testing " + hexToRGB(color) + " aka " + color + " and " + hexToRGB(colorMap[key]) +  " aka " + key)
+              let a = hexToRGB(color);
+              let b = hexToRGB(colorMap[key]);
+              dist = Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
+            //console.log("Distance: " + dist);
+            if(dist < distance){
+                distance = dist;
+                accolor = key;
+            }
+          }
+          console.log(accolor);
+          return accolor;
+        }
+        function getColor(cubynum){
+          let drawElement3 = document.getElementById('cuby' + cubynum);
+          let gfg = drawElement3.getContext("2d");
+          let context = gfg.getImageData(50, 50, 1, 1).data;
+          color = '#' + ('000000' + rgbToHex(context[0], context[1], context[2])).slice(-6);
+          color = closestColor(color, false);
+          return color;
+        }
+        function clickCuby(cubynum){
+          if(action != "face") return;
+          let drawElement3 = document.getElementById('cuby' + cubynum);
+          let gfg = drawElement3.getContext("2d");
+          let context = gfg.getImageData(50, 50, 1, 1).data;
+          color = '#' + ('000000' + rgbToHex(context[0], context[1], context[2])).slice(-6);
+          color = closestColor(color, false);
+          let i = colororder.indexOf(color);
+          if(i == 5)
+            i = 0;
+          else
+            i++;
+          console.log(color, i, colororder[i]);
+          color = colororder[i];
+          gfg.beginPath();
+          gfg.rect(0, 0, 100, 100);
+          gfg.fillStyle = ColorMap[color];
+          gfg.fill();
+          gfg.strokeRect(0, 0, 100, 100);
+        }
+        function to76(num) {
+            var order = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*(){|}~ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+            var base = order.length;
+            var str = "", r;
+            while (num) {
+                r = num % base
+                num -= r;
+                num /= base;
+                str = order.charAt(r) + str;
+            }
+            return str;
+        }
+        function to10(num) {
+            var order = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*(){|}~ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+            var base = order.length;
+            let total = 0;
+            num = num + "";
+            for(let i = num.length-1; i >= 0; i--) {
+              let addto = Math.pow(base, num.length-i-1) * order.indexOf(num[i]); 
+              //console.log(base, num.length-i-1, num[i], order.indexOf(num[i]));
+              total += addto;
+            }
+            return total;
+        }
+        console.log(decode("2*~góZÞ 4@nåCSN 3pllxäß"));
+        //console.log(IDtoLayout(decode("1ÏdL12T 4@nåCSN 3pllxäß")));
+        
+    </script>
+  </body>
+</html>
+

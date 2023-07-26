@@ -1,5 +1,5 @@
 export default class Cuby {
-  constructor(size, x, y, z, buff, picker, p, index) {
+  constructor(size, x, y, z, buff, picker, p, index, custom) {
     //size = 50;
     this.cubysize = size;
     this.x = x;
@@ -31,6 +31,17 @@ export default class Cuby {
       black:p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
       magenta:p.color(245 + this.x*0.02,  25 + this.y*0.02, 245 + this.z*0.02),
     };
+    this.c = {
+      def:   p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02,),
+      w: p.color(250 + this.x*0.02, 250 + this.y*0.02, 250 + this.z*0.02),
+      r:   p.color(219 + this.x*0.02, 25 + this.y*0.02,  25 + this.z*0.02),
+      b:  p.color(25 + this.x*0.02,  105 + this.y*0.02, 219 + this.z*0.02),
+      o: p.color(219 + this.x*0.02, 125 + this.y*0.02, 25 + this.z*0.02),
+      g: p.color(25 + this.x*0.02,  219 + this.y*0.02, 31 + this.z*0.02),
+      y: p.color(209 + this.x*0.02, 219 + this.y*0.02, 25 + this.z*0.02),
+      k: p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
+      m: p.color(245 + this.x*0.02,  25 + this.y*0.02, 245 + this.z*0.02),
+    };
 	
     this.top = this.colors.white;
     this.bottom = this.colors.yellow;
@@ -38,7 +49,43 @@ export default class Cuby {
     this.right = this.colors.blue;
     this.back = this.colors.orange;
     this.left = this.colors.green;
-
+    
+    if(size == 4 || size == 5)
+    {
+      this.bottom = this.colors.white;
+      this.right = this.colors.green;
+      this.back = this.colors.red;
+    }
+    if(custom){
+      let opposite = [];
+      opposite["g"] = "b";
+      opposite["b"] = "g";
+      opposite["y"] = "w";
+      opposite["w"] = "y";
+      opposite["o"] = "r";
+      opposite["r"] = "o";
+      if((size == 4 || size == 5) && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
+      else this.top = this.c[custom[this.index][0]];
+      if((size == 4 || size == 5) && (custom[this.index][1] == "y" || custom[this.index][1] == "b" || custom[this.index][1] == "o")) this.bottom = this.c[opposite[custom[this.index][1]]];
+      else this.bottom = this.c[custom[this.index][1]];
+      if((size == 4 || size == 5) && (custom[this.index][2] == "y" || custom[this.index][2] == "b" || custom[this.index][2] == "o")) this.front = this.c[opposite[custom[this.index][2]]];
+      else this.front = this.c[custom[this.index][2]];
+      if((size == 4 || size == 5) && (custom[this.index][3] == "y" || custom[this.index][3] == "b" || custom[this.index][3] == "o")) this.back = this.c[opposite[custom[this.index][3]]];
+      else this.back = this.c[custom[this.index][3]];
+      if((size == 4 || size == 5) && (custom[this.index][4] == "y" || custom[this.index][4] == "b" || custom[this.index][4] == "o")) this.left = this.c[opposite[custom[this.index][4]]];
+      else this.left = this.c[custom[this.index][4]];
+      if((size == 4 || size == 5) && (custom[this.index][5] == "y" || custom[this.index][5] == "b" || custom[this.index][5] == "o")) this.right = this.c[opposite[custom[this.index][5]]];
+      else this.right = this.c[custom[this.index][5]];
+    }
+    if(Array.isArray(size) && size[0] != "adding")
+    {
+      this.top = this.colors[size[2]];
+      this.bottom = this.colors[size[5]];
+      this.front = this.colors[size[3]];
+      this.right = this.colors[size[0]];
+      this.back = this.colors[size[1]];
+      this.left = this.colors[size[4]];
+    }
     if(Array.isArray(size) && size[0] == "adding")
     {
       if(size[1].includes(index))
@@ -65,22 +112,8 @@ export default class Cuby {
         }
       }
     }
-    
-    if(size == 4 || size == 5)
-    {
-      this.bottom = this.colors.white;
-      this.right = this.colors.green;
-      this.back = this.colors.red;
-    }
-    if(Array.isArray(size) && size[0] != "adding")
-    {
-      this.top = this.colors[size[2]];
-      this.bottom = this.colors[size[5]];
-      this.front = this.colors[size[3]];
-      this.right = this.colors[size[0]];
-      this.back = this.colors[size[1]];
-      this.left = this.colors[size[4]];
-    }
+
+
     this.buff_top = buff[2];
     this.buff_bottom = buff[3];
     this.buff_front = buff[0];
