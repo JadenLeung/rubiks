@@ -57,7 +57,7 @@
         <canvas id = "cuby15" width = "100" height = "100" style = "position: absolute; top: 585; left: 270;" onclick = "clickCuby(15)"></canvas>
         <canvas id = "cuby18" width = "100" height = "100" style = "position: absolute; top: 585; left: 370;" onclick = "clickCuby(18)"></canvas>
       </div>
-    <button id = "startcal" style = "position: absolute; top: 350; left: 15; font-size: 30px;" onclick = "startCal()">Start Calibration</button>
+    <button id = "startcal" style = "position: absolute; top: 350; left: 15; font-size: 25px;" onclick = "startCal()">Start Calibration</button>
     <canvas id = "redcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
     <canvas id = "orangecuby" style = "position: absolute; top: 420; left: 20;"></canvas>
     <canvas id = "yellowcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
@@ -81,6 +81,7 @@
         arr = to76(arr);
         alert(to10(arr));*/
         let ID = "";
+        let ID2 = "";
         let realID = "";
         let webcamElement = document.getElementById('webcam');
         let canvasElement = document.getElementById('canvas');
@@ -213,6 +214,8 @@
           }
           if(action != "face"){
             document.getElementById("startcal").innerHTML = "Finished " + action + " recalibration";
+            document.getElementById("startcal").style.top = 600;
+            document.getElementById("startcal").style.left = 300;
             let gfg = canvasElement.getContext("2d");
             let data = gfg.getImageData(162,112,1,1).data;
             allcolors[colororder.indexOf(action)] = '#' + ('000000' + rgbToHex(data[0], data[1], data[2])).slice(-6);
@@ -256,7 +259,7 @@
             let b = d.getContext('2d');
             b.clearRect(0, 0, d.width, d.height);
             action = a
-            //document.getElementById("donerecal").style.display = "block";
+            document.getElementById("donerecal").style.display = "none";
             //document.getElementById("current").innerHTML = "Currently taking picture of: " + action + " square";
             document.getElementById("allcubies").style.display = "none";
             document.getElementById("takepic").style.display = "block";
@@ -276,9 +279,9 @@
             document.getElementById("current").innerHTML = "Align any " + action + " square on your cube with the " + action + " square in the camera. Press space/click button to take a picture.";
             document.getElementById("current2").innerHTML = "<br><br><br>";
             document.getElementById("current3").innerHTML = "This is what we'll define as " + action + ":";
-            document.getElementById("startcal").innerHTML = "Skip " + action + " recalibration";
-            document.getElementById("startcal").style.top = 600;
-            document.getElementById("startcal").style.left = 300;
+            document.getElementById("startcal").innerHTML = "Skip";
+            document.getElementById("startcal").style.top = 20;
+            document.getElementById("startcal").style.left = 800;
         }
         function doneCal(){
           if(action == "white"){
@@ -334,6 +337,7 @@
             document.getElementById("current3").innerHTML = "Click one the recalibration options to start. Align the designated color up with the square in the camera, and press space to take a picture.";
             action = "intro";
             ID = "";
+            ID2 = "";
             realID = "";
             document.getElementById("donerecal").style.display = "none";
             document.getElementById("startcal").style.display = "block";
@@ -341,11 +345,20 @@
             document.getElementById("startcal").style.left = "15";
             document.getElementById("startcal").innerHTML = "Start Calibration ";
             document.getElementById("finishside").style.display = "none";
+            document.getElementById("redcuby").style.display = "none";
+            document.getElementById("orangecuby").style.display = "none";
+            document.getElementById("yellowcuby").style.display = "none";
+            document.getElementById("greencuby").style.display = "none";
+            document.getElementById("bluecuby").style.display = "none";
+            document.getElementById("whitecuby").style.display = "none";
           }
         }
         function setID(){
           ID += colororder2.indexOf(getColor(10)) + "" + colororder2.indexOf(getColor(13)) + "" + colororder2.indexOf(getColor(16)) + "" + colororder2.indexOf(getColor(11)) + "" + colororder2.indexOf(getColor(17))
              + "" + colororder2.indexOf(getColor(12)) + "" + colororder2.indexOf(getColor(15)) + "" + colororder2.indexOf(getColor(18)) + "";
+
+          ID2 += colororder2.indexOf(getColor(14));
+
             console.log("ID is " + ID);
         }
         function nextFace(){
@@ -374,7 +387,7 @@
             //alert(realID);
             document.getElementById("finishside").innerHTML = "Finished Yellow Face";
             document.getElementById("current").innerHTML = "We are now going to take a picture of the YELLOW FACE.";
-            document.getElementById("current2").innerHTML = "Repeating the last step, turn the cube counterclockwise to make the yellow center face the cam.";
+            document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the yellow center face the cam.";
           }
           if(numfaces == 3){
             ID = "";
@@ -382,7 +395,7 @@
             action2 = "orange";
             document.getElementById("finishside").innerHTML = "Finished Orange Face";
             document.getElementById("current").innerHTML = "We are now going to take a picture of the ORANGE FACE.";
-            document.getElementById("current2").innerHTML = "Repeating the last step, turn the cube counterclockwise to make the orange center face the cam.";
+            document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the orange center face the cam.";
           }
           if(numfaces == 4){
             setID();
@@ -409,6 +422,11 @@
             let a = parseInt(ID, 7);
             a = to76(a);
             realID += a + " "; 
+            if(ID2 != "613245")
+            {
+              ID2 = parseInt(ID2, 7);
+              realID += to76(ID2);
+            }
             //alert(realID);
             action = "done"
             document.getElementById("finishside").style.display = "none";

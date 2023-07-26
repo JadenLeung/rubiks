@@ -87,6 +87,7 @@ export default function (p) {
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12;
 	let bandaged = [];
+	let colororder = ["", "r", "o", "y", "g", "b", "w"];
 	let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
 	let LEFTMOD;
 	let RIGHTMOD;
@@ -364,6 +365,7 @@ p.setup = () => {
 	IDINPUT.option("Default (solved)");
 	IDINPUT.option("Checkerboard");
 	IDINPUT.option("Impossible Donut");
+	IDINPUT.option("Impossible Solved");
 
 	SCRAM = p.createSelect(); 
 	SCRAM.parent("scram");
@@ -499,6 +501,19 @@ p.setup = () => {
 	BACK2.parent("custom5");
 	BACK2.mousePressed(cubemode.bind(null, 0));
 	BACK2.style("height:30px; width:50px; text-align:center; font-size:15px;");
+
+	const IDBACK = p.createButton('Back');
+	IDBACK.parent("idback");
+	IDBACK.mousePressed((regular.bind(null, 0)));
+	IDBACK.style("text-align:center; font-size:20px;");
+
+	const IDDEFAULT = p.createButton('Restore defaults');
+	IDDEFAULT.parent("iddefault");
+	IDDEFAULT.mousePressed(() => {
+		allcubies = false;
+		reSetup();
+	});
+	IDDEFAULT.style("text-align:center; font-size:20px;");
 
 	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
@@ -900,7 +915,8 @@ setInterval(() => {
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
-}, 10)
+	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
+}, 10) //forever
 function reSetup(rot) {
 	m_points = 0;
 	CUBE = {};
@@ -1025,6 +1041,18 @@ function reSetup(rot) {
 		}
 	}
 }
+function to132(num) {
+	var order = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*(){|}~ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+	var base = order.length;
+	var str = "", r;
+	while (num) {
+		r = num % base
+		num -= r;
+		num /= base;
+		str = order.charAt(r) + str;
+	}
+	return str;
+}
 function to10(num) {
 	var order = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*(){|}~ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
 	var base = order.length;
@@ -1059,7 +1087,8 @@ function generateID(){
 	let str = "";
 	if(IDINPUT.value() == "Default (solved)") str = "6BAPpVI 3iÐqtUì 4oìz÷óÐ";
 	if(IDINPUT.value() == "Checkerboard") str = "5ñFâwæo 3(Êçm80 4Gm!ðëA";
-	if(IDINPUT.value() == "Impossible Donut") str = "3iÐqtUì 6BAPpVI 5v8HýçA"
+	if(IDINPUT.value() == "Impossible Donut") str = "3iÐqtUì 6BAPpVI 5v8HýçA";
+	if(IDINPUT.value() == "Impossible Solved") str = "4oìz÷óÐ 2cUin*s 6BAPpVI 4Êñ";
 	IDtoReal(IDtoLayout(decode(str)));
 	reSetup();
 	setLayout();
@@ -1079,7 +1108,7 @@ function IDtoReal(id){
 	allcubies[1] = ["w", id[4][0][1], "w", "w", "w", id[2][0][1]];
 	allcubies[2] = ["w", id[4][0][2], id[1][0][0], "w", "w", id[2][0][2]];
 	allcubies[3] = ["w", "w", "w", id[0][0][1], "w", id[2][1][0]];
-	allcubies[4] = ["w", "w", "w", "w", "w", "b"];
+	allcubies[4] = ["w", "w", "w", "w", "w", id[2][1][1]];
 	allcubies[5] = ["w", "w", id[1][0][1], "w", "w", id[2][1][2]];
 	allcubies[6] = [id[5][0][0], "w", "w", id[0][0][2], "w", id[2][2][0]];
 	allcubies[7] = [id[5][0][1], "w", "w", "w", "w", id[2][2][1]];
@@ -1087,9 +1116,9 @@ function IDtoReal(id){
 	allcubies[9] = ["w", id[4][1][0], "w", id[0][1][0], "w", "w"];
 	allcubies[10] = ["w", id[4][1][1], "w", "w", "w", "w"];
 	allcubies[11] = ["w", id[4][1][2], id[1][1][0], "w", "w", "w"];
-	allcubies[12] = ["w", "w", "w", "o", "w", "w"];
-	allcubies[13] = ["w", "w", "w", "w", "w", "w"];
-	allcubies[14] = ["w", "w", "r", "w", "w", "w"];
+	allcubies[12] = ["w", "w", "w", id[0][1][1], "w", "w"];
+	allcubies[13] = [id[5][1][1], "w", "w", "w", "w", "w"];
+	allcubies[14] = ["w", "w", id[1][1][1], "w", "w", "w"];
 	allcubies[15] = [id[5][1][0], "w", "w", id[0][1][2], "w", "w"];
 	allcubies[16] = [id[5][1][1], "w", "w", "w", "w", "w"];
 	allcubies[17] = [id[5][1][2], "w", id[1][1][2], "w", "w", "w"];
@@ -1097,7 +1126,7 @@ function IDtoReal(id){
 	allcubies[19] = ["w", id[4][2][1], "w", "w", id[3][0][1], "w"];
 	allcubies[20] = ["w", id[4][2][2], id[1][2][0], "w", id[3][0][2], "w"];
 	allcubies[21] = ["w", "w", "w", id[0][2][1], id[3][1][0], "w"];
-	allcubies[22] = ["w", "w", "w", "w", "g", "w"];
+	allcubies[22] = ["w", "w", "w", "w", id[3][1][1], "w"];
 	allcubies[23] = ["w", "w", id[1][2][1], "w", id[3][1][2], "w"];
 	allcubies[24] = [id[5][2][0], "w", "w", id[0][2][2], id[3][2][0], "w"];
 	allcubies[25] = [id[5][2][1], "w", "w", "w", id[3][2][1], "w"];
@@ -1106,6 +1135,10 @@ function IDtoReal(id){
 	//alert(allcubies);
 }
 function IDtoLayout(num){
+	let copynum = num;
+	let bignum = false;
+	if(num.length == 54) bignum = true;
+	console.log("bignum " + bignum);
 	let layout2 = [[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
 	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
 	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
@@ -1115,7 +1148,10 @@ function IDtoLayout(num){
 	let cnt = 0; //white
 	for(let x = 2; x >= 0; x--){
 		for(let y = 0; y < 3; y++){
-		if(cnt == 4) layout2[5][x][y] = "w";
+		if(cnt == 4){
+			layout2[5][x][y] = "w";
+			if(bignum && cnt == 4) layout2[5][x][y] = colororder2[copynum[48]][0];
+		}
 		else {
 			layout2[5][x][y] = colororder2[num[0]][0];
 			num = num.slice(1);
@@ -1126,7 +1162,10 @@ function IDtoLayout(num){
 	cnt = 0; //red
 	for(let x = 2; x >= 0; x--){
 		for(let y = 2; y >= 0; y--){
-		if(cnt == 4) layout2[1][x][y] = "r";
+		if(cnt == 4){ 
+			layout2[1][x][y] = "r";
+			if(bignum && cnt == 4) layout2[1][x][y] = colororder2[copynum[49]][0];
+		}
 		else {
 			layout2[1][x][y] = colororder2[num[0]][0];
 			num = num.slice(1);
@@ -1137,7 +1176,10 @@ function IDtoLayout(num){
 	cnt = 0; //yellow
 	for(let x = 2; x >= 0; x--){
 		for(let y = 2; y >= 0; y--){
-		if(cnt == 4) layout2[4][x][y] = "y";
+		if(cnt == 4){
+			layout2[4][x][y] = "y";
+			if(bignum && cnt == 4) layout2[4][x][y] = colororder2[copynum[50]][0];
+		}
 		else {
 			layout2[4][x][y] = colororder2[num[0]][0];
 			num = num.slice(1);
@@ -1148,7 +1190,10 @@ function IDtoLayout(num){
 	cnt = 0; //orange
 	for(let x = 2; x >= 0; x--){
 		for(let y = 0; y < 3; y++){
-		if(cnt == 4) layout2[0][x][y] = "o";
+		if(cnt == 4){
+			layout2[0][x][y] = "o";
+			if(bignum && cnt == 4) layout2[0][x][y] = colororder2[copynum[51]][0];
+		}
 		else {
 			layout2[0][x][y] = colororder2[num[0]][0];
 			num = num.slice(1);
@@ -1159,7 +1204,10 @@ function IDtoLayout(num){
 	cnt = 0; //green
 	for(let y = 2; y >= 0; y--){
 		for(let x = 0; x < 3; x++){
-		if(cnt == 4) layout2[3][x][y] = "g";
+		if(cnt == 4){
+			layout2[3][x][y] = "g";
+			if(bignum && cnt == 4) layout2[3][x][y] = colororder2[copynum[52]][0];
+		}
 		else {
 			layout2[3][x][y] = colororder2[num[0]][0];
 			num = num.slice(1);
@@ -1170,7 +1218,10 @@ function IDtoLayout(num){
 	cnt = 0; //blue
 	for(let y = 0; y  < 3; y++){
 		for(let x = 0; x < 3; x++){
-		if(cnt == 4) layout2[2][x][y] = "b";
+		if(cnt == 4){
+			layout2[2][x][y] = "b";
+			if(bignum && cnt == 4) layout2[2][x][y] = colororder2[copynum[53]][0];
+		}
 		else {
 			layout2[2][x][y] = colororder2[num[0]][0];
 			num = num.slice(1);
@@ -1179,6 +1230,83 @@ function IDtoLayout(num){
 		}
 	}
 	return layout2;
+}
+function getID(){
+	let ID = "";
+	let ID2 = "";
+	let realID = "";
+	let cnt = 0;
+	for(let x = 2; x >= 0; x--){ //front
+		for(let y = 0; y < 3; y++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(layout[5][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(layout[5][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	cnt = 0;
+	for(let x = 2; x >= 0; x--){ //right
+		for(let y = 2; y >= 0; y--){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(layout[1][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(layout[1][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	let a = parseInt(ID, 7);
+	a = to132(a);
+	realID += a + " "; 
+	ID = "";
+	cnt = 0;
+	for(let x = 2; x >= 0; x--){ //back
+		for(let y = 2; y >= 0; y--){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(layout[4][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(layout[4][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	cnt = 0;
+	for(let x = 2; x >= 0; x--){ //left
+		for(let y = 0; y < 3; y++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(layout[0][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(layout[0][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	a = parseInt(ID, 7);
+	a = to132(a);
+	realID += a + " "; 
+	ID = "";
+	cnt = 0;
+	for(let y = 2; y >= 0; y--){ //bottom
+		for(let x = 0; x < 3; x++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(layout[3][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(layout[3][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	cnt = 0;
+	for(let y = 0; y < 3; y++){ //top
+		for(let x = 0; x < 3; x++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(layout[2][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(layout[2][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	a = parseInt(ID, 7);
+	a = to132(a);
+	realID += a + " "+ to132(parseInt(ID2, 7)); 
+	return realID;
 }
 function quickSolve()
 {
@@ -2085,8 +2213,8 @@ function regular(nocustom){
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = true;
-	if(document.getElementById("ID3").style.display != "block" && MODE != "cube" && !nocustom && MODE != "timed")
-		allcubies = false;
+	//if(document.getElementById("ID3").style.display != "block" && MODE != "cube" && !nocustom && MODE != "timed" && MODE != "speed" && MODE != "moves")
+		//allcubies = false;
 	DIM = DIM2;
 	if(MODE == "cube")
 	{
@@ -2285,6 +2413,7 @@ function idmode()
 	document.getElementById("solve").style.display = "none";
 	document.getElementById("input2").style.display = "none";
 	document.getElementById("ID3").style.display = "block";
+	document.getElementById("test_alg_div").style.display = "block";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -2295,7 +2424,7 @@ function idmode()
 }
 function speedmode()
 {
-	regular();
+	regular(true);
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = false;
@@ -2348,7 +2477,7 @@ function speedmode()
 }
 function movesmode()
 {
-	regular();
+	regular(true);
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	m_points = 0;
@@ -4163,7 +4292,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(document.getElementById("ID3").style.display );
+		getID();
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -4204,8 +4333,12 @@ p.keyPressed = (event) => {
 		CAM.rotateZ(-p.PI / ROTZ);
 		return;
 	}
-	if(p.keyCode == 54){
+	if(p.keyCode == 54){ //6
 		darkMode();
+		return;
+	}
+	if(p.keyCode == 55){ //7
+		alert(getID());
 		return;
 	}
 	if(p.keyCode == 45)
@@ -4539,7 +4672,7 @@ p.keyPressed = (event) => {
 			movesmode();
 			if(MODE == "speed")
 			speedmode();
-			if(MODE == "timed" || (MODE == "cube" && custom == 0))
+			if(MODE == "timed" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
 			regular();
 			if(MODE == "cube" && custom > 0)
 			{
@@ -7054,6 +7187,14 @@ function setLayout(){
 			}
 		}
 	}
+	opposite = [];
+	opposite[layout[0][1][1][0]] = layout[1][1][1][0];
+	opposite[layout[1][1][1][0]] = layout[0][1][1][0];
+	opposite[layout[2][1][1][0]] = layout[3][1][1][0];
+	opposite[layout[3][1][1][0]] = layout[2][1][1][0];
+	opposite[layout[4][1][1][0]] = layout[5][1][1][0];
+	opposite[layout[5][1][1][0]] = layout[4][1][1][0];
+	
 }
 function getColor(color)
 {
