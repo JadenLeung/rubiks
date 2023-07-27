@@ -597,6 +597,22 @@ p.setup = () => {
 	M_4.parent("m_4");
 	M_4.mousePressed(m_4.bind(null, 0));
 
+	const IDCOPY = p.createButton('Copy');
+	IDCOPY.parent("idcopy");
+	IDCOPY.mousePressed();
+
+	document.getElementById('idcopy').addEventListener('click', function() {
+		// Thank you Stack Overflow
+		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
+			function(){
+
+			})
+		  .catch(
+			 function() {
+				alert("Copying didn't work :("); // error
+		  });
+	  });
+
 	GENERATE = p.createButton('Generate');
 	GENERATE.style("background-color: #42ff58;")
 	GENERATE.parent("generate");
