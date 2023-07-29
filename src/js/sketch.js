@@ -601,7 +601,7 @@ p.setup = () => {
 	IDCOPY.parent("idcopy");
 	IDCOPY.mousePressed();
 
-	document.getElementById('idcopy').addEventListener('click', function() {
+	document.getElementById('idcopy').addEventListener('click', function() { //copy button
 		// Thank you Stack Overflow
 		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
 			function(){

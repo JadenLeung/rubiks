@@ -67,7 +67,10 @@
     <div id = "allcals">
     </div>
     <p id = "current">This page will attempt to take a picture of your scrambled cube to generate a POSITION ID, which can be used to set up the same position in the virtual cube.</p>
-    <p id = "current2">Press 'Start Recalibration' to get started.</p>
+    <div>    
+      <p id = "current2" style = "display:inline;">Press 'Start Recalibration' to get started.</p>
+      <button id = "copy" style = "display:inline;">Copy</button>
+    </div>
     <p id = "current3"></p>
     <progress id="progress" value="1" max="7" style = "position: absolute; top: 750; left: 200; font-size: 25px;"></progress>
     <button id = "takepic" style = "position: absolute; top: 220; left: 90; font-size: 25px;" onclick = "takePic()">Read Color</button>
@@ -90,6 +93,7 @@
         let snapSoundElement = document.getElementById('snapSound');
         let numfaces = 0;
         document.getElementById("draw").style.display = "none";
+        document.getElementById("copy").style.display = "none";
         document.getElementById("testcubies").style.display = "none";
         document.getElementById("allcals").style.display = "none";
         document.getElementById("redcuby").style.display = "none";
@@ -299,7 +303,7 @@
             document.getElementById("takepic").innerHTML = "Take Picture";
             document.getElementById("current").innerHTML = "We are now going to take a picture of the WHITE FACE, which is the face that contains the white center.";
             document.getElementById("allcals").style.display = "none";
-            document.getElementById("current2").style.display = "block";
+            document.getElementById("current2").style.display = "inline";
             document.getElementById("current2").innerHTML = "Orient the cube like this: Green face on top, White face facing camera.";
             document.getElementById("current3").style.display = "block";
             document.getElementById("current3").innerHTML = "Take a picture. Then, you can click on the detected squares to edit their color if wrongly depicted.";
@@ -329,6 +333,7 @@
             document.getElementById("draw").style.display = "none";
             document.getElementById("progress").style.display = "none";
             document.getElementById("takepic").style.display = "none";
+            document.getElementById("copy").style.display = "none";
             document.getElementById('progress').value = 1;
             document.getElementById("current").innerHTML = "";
             document.getElementById("allcubies").style.display = "none";
@@ -429,10 +434,14 @@
             }
             //alert(realID);
             action = "done"
+            document.getElementById("copy").style.display = "inline";
+            document.getElementById("takepic").style.display = "none";
             document.getElementById("finishside").style.display = "none";
             document.getElementById("current").innerHTML = "Your position ID is:";
             document.getElementById("current2").innerHTML = "<b>" + realID + "<b>";
             document.getElementById("current3").innerHTML = "You can copy this ID and use it to generate the same position in the virtual cube!";
+            document.getElementById("draw").style.display = "none";
+            document.getElementById("draw2").style.display = "none";
           }
           let context = drawElement2.getContext("2d");
           context.strokeStyle = action2;
@@ -570,6 +579,17 @@
             }
             return total;
         }
+        document.getElementById('copy').addEventListener('click', function() { //copy button
+        // Thank you Stack Overflow
+          navigator.clipboard.writeText(document.getElementById("current2").innerText).then(
+          function(){
+
+          })
+          .catch(
+          function() {
+            alert("Copying didn't work :("); // error
+          });
+        });
         console.log(decode("2*~góZÞ 4@nåCSN 3pllxäß"));
         //console.log(IDtoLayout(decode("1ÏdL12T 4@nåCSN 3pllxäß")));
         
