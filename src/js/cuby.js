@@ -77,6 +77,18 @@ export default class Cuby {
       if((size == 4 || size == 5) && (custom[this.index][5] == "y" || custom[this.index][5] == "b" || custom[this.index][5] == "o")) this.right = this.c[opposite[custom[this.index][5]]];
       else this.right = this.c[custom[this.index][5]];
     }
+    if(size == 13){
+      let a = "";
+      if(this.x == -50) a = this.colors.green;
+      if(this.x == 0) a = this.colors.orange;
+      if(this.x == 50) a = this.colors.blue;
+      this.top = a;
+      this.bottom = a;
+      this.front = a;
+      this.right = a;
+      this.back = a;
+      this.left = a;
+    }
     if(Array.isArray(size) && size[0] != "adding")
     {
       this.top = this.colors[size[2]];

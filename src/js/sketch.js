@@ -81,7 +81,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE;
 	let SCRAM;
 	let INPUT2 = [];
@@ -312,6 +312,7 @@ p.setup = () => {
 	CUBE10 = p.createButton('Bandaged 2x2');
 	CUBE11 = p.createButton('Z Perm');
 	CUBE12 = p.createButton('T Perm');
+	CUBE13 = p.createButton('Sandwich Cube');
 	refreshButtons();
 
 
@@ -725,7 +726,7 @@ setInterval(() => {
 	secs = 20;
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
-	let easyarr = [50,100,3,2,4,7,5,1,6,8,9,10,11,12];
+	let easyarr = [50,100,3,2,4,7,5,1,6,8,9,10,11,12,13,14,15,16,17,18];
 	easytime = (easyarr.includes(DIM) || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[0] != "adding" && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22))
@@ -1683,6 +1684,13 @@ function change15(dim, b){
 function change16(dim, b){
 	changeBan(dim, b)
 	CUBE12.style('background-color', "#8ef5ee");
+}
+function change17(){
+	DIM = 13;
+	CAMZOOM = ZOOM3;
+	changeCam(3);
+	refreshButtons();
+	CUBE13.style('background-color', "#8ef5ee");
 }
 function changeMod(){
 	modnum = 1 - modnum;
@@ -4308,7 +4316,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		getID();
+		setLayout();
+		console.log(isSolved());
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -4990,6 +4999,7 @@ function refreshButtons()
 	CUBE10.remove();
 	CUBE11.remove();
 	CUBE12.remove();
+	CUBE13.remove();
 	REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
 	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
@@ -5066,6 +5076,11 @@ function refreshButtons()
 		CUBE6.parent("cube6");
 		CUBE6.mousePressed(change10.bind(null, 0));
 		CUBE6.style("height:45px; width:180px; text-align:center; font-size:20px;");
+
+		CUBE13 = p.createButton('Sandwhich Cube');
+		CUBE13.parent("cube13");
+		CUBE13.mousePressed(change17.bind(null, 0));
+		CUBE13.style("height:45px; width:180px; text-align:center; font-size:20px;");
 	}
 	else{
 		CUBE7 = p.createButton('Block Bandage');
@@ -7948,6 +7963,23 @@ function isSolved()
 			}
 		}
 		return true;
+	}
+	if(DIM == 13){
+		for(let i = 0; i < 6; i+=2){
+			let same = true;
+			let onecolor = layout[i][0][0][0];
+			let othercolor = layout[i+1][0][0][0];
+			for(let x = 0; x < 3; x++){
+				for(let y = 0; y < 3; y++){
+					if(layout[i][x][y][0] != onecolor) same = false;
+					if(layout[i+1][x][y][0] != othercolor) same = false;
+				}
+			}
+			if(same){
+				return true;
+			}
+		}
+		return false;
 	}
 	if(DIM == 6 || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
 	{
