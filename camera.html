@@ -57,7 +57,8 @@
         <canvas id = "cuby15" width = "100" height = "100" style = "position: absolute; top: 585; left: 270;" onclick = "clickCuby(15)"></canvas>
         <canvas id = "cuby18" width = "100" height = "100" style = "position: absolute; top: 585; left: 370;" onclick = "clickCuby(18)"></canvas>
       </div>
-    <button id = "startcal" style = "position: absolute; top: 350; left: 15; font-size: 25px;" onclick = "startCal()">Start Calibration</button>
+    <button id = "startcal" style = "position: absolute; top: 350; left: 20; font-size: 25px;" onclick = "startCal()">3x3</button>
+    <button id = "2x2cal" style = "position: absolute; top: 400; left: 20; font-size: 25px;" onclick = "startCal2()">2x2</button>
     <canvas id = "redcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
     <canvas id = "orangecuby" style = "position: absolute; top: 420; left: 20;"></canvas>
     <canvas id = "yellowcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
@@ -68,7 +69,7 @@
     </div>
     <p id = "current">This page will attempt to take a picture of your scrambled cube to generate a POSITION ID, which can be used to set up the same position in the virtual cube.</p>
     <div>    
-      <p id = "current2" style = "display:inline;">Press 'Start Recalibration' to get started.</p>
+      <p id = "current2" style = "display:inline;">Which cube are you scanning?</p>
       <button id = "copy" style = "display:inline;">Copy</button>
     </div>
     <p id = "current3"></p>
@@ -92,6 +93,7 @@
         let drawElement2 = document.getElementById('draw2');
         let snapSoundElement = document.getElementById('snapSound');
         let numfaces = 0;
+        let twobytwo = false;
         document.getElementById("draw").style.display = "none";
         document.getElementById("copy").style.display = "none";
         document.getElementById("testcubies").style.display = "none";
@@ -166,6 +168,27 @@
             document.getElementById("takepic").innerHTML = "Retake Picture";
             document.getElementById("finishside").style.display = "block";
             document.getElementById("allcubies").style.display = "block";
+            if(twobytwo){
+              document.getElementById("cuby13").style.display = "none";
+              document.getElementById("cuby11").style.display = "none";
+              document.getElementById("cuby14").style.display = "none";
+              document.getElementById("cuby17").style.display = "none";
+              document.getElementById("cuby15").style.display = "none";
+              document.getElementById("cuby16").style.top = 385;
+              document.getElementById("cuby16").style.left = 270;
+              document.getElementById("cuby12").style.top = 485;
+              document.getElementById("cuby12").style.left = 170;
+              document.getElementById("cuby18").style.top = 485;
+              document.getElementById("cuby18").style.left = 270;
+            }
+            else{
+              document.getElementById("cuby16").style.top = 385;
+              document.getElementById("cuby16").style.left = 370;
+              document.getElementById("cuby12").style.top = 585;
+              document.getElementById("cuby12").style.left = 170;
+              document.getElementById("cuby18").style.top = 585;
+              document.getElementById("cuby18").style.left = 370;
+            }
             let gfg = canvasElement.getContext("2d");
             let imageData = new Array(9);
             let cnt = 0;
@@ -240,7 +263,13 @@
           console.log(allcolors);
         }
         });
+        function startCal2(){
+          twobytwo = true;
+          startCal();
+        }
         function startCal(){
+          document.getElementById("2x2cal").style.display = "none";
+          document.getElementById("current3").style.display = "block";
           if(action != "intro")
             document.getElementById(action + "cuby").style.display = "none";
           if(action == "intro") 
@@ -267,6 +296,7 @@
             //document.getElementById("current").innerHTML = "Currently taking picture of: " + action + " square";
             document.getElementById("allcubies").style.display = "none";
             document.getElementById("takepic").style.display = "block";
+            document.getElementById("draw2").style.display = "block";
             document.getElementById("takepic").innerHTML = "Read Color";
             //document.getElementById("current2").style.display = "none";
             let c = drawElement.getContext('2d');
@@ -292,7 +322,6 @@
             let a = document.getElementById("canvas");
             let b = a.getContext('2d');
             b.clearRect(0, 0, a.width, a.height);
-            document.getElementById("finishside").innerHTML = "Finished White Face";
             document.getElementById("startcal").style.display = "none";
             document.getElementById("progress").style.display = "block";
             document.getElementById("donerecal").style.display = "block";
@@ -301,33 +330,49 @@
             document.getElementById("donerecal").style.top = "20";
             document.getElementById("donerecal").style.left = "700";
             document.getElementById("takepic").innerHTML = "Take Picture";
-            document.getElementById("current").innerHTML = "We are now going to take a picture of the WHITE FACE, which is the face that contains the white center.";
             document.getElementById("allcals").style.display = "none";
             document.getElementById("current2").style.display = "inline";
-            document.getElementById("current2").innerHTML = "Orient the cube like this: Green face on top, White face facing camera.";
+
+            if(!twobytwo){
+              document.getElementById("finishside").innerHTML = "Finished White Face";
+              document.getElementById("current").innerHTML = "We are now going to take a picture of the WHITE FACE, which is the face that contains the white center.";
+              document.getElementById("current2").innerHTML = "Orient the cube like this: Green face on top, White face facing camera.";
+              document.getElementById("current3").innerHTML = "Take a picture. Then, you can click on the detected squares to edit their color if wrongly depicted.";
+            }
+            else{
+              document.getElementById("finishside").innerHTML = "Finished 1st Face";
+              document.getElementById("current").innerHTML = "";
+              document.getElementById("current2").innerHTML = "Show any face to the camera. Take a picture. Remember this orientation.";
+              document.getElementById("current3").innerHTML = "You can click on the detected squares to edit their color if wrongly depicted.";
+            }
             document.getElementById("current3").style.display = "block";
-            document.getElementById("current3").innerHTML = "Take a picture. Then, you can click on the detected squares to edit their color if wrongly depicted.";
             document.getElementById("draw").style.display = "block";
             document.getElementById("draw2").style.display = "block";
-            let c = drawElement2.getContext('2d');
-            c.clearRect(0, 0, drawElement2.width, drawElement2.height);
-            let context = drawElement2.getContext("2d");
-            context.strokeStyle = "white";
-            context.lineWidth = 3;
-            context.rect(130, 80, 65, 65);
-            context.stroke();
+            if(!twobytwo){
+              let c = drawElement2.getContext('2d');
+              c.clearRect(0, 0, drawElement2.width, drawElement2.height);
+              let context = drawElement2.getContext("2d");
+              context.strokeStyle = "white";
+              context.lineWidth = 3;
+              context.rect(130, 80, 65, 65);
+              context.stroke();
+            }
+            else{
+              document.getElementById("draw2").style.display = "none";
+            }
             action = "face";
             drawFace();
             document.getElementById("donerecal").innerHTML = "Home";
           }
           else{
             numfaces = 0;
+            twobytwo = false;
             let c = drawElement2.getContext('2d');
             c.clearRect(0, 0, drawElement2.width, drawElement2.height);
             c.lineWidth = 3;
             document.getElementById("finishside").innerHTML = "Finished White Face";
             document.getElementById("current").innerHTML = "This page will attempt to take a picture of your scrambled cube to generate a POSITION ID, which can be used to set up the same position in the virtual cube.";
-            document.getElementById("current2").innerHTML = "Press 'Start Recalibration' to get started.";
+            document.getElementById("current2").innerHTML = "Which cube are you scanning?";
             document.getElementById("donerecal").style.top = "600";
             document.getElementById("donerecal").style.left = "315";
             document.getElementById("draw").style.display = "none";
@@ -335,10 +380,10 @@
             document.getElementById("takepic").style.display = "none";
             document.getElementById("copy").style.display = "none";
             document.getElementById('progress').value = 1;
-            document.getElementById("current").innerHTML = "";
             document.getElementById("allcubies").style.display = "none";
             document.getElementById("allcals").style.display = "block";
-            document.getElementById("current3").style.display = "block";
+            document.getElementById("current3").style.display = "none";
+            document.getElementById("current").style.display = "block";
             document.getElementById("current3").innerHTML = "Click one the recalibration options to start. Align the designated color up with the square in the camera, and press space to take a picture.";
             action = "intro";
             ID = "";
@@ -346,9 +391,10 @@
             realID = "";
             document.getElementById("donerecal").style.display = "none";
             document.getElementById("startcal").style.display = "block";
+            document.getElementById("2x2cal").style.display = "block";
             document.getElementById("startcal").style.top = "350";
-            document.getElementById("startcal").style.left = "15";
-            document.getElementById("startcal").innerHTML = "Start Calibration ";
+            document.getElementById("startcal").style.left = "20";
+            document.getElementById("startcal").innerHTML = "3x3";
             document.getElementById("finishside").style.display = "none";
             document.getElementById("redcuby").style.display = "none";
             document.getElementById("orangecuby").style.display = "none";
@@ -356,6 +402,11 @@
             document.getElementById("greencuby").style.display = "none";
             document.getElementById("bluecuby").style.display = "none";
             document.getElementById("whitecuby").style.display = "none";
+            document.getElementById("cuby13").style.display = "block";
+            document.getElementById("cuby11").style.display = "block";
+            document.getElementById("cuby14").style.display = "block";
+            document.getElementById("cuby17").style.display = "block";
+            document.getElementById("cuby15").style.display = "block";
           }
         }
         function setID(){
@@ -379,9 +430,15 @@
           if(numfaces == 1){
             setID();
             action2 = "red";
-            document.getElementById("finishside").innerHTML = "Finished Red Face";
-            document.getElementById("current").innerHTML = "We are now going to take a picture of the RED FACE.";
-            document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the red center face the cam.";
+            if(!twobytwo){
+              document.getElementById("finishside").innerHTML = "Finished Red Face";
+              document.getElementById("current").innerHTML = "We are now going to take a picture of the RED FACE.";
+              document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the red center face the cam.";
+            }
+            else{
+              document.getElementById("finishside").innerHTML = "Finished 2nd Face";
+              document.getElementById("current2").innerHTML = "Turn the cube counterclockwise looking at it from the top. Take a picture.";
+            }
           }
           if(numfaces == 2){
             setID();
@@ -390,17 +447,29 @@
             a = to76(a);
             realID += a + " "; 
             //alert(realID);
-            document.getElementById("finishside").innerHTML = "Finished Yellow Face";
-            document.getElementById("current").innerHTML = "We are now going to take a picture of the YELLOW FACE.";
-            document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the yellow center face the cam.";
+            if(!twobytwo){
+              document.getElementById("finishside").innerHTML = "Finished Yellow Face";
+              document.getElementById("current").innerHTML = "We are now going to take a picture of the YELLOW FACE.";
+              document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the yellow center face the cam.";
+            }
+            else{
+              document.getElementById("finishside").innerHTML = "Finished 3rd Face";
+              document.getElementById("current2").innerHTML = "Turn the cube counterclockwise looking at it from the top. Take a picture.";
+            }
           }
           if(numfaces == 3){
             ID = "";
             setID();
             action2 = "orange";
-            document.getElementById("finishside").innerHTML = "Finished Orange Face";
-            document.getElementById("current").innerHTML = "We are now going to take a picture of the ORANGE FACE.";
-            document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the orange center face the cam.";
+            if(!twobytwo){
+              document.getElementById("finishside").innerHTML = "Finished Orange Face";
+              document.getElementById("current").innerHTML = "We are now going to take a picture of the ORANGE FACE.";
+              document.getElementById("current2").innerHTML = "Keeping the green face on top, turn the cube counterclockwise to make the orange center face the cam.";
+            }
+            else{
+              document.getElementById("finishside").innerHTML = "Finished 4th Face";
+              document.getElementById("current2").innerHTML = "Turn the cube counterclockwise looking at it from the top. Take a picture.";
+            }
           }
           if(numfaces == 4){
             setID();
@@ -409,17 +478,29 @@
             a = to76(a);
             realID += a + " "; 
             //alert(realID);
-            document.getElementById("finishside").innerHTML = "Finished Green Face";
-            document.getElementById("current").innerHTML = "We are now going to take a picture of the GREEN FACE.";
-            document.getElementById("current2").innerHTML = "Keep the yellow face on the left, and turn the cube upwards to make the green center face the cam.";
+            if(!twobytwo){
+              document.getElementById("finishside").innerHTML = "Finished Green Face";
+              document.getElementById("current").innerHTML = "We are now going to take a picture of the GREEN FACE.";
+              document.getElementById("current2").innerHTML = "Keep the yellow face on the left, and turn the cube upwards to make the green center face the cam.";
+            }
+            else{
+              document.getElementById("finishside").innerHTML = "Finished 5th Face";
+              document.getElementById("current2").innerHTML = "Turn the cube counterclockwise looking at it from the LEFT. Take a picture.";
+            }
           }
           if(numfaces == 5){
             ID = "";
             setID();
             action2 = "blue";
-            document.getElementById("finishside").innerHTML = "Finished Blue Face";
-            document.getElementById("current").innerHTML = "We are now going to take a picture of the BLUE FACE.";
-            document.getElementById("current2").innerHTML = "Keep the yellow face on the left, and turn the cube upwards twice to make the blue center face the cam.";
+            if(!twobytwo){
+              document.getElementById("finishside").innerHTML = "Finished Blue Face";
+              document.getElementById("current").innerHTML = "We are now going to take a picture of the BLUE FACE.";
+              document.getElementById("current2").innerHTML = "Keep the yellow face on the left, and turn the cube upwards twice to make the blue center face the cam.";
+            }
+            else{
+              document.getElementById("finishside").innerHTML = "Finished 6th Face";
+              document.getElementById("current2").innerHTML = "Turn the cube counterclockwise twice looking at it from the LEFT. Take a picture.";
+            }
           }
           if(numfaces == 6){
             action2 = "black";
@@ -464,30 +545,42 @@
           ctx.beginPath();
           ctx.rect(65, 15, 195, 195);
           ctx.stroke();
-          ctx.moveTo(130,15);
-          ctx.lineTo(130,80);
-          ctx.stroke();
-          ctx.moveTo(130,145);
-          ctx.lineTo(130,210);
-          ctx.stroke();
-          ctx.moveTo(195,15);
-          ctx.lineTo(195,80);
-          ctx.stroke();
-          ctx.moveTo(195,145);
-          ctx.lineTo(195,210);
-          ctx.stroke();
-          ctx.moveTo(65,80);
-          ctx.lineTo(130,80);
-          ctx.stroke();
-          ctx.moveTo(195,80);
-          ctx.lineTo(260,80);
-          ctx.stroke();
-          ctx.moveTo(65,145);
-          ctx.lineTo(130,145);
-          ctx.stroke();
-          ctx.moveTo(195,145);
-          ctx.lineTo(260,145);
-          ctx.stroke();
+
+          if(!twobytwo){
+            ctx.moveTo(130,15);
+            ctx.lineTo(130,80);
+            ctx.stroke();
+            ctx.moveTo(130,145);
+            ctx.lineTo(130,210);
+            ctx.stroke();
+            ctx.moveTo(195,15);
+            ctx.lineTo(195,80);
+            ctx.stroke();
+            ctx.moveTo(195,145);
+            ctx.lineTo(195,210);
+            ctx.stroke();
+            ctx.moveTo(65,80);
+            ctx.lineTo(130,80);
+            ctx.stroke();
+            ctx.moveTo(195,80);
+            ctx.lineTo(260,80);
+            ctx.stroke();
+            ctx.moveTo(65,145);
+            ctx.lineTo(130,145);
+            ctx.stroke();
+            ctx.moveTo(195,145);
+            ctx.lineTo(260,145);
+            ctx.stroke();
+          }
+          else{
+            ctx.moveTo(162, 15);
+            ctx.lineTo(162, 210);
+            ctx.stroke();
+            ctx.moveTo(65, 112);
+            ctx.lineTo(260, 112);
+            ctx.stroke();
+
+          }
         }
         function closestColor(color, changedColors){
           if(changedColors){

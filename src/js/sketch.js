@@ -85,7 +85,7 @@ export default function (p) {
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
 	let bandaged = [];
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
 	let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
@@ -94,7 +94,7 @@ export default function (p) {
 	let LEFTBAN, RIGHTBAN;
 	let modnum = 0;
 	let CUSTOM, CUSTOM2;
-	let MODDIM = [7,8,9,10,11,12];
+	let MODDIM = [7,8,9,10,11,12,14];
 	let ADDBANDAGE, VIEWBANDAGE;
 	let customb = 0;
 	let bandaged2 = [];
@@ -306,13 +306,14 @@ p.setup = () => {
 	CUBE4 = p.createButton('Christmas 3x3');
 	CUBE5 = p.createButton('Christmas 2x2');
 	CUBE6 = p.createButton('The Jank 2x2');
-	CUBE7 = p.createButton('Block Bandage');
+	CUBE7 = p.createButton('Slice Bandage');
 	CUBE8 = p.createButton('The Pillars');
 	CUBE9 = p.createButton('Triple Quad');
 	CUBE10 = p.createButton('Bandaged 2x2');
 	CUBE11 = p.createButton('Z Perm');
 	CUBE12 = p.createButton('T Perm');
 	CUBE13 = p.createButton('Sandwich Cube');
+	CUBE14 = p.createButton('Cube Bandage');
 	refreshButtons();
 
 
@@ -1692,6 +1693,10 @@ function change17(){
 	refreshButtons();
 	CUBE13.style('background-color', "#8ef5ee");
 }
+function change18(dim, b){
+	changeBan(dim, b)
+	CUBE14.style('background-color', "#8ef5ee");
+}
 function changeMod(){
 	modnum = 1 - modnum;
 	if(modnum == 0){ 
@@ -2377,7 +2382,8 @@ function cubemode()
 {
 	bandaged3 = bandaged;
 	custom = 0;
-	if(MODE != "cube" && MODE != "normal" && MODE != "timed")
+	MODE = "cube";
+	if(MODE != "cube" && MODE != "normal" && MODE != "timed" && MODE != "normal")
 	{
 		ao5 = [];
 		mo5 = [];
@@ -2387,8 +2393,8 @@ function cubemode()
 	}
 	//if(MODE != "normal")
 	regular(true);
-	MODE = "cube";
 	reSetup();
+	MODE = "cube";
 	document.getElementById("mode").style.display = "none";
 	document.getElementById("ID1").style.display = "none";
 	document.getElementById("mode2").style.display = "none";
@@ -3977,6 +3983,27 @@ function displayTimes()
 		sum2 = (sum2 - min2 - max2)/3;
 		alltimes += "<a style = 'font-size:12px;'>Ao5: " + (Math.round((sum1)*100)/100) + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
 	}
+	if(mo5.length > 11)
+	{
+		let sum1 = 0;
+		let min = mo5[mo5.length-12];
+		let max = mo5[mo5.length-12];
+		let sum2 = 0;
+		let min2 = movesarr[movesarr.length-12];
+		let max2 = movesarr[movesarr.length-12];
+		for(let i = mo5.length-12; i < mo5.length; i++)
+		{
+			sum1 += mo5[i];
+			min = Math.min(mo5[i], min);
+			max = Math.max(mo5[i], max);
+			sum2 += movesarr[i];
+			min2 = Math.min(movesarr[i], min2);
+			max2 = Math.max(movesarr[i], max2);
+		}
+		sum1 = (sum1 - min - max)/10;
+		sum2 = (sum2 - min2 - max2)/10;
+		alltimes += "<a style = 'font-size:12px;'>Ao12: " + (Math.round((sum1)*100)/100) + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
+	}
 	if(mo5.length > 2)
 	{
 		let copy1 = [];
@@ -4317,7 +4344,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(isSolved());
+		console.log(MODE);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -4375,7 +4402,7 @@ p.keyPressed = (event) => {
 	if(canMan == true)
 	{
 		setLayout();
-		console.log("here");
+		//console.log("here");
 		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89";
 		let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89";
 		let bad3 = "88 90";
@@ -4393,7 +4420,7 @@ p.keyPressed = (event) => {
 				if(CUBE[i].stroke != 0) cubies.push(i);
 			}
 		}
-		console.log("cubies is " + cubies);
+		//console.log("cubies is " + cubies);
 		if(Array.isArray(DIM) && DIM[0] != "adding")
 		{
 			cubies = [];
@@ -5000,6 +5027,7 @@ function refreshButtons()
 	CUBE11.remove();
 	CUBE12.remove();
 	CUBE13.remove();
+	CUBE14.remove();
 	REGULAR = p.createButton('Normal Mode');
 	REGULAR.parent("mode").class("mode1");
 	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
@@ -5083,7 +5111,7 @@ function refreshButtons()
 		CUBE13.style("height:45px; width:180px; text-align:center; font-size:20px;");
 	}
 	else{
-		CUBE7 = p.createButton('Block Bandage');
+		CUBE7 = p.createButton('Slice Bandage');
 		CUBE7.parent("cube7");
 		CUBE7.mousePressed(change11.bind(null, 7, [[3,4,5,6,7,8]]));
 		CUBE7.style("height:45px; width:180px; text-align:center; font-size:20px;");
@@ -5112,6 +5140,11 @@ function refreshButtons()
 		CUBE12.parent("cube12");
 		CUBE12.mousePressed(change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
 		CUBE12.style("height:45px; width:180px; text-align:center; font-size:20px;");
+
+		CUBE14 = p.createButton('Cube Bandage');
+		CUBE14.parent("cube14");
+		CUBE14.mousePressed(change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
+		CUBE14.style("height:45px; width:180px; text-align:center; font-size:20px;");
 	}
 
 }
@@ -8101,7 +8134,7 @@ function defineFlipper4(){ //Counterclockwise rotation around z axis
 	flipper["y"] = "y"; flipper["y'"] = "y'"; flipper["z'"] = "x'"; flipper["z"] = "x";  
 }
 document.onkeydown = function (e) {
-	console.log("here67")
+	//console.log("here67")
 	INPUT.elt.blur();
   };
   document.onkeyup = function(e) { //space
@@ -8150,6 +8183,7 @@ window.addEventListener('keydown', (e) => {
 //Easy: 0.8, 0.52s
 //Medium: 15.4s, 13.58s
 //FMC: 193
+//Shape Mod All: 234.85s
 
 //BELOW 54 MOVES
 //B2 R2 F' R2 D' L2 D2 F2 L' U2 B R F L D R2 F2 D2 (53)

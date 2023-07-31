@@ -424,6 +424,7 @@ export default class Cuby {
   if(this.cubysize == 10) bandaged = [6,8];
   if(this.cubysize == 11) bandaged = [0,20,24,8,9,11,15,17];
   if(this.cubysize == 12) bandaged = [0,9,2,11,24,15,26,17];
+  if(this.cubysize == 14) bandaged = [13,14,16,17,22,23,25,26];
   if(bandaged.includes(this.index)){
     this.p.strokeWeight(0);
 	  this.p.stroke('black');
