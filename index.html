@@ -3,7 +3,8 @@
 <head>
     <title>Jaden Leung, Lexington High School</title>
 	<!--script src = "https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script-->   
-    <script src = "https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script>
+    <!--script src = "https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script-->
+	<script type="text/javascript" src = "./p5.min.js"></script>
 	<script src = "src/index.js" type="module"></script>	
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	
@@ -155,6 +156,11 @@
 			<div id = "timegone" style = "text-align:center;  margin-top: 5px; margin-bottom: 5px;">
 				<p id = "timegone2" style = "text-align:center;  margin-top: 5px; margin-bottom: 5px;"></p>
 				<p id = "timegone3" style = "text-align:center;  margin-top: 5px; margin-bottom: 5px;"></p>
+				<div>
+					<p style = "display:inline;">Remove solve #:</p>
+					<input style = "display:inline; width: 20%" type="number" id="timegone4" name="quantity">
+					<p class = "button" style = "display:inline;" id = "timegone5"></p>
+				</div>
 			</div>
 			
 			
@@ -221,6 +227,7 @@
 			</div>
 		</div>
 		<div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div" ></div>
+		<!--div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div2" ></div-->
 		<div class="col-lg-4" style = "padding-left:35px;">
 			<div class = "noselect" id = "input2" style = "margin-top:4px; font-size: 20px; text-align:left">
 				<p id = "mover4" style = "margin-bottom:2px;"></p>

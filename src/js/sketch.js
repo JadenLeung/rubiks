@@ -243,10 +243,11 @@ p.setup = () => {
 	}
 	else
 	{
-		WINDOW = 0.9
+		WINDOW = 0.9;
 		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
 	}
+	
 	p.pixelDensity(1);
 	p.frameRate(60);
 	p.smooth();
@@ -259,6 +260,7 @@ p.setup = () => {
 	CAM.rotateZ(-p.PI / ROTZ);
 	
 	reSetup();
+	
 	
 	// hardcoded to do size 50 (3x3x3) 
 	//SIZE_SLIDER = p.createSlider(2, 5, 3, 1);
@@ -666,6 +668,10 @@ p.setup = () => {
 	TIMEGONE2.parent("timegone3");
 	TIMEGONE2.mousePressed(removeAllTimes.bind(null, 0));	
 	regular();
+
+	let TIMEGONE3 = p.createButton('🗑️');
+	TIMEGONE3.parent("timegone5");
+	TIMEGONE3.mousePressed(removeSpecificTime.bind(null, 0));	
 
 	LEFTMOD = p.createButton('←');
 	LEFTMOD.style("font-size:15px; width:70px; height:30px; margin-right:5px;")
@@ -4035,11 +4041,17 @@ function displayTimes()
 	if(mo5.length > 50) j = mo5.length-50;
 	for(let i = j; i < mo5.length && i < 25+j; i++)
 	{
+		let a = mo5[i];
+		let b = mo5[i+25];
+		if(mo5[i] % 0.1 == 0 && mo5[i][mo5[i].length-1] != "0"){a = a + "0";}
+		if(mo5.length > 25 && mo5[i+25] % 0.1 == 0 && mo5[i+25][mo5[i+25].length-1] != "0"){b = mo5[i+25] + "0";}
+		
+
 		if(i < 9) alltimes += "&nbsp;&nbsp;" + (i+1) + ") ";
 		else alltimes += (i+1) + ") ";
 
-		alltimes +=  mo5[i] + "s, " + movesarr[i] + "m &nbsp;&nbsp;";
-		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) alltimes += (i+26) + ") " + mo5[i+25] + "s, " + movesarr[i+25] + " moves";
+		alltimes +=  a + "s, " + movesarr[i] + "m &nbsp;&nbsp;";
+		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) alltimes += (i+26) + ") " + b + "s, " + movesarr[i+25] + " moves";
 		alltimes += "<br>"
 	}
 
@@ -4344,7 +4356,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(MODE);
+		console.log(ao5, mo5);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -4502,15 +4514,12 @@ p.keyPressed = (event) => {
 		}
 		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80]
 		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
-		if(Array.isArray(DIM) == false || true)
-		{
-			if(setup[0] == -50 || setup[0] == 50) //top
-				bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
-			else if(setup[2] == -50 || setup[2] == 50) //left
-				bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65];
-			else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65]; // front
+		if(setup[0] == -50 || setup[0] == 50) //top
+			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
+		else if(setup[2] == -50 || setup[2] == 50) //left
+			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65];
+		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65]; // front
 			
-		}
 		let bad6 = [190,188,65,186,80,81];
 		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
 			if(p.keyCode == 83) changeArr("D2")
@@ -7318,6 +7327,25 @@ function removeAllTimes()
 	mo5 = [];
 	ao5 = [];
 }
+function removeSpecificTime(){
+	if(document.getElementById("timegone4").value > 0){
+		movesarr.splice(document.getElementById("timegone4").value - 1, 1);
+		mo5.splice(document.getElementById("timegone4").value - 1, 1);
+		ao5 = [];
+		if(mo5.length <= 5){
+			for(let i = 0; i < mo5.length; i++) {
+				ao5[i] = mo5[i];
+			}
+		}
+		else{
+			let cnt = 0;
+			for(let i = mo5.length-5; i < mo5.length; i++) {
+				ao5[cnt] = mo5[i];
+				cnt++;
+			}
+		}
+	}
+}
 function removeTime()
 {
 	movesarr.pop();
@@ -7433,6 +7461,15 @@ function dragCube(cuby1, color1, cuby2, color2)
 	if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
 	return;
 	console.log(cuby1, color1, cuby2, color2)
+	
+	let bad5 = [];
+	let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
+	if(setup[0] == -50 || setup[0] == 50) //top
+		bad5 = ['L','R','F','B','S','M'];
+	else if(setup[2] == -50 || setup[2] == 50) //left
+		bad5 = ['U','D','F','B','E','S'];
+	else bad5 = ['L','R','U','D','E','M']; // front
+
 	for(let i = 0; i < 6; i++)
 	{
 		colorx = -1;
@@ -7492,6 +7529,12 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["E'"]
 			else
 			arr = ["E"];
+			if(INPUT.value() == "Key-Double")
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-Gearcube")
+				arr = [];
 			multiple(0, true);
 			selectedCuby = -1;
 			selectedColor = [];
@@ -7518,6 +7561,12 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["S'"]
 			else
 			arr = ["S"];
+			if(INPUT.value() == "Key-Double")
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-Gearcube")
+				arr = [];
 			multiple(0, true);
 			selectedCuby = -1;
 			selectedColor = [];
@@ -7544,6 +7593,12 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["M'"]
 			else
 			arr = ["M"];
+			if(INPUT.value() == "Key-Double")
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-Gearcube")
+				arr = [];
 			multiple(0, true);
 			selectedCuby = -1;
 			selectedColor = [];
@@ -7720,6 +7775,12 @@ function dragCube(cuby1, color1, cuby2, color2)
 					arr = ["F'"];
 				}
 			}
+			if(INPUT.value() == "Key-Double")
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+				arr.push(arr[0]);
+			if(INPUT.value() == "Key-Gearcube")
+				arr.unshift(toGearCube(arr[0]));
 			multiple(0, true);
 			selectedCuby = -1;
 			selectedColor = [];
@@ -7728,6 +7789,12 @@ function dragCube(cuby1, color1, cuby2, color2)
 	}
 	console.log("Loser_error")
 	return false;
+}
+function toGearCube(move){
+	if(move.length == 2){
+		return move[0] + "w'";
+	}
+	return move + "w";
 }
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
