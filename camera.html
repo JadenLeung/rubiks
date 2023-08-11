@@ -25,6 +25,9 @@
 			-ms-user-select: none; /* Internet Explorer/Edge */
 			user-select: none; 
 		}
+    .hoverc:hover{
+        cursor:pointer;
+    }
 	</style>	
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <meta charset="utf-8">
@@ -46,7 +49,7 @@
         <canvas id="cuby6" style="position: absolute; top: 585; left: 170;"></canvas>
         <canvas id="cuby9" style="position: absolute; top: 585; left: 270;"></canvas>
     </div>
-    <div id = "allcubies">
+    <div id = "allcubies" class = "hoverc">
         <canvas id = "cuby10" width = "100" height = "100" style = "position: absolute; top: 385; left: 170;" onclick = "clickCuby(10)"></canvas>
         <canvas id = "cuby13" width = "100" height = "100" style = "position: absolute; top: 385; left: 270;" onclick = "clickCuby(13)"></canvas>
         <canvas id = "cuby16" width = "100" height = "100" style = "position: absolute; top: 385; left: 370;" onclick = "clickCuby(16)"></canvas>

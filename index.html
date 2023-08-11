@@ -135,7 +135,7 @@
 			<div id = "ID1">
 				<p id = "or_instruct6" style = "font-size:20px; text-align:center; padding-top:10px;"><b>Position ID:</b></p>
 				<p id = "or_instruct7" style = "font-size:12px;">Save any cube position (on your own cube or on the virtual cube) as an ID.</p>
-				<p id="ID2" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
+				<p id="ID2" class = "button" style = "text-align:center; margin-top: 0px;"></p>
 			</div>
 			
 			<div id = "allmodes">
@@ -226,7 +226,9 @@
 				<p id = "deleteban" style = "text-align:center; margin:5px; padding:0px;"></p>
 			</div>
 		</div>
-		<div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div" ></div>
+		<div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div" >
+			<p id = "settings" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
+		</div>
 		<!--div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div2" ></div-->
 		<div class="col-lg-4" style = "padding-left:35px;">
 			<div class = "noselect" id = "input2" style = "margin-top:4px; font-size: 20px; text-align:left">
@@ -257,7 +259,30 @@
 					<p id = "generate" style = "display: inline;"></p>
 				</div>
 				<p style = "font-size:20px; text-align:left; padding-top:20px;"><b>Load Cube Position from ID:</b></p>
-
+			</div>
+			<div id = "settings1" class = "noselect">
+				<p style = "font-size:20px; text-align:left; padding-top:15px; text-align: center"><b>Advanced Settings</b></p>
+				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
+					<p id="size" style = "display: inline;"><span>Cube Size: &nbsp;</span></p>
+					<span style = "display: inline;" id = "size2">4</span>
+				</div>	
+				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
+					<p id="border" style = "display: inline;"><span>Border Width: &nbsp;</span></p>
+					<span style = "display: inline;" id = "border2">4</span>
+				</div>	
+				<div>
+					<p style = "display: inline; font-size:15px; text-align:left; padding-top:15px;">Top Color:</p>
+					<p id = "topwhite" style = "display: inline;"></p>			
+				</div>
+				<div style = "padding-top:5px;">
+					<p style = "display: inline; font-size:15px; text-align:left;">Top Color for Speed Mode:</p>
+					<p id = "toppll" style = "display: inline;"></p>			
+				</div>
+				<div>
+					<p style = "display: inline; font-size:15px; text-align:left; padding-top:15px;">Hollow Cube:</p>
+					<p id = "hollow" style = "display: inline;"></p>			
+				</div>
+				
 			</div>
 			<p id="test_alg_div" style="margin-top:4px;"  class = "noselect">
 				<span id = "test_alg_span">Test Algorithm:</span>
@@ -274,11 +299,7 @@
 				<p id="hint" style = "display: inline;"  class = "normal"></p>
 				<p id="giveup" style = "display: inline;"  class = "normal"></p>
 			</div>
-			<div class = "normal noselect" style = "padding-bottom:7px; margin-top:8px;">
-				<p id="size" style = "display: inline;"><span>Cube Size: &nbsp;</span></p>
-				<span style = "display: inline;" id = "size2">4</span>
-			</div>	
-			<div style = "padding-bottom:7px"  class = "noselect">
+			<div style = "padding-bottom:7px; padding-top: 8px;"  class = "noselect">
 				<p id="slider_div" style = "display: inline;"  class = "normal"><span>Turn Speed: </span></p>
 				<span style = "display: inline;" id = "speed"  class = "normal">0.01 </span>
 			</div>

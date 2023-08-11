@@ -1,5 +1,5 @@
 export default class Cuby {
-  constructor(size, x, y, z, buff, picker, p, index, custom) {
+  constructor(size, x, y, z, buff, picker, p, index, custom, special) {
     //size = 50;
     this.cubysize = size;
     this.x = x;
@@ -9,6 +9,8 @@ export default class Cuby {
     this.p = p;
 	  this.index = index;
     this.stroke = 0.5;
+    this.custom = custom;
+    this.special = special;
 
 	/*
     this.colors = {
@@ -49,6 +51,8 @@ export default class Cuby {
     this.right = this.colors.blue;
     this.back = this.colors.orange;
     this.left = this.colors.green;
+
+    
     
     if(size == 4 || size == 5)
     {
@@ -64,6 +68,7 @@ export default class Cuby {
       opposite["w"] = "y";
       opposite["o"] = "r";
       opposite["r"] = "o";
+        
       if((size == 4 || size == 5) && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
       else this.top = this.c[custom[this.index][0]];
       if((size == 4 || size == 5) && (custom[this.index][1] == "y" || custom[this.index][1] == "b" || custom[this.index][1] == "o")) this.bottom = this.c[opposite[custom[this.index][1]]];
@@ -76,6 +81,14 @@ export default class Cuby {
       else this.left = this.c[custom[this.index][4]];
       if((size == 4 || size == 5) && (custom[this.index][5] == "y" || custom[this.index][5] == "b" || custom[this.index][5] == "o")) this.right = this.c[opposite[custom[this.index][5]]];
       else this.right = this.c[custom[this.index][5]];
+
+      if(size == 1 && this.index > 8) this.right = this.c[custom[this.index-9][5]];
+      if(size == 1 && this.index < 18) this.left = this.c[custom[this.index+9][4]];
+
+      if(size == 6 && this.index < 18) this.left = this.c[custom[this.index+9][4]];
+      if(size == 6 && this.index > 2) this.bottom = this.c[custom[this.index-3][1]];
+      if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
+
     }
     if(size == 13){
       let a = "";
@@ -124,7 +137,21 @@ export default class Cuby {
         }
       }
     }
-
+    if(special[0] == true){
+      let badarr = ["tlf", "tfbl", "blt", "tlfd", "tdfbl", "bltd", "dfl", "fbld", "bdl",
+                    "rtfl", "tfbrl", "rbtl", "tdfrl", "tdfbrl", "tdbrl", "rdfl", "dfbrl", "rbdl",
+                    "rtf", "rbtf", "rbt", "rtdf", "tdfbr", "rtdb", "rfd", "rbfd", "rbd"];
+      for(let i = 0; i < badarr.length; i++){
+        for(let j = 0; j < badarr[i].length && this.index == i; j++){
+          if(badarr[i][j] == "t") this.top = "";
+          if(badarr[i][j] == "d") this.bottom = "";
+          if(badarr[i][j] == "f") this.front = "";
+          if(badarr[i][j] == "b") this.back = "";
+          if(badarr[i][j] == "l" && size != 1) this.left = "";
+          if(badarr[i][j] == "r" && size != 1) this.right = "";
+        }
+      }
+    }
 
     this.buff_top = buff[2];
     this.buff_bottom = buff[3];
@@ -405,6 +432,8 @@ export default class Cuby {
     let r = 25;
     if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
       r = 50;
+    if(this.special[0] == true)
+      r -= 3;
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
   let bandaged = [];
@@ -425,41 +454,49 @@ export default class Cuby {
   if(this.cubysize == 11) bandaged = [0,20,24,8,9,11,15,17];
   if(this.cubysize == 12) bandaged = [0,9,2,11,24,15,26,17];
   if(this.cubysize == 14) bandaged = [13,14,16,17,22,23,25,26];
+
+
   if(bandaged.includes(this.index)){
     this.p.strokeWeight(0);
 	  this.p.stroke('black');
     this.stroke = 0;
   }
   else{
-    this.p.strokeWeight(0.5);
+    this.p.strokeWeight(this.special[1]);
 	  this.p.stroke('black');
     this.stroke = 0.5;
   }
 	// p1, p2, p3, p4 coordinates
 	
-	this.p.fill(this.back);
-	//this.p.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
-	this.p.quad(-r, -r, -r,    r, -r, -r,  r, r, -r,   -r, r, -r, 2, 2);
+  if(this.back != ""){
+    this.p.fill(this.back);
+    this.p.quad(-r, -r, -r,    r, -r, -r,  r, r, -r,   -r, r, -r, 2, 2);
+  }
 	
-	this.p.fill(this.front);
-	//this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
-	this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	  
+  if(this.front != ""){
+    this.p.fill(this.front);
+    this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	 
+  } 
 
-	this.p.fill(this.bottom);
-	//this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
-	this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r, 2, 2);	  	  
+  if(this.bottom != ""){
+    this.p.fill(this.bottom);
+    this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r, 2, 2);	  	 
+  } 
 
-	this.p.fill(this.top);
-	//this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
-	this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r, 2, 2);	  
+  if(this.top != ""){
+    this.p.fill(this.top);
+    this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r, 2, 2);	  
+  }
   
-	this.p.fill(this.right);
-	//this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
-	this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r, 2, 2);     	  	  
+  if(this.right != ""){
+    this.p.fill(this.right);
+    this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r, 2, 2);     	 
+  } 	  
 
-	this.p.fill(this.left);
-	//this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
-	this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
+  if(this.left != ""){
+    this.p.fill(this.left);
+    this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
+  }
 	/*this.p.line(r,r,r,-r,-r,-r);
 	this.p.line(r,r,r,-r,-r,-r);
 	this.p.line(r,r,r,-r,-r,-r);*/
