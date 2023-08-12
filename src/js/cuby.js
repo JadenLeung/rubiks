@@ -432,8 +432,9 @@ export default class Cuby {
     let r = 25;
     if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
       r = 50;
-    if(this.special[0] == true)
-      r -= 3;
+
+      
+      r -= this.special[3] * (r/25);
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
   let bandaged = [];

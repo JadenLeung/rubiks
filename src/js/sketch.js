@@ -16,6 +16,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let DIM5 = 50;
 	let goodsolved = false;
 	let RND_COLORS;
 	let GAP = 0;
@@ -68,7 +69,7 @@ export default function (p) {
 	let mindist;
 	let minaction;
 	let WINDOW = 0.9
-	let special = [false, 0.3, false];
+	let special = [false, 0.3, false, 0];
 	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
 	let arr = [];
 	let obj2 = [];
@@ -271,7 +272,10 @@ p.setup = () => {
 	
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.zoom(CAMZOOM);
+	if(DIM2 == 100)
+		CAM.zoom(CAMZOOM+140);
+	else
+		CAM.zoom(CAMZOOM);
 	CAM.rotateX(-p.PI / ROTX);
 	CAM.rotateY(-p.PI / ROTY);
 	CAM.rotateZ(-p.PI / ROTZ);
@@ -284,10 +288,9 @@ p.setup = () => {
 	if(canMan)
 	{
 		
-		GAP_SLIDER = p.createSlider(0, 100, 0, 1);
+		GAP_SLIDER = p.createSlider(0, 20, 0, 1);
 		GAP_SLIDER.input(sliderUpdate);
-		GAP_SLIDER.hide();
-		GAP_SLIDER.parent("slider_div");
+		GAP_SLIDER.parent("gap");
 		
 		SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
 		SPEED_SLIDER.input(sliderUpdate);
@@ -534,6 +537,11 @@ p.setup = () => {
 	IDBACK.mousePressed((regular.bind(null, 0)));
 	IDBACK.style("text-align:center; font-size:20px;");
 
+	const SETTINGSBACK = p.createButton('Back');
+	SETTINGSBACK.parent("settingsback");
+	SETTINGSBACK.mousePressed((regular.bind(null, 0)));
+	SETTINGSBACK.style("text-align:center; font-size:20px;");
+
 	const IDDEFAULT = p.createButton('Restore defaults');
 	IDDEFAULT.parent("iddefault");
 	IDDEFAULT.mousePressed(() => {
@@ -541,6 +549,11 @@ p.setup = () => {
 		reSetup();
 	});
 	IDDEFAULT.style("text-align:center; font-size:20px;");
+
+	const SETTINGSDEFAULT = p.createButton('Restore defaults');
+	SETTINGSDEFAULT.parent("settingsdefault");
+	SETTINGSDEFAULT.mousePressed(settingsDefault.bind(null, 0));
+	SETTINGSDEFAULT.style("text-align:center; font-size:20px;");
 
 	const DEAFULT = p.createButton('Restore');
 	DEAFULT.parent("select7");
@@ -777,6 +790,7 @@ setInterval(() => {
 	document.getElementById('delay2').innerText = DELAY;
 	document.getElementById('size2').innerText = CAMZOOM * -1;
 	document.getElementById('border2').innerText = special[1];
+	document.getElementById('gap2').innerText = special[3];
 	displayAverage();
 	displayTimes();
 	setLayout();
@@ -1015,7 +1029,26 @@ function reSetup(rot) {
 	pllstep = 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.zoom(CAMZOOM);
+
+	if(MODE != "cube")
+	{
+		if(DIM == 50)
+			DIM4 = 3;
+		else
+			DIM4 = 2;
+	}
+	else{
+		if(Array.isArray(DIM) && DIM[0] != "adding")
+			DIM4 = DIM3;
+		else if(DIM == 5 || DIM == 10)
+			DIM4 = 2;
+		else
+			DIM4 = 3;
+	}
+	if(DIM4 == 2)
+		CAM.zoom(CAMZOOM+140);
+	else
+		CAM.zoom(CAMZOOM);
 
 	if(window.matchMedia("(max-width: 767px)").matches)
 	{
@@ -1419,7 +1452,10 @@ function speedSetup()
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		CAM.zoom(CAMZOOM);
+		if(DIM2 == 100)
+			CAM.zoom(CAMZOOM+140);
+		else
+			CAM.zoom(CAMZOOM);
 		rotateIt();
 		quickSolve();
 		return;
@@ -1450,7 +1486,10 @@ function moveSetup()
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		CAM.zoom(CAMZOOM);
+		if(DIM2 == 100)
+			CAM.zoom(CAMZOOM+140);
+		else
+			CAM.zoom(CAMZOOM);
 		rotateIt();
 		quickSolve();
 		return;
@@ -1458,7 +1497,10 @@ function moveSetup()
 	moves = 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.zoom(CAMZOOM);
+	if(DIM2 == 100)
+		CAM.zoom(CAMZOOM+140);
+	else
+		CAM.zoom(CAMZOOM);
 	rotateIt();
 	quickSolve();
 	arr = m_scramble;
@@ -1574,15 +1616,14 @@ function changeTwo()
 {
 	DIM2 = 100;
 	DIM = 100;
-	if(CAMZOOM < -150) CAMZOOM = -150;
-	if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
+	//if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
 	THREEBYTHREE.remove();
 	THREEBYTHREE = p.createButton('3x3');
 	THREEBYTHREE.parent("type2");
 	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
 	TWOBYTWO.style('background-color', "#f5f573");
 	SIZE_SLIDER2.remove();
-	SIZE_SLIDER2 = p.createSlider(-1000, 150, -CAMZOOM, 5);
+	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
@@ -1596,7 +1637,7 @@ function changeThree()
 {
 	DIM2 = 50;
 	DIM = 50;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
+
 	THREEBYTHREE.style('background-color', "#f5f573");
 	TWOBYTWO.remove();
 	TWOBYTWO = p.createButton('2x2');
@@ -1615,21 +1656,6 @@ function changeThree()
 }
 function changeCam(dim)
 {
-	SIZE_SLIDER2.remove();
-	if(dim == 3)
-	{
-		SIZE_SLIDER2 = p.createSlider(-1000, 300, -ZOOM3, 5);
-		SIZE_SLIDER2.input(sliderUpdate2);
-		SIZE_SLIDER2.parent("size");
-		SIZE_SLIDER2.style('width', '100px');
-	}
-	else
-	{
-		SIZE_SLIDER2 = p.createSlider(-1000, 150, -ZOOM2, 5);
-		SIZE_SLIDER2.input(sliderUpdate2);
-		SIZE_SLIDER2.parent("size");
-		SIZE_SLIDER2.style('width', '100px');
-	}
 	reSetup();
 }
 function bandageZero(){
@@ -1669,42 +1695,37 @@ function changeZero()
 }
 function changeFour(){
 	DIM = 1;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	ONEBYTHREE.style('background-color', "#8ef5ee");
 }
 function changeFive(){
 	DIM = 2;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	SANDWICH.style('background-color', "#8ef5ee");
 }
 function changeSix(){
 	DIM = 3;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	CUBE3.style('background-color', "#8ef5ee");
 }
 function changeSeven(){
 	DIM = 4;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	CUBE4.style('background-color', "#8ef5ee");
 }
 function change8(){
 	DIM = 5;
-	if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
+	DIM2 = 100;
 	changeCam(2);
 	refreshButtons();
 	CUBE5.style('background-color', "#8ef5ee");
 }
 function change10(){
 	DIM = 6;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 	CUBE6.style('background-color', "#8ef5ee");
@@ -1713,7 +1734,6 @@ function changeBan(dim, b)
 {
 	bandaged = b;
 	DIM = dim;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
 	changeCam(3);
 	refreshButtons();
 }
@@ -1732,7 +1752,7 @@ function change13(dim, b){
 function change14(dim, b){
 	bandaged = b;
 	DIM = dim;
-	if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
+
 	changeCam(2);
 	refreshButtons();
 	CUBE10.style('background-color', "#8ef5ee");
@@ -1747,7 +1767,7 @@ function change16(dim, b){
 }
 function change17(){
 	DIM = 13;
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
+
 	changeCam(3);
 	refreshButtons();
 	CUBE13.style('background-color', "#8ef5ee");
@@ -1796,7 +1816,7 @@ function change9(cubies)
 	DIM[5] = SEL6.value();
 	if(SEL7.value() == "3x3")
 	{
-		if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
+	
 		if(DIM3 == 2)
 		{
 			for(let i = 0; i < 27; i++)
@@ -1843,7 +1863,7 @@ function change9(cubies)
 			if(arr3.includes(i))
 				CHECK[i].remove();
 		}
-		if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
+
 	}
 
 	let checked = [];
@@ -2205,7 +2225,7 @@ function Custom2(){
 	document.getElementById("okban").style.display = "none";
 	document.getElementById("leftban").style.display = "none";
 	document.getElementById("rightban").style.display = "none";
-	if(CAMZOOM == ZOOM2) CAMZOOM = ZOOM3;
+
 	changeCam(3);
 	doneBandage()
 	bandaged = bandaged3;
@@ -2272,12 +2292,13 @@ function getPos(cubyindex)
 
 function sliderUpdate() {
 	//SIZE = SIZE_SLIDER.value();
-	GAP = GAP_SLIDER.value();
+	//GAP = GAP_SLIDER.value();
 	SPEED = SPEED_SLIDER.value();
 	if(MODE == "normal" || MODE == "timed" || MODE == "cube" || race > 0)
 	DELAY = DELAY_SLIDER.value();
 	special[1] = BORDER_SLIDER.value();
-	//reSetup();
+	special[3] = GAP_SLIDER.value();
+	reSetup();
 }
 function sliderUpdate2(){
 	CAMZOOM = SIZE_SLIDER2.value() * -1;
@@ -2285,7 +2306,10 @@ function sliderUpdate2(){
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	rotateIt();
-	CAM.zoom(CAMZOOM);
+	if(DIM2 == 100)
+		CAM.zoom(CAMZOOM+140);
+	else
+		CAM.zoom(CAMZOOM);
 }
 //Henry
 function regular(nocustom){
@@ -2308,9 +2332,9 @@ function regular(nocustom){
 		else
 			changeThree();
 	}
+	MODE = "normal";
 	reSetup();
 	race = 0;
-	MODE = "normal"
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='block';
@@ -2401,7 +2425,7 @@ function timedmode()
 		movesarr = [];
 		scrambles = [];
 	}
-	if(MODE != "normal" || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
+	if(MODE != "normal" || document.getElementById("test_alg_span").innerHTML == "Paste ID here:" || document.getElementById("settings1").style.display == "block")
 		regular(true);
 	DIM = DIM2;
 	MODE = "timed";
@@ -2431,10 +2455,7 @@ function timedmode()
 	document.getElementById("custom2").style.display = "none";
 	document.getElementById("custom4").style.display = "none";
 	document.getElementById("cube").style.display = "none";
-	
-
 	document.getElementById("type3").style.display = "block";
-
 	document.getElementById("input").style.display = "none";
 	changeInput();
 }
@@ -2680,7 +2701,10 @@ function reCam()
 {
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	CAM.zoom(CAMZOOM);
+	if(DIM2 == 100)
+		CAM.zoom(CAMZOOM+140);
+	else
+		CAM.zoom(CAMZOOM);
 	rotateIt();
 }
 function easy() 
@@ -4425,6 +4449,7 @@ function keydown (evt) {
 	inspect = false;
 }
 p.keyPressed = (event) => {
+	console.log(special);
 	if (event.srcElement.nodeName == "INPUT") {
 		event.stopPropagation;
 		return;
@@ -4441,7 +4466,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(DIM);
+		console.log(special);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -4472,11 +4497,14 @@ p.keyPressed = (event) => {
 		}
 		return;
 	}
-	if(p.keyCode == 52)
+	if(p.keyCode == 52) //4
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		CAM.zoom(CAMZOOM);
+		if(DIM2 == 100)
+			CAM.zoom(CAMZOOM+140);
+		else
+			CAM.zoom(CAMZOOM);
 		rotateIt();
 		return;
 	}
@@ -7444,20 +7472,24 @@ function hollowCube(){
 	if(HOLLOW.checked()){
 		special[0] = true;
 		special[1] = 0.1;
+		special[3] = 3;
 		BORDER_SLIDER.remove();
 		BORDER_SLIDER = p.createSlider(0, 4, special[1], 0.1);
 		BORDER_SLIDER.input(sliderUpdate);
 		BORDER_SLIDER.parent("border");
 		BORDER_SLIDER.style('width', '100px');
+		GAP_SLIDER.value(3);
 	}
 	else{
 		special[0] = false;
 		special[1] = 0.3;
 		BORDER_SLIDER.remove();
+		special[3] = 0;
 		BORDER_SLIDER = p.createSlider(0, 4, special[1], 0.1);
 		BORDER_SLIDER.input(sliderUpdate);
 		BORDER_SLIDER.parent("border");
 		BORDER_SLIDER.style('width', '100px');
+		GAP_SLIDER.value(0);
 	}
 	reSetup();
 }
@@ -8278,6 +8310,21 @@ function median(values){
 function myHandler(e) {
     downloadAll();
     return false;
+}
+function settingsDefault(){
+	allcubies = false;
+	special[0] = false;
+	special[1] = 0.3;
+	HOLLOW.checked(false);
+	BORDER_SLIDER.value(0.3);
+	special[3] = 0;
+	GAP_SLIDER.value(0);
+	TOPWHITE.value("Blue");
+	TOPPLL.value("Same as above");
+	CAMZOOM = -170;
+	SIZE_SLIDER2.value(-CAMZOOM);
+	GAP_SLIDER.value(0);
+	topWhite();
 }
 function download(filename, text) {
 	var element = document.createElement('a');
