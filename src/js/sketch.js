@@ -60,6 +60,7 @@ export default function (p) {
 	let TIMEDMODE2;
 	let MOVESMODE2;
 	let TIMEGONE;
+	let audioon = true;
 	let input = "keyboard";
 	let scramblemoves = 0;
 	let edgeback = false;
@@ -83,7 +84,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL, SOUND;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -110,6 +111,8 @@ export default function (p) {
 	let shuffling = false;
 	let realtop;
 	let colorvalues = [];
+	let curnote = 0;
+	let song = "CcDdEFfGgAaB";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
 	colorvalues["y"] = "4oìyÖ@A 5v8GÜOô 6BAQ3Úô 4vP";
@@ -289,7 +292,10 @@ p.setup = () => {
 	{
 		
 		GAP_SLIDER = p.createSlider(0, 20, 0, 1);
-		GAP_SLIDER.input(sliderUpdate);
+		GAP_SLIDER.input(() => {
+			special[3] = GAP_SLIDER.value();
+			reSetup();
+		});
 		GAP_SLIDER.parent("gap");
 		
 		SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
@@ -589,6 +595,12 @@ p.setup = () => {
 	TOPWHITE.option("Orange");
 	TOPWHITE.option("Red");
 	TOPWHITE.changed(topWhite.bind(null, 0));
+
+	SOUND = p.createSelect(); 
+	SOUND.parent("sounddiv");
+	SOUND.option("Speedcube");
+	SOUND.option("Windows XP");
+	SOUND.option("Piano");
 
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
@@ -2297,8 +2309,6 @@ function sliderUpdate() {
 	if(MODE == "normal" || MODE == "timed" || MODE == "cube" || race > 0)
 	DELAY = DELAY_SLIDER.value();
 	special[1] = BORDER_SLIDER.value();
-	special[3] = GAP_SLIDER.value();
-	reSetup();
 }
 function sliderUpdate2(){
 	CAMZOOM = SIZE_SLIDER2.value() * -1;
@@ -3645,6 +3655,42 @@ function animate(axis, row, dir, time) {
 			CUBE[i].anim_angle = CUBE[i].dir * SPEED;
 		}
 	}
+
+	if(!audioon) return;
+	let m = Math.random();
+	if(SOUND.value() == "Piano"){
+		playNote();
+		return;
+	}
+	else if(SOUND.value() == "Windows XP"){
+		if(m < 0.1)
+			var audio = new Audio('audio/winxp.mp3');
+		else if(m < 0.2)
+			var audio = new Audio('audio/winxpshutdown.mp3');
+		else
+			var audio = new Audio('audio/erro.mp3');
+		audio.volume = 0.7;
+	}
+	else if(row == 0){
+		var audio = new Audio('cubesound6.mp3');
+		audio.volume = 0.7;
+	}
+	else if(m < 0.25){
+		var audio = new Audio('cubesound5.mp3');
+		audio.volume = 0.2;
+	}else if(m<0.5){
+		var audio = new Audio('cubesound1.mp3');
+		audio.volume = 0.5;
+	}else if(m<0.75){
+		var audio = new Audio('cubesound3.mp3');
+		audio.volume = 0.8;
+	}
+	else{
+		var audio = new Audio('cubesound4.mp3');
+		audio.volume = 0.5;
+	}
+	console.log(m)
+	audio.play();
 }
 
 function cleanAllSelectedCubies() {
@@ -4432,6 +4478,57 @@ function animateWide(axis, row, dir, timed) {
 			}
 		}
 	}
+	if(!audioon) return;
+	let m = Math.random();
+	if(SOUND.value() == "Piano"){
+		playNote();
+		return;
+	}
+	else if(SOUND.value() == "Windows XP"){
+		if(m < 0.1)
+			var audio = new Audio('audio/winxp.mp3');
+		else if(m < 0.2)
+			var audio = new Audio('audio/winxpshutdown.mp3');
+		else
+			var audio = new Audio('audio/erro.mp3');
+		audio.volume = 0.7;
+	}
+	else if(row == 0){
+		var audio = new Audio('cubesound6.mp3');
+		audio.volume = 0.7;
+	}
+	else if(m < 0.25){
+		var audio = new Audio('cubesound5.mp3');
+		audio.volume = 0.2;
+	}else if(m<0.5){
+		var audio = new Audio('cubesound1.mp3');
+		audio.volume = 0.5;
+	}else if(m<0.75){
+		var audio = new Audio('cubesound3.mp3');
+		audio.volume = 0.8;
+	}
+	else{
+		var audio = new Audio('cubesound4.mp3');
+		audio.volume = 0.5;
+	}
+	console.log(m)
+	audio.play();
+}
+function playNote(){
+	//return;
+	//https://www.studytonight.com/post/build-a-piano-app-using-javascript
+	if(curnote == song.length) curnote = 0;
+	let note = song[curnote];
+	if(note > 'Z'){
+		note = note.toUpperCase() + 's4'
+	}
+	else{
+		note += '4';
+	}
+	var audio = new Audio('https://nemo0.github.io/js-piano/notes/' + note + '.mp3');
+	audio.volume = 0.5;
+	audio.play();
+	curnote++;
 }
 function sleep(milliseconds) {
 	const date = Date.now();
@@ -4876,10 +4973,10 @@ p.keyPressed = (event) => {
 			.then((obj) => (setPLL(obj)));*/
 			console.log("erger");
 			break;
-			case 53: //4
+			case 53: //5
 			removeTime();
 			break;
-			case 51: //5
+			case 51: //3
 			window.open(
 				"https://classroom.google.com/u/0/", "_blank");
 			break;
@@ -5178,8 +5275,24 @@ function refreshButtons()
 	SETTINGS = p.createButton('⚙️');
 	SETTINGS.parent("settings");
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
-	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white");
-	SETTINGS.position(cnv_div.offsetWidth-60,5);
+	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;");
+	SETTINGS.position(cnv_div.offsetWidth-140,5);
+
+	const VOLUME = p.createButton('');
+	VOLUME.parent("audio");
+	VOLUME.style("font-size: 40px; height: 60px; width: 60px; border: none;"); // Replace 'image.png' with your image's path
+	VOLUME.style("background-image: url('soundon.avif'); background-size: cover; background-color: white; border-radius: 10px;");
+	VOLUME.position(cnv_div.offsetWidth-60,5);
+	VOLUME.mousePressed(() => {
+		if(audioon){
+			VOLUME.style("background-image: url('soundoff.avif'); background-size: cover;");
+		}
+		else{
+			VOLUME.style("background-image: url('soundon.avif'); background-size: cover;");
+		}
+		audioon = !audioon;
+	});
+	
 
 	REGULAR2 = p.createButton('Normal');
 	REGULAR2.parent("mode4").class("mode1");
@@ -7464,9 +7577,11 @@ function removeSpecificTime(){
 }
 function removeTime()
 {
-	movesarr.pop();
-	mo5.pop();
-	ao5.pop();
+	if(["normal","cube","timed"].includes(MODE)){
+		movesarr.pop();
+		mo5.pop();
+		ao5.pop();
+	}
 }
 function hollowCube(){
 	if(HOLLOW.checked()){
