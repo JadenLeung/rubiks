@@ -3672,21 +3672,21 @@ function animate(axis, row, dir, time) {
 		audio.volume = 0.7;
 	}
 	else if(row == 0){
-		var audio = new Audio('cubesound6.mp3');
+		var audio = new Audio('audio/cubesound6.mp3');
 		audio.volume = 0.7;
 	}
 	else if(m < 0.25){
-		var audio = new Audio('cubesound5.mp3');
+		var audio = new Audio('audio/cubesound5.mp3');
 		audio.volume = 0.2;
 	}else if(m<0.5){
-		var audio = new Audio('cubesound1.mp3');
+		var audio = new Audio('audio/cubesound1.mp3');
 		audio.volume = 0.5;
 	}else if(m<0.75){
-		var audio = new Audio('cubesound3.mp3');
+		var audio = new Audio('audio/cubesound3.mp3');
 		audio.volume = 0.8;
 	}
 	else{
-		var audio = new Audio('cubesound4.mp3');
+		var audio = new Audio('audio/cubesound4.mp3');
 		audio.volume = 0.5;
 	}
 	console.log(m)
@@ -4494,21 +4494,21 @@ function animateWide(axis, row, dir, timed) {
 		audio.volume = 0.7;
 	}
 	else if(row == 0){
-		var audio = new Audio('cubesound6.mp3');
+		var audio = new Audio('audio/cubesound6.mp3');
 		audio.volume = 0.7;
 	}
 	else if(m < 0.25){
-		var audio = new Audio('cubesound5.mp3');
+		var audio = new Audio('audio/cubesound5.mp3');
 		audio.volume = 0.2;
 	}else if(m<0.5){
-		var audio = new Audio('cubesound1.mp3');
+		var audio = new Audio('audio/cubesound1.mp3');
 		audio.volume = 0.5;
 	}else if(m<0.75){
-		var audio = new Audio('cubesound3.mp3');
+		var audio = new Audio('audio/cubesound3.mp3');
 		audio.volume = 0.8;
 	}
 	else{
-		var audio = new Audio('cubesound4.mp3');
+		var audio = new Audio('audio/cubesound4.mp3');
 		audio.volume = 0.5;
 	}
 	console.log(m)
