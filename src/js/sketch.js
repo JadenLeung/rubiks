@@ -600,7 +600,6 @@ p.setup = () => {
 	SOUND.parent("sounddiv");
 	SOUND.option("Speedcube");
 	SOUND.option("Windows XP");
-	SOUND.option("Piano");
 
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
@@ -3658,39 +3657,41 @@ function animate(axis, row, dir, time) {
 
 	if(!audioon) return;
 	let m = Math.random();
-	if(SOUND.value() == "Piano"){
-		playNote();
-		return;
-	}
-	else if(SOUND.value() == "Windows XP"){
+	if(SOUND.value() == "Windows XP"){
 		if(m < 0.1)
-			var audio = new Audio('audio/winxp.mp3');
+			var audio = document.getElementById("audio6");
 		else if(m < 0.2)
-			var audio = new Audio('audio/winxpshutdown.mp3');
+			var audio = document.getElementById("audio7");
 		else
-			var audio = new Audio('audio/erro.mp3');
-		audio.volume = 0.7;
+			var audio = document.getElementById("audio8");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.7;
 	}
 	else if(row == 0){
-		var audio = new Audio('audio/cubesound6.mp3');
-		audio.volume = 0.7;
+		var audio = document.getElementById("audio5");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.7;
 	}
 	else if(m < 0.25){
-		var audio = new Audio('audio/cubesound5.mp3');
-		audio.volume = 0.2;
+		var audio = document.getElementById("audio4");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.2;
 	}else if(m<0.5){
-		var audio = new Audio('audio/cubesound1.mp3');
-		audio.volume = 0.5;
+		var audio = document.getElementById("audio1");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.5;
 	}else if(m<0.75){
-		var audio = new Audio('audio/cubesound3.mp3');
-		audio.volume = 0.8;
+		var audio = document.getElementById("audio2");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.8;
 	}
 	else{
-		var audio = new Audio('audio/cubesound4.mp3');
-		audio.volume = 0.5;
+		var audio = document.getElementById("audio3");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.5;
 	}
 	console.log(m)
-	audio.play();
+    newAudio.play();
 }
 
 function cleanAllSelectedCubies() {
@@ -4480,55 +4481,36 @@ function animateWide(axis, row, dir, timed) {
 	}
 	if(!audioon) return;
 	let m = Math.random();
-	if(SOUND.value() == "Piano"){
-		playNote();
-		return;
-	}
-	else if(SOUND.value() == "Windows XP"){
+	if(SOUND.value() == "Windows XP"){
 		if(m < 0.1)
-			var audio = new Audio('audio/winxp.mp3');
+			var audio = document.getElementById("audio6");
 		else if(m < 0.2)
-			var audio = new Audio('audio/winxpshutdown.mp3');
+			var audio = document.getElementById("audio7");
 		else
-			var audio = new Audio('audio/erro.mp3');
-		audio.volume = 0.7;
-	}
-	else if(row == 0){
-		var audio = new Audio('audio/cubesound6.mp3');
-		audio.volume = 0.7;
+			var audio = document.getElementById("audio8");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.7;
 	}
 	else if(m < 0.25){
-		var audio = new Audio('audio/cubesound5.mp3');
-		audio.volume = 0.2;
+		var audio = document.getElementById("audio4");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.2;
 	}else if(m<0.5){
-		var audio = new Audio('audio/cubesound1.mp3');
-		audio.volume = 0.5;
+		var audio = document.getElementById("audio1");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.5;
 	}else if(m<0.75){
-		var audio = new Audio('audio/cubesound3.mp3');
-		audio.volume = 0.8;
+		var audio = document.getElementById("audio2");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.8;
 	}
 	else{
-		var audio = new Audio('audio/cubesound4.mp3');
-		audio.volume = 0.5;
+		var audio = document.getElementById("audio3");
+		var newAudio = audio.cloneNode()
+		newAudio.volume = 0.5;
 	}
 	console.log(m)
-	audio.play();
-}
-function playNote(){
-	//return;
-	//https://www.studytonight.com/post/build-a-piano-app-using-javascript
-	if(curnote == song.length) curnote = 0;
-	let note = song[curnote];
-	if(note > 'Z'){
-		note = note.toUpperCase() + 's4'
-	}
-	else{
-		note += '4';
-	}
-	var audio = new Audio('https://nemo0.github.io/js-piano/notes/' + note + '.mp3');
-	audio.volume = 0.5;
-	audio.play();
-	curnote++;
+    newAudio.play();
 }
 function sleep(milliseconds) {
 	const date = Date.now();
@@ -8536,7 +8518,8 @@ window.addEventListener('keydown', (e) => {
 //Easy: 0.8, 0.52s
 //Medium: 15.4s, 13.58s
 //FMC: 193
-//Shape Mod All: 234.85s
+//Shape Mod All: 234.85, 125.58s
+//Bandage Mod ALL: 672.28
 
 //BELOW 54 MOVES
 //B2 R2 F' R2 D' L2 D2 F2 L' U2 B R F L D R2 F2 D2 (53)

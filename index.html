@@ -394,7 +394,16 @@
 				<img class = "pictures" style = "width:40%; display: none;" id = "pic14"></img>
 				<img class = "pictures" style = "width:40%; display: none;" id = "pic15"></img>
 			</div>
-			
+			<div>
+				<audio class = "audio" style = "display: none;" id = "audio1"></audio>	
+				<audio class = "audio" style = "display: none;" id = "audio2"></audio>	
+				<audio class = "audio" style = "display: none;" id = "audio3"></audio>		
+				<audio class = "audio" style = "display: none;" id = "audio4"></audio>	
+				<audio class = "audio" style = "display: none;" id = "audio5"></audio>	
+				<audio class = "audio" style = "display: none;" id = "audio6"></audio>	
+				<audio class = "audio" style = "display: none;" id = "audio7"></audio>	
+				<audio class = "audio" style = "display: none;" id = "audio8"></audio>	
+			</div>	  
 		</div>
 	</div>
 	<script>
@@ -402,10 +411,15 @@
 			let arr = ["solved.JPG", "IMG_1868.JPG", "IMG_1863.JPG", "IMG_1864.JPG", "IMG_1865.JPG", "IMG_1867.JPG",
 			"solved.JPG", "IMG_1871.JPG", "IMG_1870.JPG", "IMG_1872.JPG", "IMG_1874.JPG", "IMG_1875.JPG"
 			,"IMG_1876.JPG", "IMG_1874.JPG", "IMG_1877.JPG"];
-			for(let i = 1; i <= 15; i++)
-			{
-				document.getElementById("pic" + i).src = arr[i-1];  //example function call.
+			for(let i = 1; i <= 15; i++){
+				document.getElementById("pic" + i).src = arr[i-1];  
 			}
+			arr = ["audio/cubesound1.mp3", "audio/cubesound2.mp3", "audio/cubesound3.mp3", "audio/cubesound4.mp3", "audio/cubesound5.mp3",
+		"audio/winxp.mp3", "audio/winxpshutdown.mp3", "audio/erro.mp3"];
+			for(let i = 1; i <= arr.length; i++){
+				document.getElementById("audio" + i).src = arr[i-1]; 
+			}
+			
 		}
 	</script>
 	
