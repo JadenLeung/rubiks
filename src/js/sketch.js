@@ -2564,6 +2564,7 @@ function settingsmode()
 	document.getElementById("shuffle_div").style.display = "none";
 	document.getElementById("reset_div").style.display = "none";
 	document.getElementById("solve").style.display = "none";
+	document.getElementById("input").style.display = "none";
 	document.getElementById("input2").style.display = "none";
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("settings1").style.display = "block";
