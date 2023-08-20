@@ -3665,34 +3665,29 @@ function animate(axis, row, dir, time) {
 			var audio = document.getElementById("audio7");
 		else
 			var audio = document.getElementById("audio8");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.7;
+		audio.volume = 0.7;
 	}
 	else if(row == 0){
 		var audio = document.getElementById("audio5");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.7;
+		audio.volume = 0.7;
 	}
 	else if(m < 0.25){
 		var audio = document.getElementById("audio4");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.2;
+		audio.volume = 0.2;
 	}else if(m<0.5){
 		var audio = document.getElementById("audio1");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.5;
+		audio.volume = 0.5;
 	}else if(m<0.75){
 		var audio = document.getElementById("audio2");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.8;
+		audio.volume = 0.8;
 	}
 	else{
 		var audio = document.getElementById("audio3");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.5;
+		audio.volume = 0.5;
 	}
 	console.log(m)
-    newAudio.play();
+	audio.currentTime = 0;
+    audio.play();
 }
 
 function cleanAllSelectedCubies() {
@@ -4489,29 +4484,25 @@ function animateWide(axis, row, dir, timed) {
 			var audio = document.getElementById("audio7");
 		else
 			var audio = document.getElementById("audio8");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.7;
+		audio.volume = 0.7;
 	}
 	else if(m < 0.25){
 		var audio = document.getElementById("audio4");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.2;
+		audio.volume = 0.2;
 	}else if(m<0.5){
 		var audio = document.getElementById("audio1");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.5;
+		audio.volume = 0.5;
 	}else if(m<0.75){
 		var audio = document.getElementById("audio2");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.8;
+		audio.volume = 0.8;
 	}
 	else{
 		var audio = document.getElementById("audio3");
-		var newAudio = audio.cloneNode()
-		newAudio.volume = 0.5;
+		audio.volume = 0.5;
 	}
 	console.log(m)
-    newAudio.play();
+	audio.currentTime = 0;
+    audio.play();
 }
 function sleep(milliseconds) {
 	const date = Date.now();
