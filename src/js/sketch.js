@@ -302,7 +302,7 @@ p.setup = () => {
 		SPEED_SLIDER.input(sliderUpdate);
 		SPEED_SLIDER.parent("slider_div");
 		
-		DELAY_SLIDER = p.createSlider(0, 2, 0, 0.1);
+		DELAY_SLIDER = p.createSlider(0, 4, 0, 0.1);
 		DELAY_SLIDER.input(sliderUpdate);
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
@@ -608,6 +608,7 @@ p.setup = () => {
 	TOPPLL.changed(topWhite.bind(null, 0));
 
 	SETTINGS = p.createButton('⚙️');
+	SETTINGS.attribute('title', 'Settings');
 	SETTINGS.parent("settings");
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
 	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white");
@@ -2819,7 +2820,7 @@ function easy()
 		if(DIM == 50)
 		{
 			document.getElementById("s_INSTRUCT").innerHTML = "Challenge #4: Construct a Line of Solved Edges in Two Faces";
-			document.getElementById("s_instruct").innerHTML = "Take a look at these pictures for an example:";
+			document.getElementById("s_instruct").innerHTML = "This means a middle layer must be half solved.";
 			numsc = 20;
 		}
 		else
@@ -5247,22 +5248,26 @@ function refreshButtons()
 	IDMODE.mousePressed(idmode.bind(null, 0));
 
 	SETTINGS = p.createButton('⚙️');
+	SETTINGS.attribute('title', 'Settings');
 	SETTINGS.parent("settings");
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
 	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;");
 	SETTINGS.position(cnv_div.offsetWidth-140,5);
 
-	const VOLUME = p.createButton('');
+	const VOLUME = p.createButton('🔊');
 	VOLUME.parent("audio");
 	VOLUME.style("font-size: 40px; height: 60px; width: 60px; border: none;"); // Replace 'image.png' with your image's path
-	VOLUME.style("background-image: url('soundon.avif'); background-size: cover; background-color: white; border-radius: 10px;");
+	VOLUME.style("background-size: cover; background-color: white; border-radius: 10px;");
 	VOLUME.position(cnv_div.offsetWidth-60,5);
+	VOLUME.attribute('title', 'Sound on');
 	VOLUME.mousePressed(() => {
 		if(audioon){
-			VOLUME.style("background-image: url('soundoff.avif'); background-size: cover;");
+			VOLUME.html("🔇");
+			VOLUME.attribute('title', 'Sound off');
 		}
 		else{
-			VOLUME.style("background-image: url('soundon.avif'); background-size: cover;");
+			VOLUME.html("🔊");
+			VOLUME.attribute('title', 'Sound on');
 		}
 		audioon = !audioon;
 	});
@@ -8521,6 +8526,7 @@ window.addEventListener('keydown', (e) => {
 // U R D L2 B2 R2 U F' D' F L F' R2 F2 D2 B' D2 F (52)
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
+//  2)se$ÞG 17Þn6i~ 5HK8løå  (48)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!!
 //U2 B D' R2 U L2 D F D B R B2 U2 B' U B' L U' (41)

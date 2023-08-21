@@ -413,13 +413,17 @@
 			for(let i = 1; i <= arr.length; i++){
 				document.getElementById("audio" + i).src = arr[i-1]; 
 			}
-			/*arr = ["solved.JPG", "IMG_1868.JPG", "IMG_1863.JPG", "IMG_1864.JPG", "IMG_1865.JPG", "IMG_1867.JPG",
+			
+		}
+		const myTimeout = setTimeout(loadPics, 1000);
+		function loadPics(){
+			arr = ["solved.JPG", "IMG_1868.JPG", "IMG_1863.JPG", "IMG_1864.JPG", "IMG_1865.JPG", "IMG_1867.JPG",
 			"solved.JPG", "IMG_1871.JPG", "IMG_1870.JPG", "IMG_1872.JPG", "IMG_1874.JPG", "IMG_1875.JPG"
 			,"IMG_1876.JPG", "IMG_1874.JPG", "IMG_1877.JPG"];
 			for(let i = 1; i <= 15; i++){
 				document.getElementById("pic" + i).src = arr[i-1];  
-			}*/
-			
+			}
+
 		}
 	</script>
 	
