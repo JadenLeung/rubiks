@@ -17,6 +17,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let DIM5 = 50;
+	let goodsound = true;
 	let goodsolved = false;
 	let RND_COLORS;
 	let GAP = 0;
@@ -312,6 +313,15 @@ p.setup = () => {
 			ZOOM3 = -250;
 			ZOOM2 = -100;
 			CAMZOOM = ZOOM3;
+			audioon = false;
+			document.getElementById("audio").style.display = 'none';
+			goodsound = false;
+		}
+		var isSafari = window.safari !== undefined; //safari
+		if(isSafari) {
+			audioon = false;
+			document.getElementById("audio").style.display = 'none';
+			goodsound = false;
 		}
 		SIZE_SLIDER2 = p.createSlider(-1000, 300, -(ZOOM3), 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
@@ -402,6 +412,8 @@ p.setup = () => {
 	IDINPUT.option("Checkerboard");
 	IDINPUT.option("Impossible Donut");
 	IDINPUT.option("Impossible Solved");
+	IDINPUT.option("Autosolve WR scramble");
+	IDINPUT.option("3x3 WR scramble");
 
 	SCRAM = p.createSelect(); 
 	SCRAM.parent("scram");
@@ -597,9 +609,15 @@ p.setup = () => {
 	TOPWHITE.changed(topWhite.bind(null, 0));
 
 	SOUND = p.createSelect(); 
+	if(goodsound){
+		SOUND.parent("sounddiv");
+		SOUND.option("Speedcube");
+		SOUND.option("Windows XP");
+	}
+	else{
+		SOUND.option("Not supported on this device/browser");
+	}
 	SOUND.parent("sounddiv");
-	SOUND.option("Speedcube");
-	SOUND.option("Windows XP");
 
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
@@ -613,7 +631,10 @@ p.setup = () => {
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
 	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white");
 
-	SETTINGS.position(cnv_div.offsetWidth-60,5);
+	if(goodsound)
+		SETTINGS.position(cnv_div.offsetWidth-140,5);
+	else
+		SETTINGS.position(cnv_div.offsetWidth-60,5);
 
 
 	CUSTOM = p.createButton('Custom Shape');
@@ -1214,6 +1235,8 @@ function generateID(){
 	if(IDINPUT.value() == "Checkerboard") str = "5ñFâwæo 3(Êçm80 4Gm!ðëA";
 	if(IDINPUT.value() == "Impossible Donut") str = "3iÐqtUì 6BAPpVI 5v8HýçA";
 	if(IDINPUT.value() == "Impossible Solved") str = "4oìz÷óÐ 2cUin*s 6BAPpVI 4Êñ";
+	if(IDINPUT.value() == "Autosolve WR scramble") str = "2hKóyãô 2Ó^üzÑ! 5È÷CU3æ 5þ÷";
+	if(IDINPUT.value() == "3x3 WR scramble") str = "4ÝW÷1i^ 31ß*XUY 4WÙIþlÉ 1~@";
 	allcubies = IDtoReal(IDtoLayout(decode(str)));
 	reSetup();
 	setLayout();
@@ -5252,14 +5275,24 @@ function refreshButtons()
 	SETTINGS.parent("settings");
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
 	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;");
-	SETTINGS.position(cnv_div.offsetWidth-140,5);
+	if(goodsound)
+		SETTINGS.position(cnv_div.offsetWidth-140,5);
+	else
+		SETTINGS.position(cnv_div.offsetWidth-60,5);
 
-	const VOLUME = p.createButton('🔊');
+	let VOLUME;
+	if(audioon){
+		VOLUME = p.createButton('🔊');
+		VOLUME.attribute('title', 'Sound on');
+	}
+	else{
+		VOLUME = p.createButton('🔇');
+		VOLUME.attribute('title', 'Sound off');
+	}
 	VOLUME.parent("audio");
 	VOLUME.style("font-size: 40px; height: 60px; width: 60px; border: none;"); // Replace 'image.png' with your image's path
 	VOLUME.style("background-size: cover; background-color: white; border-radius: 10px;");
 	VOLUME.position(cnv_div.offsetWidth-60,5);
-	VOLUME.attribute('title', 'Sound on');
 	VOLUME.mousePressed(() => {
 		if(audioon){
 			VOLUME.html("🔇");
