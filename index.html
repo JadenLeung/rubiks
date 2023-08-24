@@ -280,8 +280,12 @@
 					<span style = "display: inline;" id = "gap2">3</span>
 				</div>	
 				<div id = "sounddiv" class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
-					<p id="sound" style = "display: inline;"><span>Sound: &nbsp;</span></p>
+					<p style = "display: inline;"><span>Sound: &nbsp;</span></p>
 					<span style = "display: inline;" id = "sound"></span>
+				</div>	
+				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
+					<p style = "display: inline;"><span>Keyboard: &nbsp;</span></p>
+					<span style = "display: inline;" id = "keyboard"></span>
 				</div>	
 				<div style = "padding-bottom:7px; margin-top:8px;">
 					<p style = "display: inline; font-size:15px; text-align:left; padding-top:15px;">Top Color:</p>
@@ -336,10 +340,11 @@
 				  <td colspan = "2"><sup>=</sup><sub>redo</sub></td>
 				 <td colspan = "3"><sup>Bspace</sup><sub>undo</sub></td>
 				</tr>
-				<tr><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
-				<tr><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
-				<tr><td><sup>Z</sup> <sub></sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub></sub></td></tr>
-				<tr><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = "3"><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td></tr>
+				<tr id = "changekeys0"></tr>
+				<tr id = "changekeys1"><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
+				<tr id = "changekeys2"><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
+				<tr id = "changekeys3"><td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td></tr>
+				<tr id = "changekeys4"><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = "3"><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td></tr>
 			</table>
 			<div>
 				<p id = "scramble_par" class = "normal">Scramble: <span id = "scramble" style = "font-size:12px;">N/A</span></p>

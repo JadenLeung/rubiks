@@ -85,7 +85,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL, SOUND;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -618,6 +618,27 @@ p.setup = () => {
 		SOUND.option("Not supported on this device/browser");
 	}
 	SOUND.parent("sounddiv");
+
+	KEYBOARD = p.createSelect(); 
+	KEYBOARD.parent("keyboard");
+	KEYBOARD.option("Default");
+	KEYBOARD.option("Same as CS Timer");
+	KEYBOARD.changed(() => {
+		if(KEYBOARD.value() == "Same as CS Timer"){
+			document.getElementById("changekeys0").innerHTML = "<td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td>"
+			document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>z'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>x</sub></td><td><sup>Y</sup> <sub>x</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>z</sub></td>"
+			document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>y'</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>y</sub></td>";
+			document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub>M'</sub></td><td><sup>C</sup> <sub>u'</sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>x'</sub></td><td><sup>N</sup> <sub>x'</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>u</sub></td><td><sup>.</sup> <sub>M'</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
+			document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '4'><sup>Space</sup> <sub>stop time</sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td>";
+		}
+		else{
+			document.getElementById("changekeys0").innerHTML = ""
+			document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td>"
+			document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td>";
+			document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
+			document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
+		}
+	});
 
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
@@ -1584,6 +1605,7 @@ function difColors()
 	return false;
 }
 function stopTime(){
+	//alert(moves);
 	if(timer.isRunning && moves > 0)
 	{
 		timer.stop();
@@ -4551,6 +4573,13 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
+	let needsnew = [53,54,81,84,89,80,65,186,88,67,66,78,188,190];
+	let newkey = {
+		53: 190, 54: 190, 81: 1000, 84: 38, 89: 38, 80: 1001, 65: 39, 186: 37, 88: 188, 67: 84, 66: 40, 78: 40, 188: 89, 190: 188
+	}
+	if(KEYBOARD.value() == "Same as CS Timer"){
+		if(needsnew.includes(p.keyCode)) p.keyCode = newkey[p.keyCode];
+	}
 	if(timer.isRunning && race > 1){ //racedetect
 		raceDetect();
 		return;
@@ -4603,10 +4632,6 @@ p.keyPressed = (event) => {
 		rotateIt();
 		return;
 	}
-	if(p.keyCode == 54){ //6
-		darkMode();
-		return;
-	}
 	if(p.keyCode == 55){ //7
 		alert(getID());
 		return;
@@ -4621,11 +4646,11 @@ p.keyPressed = (event) => {
 	{
 		setLayout();
 		//console.log("here");
-		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89";
+		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89 1000 1001 90 191";
 		let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89";
-		let bad3 = "88 90";
+		let bad3 = "88c";
 		if(DIM == 100)
-			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81";
+			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81 1000 1001";
 		if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
 		if(bad3.includes(p.keyCode) && p.keyCode > 9 || p.keyCode == 18) return;
 		let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
@@ -4650,33 +4675,33 @@ p.keyPressed = (event) => {
 		}
 		let onedown = false;
 		alldown = false;
-		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66];
+		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191]; //no rotations
 		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50)){
 			alldown = true;
 			if(p.keyCode == 83 || p.keyCode == 76){ //D
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
-				}
+			}
 			if(p.keyCode == 70 || p.keyCode == 74){ //U
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
-				}
+			}
 			if(p.keyCode == 69 || p.keyCode == 68){ //L
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
-				}
+			}
 			if(p.keyCode == 73 || p.keyCode == 75){ //R
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
-				}
+			}
 			if(p.keyCode == 71 || p.keyCode == 72){ //F
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
-				}
+			}
 			if(p.keyCode == 87 || p.keyCode == 79){ //B
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == -50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
-				}
+			}
 			if(p.keyCode == 65 || p.keyCode == 186){ //E
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
@@ -4684,11 +4709,11 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 188 || p.keyCode == 190){ //M
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
-				}
+			}
 			if(p.keyCode == 81 || p.keyCode == 80){ //S
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 0);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 0);
-				}
+			}
 			if(p.keyCode == 85 || p.keyCode == 77){ //Rw
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50 || (CUBE[cubies[i]].z == 0));
@@ -4702,6 +4727,11 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 89 || p.keyCode == 84){ //Uw
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50 || CUBE[cubies[i]].x == 0);
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
+			}
+			if(p.keyCode == 90 || p.keyCode == 191){ //Dw
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
+				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50 || CUBE[cubies[i]].x == 0);
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
 			}
 			if(p.keyCode == 78 || p.keyCode == 66){ //Fw
@@ -4718,13 +4748,13 @@ p.keyPressed = (event) => {
 				return;
 			}
 		}
-		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80]
+		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80] //for 3x3x2
 		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
 		if(setup[0] == -50 || setup[0] == 50) //top
 			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
 		else if(setup[2] == -50 || setup[2] == 50) //left
-			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65];
-		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65]; // front
+			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65,90,191];
+		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191]; // front
 			
 		let bad6 = [190,188,65,186,80,81];
 		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
@@ -4754,8 +4784,8 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 84) changeArr("Uw2'")
 			if(p.keyCode == 78) changeArr("Fw2")
 			if(p.keyCode == 66) changeArr("Fw2'")
-			if(p.keyCode == 38) changeArr("x2")
-			if(p.keyCode == 40) changeArr("x2'")
+			if(p.keyCode == 90) changeArr("Dw2")
+			if(p.keyCode == 191) changeArr("Dw2'")
 			multiple(0, true);	
 			return;
 		}
@@ -4810,6 +4840,14 @@ p.keyPressed = (event) => {
 			rotationz++;
 			if(rotationz == 4) rotationz = 0;
 			break;	
+			case 1000:
+			undo.push("z'");
+			animateRotate("y", 1);
+			break;
+			case 1001:
+			undo.push("z");
+			animateRotate("y", -1);
+			break;
 			case 76:
 			undo.push("D'");
 			animate('x', 50, -1, true);
@@ -4914,6 +4952,14 @@ p.keyPressed = (event) => {
 			undo.push("Uw")
 			animateWide('x', -50, -1, true);
 			break;
+			case 90:
+			undo.push("Dw")
+			animateWide('x', 50, 1, true);
+			break;
+			case 191:
+			undo.push("Dw'")
+			animateWide('x', 50, -1, true);
+			break;
 			case 8: //backspace
 			Undo();
 			break;
@@ -4971,12 +5017,11 @@ p.keyPressed = (event) => {
 			.then((obj) => (setPLL(obj)));*/
 			console.log("erger");
 			break;
-			case 53: //5
+			case 56: //8
 			removeTime();
 			break;
 			case 51: //3
-			window.open(
-				"https://classroom.google.com/u/0/", "_blank");
+			darkMode();
 			break;
 		}
 		let bad = -1;
