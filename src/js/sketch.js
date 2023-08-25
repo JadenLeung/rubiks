@@ -2368,7 +2368,7 @@ function sliderUpdate2(){
 }
 //Henry
 function regular(nocustom){
-	if(MODE != "timed" && MODE != "cube")
+	if(MODE != "timed" && MODE != "cube" && MODE != "normal")
 	{
 		ao5 = [];
 		mo5 = [];
@@ -2473,7 +2473,7 @@ function regular(nocustom){
 }
 function timedmode()
 {
-	if(MODE != "normal" && MODE != "cube")
+	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
 	{
 		ao5 = [];
 		mo5 = [];
@@ -2598,10 +2598,10 @@ function settingsmode()
 	DIM = DIM2;
 	//reSetup();
 	stopMoving();
-
+	quickSolve();
 	refreshButtons();
 
-	regular();
+	//regular();
 	REGULAR.style('background-color', "#8ef5ee");
 	SETTINGS.style('background-color', "#8ef5ee");
 
@@ -3686,7 +3686,7 @@ function animate(axis, row, dir, time) {
 	}
 	if(Math.round(timer.getTime() / 10)/100.0 == 0 && time)
 	{
-		if(!(MODE == "cube" && alldown == true))
+		if(!(MODE == "cube" && alldown == true) && document.getElementById("ID3").style.display == "none")
 			timer.start();
 	}
 	
@@ -4504,7 +4504,7 @@ function animateWide(axis, row, dir, timed) {
 
 	if(Math.round(timer.getTime() / 10)/100.0 == 0 && timed)
 	{
-		if(!(MODE == "cube" && alldown == true))
+		if(!(MODE == "cube" && alldown == true) && document.getElementById("ID3").style.display == "none")
 			timer.start();
 	}
 
@@ -4590,7 +4590,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(special);
+		console.log(ao5, mo5);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
