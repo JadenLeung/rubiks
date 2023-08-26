@@ -18,5 +18,5 @@
 "H": ["(On any side) M2 U M2 U2 M2 U M2", "M2 U M2 U2 M2 U M2"],
 "Ua": ["(On any side) M2 U M U2 M' U M2", "M2 U' M U2 M' U' M2"],
 "Ub": ["(On any side) M2 U' M U2 M' U' M2", "M2 U M U2 M' U M2"],
-"Z": ["(Right side of the swapping pair- a pair constitutes 2 faces having the same colors- facing front) M' U M2 U M2 U M' U2 M2", "M' U M2 U M2 U M' U2 M2"]
+"Z": ["(Right side of the swapping pair- a pair constitutes 2 top layer sides having the same color scheme- facing front) M' U M2 U M2 U M' U2 M2", "M' U M2 U M2 U M' U2 M2"]
 }

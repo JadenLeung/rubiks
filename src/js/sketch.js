@@ -85,7 +85,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, DARK;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -113,6 +113,7 @@ export default function (p) {
 	let realtop;
 	let colorvalues = [];
 	let saveao5 = [];
+	let savesetup = [];
 	let song = "CcDdEFfGgAaB";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
@@ -597,6 +598,11 @@ p.setup = () => {
 	HOLLOW.parent("hollow")
 	HOLLOW.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	HOLLOW.changed(hollowCube.bind(null, 0));
+
+	DARK = p.createCheckbox("", false);
+	DARK.parent("dark")
+	DARK.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
+	DARK.changed((darkMode.bind(null, 0)));
 
 	TOPWHITE = p.createSelect(); 
 	TOPWHITE.parent("topwhite");
@@ -1264,15 +1270,6 @@ function generateID(){
 	TOPWHITE.selected(expandc[layout[2][1][1][0]]);
 }
 function IDtoReal(id){
-	
-	/*let id = [[['o', 'r', 'g'],['w', 'o', 'o'],['r', 'r', 'w']],
-	[['r', 'y', 'b'],['o', 'r', 'w'],['o', 'r', 'o']],
-	[['b', 'b', 'b'],['g', 'b', 'g'],['r', 'g', 'w']],
-	[['g', 'r', 'y'],['b', 'g', 'y'],['b', 'o', 'w']],
-	[['y', 'y', 'y'],['g', 'y', 'y'],['w', 'w', 'g']],
-	[['y', 'o', 'r'],['w', 'w', 'b'],['o', 'b', 'g']]];*/
-	//alert(id);
-	//allcubies[0] = ["r", "o", "y", "g", "b", "w"];
 	let a = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
 	a[0] = ["k", id[4][0][0], "k", id[0][0][0], "k", id[2][0][0]];
 	a[1] = ["k", id[4][0][1], "k", "k", "k", id[2][0][1]];
@@ -1516,24 +1513,9 @@ function speedSetup()
 		quickSolve();
 		return;
 	}
-	let cnt = 0;
-	arr = [];
-	for(let i = undo.length-1; i >= 0; i--)
-	{
-		arr[cnt] = Inverse(undo[i]);
-		cnt++;
-	}
-	console.log(arr);
-	shufflespeed = 2;
-	canMan = false;
-	if(easystep > 0)
-		multipleEasy(0,0.5);
-	else if(medstep > 0)
-		multipleEasy(0,1.5);
-	else if(pllstep > 0)
-		multipleEasy(0,2.5);
-	else if(ollstep > 0)
-		multipleEasy(0,5.5);
+	special[2] = savesetup;
+	quickSolve();
+	//reSetup();
 }
 function moveSetup()
 {
@@ -1551,21 +1533,9 @@ function moveSetup()
 		return;
 	}
 	moves = 0;
-	CAM = p.createEasyCam(p._renderer);
-	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	if(DIM2 == 100)
-		CAM.zoom(CAMZOOM+140);
-	else
-		CAM.zoom(CAMZOOM);
-	rotateIt();
+	special[2] = savesetup;
 	quickSolve();
-	arr = m_scramble;
-	shufflespeed = 2;
-	canMan = false;
-	if(m_34step > 0)
-		multipleEasy(0, 3.5);
-	else if(m_4step > 0)
-		multipleEasy(0, 4.5);
+	
 }
 function Hint()
 {
@@ -3397,6 +3367,7 @@ function multipleEasy(nb, dificil) {
 	else
 	{
 		shufflespeed = 5;
+		savesetup = IDtoReal(IDtoLayout(decode(getID())));
 		if(dificil == 0)
 		{
 			if(!isSolved())
