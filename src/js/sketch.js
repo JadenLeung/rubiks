@@ -112,7 +112,7 @@ export default function (p) {
 	let shuffling = false;
 	let realtop;
 	let colorvalues = [];
-	let curnote = 0;
+	let saveao5 = [];
 	let song = "CcDdEFfGgAaB";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
@@ -2375,6 +2375,12 @@ function regular(nocustom){
 		movesarr = [];
 		scrambles = [];
 	}
+	if(MODE == "speed" || MODE == "moves"){
+		ao5 = saveao5[0];
+		mo5 = saveao5[1];
+		scrambles = saveao5[2];
+		movesarr = saveao5[3];
+	}
 	document.getElementById("scramble").innerHTML = "N/A";
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
@@ -2519,13 +2525,11 @@ function cubemode()
 	bandaged3 = bandaged;
 	custom = 0;
 	MODE = "cube";
-	if(MODE != "cube" && MODE != "normal" && MODE != "timed" && MODE != "normal")
-	{
-		ao5 = [];
-		mo5 = [];
-		custom = 0;
-		movesarr = [];
-		scrambles = [];
+	if(MODE == "speed" || MODE == "moves"){
+		ao5 = saveao5[0];
+		mo5 = saveao5[1];
+		scrambles = saveao5[2];
+		movesarr = saveao5[3];
 	}
 	//if(MODE != "normal")
 	regular(true);
@@ -2629,9 +2633,11 @@ function speedmode()
 	MODE = "speed"
 	DIM = DIM2;
 	reSetup();
+	saveao5 = [ao5, mo5, scrambles, movesarr];
 	ao5 = [];
 	mo5 = [];
 	scrambles = [];
+	movesarr = [];
 
 	refreshButtons();
 	SPEEDMODE.style('background-color', "#8ef5ee");
@@ -2685,9 +2691,11 @@ function movesmode()
 	MODE = "moves"
 	DIM = DIM2;
 	reSetup();
+	saveao5 = [ao5, mo5, scrambles, movesarr];
 	ao5 = [];
 	mo5 = [];
 	scrambles = [];
+	movesarr = [];
 
 	refreshButtons();
 	MOVESMODE.style('background-color', "#8ef5ee");
@@ -2911,7 +2919,7 @@ function easy()
 			elements[i].style.display='none';
 		}
 		let total = 0;
-		for(let i = 0; i < 4; i++)
+		for(let i = 0; i < ao5.length; i++)
 		{
 			total += ao5[i];
 		}
@@ -4590,7 +4598,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(ao5, mo5);
+		console.log(ao5, mo5, saveao5);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -8588,10 +8596,11 @@ window.addEventListener('keydown', (e) => {
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
 //Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
 //Jaden WR 2x2: 3.88
-//PLL Practice: 6.9, 6.84, 6.2, 5.01
-//OLL Practice: 4.66, 4.31, 3.2
-//Easy: 0.8, 0.52s
-//Medium: 15.4s, 13.58s
+//3x3 PLL Practice: 6.9, 6.84, 6.2, 5.01
+//3x3 OLL Practice: 4.66, 4.31, 3.2
+//3x3 Easy: 0.8, 0.52s
+//3x3 Medium: 15.4s, 13.58s
+//3x3 Easy: 1.4s
 //FMC: 193
 //Shape Mod All: 234.85, 125.58s
 //Bandage Mod ALL: 672.28
