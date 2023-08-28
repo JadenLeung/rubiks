@@ -656,10 +656,10 @@ p.setup = () => {
 	SETTINGS.attribute('title', 'Settings');
 	SETTINGS.parent("settings");
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
-	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white");
+	SETTINGS.style("font-size: 40px; background-color: white");
 
 	if(goodsound)
-		SETTINGS.position(cnv_div.offsetWidth-140,5);
+		SETTINGS.position(cnv_div.offsetWidth-130,5);
 	else
 		SETTINGS.position(cnv_div.offsetWidth-60,5);
 
@@ -2538,6 +2538,10 @@ function idmode()
 {
 	//regular(true);
 	//MODE = "speed"
+	if(document.getElementById("ID3").style.display == "block"){
+		regular();
+		return;
+	}
 	DIM = DIM2;
 	//reSetup();
 	stopMoving();
@@ -2569,6 +2573,11 @@ function settingsmode()
 {
 	//regular(true);
 	//MODE = "speed"
+
+	if(document.getElementById("settings1").style.display == "block"){
+		regular();
+		return;
+	}
 	DIM = DIM2;
 	//reSetup();
 	stopMoving();
@@ -5298,9 +5307,9 @@ function refreshButtons()
 	SETTINGS.attribute('title', 'Settings');
 	SETTINGS.parent("settings");
 	SETTINGS.mousePressed(settingsmode.bind(null, 0));
-	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;");
+	SETTINGS.style("font-size: 40px; background-color: white; border: none; border-radius: 10px;");
 	if(goodsound)
-		SETTINGS.position(cnv_div.offsetWidth-140,5);
+		SETTINGS.position(cnv_div.offsetWidth-130,5);
 	else
 		SETTINGS.position(cnv_div.offsetWidth-60,5);
 
@@ -5314,7 +5323,7 @@ function refreshButtons()
 		VOLUME.attribute('title', 'Sound off');
 	}
 	VOLUME.parent("audio");
-	VOLUME.style("font-size: 40px; height: 60px; width: 60px; border: none;"); // Replace 'image.png' with your image's path
+	VOLUME.style("font-size: 40px; border: none;"); // Replace 'image.png' with your image's path
 	VOLUME.style("background-size: cover; background-color: white; border-radius: 10px;");
 	VOLUME.position(cnv_div.offsetWidth-60,5);
 	VOLUME.mousePressed(() => {
