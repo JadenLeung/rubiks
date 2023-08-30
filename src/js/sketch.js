@@ -256,6 +256,7 @@ class Timer {
 }
 const timer = new Timer();
 p.setup = () => {
+	
 	PICKER = new Picker(p, DEBUG);
 	let cnv_div = document.getElementById("cnv_div");
 	if (window.matchMedia("(max-width: 767px)").matches)
@@ -606,8 +607,8 @@ p.setup = () => {
 
 	TOPWHITE = p.createSelect(); 
 	TOPWHITE.parent("topwhite");
-	TOPWHITE.option("Blue");
 	TOPWHITE.option("White");
+	TOPWHITE.option("Blue");
 	TOPWHITE.option("Yellow");
 	TOPWHITE.option("Green");
 	TOPWHITE.option("Orange");
@@ -648,8 +649,8 @@ p.setup = () => {
 
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
-	TOPPLL.option("Same as above");
 	TOPPLL.option("Opposite of above");
+	TOPPLL.option("Same as above");
 	TOPPLL.changed(topWhite.bind(null, 0));
 
 	SETTINGS = p.createButton('⚙️');
@@ -841,6 +842,7 @@ p.setup = () => {
 	DELETEBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:0px; background-color:red;")
 	DELETEBAN.parent("deleteban");
 	DELETEBAN.mousePressed(deleteBan.bind(null, 0));	
+	topWhite();
 }
 setInterval(() => {
 	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
@@ -1259,10 +1261,10 @@ function decode(num){
 function generateID(){
 	let str = "";
 	if(IDINPUT.value() == "Default (solved)") str = "6BAPpVI 3iÐqtUì 4oìz÷óÐ";
-	if(IDINPUT.value() == "Checkerboard") str = "5ñFâwæo 3(Êçm80 4Gm!ðëA";
-	if(IDINPUT.value() == "Impossible Donut") str = "3iÐqtUì 6BAPpVI 5v8HýçA";
-	if(IDINPUT.value() == "Impossible Solved") str = "4oìz÷óÐ 2cUin*s 6BAPpVI 4Êñ";
-	if(IDINPUT.value() == "Autosolve WR scramble") str = "2hKóyãô 2Ó^üzÑ! 5È÷CU3æ 5þ÷";
+	if(IDINPUT.value() == "Checkerboard") str = "4GmZGcM 5dÞgcáè 3(ÊèÜæô 4dV";
+	if(IDINPUT.value() == "Impossible Donut") str = "5v8Hj*Ø 4oìyzI# 6BAQ3Úô 4dV";
+	if(IDINPUT.value() == "Impossible Solved") str = "5v8HýçA 3iÐqtUì 16saûók 5W3";
+	if(IDINPUT.value() == "Autosolve WR scramble") str = "2eñOäM( 2UhÑðî& 3éjrÒôÐ 4dV";
 	if(IDINPUT.value() == "3x3 WR scramble") str = "4ÝW÷1i^ 31ß*XUY 4WÙIþlÉ 1~@";
 	allcubies = IDtoReal(IDtoLayout(decode(str)));
 	reSetup();
@@ -2538,7 +2540,7 @@ function idmode()
 {
 	//regular(true);
 	//MODE = "speed"
-	if(document.getElementById("settings1").style.display == "block"){
+	if(document.getElementById("ID3").style.display == "block"){
 		regular();
 		return;
 	}
@@ -2579,9 +2581,9 @@ function settingsmode()
 		return;
 	}
 	DIM = DIM2;
-	//reSetup();
+	reSetup();
 	stopMoving();
-	quickSolve();
+	//quickSolve();
 	refreshButtons();
 
 	//regular();
@@ -4578,7 +4580,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(ao5, mo5, saveao5);
+		console.log(TOPWHITE.value()[0].toLowerCase(), opposite[TOPWHITE.value()[0].toLowerCase()], realtop);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -5007,6 +5009,15 @@ p.keyPressed = (event) => {
 			break;
 			case 56: //8
 			removeTime();
+			break;
+			case 57: //9
+			if(MODE != "normal" && MODE != "timed")
+				break;
+			TOPWHITE.selected("Blue");
+			TOPPLL.selected("Same as above");
+			SPEED_SLIDER.value(2);
+			SPEED = 2;
+			topWhite();
 			break;
 			case 51: //3
 			darkMode();
@@ -8479,8 +8490,8 @@ function settingsDefault(){
 	BORDER_SLIDER.value(0.3);
 	special[3] = 0;
 	GAP_SLIDER.value(0);
-	TOPWHITE.value("Blue");
-	TOPPLL.value("Same as above");
+	TOPWHITE.value("White");
+	TOPPLL.value("Opposite of above");
 	CAMZOOM = -170;
 	SIZE_SLIDER2.value(-CAMZOOM);
 	GAP_SLIDER.value(0);
