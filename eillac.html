@@ -1,0 +1,137 @@
+<html>
+    <head>
+        <title>eolhc</title>
+        <title>Jaden Leung, Lexington High School</title>
+	<!--script src = "https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script-->   
+    <script src = "https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script>
+	<script src = "src/index.js" type="module"></script>	
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	
+    <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"/>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">	
+	
+    <link rel="stylesheet" type="text/css" href="src/style.css">
+	
+	<style>
+		body{
+			background-color:#c9ffda;
+			color:#0a1970;
+			font:courier;
+			
+		}
+		.actualbody{
+			padding-left:0px;
+			padding-right:0px;
+		}
+		table, th, td{
+			border: 1px solid;
+			text-align:center;
+			padding:2px;
+		}
+		weird{
+			float:left;
+		}
+		ul {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+		}
+		li {
+			float: left;
+		}
+		li a{
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+		}
+		li a:hover {
+			background-color: #111;
+		}
+		.active {
+			background-color: #04AA6D;
+		}
+		.caption{
+			text-align:center;
+			color: red;
+			font-size: 15px;
+		}
+		img{
+			padding: 0px;
+			margin-left:auto;
+			margin-right:auto;
+		}		
+		.row{
+			max-width:100%;
+		}
+		sub{
+			font-weight: bold;
+		}
+		button{
+			touch-action: manipulation;
+		}
+		button:hover {
+			cursor: pointer;
+			background-color: #FABD44;
+		}
+		.noselect {
+			-webkit-touch-callout: none; /* iOS Safari */
+			-webkit-user-select: none; /* Safari */
+			-khtml-user-select: none; /* Konqueror HTML */
+			-moz-user-select: none; /* Old versions of Firefox */
+			-ms-user-select: none; /* Internet Explorer/Edge */
+			user-select: none; 
+		}
+	</style>	
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="utf-8">
+    </head>
+    <body style = "margin-left: 10px;">
+        <p>Find the secret phrase (2 words) hidden under the red underlines</p>
+		<p>Another name for the green room <span style = "color:red">_</span> _ _ _ _ _ _ _ &nbsp&nbsp _ _ _ _ _ _</p>
+        <p>Game where you're in a black cage and you aim for the legs! _ _ _ <span style = "color:red">_</span>&nbsp&nbsp _ _ _ _</p>
+        <p>Pull It. Golf it. _ _ _ &nbsp&nbsp _ <span style = "color:red">_</span></p>
+        <p>Some people eat it with eggs. Also my colonial costume for halloween oink. Nathaniel _ <span style = "color:red">_</span> _ _ _</p>
+        <p>_ _ _ _ _ _ <span style = "color:red">_</span> _ _ _ _ _ _ clap clap clap 64 clap clap clap no repeats clap clap clap</p>
+        <p>Synonym for 'times' _ _ _ <span style = "color:red"> _ </span> _ _ _ y</p>
+        <p>Name of a math contest _ _ <span style = "color:red">  _ </span>_ &nbsp&nbsp _ _ _ _ _ _ _ _</p>
+        <p>This cold activity can be denoted as 'advanced' in the clipboard _ _ <span style = "color:red">_</span> _ _ _ _</p>
+        <p>A finger game, also a famous piano song. 5 = bad. <span style = "color:red">_</span> _ _ _ _ _ _ _ _ _</p>
+        <p>Kinetic sand, train table _ _ _ _ _ &nbsp&nbsp&nbsp _ _ _ <span style = "color:red">_</span></p>
+        <br>
+        <p>Type the phrase here, 2 lowercase words separated by a space:</p>
+
+        <input type="text" id = "typein"></input>
+        <button id = "submit" style = "display:inline;">Submit</button>
+
+        <h1 id = "answer" style = "font-size: 40px;"></h1>
+    </body>
+    <script>
+        document.getElementById('submit').addEventListener('click', function() {
+            if(document.getElementById('typein').value == "cat attack"){
+                document.getElementById('answer').innerHTML = "🐱";
+                document.getElementById('answer').style = "font-size: 200px;";
+                alert("meow");
+            }
+        });
+        $(document).on("keypress", "input", function(e){
+            if(e.which == 13){
+                if(document.getElementById('typein').value == "cat attack"){
+                    document.getElementById('answer').innerHTML = "🐱";
+                    document.getElementById('answer').style = "font-size: 200px;";
+                    alert("meow");
+                }
+            }
+        });
+    </script>
+</html>
