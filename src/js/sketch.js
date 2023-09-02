@@ -2588,7 +2588,8 @@ function settingsmode()
 
 	//regular();
 	REGULAR.style('background-color', "#8ef5ee");
-	SETTINGS.style('background-color', "#8ef5ee");
+	if(!isIpad() && !window.matchMedia("(max-width: 767px)"))
+		SETTINGS.style('background-color', "#8ef5ee");
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
