@@ -319,7 +319,7 @@ p.setup = () => {
 			document.getElementById("audio").style.display = 'none';
 			goodsound = false;
 		}
-		var isSafari = window.safari !== undefined; //safari
+		var isSafari = window.safari !== undefined || isIpad(); //safari
 		if(isSafari) {
 			audioon = false;
 			document.getElementById("audio").style.display = 'none';
@@ -535,7 +535,7 @@ p.setup = () => {
 	INPUT.option("Key-3x3x2");
 	INPUT.option("Key-Gearcube");
 	INPUT.option("Button");
-	if(window.matchMedia("(max-width: 767px)").matches)
+	if(window.matchMedia("(max-width: 767px)").matches || isIpad()) 
 		INPUT.selected('Button');
 	else
 		INPUT.selected('Keyboard');
@@ -662,7 +662,7 @@ p.setup = () => {
 	if(goodsound)
 		SETTINGS.position(cnv_div.offsetWidth-140,5);
 	else
-		SETTINGS.position(cnv_div.offsetWidth-60,5);
+		SETTINGS.position(cnv_div.offsetWidth-80,5);
 
 
 	CUSTOM = p.createButton('Custom Shape');
@@ -4580,7 +4580,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log(TOPWHITE.value()[0].toLowerCase(), opposite[TOPWHITE.value()[0].toLowerCase()], realtop);
+		console.log(isIpad());
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -5113,7 +5113,10 @@ function multiple2(nb, timed) {
 		canMan = false;
 		notation(arr[nb], timed);
 		console.log(nb);
-		setTimeout(multiple2.bind(null, nb + 1), 20);
+		if(isIpad())
+			setTimeout(multiple2.bind(null, nb + 1), 80);
+		else
+			setTimeout(multiple2.bind(null, nb + 1), 20);
 	}
 	else
 	{
@@ -5321,8 +5324,10 @@ function refreshButtons()
 	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;");
 	if(goodsound)
 		SETTINGS.position(cnv_div.offsetWidth-140,5);
-	else
-		SETTINGS.position(cnv_div.offsetWidth-60,5);
+	else{
+		SETTINGS.position(cnv_div.offsetWidth-80,5);
+		SETTINGS.style("background-color: #e6e6e6;")
+	}
 
 	let VOLUME;
 	if(audioon){
@@ -8234,6 +8239,10 @@ $(document).on("keypress", "input", function(e){
 		testAlg();
 	}
 });
+function isIpad(){
+	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !(window.matchMedia("(max-width: 767px)").matches);
+}
+
 function sideSolved(color)
 {
 	if(DIM == 50)
