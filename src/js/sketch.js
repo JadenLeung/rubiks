@@ -535,7 +535,7 @@ p.setup = () => {
 	INPUT.option("Key-3x3x2");
 	INPUT.option("Key-Gearcube");
 	INPUT.option("Button");
-	if(window.matchMedia("(max-width: 767px)").matches || isIpad() || false) 
+	if(window.matchMedia("(max-width: 767px)").matches || isIpad()) 
 		INPUT.selected('Button');
 	else
 		INPUT.selected('Keyboard');
