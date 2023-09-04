@@ -8242,7 +8242,8 @@ $(document).on("keypress", "input", function(e){
 	}
 });
 function isIpad(){
-	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !(window.matchMedia("(max-width: 767px)").matches);
+	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !(window.matchMedia("(max-width: 767px)").matches) 
+	&& !matchMedia('(pointer:fine)').matches;
 }
 
 function sideSolved(color)
