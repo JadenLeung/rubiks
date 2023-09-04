@@ -4581,7 +4581,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		setLayout();
-		console.log("bye");
+		console.log("fwe");
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
