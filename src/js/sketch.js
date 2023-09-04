@@ -535,7 +535,7 @@ p.setup = () => {
 	INPUT.option("Key-3x3x2");
 	INPUT.option("Key-Gearcube");
 	INPUT.option("Button");
-	if(window.matchMedia("(max-width: 767px)").matches || isIpad()) 
+	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) //phone computer
 		INPUT.selected('Button');
 	else
 		INPUT.selected('Keyboard');
@@ -8241,7 +8241,8 @@ $(document).on("keypress", "input", function(e){
 	}
 });
 function isIpad(){
-	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !(window.matchMedia("(max-width: 767px)").matches);
+	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !(window.matchMedia("(max-width: 767px)").matches) 
+	&& !matchMedia('(pointer:fine)').matches;
 }
 
 function sideSolved(color)
