@@ -630,22 +630,10 @@ p.setup = () => {
 	KEYBOARD = p.createSelect(); 
 	KEYBOARD.parent("keyboard");
 	KEYBOARD.option("Default");
-	KEYBOARD.option("Same as CS Timer");
+	KEYBOARD.option("Alt Keyboard");
+	changeKeys();
 	KEYBOARD.changed(() => {
-		if(KEYBOARD.value() == "Same as CS Timer"){
-			document.getElementById("changekeys0").innerHTML = "<td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td>"
-			document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>z'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>x</sub></td><td><sup>Y</sup> <sub>x</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>z</sub></td>"
-			document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>y'</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>y</sub></td>";
-			document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub>M'</sub></td><td><sup>C</sup> <sub>u'</sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>x'</sub></td><td><sup>N</sup> <sub>x'</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>u</sub></td><td><sup>.</sup> <sub>M'</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
-			document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '4'><sup>Space</sup> <sub>stop time</sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td>";
-		}
-		else{
-			document.getElementById("changekeys0").innerHTML = ""
-			document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td>"
-			document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td>";
-			document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
-			document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
-		}
+		changeKeys();
 	});
 
 	TOPPLL = p.createSelect(); 
@@ -1240,6 +1228,22 @@ function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
 	CAM.rotateY(-p.PI / ROTY);
 	CAM.rotateZ(-p.PI / ROTZ);
+}
+function changeKeys(){
+	if(KEYBOARD.value() == "Default"){
+		document.getElementById("changekeys0").innerHTML = "<td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td>"
+		document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>z'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>x</sub></td><td><sup>Y</sup> <sub>x</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>z</sub></td>"
+		document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>y'</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>y</sub></td>";
+		document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub>M'</sub></td><td><sup>C</sup> <sub>u'</sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>x'</sub></td><td><sup>N</sup> <sub>x'</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>u</sub></td><td><sup>.</sup> <sub>M'</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
+		document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '4'><sup>Space</sup> <sub>stop time</sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td>";
+	}
+	else{
+		document.getElementById("changekeys0").innerHTML = ""
+		document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td>"
+		document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td>";
+		document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
+		document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
+	}
 }
 function decode(num){
 	//6BAPpVI 3iÐqtUì 4oìz÷óÐ
@@ -2497,7 +2501,6 @@ function cubemode()
 {
 	bandaged3 = bandaged;
 	custom = 0;
-	MODE = "cube";
 	if(MODE == "speed" || MODE == "moves"){
 		ao5 = saveao5[0];
 		mo5 = saveao5[1];
@@ -4569,7 +4572,7 @@ p.keyPressed = (event) => {
 	let newkey = {
 		53: 190, 54: 190, 81: 1000, 84: 38, 89: 38, 80: 1001, 65: 39, 186: 37, 88: 188, 67: 84, 66: 40, 78: 40, 188: 89, 190: 188
 	}
-	if(KEYBOARD.value() == "Same as CS Timer"){
+	if(KEYBOARD.value() == "Default"){
 		if(needsnew.includes(p.keyCode)) p.keyCode = newkey[p.keyCode];
 	}
 	if(timer.isRunning && race > 1){ //racedetect
@@ -5020,6 +5023,8 @@ p.keyPressed = (event) => {
 			SPEED_SLIDER.value(2);
 			SPEED = 2;
 			topWhite();
+			KEYBOARD.value("Alt Keyboard");
+			changeKeys();
 			break;
 			case 51: //3
 			darkMode();
@@ -8503,7 +8508,10 @@ function settingsDefault(){
 	special[3] = 0;
 	GAP_SLIDER.value(0);
 	TOPWHITE.value("White");
+	SOUND.value("Speedcube")
 	TOPPLL.value("Opposite of above");
+	KEYBOARD.value("Default");
+	changeKeys();
 	CAMZOOM = -170;
 	SIZE_SLIDER2.value(-CAMZOOM);
 	GAP_SLIDER.value(0);
