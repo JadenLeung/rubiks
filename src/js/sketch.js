@@ -8613,7 +8613,8 @@ window.addEventListener('keydown', (e) => {
 //3x3 Medium: 15.4s, 13.58s
 //3x3 Easy: 1.4s
 //FMC: 193
-//Shape Mod All: 234.85, 125.58s
+//Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s 
+//Shape Mod All WR times: (8.43, 16.39, 34.63, 20.54, 9.21, 29.57, 4.45)
 //Bandage Mod ALL: 672.28
 
 //BELOW 54 MOVES
