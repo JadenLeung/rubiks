@@ -2141,6 +2141,7 @@ function deleteBan(){
 }
 function inputPressed(move)
 {
+	redo = [];
 	if(customb > 0 && move[0] != "y" && move[0] != "x") return;
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].animating()) {
@@ -4753,6 +4754,7 @@ p.keyPressed = (event) => {
 			
 		let bad6 = [190,188,65,186,80,81];
 		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
+			redo = [];
 			if(p.keyCode == 83) changeArr("D2")
 			if(p.keyCode == 76) changeArr("D2'")
 			if(p.keyCode == 74) changeArr("U2")
@@ -4787,6 +4789,7 @@ p.keyPressed = (event) => {
 		else if(INPUT.value() == "Key-Gearcube" && bad4.includes(p.keyCode)){
 			if(bad6.includes(p.keyCode))
 				return;
+			redo = [];
 			if(p.keyCode == 83) changeArr("d D")
 			if(p.keyCode == 76) changeArr("d' D'")
 			if(p.keyCode == 74) changeArr("u U")
@@ -4805,6 +4808,7 @@ p.keyPressed = (event) => {
 		switch (p.keyCode) {	
 			case 37:
 			if(customb > 0 && rotationz != 0) break;
+			redo = [];
 			console.log("Left Arrow/y");
 			undo.push("y");
 			animateRotate("x", -1);
@@ -4813,6 +4817,7 @@ p.keyPressed = (event) => {
 			break;
 			case 39:
 			if(customb > 0 && rotationz != 0) break;
+			redo = [];
 			console.log("Right Arrow/y'");
 			undo.push("y'");
 			animateRotate("x", 1);
@@ -4822,6 +4827,7 @@ p.keyPressed = (event) => {
 			case 40:
 			console.log("Down Arrow/x'");
 			if(customb > 0 && rotationx != 0) break;
+			redo = [];
 			undo.push("x'");
 			animateRotate("z", -1);
 			rotationz--;
@@ -4830,6 +4836,7 @@ p.keyPressed = (event) => {
 			case 38:
 			console.log("Up Arrow/x");
 			if(customb > 0 && rotationx != 0) break;
+			redo = [];
 			undo.push("x");
 			animateRotate("z", 1);
 			rotationz++;
@@ -4837,122 +4844,152 @@ p.keyPressed = (event) => {
 			break;	
 			case 1000:
 			undo.push("z'");
+			redo = [];
 			animateRotate("y", 1);
 			break;
 			case 1001:
 			undo.push("z");
+			redo = [];
 			animateRotate("y", -1);
 			break;
 			case 76:
 			undo.push("D'");
+			redo = [];
 			animate('x', 50, -1, true);
 			break;
 			case 83:
 			undo.push("D");
+			redo = [];
 			animate('x', 50, 1, true);
 			break;
 			case 74:
 			undo.push("U");
+			redo = [];
 			animate('x', -50, -1, true);
 			break;
 			case 70:
 			undo.push("U'");
+			redo = [];
 			animate('x', -50, 1, true);
 			break;
 			case 72:
 			undo.push("F");
+			redo = [];
 			animate('y', 50, -1, true);
 			break;
 			case 71:
 			undo.push("F'");
+			redo = [];
 			animate('y', 50, 1, true);
 			break;
 			case 79:
 			undo.push("B'");
+			redo = [];
 			animate('y', -50, -1, true);
 			break;
 			case 87:
 			undo.push("B");
+			redo = [];
 			animate('y', -50, 1, true);
 			break;
 			case 75:
 			undo.push("R'");
+			redo = [];
 			animate('z', 50, -1, true);
 			break;
 			case 73:
 			undo.push("R");
+			redo = [];
 			animate('z', 50, 1, true);
 			break;
 			case 68:
 			undo.push("L");
+			redo = [];
 			animate('z', -50, -1, true);
 			break;
 			case 69:
 			undo.push("L'");
+			redo = [];
 			animate('z', -50, 1, true);
 			break;
 			case 188:
 			undo.push("M'");
+			redo = [];
 			animate('z', 0, 1, true);
 			break;
 			case 190:
 			undo.push("M");
+			redo = [];
 			animate('z', 0, -1, true);
 			break;
 			case 65:
 			undo.push("E");
+			redo = [];
 			animate('x', 0, 1, true);
 			break;
 			case 186:
 			undo.push("E'");
+			redo = [];
 			animate('x', 0, -1, true);
 			break;
 			case 80:
 			undo.push("S");
+			redo = [];
 			animate('y', 0, -1, true);
 			break;
 			case 81:
 			undo.push("S'");
+			redo = [];
 			animate('y', 0, 1, true);
 			break;
 			case 77:
 			undo.push("Rw'");
+			redo = [];
 			animateWide('z', 50, -1, true);
 			break;
 			case 85:
 			undo.push("Rw");
+			redo = [];
 			animateWide('z', 50, 1, true);
 			break;
 			case 86:
 			undo.push("Lw");
+			redo = [];
 			animateWide('z', -50, -1, true);
 			break;
 			case 82:
 			undo.push("Lw'");
+			redo = [];
 			animateWide('z', -50, 1, true);
 			break;
 			case 78:
 			undo.push("Fw");
+			redo = [];
 			animateWide('y', 50, -1, true);
 			break;
 			case 66:
 			undo.push("Fw'");
+			redo = [];
 			animateWide('y', 50, 1, true);
 			break;
 			case 84:
-			undo.push("Uw'")
+			undo.push("Uw'");
+			redo = [];
 			animateWide('x', -50, 1, true);
 			break;
 			case 89:
-			undo.push("Uw")
+			undo.push("Uw");
+			redo = [];
 			animateWide('x', -50, -1, true);
 			break;
 			case 90:
-			undo.push("Dw")
+			undo.push("Dw");
+			redo = [];
 			animateWide('x', 50, 1, true);
 			break;
 			case 191:
-			undo.push("Dw'")
+			undo.push("Dw'");
+			redo = [];
 			animateWide('x', 50, -1, true);
 			break;
 			case 8: //backspace
@@ -7777,7 +7814,8 @@ function dragAction()
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		if (cuby !== false) {
 			if (selectedCuby !== false) {
-				dragCube(selectedCuby, selectedColor, cuby, hoveredColor);
+				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor))
+					redo = [];
 			}
 		}
 	}
