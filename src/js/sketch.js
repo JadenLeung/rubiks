@@ -8661,6 +8661,7 @@ window.addEventListener('keydown', (e) => {
 // R D' L2 B2 D2 R F2 R2 F' R2 F' L2 B' U2 F' L2 U F2 (52)
 // U R2 D' F2 L2 B U B R2 U2 R2 B2 R F2 D' F2 R' D' (52)
 // U R D L2 B2 R2 U F' D' F L F' R2 F2 D2 B' D2 F (52)
+// L2 F2 R' D B2 L2 U2 L' D' R' F R B2 R2 U' F' R2 D2
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
 //  2)se$ÞG 17Þn6i~ 5HK8løå  (48)
