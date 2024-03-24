@@ -3377,9 +3377,7 @@ function multipleEasy(nb, dificil) {
 		moves++;
 		notation(arr[nb]);
 		console.log(nb, "easy", dificil);
-		let secs = 20;
-		moves = 0;
-		setTimeout(multipleEasy.bind(null, nb + 1, dificil), secs);
+		waitForCondition(multipleEasy.bind(null, nb + 1, dificil), false);
 	}
 	else
 	{
@@ -3654,13 +3652,16 @@ function twobytwo() //returns the number of faces containing 2x2 squares
 	}
 	return cnt;
 }
-function animate(axis, row, dir, time) {
+function isAnimating() {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].animating()) {
-			// some cube is already in animation
-			return;
+			return true;
 		}
 	}
+	return false;
+}
+function animate(axis, row, dir, time) {
+	if (isAnimating()) return;
 	let total = 0;
 	let cuthrough = false;
 	if(bandaged.length > 0){
@@ -4553,14 +4554,18 @@ function sleep(milliseconds) {
 		currentDate = Date.now();
 	} while (currentDate - date < milliseconds);
 }
-document.onkeydown = keydown; 
-function keydown (evt) { 
-    if (evt.ctrlKey) {
-		inspect = true;
-    } 
-	else
-	inspect = false;
-}
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        inspect = true;
+    }
+});
+
+document.addEventListener('keyup', function(event) {
+    if (!event.ctrlKey && !event.metaKey) {
+        inspect = false;
+    }
+});
+
 p.keyPressed = (event) => {
 	console.log(special);
 	if (event.srcElement.nodeName == "INPUT") {
@@ -5140,27 +5145,30 @@ function multiple(nb, timed) {
 				moves++;
 		}
 		console.log(nb);
-		let secs = 375-SPEED*225;
-		if(secs < 20)
-		secs = 20;
-		secs += DELAY*1000;
-		setTimeout(multiple.bind(null, nb + 1), secs);
+		waitForCondition(multiple.bind(null, nb + 1), true);
 	}
 	else
 	{
 		canMan = true;
 	}
 }
+function waitForCondition(callback, delay) {
+    if (!isAnimating()) {
+        callback();
+    } else {
+        setTimeout(function() {
+            waitForCondition(callback);
+        }, 0 + DELAY * 1000 * delay); // Check every milliseconds
+    }
+}
+
 function multiple2(nb, timed) {
 	if (nb < arr.length) {
 		shufflespeed = 2;
 		canMan = false;
 		notation(arr[nb], timed);
 		console.log(nb);
-		if(isIpad())
-			setTimeout(multiple2.bind(null, nb + 1), 80);
-		else
-			setTimeout(multiple2.bind(null, nb + 1), 20);
+		waitForCondition(multiple2.bind(null, nb + 1));
 	}
 	else
 	{
@@ -7059,11 +7067,7 @@ function multipleCross3(nb) {
 		notation(arr[nb]);
 		console.log(nb);
 		moves++;
-		let secs = 375-SPEED*225;
-		secs += DELAY*1000;
-		if(secs < 20)
-		secs = 20;
-		setTimeout(multipleCross3.bind(null, nb + 1), secs);
+		waitForCondition(multipleCross3.bind(null, nb + 1), true);
 	}
 	else
 	{
@@ -7091,11 +7095,7 @@ function multipleCross2(nb) {
 		moves++;
 		notation(arr[nb]);
 		console.log(nb);
-		let secs = 375-SPEED*225;
-		secs += DELAY*1000;
-		if(secs < 20)
-		secs = 20;
-		setTimeout(multipleCross2.bind(null, nb + 1), secs);
+		waitForCondition(multipleCross2.bind(null, nb + 1), true);
 	}
 	else
 	{
@@ -7116,7 +7116,7 @@ function multipleMod(nb, len, total2, prev)
 	if (nb < arr.length) {
 		canMan = false;
 		notation(arr[nb]);
-		setTimeout(multipleMod.bind(null, nb + 1, len, total2, prev), 20);
+		waitForCondition(multipleMod.bind(null, nb + 1, len, total2, prev));
 	}
 	else{
 		if(arr.length > 1)
@@ -7136,11 +7136,7 @@ function multipleCross(nb) {
 		canMan = false;
 		notation(arr[nb]);
 		console.log(nb);
-		let secs = 375-SPEED*225;
-		secs += DELAY*1000;
-		if(secs < 20)
-		secs = 20;
-		setTimeout(multipleCross.bind(null, nb + 1), secs);
+		waitForCondition(multipleCross.bind(null, nb + 1), true);
 	}
 	else
 	{
