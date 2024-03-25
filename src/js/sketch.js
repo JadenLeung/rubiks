@@ -4380,12 +4380,12 @@ function startAction() {
 	}
 	let hoveredColor;
 	if(p.touches.length == 0)
-		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
+		hoveredColor = p.get(p.mouseX, p.mouseY);
 	else
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
-		hoveredColor = p.get(xx, p.windowHeight * WINDOW - yy);
+		hoveredColor = p.get(xx, yy);
 	}
 	//if(layout[2][1][1][0] == "w")
 	//alert(getColor(hoveredColor));
@@ -7799,12 +7799,12 @@ function dragAction()
 {
 	let hoveredColor;
 	if(p.touches.length == 0)
-		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
+		hoveredColor = p.get(p.mouseX, p.mouseY);
 	else
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
-		hoveredColor = p.get(xx, p.windowHeight * WINDOW - yy);
+		hoveredColor = p.get(xx, yy);
 	}
 	if (hoveredColor) {
 		const cuby = getCubyIndexByColor2(hoveredColor);
@@ -8179,12 +8179,12 @@ p.windowResized = () => {
 p.draw = () => {
 	let hoveredColor;
 	if(p.touches.length == 0)
-		hoveredColor = p.get(p.mouseX, p.windowHeight * WINDOW - p.mouseY);
+		hoveredColor = p.get(p.mouseX, p.mouseY);
 	else
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
-		hoveredColor = p.get(xx, p.windowHeight * WINDOW - yy);
+		hoveredColor = p.get(xx, yy);
 		CAM.removeMouseListeners();
 	}
 	
@@ -8651,17 +8651,18 @@ window.addEventListener('keydown', (e) => {
 //Shape Mod All WR times: (8.43, 16.39, 34.63, 20.54, 9.21, 29.57, 4.45)
 //Bandage Mod ALL: 672.28
 
-//BELOW 54 MOVES
-//B2 R2 F' R2 D' L2 D2 F2 L' U2 B R F L D R2 F2 D2 (53)
-// R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53)
+//BELOW 53 MOVES
+// R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53) (52)
+// F2 L B' R2 B L2 U2 F2 R2 F2 U F2 D2 R' B2 L2 U2 R2
 // R D' L2 B2 D2 R F2 R2 F' R2 F' L2 B' U2 F' L2 U F2 (52)
 // U R2 D' F2 L2 B U B R2 U2 R2 B2 R F2 D' F2 R' D' (52)
 // U R D L2 B2 R2 U F' D' F L F' R2 F2 D2 B' D2 F (52)
-// L2 F2 R' D B2 L2 U2 L' D' R' F R B2 R2 U' F' R2 D2
+// L2 F2 R' D B2 L2 U2 L' D' R' F R B2 R2 U' F' R2 D2 (51)
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
 //  2)se$ÞG 17Þn6i~ 5HK8løå  (48)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
+// F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!!
 //U2 B D' R2 U L2 D F D B R B2 U2 B' U B' L U' (41)
 
