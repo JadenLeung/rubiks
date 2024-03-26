@@ -371,21 +371,16 @@ p.setup = () => {
 	document.getElementById("timegone").style.display = "none";
 
 	const SHUFFLE_BTN = p.createButton('Scramble');
-	SHUFFLE_BTN.parent("shuffle_div");
-	SHUFFLE_BTN.mousePressed(shuffleCube.bind(null, 0));
+	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-light', 'border-color: black;', shuffleCube.bind(null, 0));
 
 	TWOBYTWO = p.createButton('2x2');
-	TWOBYTWO.parent("type");
-	TWOBYTWO.mousePressed(changeTwo.bind(null, 0));
+	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
 
 	THREEBYTHREE = p.createButton('3x3');
-	THREEBYTHREE.parent("type2");
-	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
-	THREEBYTHREE.style('background-color', "#f5f573");
+	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
 
-	NBYN = p.createButton('Other');
-	NBYN.parent("type4");
-	NBYN.mousePressed(cubemode.bind(null, 0));
+	NBYN = p.createButton('More');
+	setButton(NBYN, "type4", 'btn btn-light btn-sm', 'border-color: black; ', cubemode.bind(null, 0));
 
 	SEL = p.createSelect(); //Top
 	SEL.parent("select1")
@@ -544,57 +539,39 @@ p.setup = () => {
 
 
 	const BACK = p.createButton('Back');
-	BACK.parent("custom3");
-	BACK.mousePressed(cubemode.bind(null, 0));
-	BACK.style("height:30px; width:50px; text-align:center; font-size:15px;");
+	setButton(BACK, "custom3", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
 
 	const BACK2 = p.createButton('Back');
-	BACK2.parent("custom5");
-	BACK2.mousePressed(cubemode.bind(null, 0));
-	BACK2.style("height:30px; width:50px; text-align:center; font-size:15px;");
+	setButton(BACK2, "custom5", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
 
 	const IDBACK = p.createButton('Back');
-	IDBACK.parent("idback");
-	IDBACK.mousePressed((regular.bind(null, 0)));
-	IDBACK.style("text-align:center; font-size:20px;");
+	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
 
 	const SETTINGSBACK = p.createButton('Back');
-	SETTINGSBACK.parent("settingsback");
-	SETTINGSBACK.mousePressed((regular.bind(null, 0)));
-	SETTINGSBACK.style("text-align:center; font-size:20px;");
+	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
 
 	const IDDEFAULT = p.createButton('Restore defaults');
-	IDDEFAULT.parent("iddefault");
-	IDDEFAULT.mousePressed(() => {
+	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', () => {
 		allcubies = false;
 		reSetup();
+		TOPWHITE.value("White");
+		topWhite();
 	});
-	IDDEFAULT.style("text-align:center; font-size:20px;");
 
 	const SETTINGSDEFAULT = p.createButton('Restore defaults');
-	SETTINGSDEFAULT.parent("settingsdefault");
-	SETTINGSDEFAULT.mousePressed(settingsDefault.bind(null, 0));
-	SETTINGSDEFAULT.style("text-align:center; font-size:20px;");
+	setButton(SETTINGSDEFAULT, "settingsdefault", 'btn btn-light', 'font-size:20px; border-color: black;', settingsDefault.bind(null, 0));
 
-	const DEAFULT = p.createButton('Restore');
-	DEAFULT.parent("select7");
-	DEAFULT.mousePressed(changeZero.bind(null, 0));
-	DEAFULT.style("height:30px; width:70px; text-align:center; font-size:15px;");
+	const DEFAULT = p.createButton('Restore');
+	setButton(DEFAULT, "select7", 'btn btn-light', 'font-size:15px; border-color: black;', changeZero.bind(null, 0));
 
 	const DEAFULT2 = p.createButton('Restore');
-	DEAFULT2.parent("select9");
-	DEAFULT2.mousePressed(bandageZero.bind(null, 0));
-	DEAFULT2.style("height:30px; width:70px; text-align:center; font-size:15px;");
+	setButton(DEAFULT2, "select9", 'btn btn-light', 'font-size:15px; border-color: black;', bandageZero.bind(null, 0));
 
 	const RNG = p.createButton(String.fromCharCode(0x2684));
-	RNG.parent("rng");
-	RNG.mousePressed(changeRandom.bind(null, 0));
-	RNG.style("height:30px; width:40px; text-align:center; font-size:15px;");
+	setButton(RNG, "rng", 'btn btn-light', 'font-size:15px; border-color: black;', changeRandom.bind(null, 0));
 
 	const RNG2 = p.createButton(String.fromCharCode(0x2684));
-	RNG2.parent("rng2");
-	RNG2.mousePressed(randomBandage.bind(null, 0));
-	RNG2.style("height:30px; width:40px; text-align:center; font-size:15px;");
+	setButton(RNG2, "rng2", 'btn btn-light', 'font-size:15px; border-color: black;', randomBandage.bind(null, 0));
 
 	HOLLOW = p.createCheckbox("", false);
 	HOLLOW.parent("hollow")
@@ -655,25 +632,24 @@ p.setup = () => {
 
 
 	CUSTOM = p.createButton('Custom Shape');
-	CUSTOM.parent("custom");
-	CUSTOM.mousePressed(Custom.bind(null, 0));
-	CUSTOM.style("height:45px; width:180px; text-align:center; font-size:20px;");
+	setButton(CUSTOM, "custom", 'btn btn-primary', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', Custom.bind(null, 0));
 
 	CUSTOM2 = p.createButton('Custom Bandage');
-	CUSTOM2.parent("customb");
-	CUSTOM2.mousePressed(Custom2.bind(null, 0));
-	CUSTOM2.style("height:45px; width:180px; text-align:center; font-size:20px;");
+	setButton(CUSTOM2, "customb", 'btn btn-primary', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', Custom2.bind(null, 0));
 	
 	const RESET = p.createButton('Reset');
-	RESET.parent("reset_div");
-	RESET.mousePressed(reSetup.bind(null, 0));
+	setButton(RESET, "reset_div", 'btn btn-light', 'border-color: black;', reSetup.bind(null, 0));
 
 	const RESET2 = p.createButton('Reset');
 	RESET2.parent("reset2_div");
+	RESET2.class('btn btn-light');
+	RESET2.style('border-color: black;');
 	RESET2.mousePressed(moveSetup.bind(null, 0));
 
 	const RESET3 = p.createButton('Reset');
 	RESET3.parent("reset3_div");
+	RESET3.class('btn btn-light');
+	RESET3.style('border-color: black;');
 	RESET3.mousePressed(speedSetup.bind(null, 0));
 
 	const STOP = p.createButton('Stop Time');
@@ -681,39 +657,28 @@ p.setup = () => {
 	STOP.mousePressed(stopTime.bind(null, 0));
 
 	const HINT = p.createButton('Hint');
-	HINT.parent("hint");
-	HINT.mousePressed(Hint.bind(null, 0));
+	setButton(HINT, "hint", 'btn btn-light', 'border-color: black;', Hint.bind(null, 0));
 	
 	const GIVEUP = p.createButton('Give Up');
-	GIVEUP.parent("giveup");
-	GIVEUP.mousePressed(giveUp.bind(null, 0));
+	setButton(GIVEUP, "giveup", 'btn btn-light', 'border-color: black;', giveUp.bind(null, 0));
 
 	const UNDO = p.createButton('Undo');
-	UNDO.parent("undo");
-	UNDO.mousePressed(Undo.bind(null, 0));
+	setButton(UNDO, "undo", 'btn btn-light', 'border-color: black;', Undo.bind(null, 0));
 	
 	const REDO = p.createButton('Redo');
-	REDO.parent("redo");
-	REDO.mousePressed(Redo.bind(null, 0));
+	setButton(REDO, "redo", 'btn btn-light', 'border-color: black;', Redo.bind(null, 0));
 	
 	const SOLVE = p.createButton('Auto-Solve');
-	SOLVE.parent("solve");
-	SOLVE.mousePressed(solveCube.bind(null, 0));
+	setButton(SOLVE, "solve", 'btn btn-light', 'border-color: black;', solveCube.bind(null, 0));
 	
 	const EASY = p.createButton('Easy');
-	EASY.style("height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58")
-	EASY.parent("s_easy");
-	EASY.mousePressed(easy.bind(null, 0));
+	setButton(EASY, "s_easy", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', easy.bind(null, 0));
 
 	const M_34 = p.createButton('3 to 5 Movers');
-	M_34.style("height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58")
-	M_34.parent("m_34");
-	M_34.mousePressed(m_34.bind(null, 0));
+	setButton(M_34, "m_34", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', m_34.bind(null, 0));
 
 	const M_4 = p.createButton('Endless (Medium)');
-	M_4.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8;")
-	M_4.parent("m_4");
-	M_4.mousePressed(m_4.bind(null, 0));
+	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
 	IDCOPY.parent("idcopy");
@@ -737,34 +702,22 @@ p.setup = () => {
 	GENERATE.mousePressed(generateID.bind(null, 0));
 	
 	const MED = p.createButton('Medium');
-	MED.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8;")
-	MED.parent("s_medium");
-	MED.mousePressed(medium.bind(null, 0));
+	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
 
 	const OLL = p.createButton('OLL Practice');
-	OLL.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163;")
-	OLL.parent("s_OLL");
-	OLL.mousePressed(speedOLL.bind(null, 0));
+	setButton(OLL, "s_OLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedOLL.bind(null, 0));
 	
 	PLL = p.createButton('PLL/PBL Practice');
-	PLL.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163;")
-	PLL.parent("s_PLL");
-	PLL.mousePressed(speedPLL.bind(null, 0));
+	setButton(PLL, "s_PLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedPLL.bind(null, 0));
 
 	const RACE = p.createButton('Start Race');
-	RACE.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53;")
-	RACE.parent("s_RACE");
-	RACE.mousePressed(speedRace.bind(null, 0));
+	setButton(RACE, "s_RACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, 0));
 
 	const READYBOT = p.createButton('Ready');
-	READYBOT.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58;")
-	READYBOT.parent("readybot");
-	READYBOT.mousePressed(speedRace2.bind(null, 0));
+	setButton(READYBOT, "readybot", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
 
 	const RACE2 = p.createButton('Continue');
-	RACE2.style("height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58;")
-	RACE2.parent("s_RACE2");
-	RACE2.mousePressed(speedRace2.bind(null, 0));
+	setButton(RACE2, "s_RACE2", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
 	
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
@@ -772,15 +725,14 @@ p.setup = () => {
 	
 	const GO_BTN = p.createButton('Go!');
 	GO_BTN.parent("test_alg_div");
+	
 	GO_BTN.mousePressed(testAlg.bind(null, 0));	
 
 	TIMEGONE = p.createButton('Remove previous time');
-	TIMEGONE.parent("timegone2");
-	TIMEGONE.mousePressed(removeTime.bind(null, 0));	
+	setButton(TIMEGONE, "timegone2", 'btn btn-light', 'border-color: black;', removeTime.bind(null, 0));
 
 	let TIMEGONE2 = p.createButton('Remove all times');
-	TIMEGONE2.parent("timegone3");
-	TIMEGONE2.mousePressed(removeAllTimes.bind(null, 0));	
+	setButton(TIMEGONE2, "timegone3", 'btn btn-light', 'border-color: black;', removeAllTimes.bind(null, 0));
 	regular();
 
 	let TIMEGONE3 = p.createButton('🗑️');
@@ -788,49 +740,32 @@ p.setup = () => {
 	TIMEGONE3.mousePressed(removeSpecificTime.bind(null, 0));	
 
 	LEFTMOD = p.createButton('←');
-	LEFTMOD.style("font-size:15px; width:70px; height:30px; margin-right:5px;")
-	LEFTMOD.parent("leftmod");
-	LEFTMOD.mousePressed(changeMod.bind(null, 0));	
+	setButton(LEFTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 0));
 
 	RIGHTMOD = p.createButton('→');
-	RIGHTMOD.style("font-size:15px; width: 70px; height:30px; margin-right:5px;")
-	RIGHTMOD.parent("leftmod");
-	RIGHTMOD.mousePressed(changeMod.bind(null, 0));	
+	setButton(RIGHTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 0));
 
 	LEFTBAN = p.createButton('←');
-	LEFTBAN.style("font-size:15px; width:70px; height:30px; margin-right:5px;")
-	LEFTBAN.parent("leftban");
-	LEFTBAN.mousePressed(leftBan.bind(null, 0));	
+	setButton(LEFTBAN, "leftban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', leftBan.bind(null, 0));
 
 	RIGHTBAN = p.createButton('→');
-	RIGHTBAN.style("font-size:15px; width: 70px; height:30px; margin-right:5px;")
-	RIGHTBAN.parent("rightban");
-	RIGHTBAN.mousePressed(rightBan.bind(null, 0));	
+	setButton(RIGHTBAN, "rightban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', rightBan.bind(null, 0));
 
 	ADDBANDAGE = p.createButton('Add Bandage Group');
-	ADDBANDAGE.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:15px;")
-	ADDBANDAGE.parent("addbandage");
-	ADDBANDAGE.mousePressed(addBandage.bind(null, 0));	
+	setButton(ADDBANDAGE, "addbandage", 'btn btn-light', 'font-size:18px; border-color: black; margin-top:15px;', addBandage.bind(null, 0));
+
 
 	VIEWBANDAGE = p.createButton('View/Delete Groups');
-	VIEWBANDAGE.style("font-size:18px; width: 180px; height:40px; margin-right:5px;")
-	VIEWBANDAGE.parent("addbandage4");
-	VIEWBANDAGE.mousePressed(viewBandage.bind(null, 0));	
+	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-light', 'font-size:18px; border-color: black;', viewBandage.bind(null, 0));
 
 	const OKBAN = p.createButton('Done');
-	OKBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:5px; background-color:green;")
-	OKBAN.parent("okban");
-	OKBAN.mousePressed(doneBandage.bind(null, 0));	
+	setButton(OKBAN, "okban", 'btn btn-success text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', doneBandage.bind(null, 0));
 
 	const CANCELBAN = p.createButton('Cancel');
-	CANCELBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:5px; background-color:red;")
-	CANCELBAN.parent("cancelban");
-	CANCELBAN.mousePressed(cancelBandage.bind(null, 0));	
+	setButton(CANCELBAN, "cancelban", 'btn btn-danger text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', cancelBandage.bind(null, 0));
 
 	const DELETEBAN = p.createButton('Delete');
-	DELETEBAN.style("font-size:18px; width: 180px; height:40px; margin-right:5px; margin-top:0px; background-color:red;")
-	DELETEBAN.parent("deleteban");
-	DELETEBAN.mousePressed(deleteBan.bind(null, 0));	
+	setButton(DELETEBAN, "deleteban", 'btn btn-danger text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', deleteBan.bind(null, 0));
 	topWhite();
 }
 setInterval(() => {
@@ -1265,7 +1200,7 @@ function decode(num){
   }
 function generateID(){
 	let str = "";
-	if(IDINPUT.value() == "Default (solved)") str = "6BAPpVI 3iÐqtUì 4oìz÷óÐ";
+	if(IDINPUT.value() == "Default (solved)") str = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
 	if(IDINPUT.value() == "Checkerboard") str = "4GmZGcM 5dÞgcáè 3(ÊèÜæô 4dV";
 	if(IDINPUT.value() == "Impossible Donut") str = "5v8Hj*Ø 4oìyzI# 6BAQ3Úô 4dV";
 	if(IDINPUT.value() == "Impossible Solved") str = "5v8HýçA 3iÐqtUì 16saûók 5W3";
@@ -1405,6 +1340,12 @@ function IDtoLayout(num){
 		}
 	}
 	return layout2;
+}
+function setButton(BUTTON, parent, className, style, event) {
+	BUTTON.parent(parent);
+	BUTTON.class(className);
+	BUTTON.style(style);
+	BUTTON.mousePressed(event);
 }
 function getID(){
 	let ID = "";
@@ -1653,9 +1594,8 @@ function changeTwo()
 	//if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
 	THREEBYTHREE.remove();
 	THREEBYTHREE = p.createButton('3x3');
-	THREEBYTHREE.parent("type2");
-	THREEBYTHREE.mousePressed(changeThree.bind(null, 0));
-	TWOBYTWO.style('background-color', "#f5f573");
+	setButton(THREEBYTHREE, "type2", 'btn btn-light btn-sm', 'border-color: black;', changeThree.bind(null, 0));
+	setButton(TWOBYTWO, "type", 'btn btn-warning btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
 	SIZE_SLIDER2.remove();
 	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
@@ -1672,11 +1612,10 @@ function changeThree()
 	DIM2 = 50;
 	DIM = 50;
 
-	THREEBYTHREE.style('background-color', "#f5f573");
+	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
 	TWOBYTWO.remove();
 	TWOBYTWO = p.createButton('2x2');
-	TWOBYTWO.parent("type");
-	TWOBYTWO.mousePressed(changeTwo.bind(null, 0));
+	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
 	SIZE_SLIDER2.remove();
 	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
@@ -2384,7 +2323,8 @@ function regular(nocustom){
 	}
 	bandaged = [];
 	refreshButtons();
-	REGULAR.style('background-color', "#8ef5ee");
+	REGULAR.style('background-color', '#8ef5ee');
+	//REGULAR.class('btn btn-secondary');
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
 	document.getElementById("or_instruct").style.display = "block";
 	document.getElementById("or_instruct2").style.display = "block";
@@ -2554,8 +2494,8 @@ function idmode()
 	stopMoving();
 
 	refreshButtons();
-	REGULAR.style('background-color', "#8ef5ee");
-	IDMODE.style('background-color', "#8ef5ee");
+	REGULAR.style('background-color', '#10caf0');
+	IDMODE.style('background-color', '#8ef5ee');
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
@@ -2592,7 +2532,8 @@ function settingsmode()
 	refreshButtons();
 
 	//regular();
-	REGULAR.style('background-color', "#8ef5ee");
+	REGULAR.style('background-color', '#10caf0');
+	//REGULAR.class('btn btn-info');
 	if(!isIpad() && !window.matchMedia("(max-width: 767px)"))
 		SETTINGS.style('background-color', "#8ef5ee");
 
@@ -2627,7 +2568,7 @@ function speedmode()
 	movesarr = [];
 
 	refreshButtons();
-	SPEEDMODE.style('background-color', "#8ef5ee");
+	SPEEDMODE.style('background-color', '#8ef5ee');
 
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("s_instruct2").innerHTML = "";
@@ -2685,7 +2626,7 @@ function movesmode()
 	movesarr = [];
 
 	refreshButtons();
-	MOVESMODE.style('background-color', "#8ef5ee");
+	MOVESMODE.style('background-color', '#8ef5ee');
 
 	document.getElementById("test_alg_div").style.display = "none";
 	document.getElementById("shuffle_div").style.display = "none";
@@ -5346,28 +5287,19 @@ function refreshButtons()
 	CUBE13.remove();
 	CUBE14.remove();
 	REGULAR = p.createButton('Normal Mode');
-	REGULAR.parent("mode").class("mode1");
-	REGULAR.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	REGULAR.mousePressed(regular.bind(null, 0));
+	setButton(REGULAR, "mode", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', regular.bind(null, 0));
 
 	TIMEDMODE = p.createButton('Stats Mode');
-	TIMEDMODE.parent("mode3").class("mode1");
-	TIMEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	TIMEDMODE.mousePressed(timedmode.bind(null, 0));
+	setButton(TIMEDMODE, "mode3", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', timedmode.bind(null, 0));
 	
 	MOVESMODE = p.createButton('Fewest Moves');
-	MOVESMODE.parent("mode7").class("mode1");
-	MOVESMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	MOVESMODE.mousePressed(movesmode.bind(null, 0));
+	setButton(MOVESMODE, "mode7", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', movesmode.bind(null, 0));
 
 	SPEEDMODE = p.createButton('Speed Mode');
-	SPEEDMODE.parent("mode2").class("mode1");
-	SPEEDMODE.style("height:50px; width:180px; text-align:center; font-size:20px;")
-	SPEEDMODE.mousePressed(speedmode.bind(null, 0));
+	setButton(SPEEDMODE, "mode2", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', speedmode.bind(null, 0));
 
 	IDMODE = p.createButton('Save/Load ID');
-	IDMODE.parent("ID2");
-	IDMODE.mousePressed(idmode.bind(null, 0));
+	setButton(IDMODE, "ID2", 'btn btn-info', 'text-align:center; border: none;', idmode.bind(null, 0));
 
 	SETTINGS = p.createButton('⚙️');
 	SETTINGS.attribute('title', 'Settings');
@@ -5408,97 +5340,61 @@ function refreshButtons()
 	
 
 	REGULAR2 = p.createButton('Normal');
-	REGULAR2.parent("mode4").class("mode1");
-	REGULAR2.style("height:20px; width:50px; text-align:center; font-size:10px;")
-	REGULAR2.mousePressed(regular.bind(null, 0));
+	setButton(REGULAR2, "mode4", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', regular.bind(null, 0));
 	
 	SPEEDMODE2 = p.createButton('Speed');
-	SPEEDMODE2.parent("mode5").class("mode1");
-	SPEEDMODE2.style("height:20px; width:42px; text-align:center; font-size:10px;")
-	SPEEDMODE2.mousePressed(speedmode.bind(null, 0));
+	setButton(SPEEDMODE2, "mode5", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', speedmode.bind(null, 0));
 
 	TIMEDMODE2 = p.createButton('Stat');
-	TIMEDMODE2.parent("mode6").class("mode1");
-	TIMEDMODE2.style("height:20px; width:35px; text-align:center; font-size:10px;")
-	TIMEDMODE2.mousePressed(timedmode.bind(null, 0));
+	setButton(TIMEDMODE2, "mode6", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', timedmode.bind(null, 0));
 
 	MOVESMODE2 = p.createButton('FMC');
-	MOVESMODE2.parent("mode8").class("mode1");
-	MOVESMODE2.style("height:20px; width:40px; text-align:center; font-size:10px;")
-	MOVESMODE2.mousePressed(movesmode.bind(null, 0));
+	setButton(MOVESMODE2, "mode8", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', movesmode.bind(null, 0));
 
 	if(modnum == 0)
 	{
 		ONEBYTHREE = p.createButton('1x3x3');
-		ONEBYTHREE.parent("cube1");
-		ONEBYTHREE.mousePressed(changeFour.bind(null, 0));
-		ONEBYTHREE.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(ONEBYTHREE, "cube1", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeFour.bind(null, 0));
 
 		SANDWICH = p.createButton('3x3x2');
-		SANDWICH.parent("cube2");
-		SANDWICH.mousePressed(changeFive.bind(null, 0));
-		SANDWICH.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(SANDWICH, "cube2", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeFive.bind(null, 0));
 
 		CUBE3 = p.createButton('Plus Cube');
-		CUBE3.parent("cube3");
-		CUBE3.mousePressed(changeSix.bind(null, 0));
-		CUBE3.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE3, "cube3", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeSix.bind(null, 0));
 
 		CUBE4 = p.createButton('Christmas 3x3');
-		CUBE4.parent("cube4");
-		CUBE4.mousePressed(changeSeven.bind(null, 0));
-		CUBE4.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE4, "cube4", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeSeven.bind(null, 0));
 
 		CUBE5 = p.createButton('Christmas 2x2');
-		CUBE5.parent("cube5");
-		CUBE5.mousePressed(change8.bind(null, 0));
-		CUBE5.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE5, "cube5", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change8.bind(null, 0));
 
 		CUBE6 = p.createButton('The Jank 2x2');
-		CUBE6.parent("cube6");
-		CUBE6.mousePressed(change10.bind(null, 0));
-		CUBE6.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE6, "cube6", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change10.bind(null, 0));
 
 		CUBE13 = p.createButton('Sandwhich Cube');
-		CUBE13.parent("cube13");
-		CUBE13.mousePressed(change17.bind(null, 0));
-		CUBE13.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE13, "cube13", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change17.bind(null, 0));
 	}
 	else{
 		CUBE7 = p.createButton('Slice Bandage');
-		CUBE7.parent("cube7");
-		CUBE7.mousePressed(change11.bind(null, 7, [[3,4,5,6,7,8]]));
-		CUBE7.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE7, "cube7", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change11.bind(null, 7, [[3,4,5,6,7,8]]));
 
 		CUBE8 = p.createButton('The Pillars');
-		CUBE8.parent("cube8");
-		CUBE8.mousePressed(change12.bind(null, 8, [[0,3,6], [2,5,8]]));
-		CUBE8.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE8, "cube8", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change12.bind(null, 8, [[0,3,6], [2,5,8]]));
 
 		CUBE9 = p.createButton('Triple Quad');
-		CUBE9.parent("cube9");
-		CUBE9.mousePressed(change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]));
-		CUBE9.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE9, "cube9", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]));
 
 		CUBE10 = p.createButton('Bandaged 2x2');
-		CUBE10.parent("cube10");
-		CUBE10.mousePressed(change14.bind(null, 10, [[6,8]]));
-		CUBE10.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE10, "cube10", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change14.bind(null, 10, [[6,8]]));
 
 		CUBE11 = p.createButton('Z Perm');
-		CUBE11.parent("cube11");
-		CUBE11.mousePressed(change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]));
-		CUBE11.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE11, "cube11", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]));
 
 		CUBE12 = p.createButton('T Perm');
-		CUBE12.parent("cube12");
-		CUBE12.mousePressed(change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
-		CUBE12.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE12, "cube12", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
 
 		CUBE14 = p.createButton('Cube Bandage');
-		CUBE14.parent("cube14");
-		CUBE14.mousePressed(change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
-		CUBE14.style("height:45px; width:180px; text-align:center; font-size:20px;");
+		setButton(CUBE14, "cube14", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
 	}
 
 }

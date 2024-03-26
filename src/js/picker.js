@@ -27,7 +27,7 @@ export default class Picker {
 	
     const gl = this.buffer.elt.getContext('webgl');	
 	let cnv_div = document.getElementById("cnv_div");
-	const colorArr = p.get(x, p.windowHeight * 0.9 - y);
+	const colorArr = p.get(x, y);
 	return colorArr;	
 
 
