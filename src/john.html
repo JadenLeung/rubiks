@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom Face</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        .image-container {
+            margin: 50px auto;
+            position: relative;
+            width: 300px;
+        }
+
+        .zoom-face {
+            width: 100%;
+            transition: transform 0.3s;
+        }
+
+        .zoom-face:hover {
+            transform: scale(1.5);
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: width 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.01);
+        }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+        }
+
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Zoom Face</h1>
+    </div>
+
+    <div class="image-container">
+        <img class="zoom-face" src="https://media.licdn.com/dms/image/D5603AQFqDGbfBhNB6Q/profile-displayphoto-shrink_800_800/0/1703733158138?e=2147483647&v=beta&t=PGstQEPmnIZq2TFywthPJMyiWApiFpFPrejC7JrXoS8" alt="Zoom Face Image">
+    </div>
+
+    <p>"I skate to where the puck is going to be, not where it has been." – Wayne Gretzky, Former NHL Player</p>
+
+    <button onclick="alert('Hover over the image')">Zoom In</button>
+
+    <iframe src="https://johnseong.info/"></iframe>
+
+    <div class="footer">
+        <a href="https://johnseong.info/" style="color: #fff; text-decoration: none;">Visit my website: JohnSeong.info</a>
+    </div>
+</body>
+</html>
