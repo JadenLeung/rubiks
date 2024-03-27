@@ -3138,6 +3138,7 @@ function m_34()
 {
 	undo = [];
 	redo = [];
+	moves = 0;
 	if(m_34step == 0) 
 	{ 
 		reCam();
@@ -3226,6 +3227,7 @@ function m_4()
 {
 	undo = [];
 	redo = [];
+	moves = 0;
 	if(m_4step == 0 && m_34step == 0) 
 	{
 		reCam();
@@ -3315,7 +3317,6 @@ function multipleEasy(nb, dificil) {
 	if (nb < arr.length) {
 		canMan = false;
 		shufflespeed = 2;
-		moves++;
 		notation(arr[nb]);
 		console.log(nb, "easy", dificil);
 		waitForCondition(multipleEasy.bind(null, nb + 1, dificil), false);
@@ -4183,11 +4184,17 @@ function displayTimes()
 		if(mo5.length > 25 && mo5[i+25] % 0.1 == 0 && mo5[i+25][mo5[i+25].length-1] != "0"){b = mo5[i+25] + "0";}
 		
 
-		if(i < 9) alltimes += "&nbsp;&nbsp;" + (i+1) + ") ";
+		if(i < 9) alltimes += "&nbsp;" + (i+1) + ") ";
 		else alltimes += (i+1) + ") ";
 
-		alltimes +=  a + "s, " + movesarr[i] + "m &nbsp;&nbsp;";
-		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) alltimes += (i+26) + ") " + b + "s, " + movesarr[i+25] + " moves";
+		alltimes +=  a + "s, " + movesarr[i] + "m&nbsp;";
+		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) {
+			alltimes += a < 100 ? "&nbsp": "";
+			alltimes += a < 10 ? "&nbsp": "";
+			alltimes += movesarr[i] < 10 ? "&nbsp": "";
+			alltimes += movesarr[i] < 100 ? "&nbsp": "";
+			alltimes += (i+26) + ") " + b + "s, " + movesarr[i+25] + "m";
+		} 
 		alltimes += "<br>"
 	}
 
@@ -8059,6 +8066,7 @@ function toGearCube(move){
 }
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
+	//VOLUME.position(cnv_div.offsetWidth-60,5);
 	if (window.matchMedia("(max-width: 767px)").matches)
 	{
 		WINDOW = 0.6;
@@ -8559,7 +8567,8 @@ window.addEventListener('keydown', (e) => {
 //  2)se$ÞG 17Þn6i~ 5HK8løå  (48)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
 // F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
-//?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!!
+//?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!! 
+// B2 L2 D F' U2 R2 B2 D2 F' L' F D' F L2 F R2 U L22 (43)
 //U2 B D' R2 U L2 D F D B R B2 U2 B' U B' L U' (41)
 
 //WORLD RECORD SCRAMBLES
