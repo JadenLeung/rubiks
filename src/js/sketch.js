@@ -3324,6 +3324,7 @@ function multipleEasy(nb, dificil) {
 	else
 	{
 		shufflespeed = 5;
+		setLayout();
 		savesetup = IDtoReal(IDtoLayout(decode(getID())));
 		if(dificil == 0)
 		{
