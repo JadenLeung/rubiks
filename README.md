@@ -1,1 +1,1 @@
-[https://JadenLeung.github.io/rubiks](https://JadenLeung.github.io/rubiks)
+[virtual-cube.net](virtual-cube.net)
