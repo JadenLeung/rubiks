@@ -4090,7 +4090,7 @@ function displayTimes()
 			mintime = Math.min(mintime, mo5[i])
 			minmove = Math.min(minmove, movesarr[i]);
 		}
-		alltimes += "<a style = 'font-size:12px;'>Best: " + mintime + "s, " + minmove + " moves</a><br>";
+		alltimes += "<a style = 'font-size:12px;'>Best: &nbsp&nbsp" + mintime + "s, " + minmove + " moves</a><br>";
 	}
 	if(mo5.length > 2)
 	{
@@ -4103,7 +4103,7 @@ function displayTimes()
 		}
 		sumtime = sumtime/3;
 		summove = summove/3;
-		alltimes += "<a style = 'font-size:12px;';>Mo3: " + (Math.round((sumtime)*100)/100) + "s, " + (Math.round((summove)*100)/100) + " moves</a><br>";
+		alltimes += "<a style = 'font-size:12px;';>Mo3: &nbsp&nbsp&nbsp" + parseFloat(sumtime).toFixed(2) + "s, " + (Math.round((summove)*100)/100) + " moves</a><br>";
 	}
 	if(mo5.length > 4)
 	{
@@ -4124,7 +4124,7 @@ function displayTimes()
 		}
 		sum1 = (sum1 - min - max)/3;
 		sum2 = (sum2 - min2 - max2)/3;
-		alltimes += "<a style = 'font-size:12px;'>Ao5: " + (Math.round((sum1)*100)/100) + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
+		alltimes += "<a style = 'font-size:12px;'>Ao5: &nbsp&nbsp&nbsp" + parseFloat(sum1).toFixed(2)  + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
 	}
 	if(mo5.length > 11)
 	{
@@ -4145,7 +4145,7 @@ function displayTimes()
 		}
 		sum1 = (sum1 - min - max)/10;
 		sum2 = (sum2 - min2 - max2)/10;
-		alltimes += "<a style = 'font-size:12px;'>Ao12: " + (Math.round((sum1)*100)/100) + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
+		alltimes += "<a style = 'font-size:12px;'>Ao12: &nbsp&nbsp" + parseFloat(sum1).toFixed(2) + "s, " + (Math.round((sum2)*100)/100) + " moves</a><br>";
 	}
 	if(mo5.length > 2)
 	{
@@ -4158,7 +4158,7 @@ function displayTimes()
 		}
 		let med1 = median(copy1);
 		let med2 = median(copy2);
-		alltimes += "<a style = 'font-size:12px;'>Median: " + (Math.round((med1)*100)/100) + "s, " + (Math.round((med2)*100)/100) + " moves</a><br>";
+		alltimes += "<a style = 'font-size:12px;'>Median: " + parseFloat(med1).toFixed(2)  + "s, " + (Math.round((med2)*100)/100) + " moves</a><br>";
 	}
 	if(mo5.length > 2)
 	{
@@ -4171,7 +4171,7 @@ function displayTimes()
 		}
 		sumtime = sumtime/mo5.length;
 		summove = summove/mo5.length;
-		alltimes += "<a style = 'font-size:12px;'>Mean: " + (Math.round((sumtime)*100)/100) + "s, " + (Math.round((summove)*100)/100) + " moves</a><br>";
+		alltimes += "<a style = 'font-size:12px;'>Mean: &nbsp&nbsp" + parseFloat(sumtime).toFixed(2) + "s, " + (Math.round((summove)*100)/100) + " moves</a><br>";
 	}
 	if(alltimes.length > 0) alltimes += "<br>";
 	let j = 0;
@@ -4187,7 +4187,7 @@ function displayTimes()
 		if(i < 9) alltimes += "&nbsp;" + (i+1) + ") ";
 		else alltimes += (i+1) + ") ";
 
-		alltimes +=  a + "s, " + movesarr[i] + "m&nbsp;";
+		alltimes +=  parseFloat(a).toFixed(2) + "s, " + movesarr[i]+ "m&nbsp;";
 		if((mo5.length > 25 && (i+25) < mo5.length) || (j > 0)) {
 			alltimes += a < 100 ? "&nbsp": "";
 			alltimes += a < 10 ? "&nbsp": "";
@@ -8555,18 +8555,13 @@ window.addEventListener('keydown', (e) => {
 //Shape Mod All WR times: (8.43, 16.39, 34.63, 20.54, 9.21, 29.57, 4.45)
 //Bandage Mod ALL: 672.28
 
-//BELOW 53 MOVES
-// R2 D B' L2 U F' R' B' R' F' D' R2 F R2 U (53) (52)
-// F2 L B' R2 B L2 U2 F2 R2 F2 U F2 D2 R' B2 L2 U2 R2
-// R D' L2 B2 D2 R F2 R2 F' R2 F' L2 B' U2 F' L2 U F2 (52)
-// U R2 D' F2 L2 B U B R2 U2 R2 B2 R F2 D' F2 R' D' (52)
-// U R D L2 B2 R2 U F' D' F L F' R2 F2 D2 B' D2 F (52)
-// L2 F2 R' D B2 L2 U2 L' D' R' F R B2 R2 U' F' R2 D2 (51)
+//BELOW 51 MOVES
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
 // F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
 //  2)se$ÞG 17Þn6i~ 5HK8løå  (48)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
 // F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
+// F2 U' L2 D2 R2 F2 R' F U' B' D' R U B2 R D' B2 R (47)
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!! 
 // B2 L2 D F' U2 R2 B2 D2 F' L' F D' F L2 F R2 U L22 (43)
 //U2 B D' R2 U L2 D F D B R B2 U2 B' U B' L U' (41)
