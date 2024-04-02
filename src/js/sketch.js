@@ -85,7 +85,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, DARK;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, DARK;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -115,6 +115,7 @@ export default function (p) {
 	let saveao5 = [];
 	let savesetup = [];
 	let song = "CcDdEFfGgAaB";
+	const MAX_WIDTH = "767px";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
 	colorvalues["y"] = "4oìyÖ@A 5v8GÜOô 6BAQ3Úô 4vP";
@@ -259,7 +260,7 @@ p.setup = () => {
 	
 	PICKER = new Picker(p, DEBUG);
 	let cnv_div = document.getElementById("cnv_div");
-	if (window.matchMedia("(max-width: 767px)").matches)
+	if (window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)
 	{
 		WINDOW = 0.6;
 		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
@@ -310,7 +311,7 @@ p.setup = () => {
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
 
-		if(window.matchMedia("(max-width: 767px)").matches) //phone computer
+		if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches) //phone computer
 		{
 			ZOOM3 = -250;
 			ZOOM2 = -100;
@@ -341,6 +342,7 @@ p.setup = () => {
 	MOVESMODE = p.createButton('Fewest Moves');
 	IDMODE = p.createButton('Save/Load ID');
 	SETTINGS = p.createButton('⚙️');
+	VOLUME = p.createButton('🔊');
 	REGULAR2 = p.createButton('Normal');
 	SPEEDMODE2 = p.createButton('Speed');
 	TIMEDMODE2 = p.createButton('Stat');
@@ -618,12 +620,6 @@ p.setup = () => {
 	TOPPLL.option("Opposite of above");
 	TOPPLL.option("Same as above");
 	TOPPLL.changed(topWhite.bind(null, 0));
-
-	SETTINGS = p.createButton('⚙️');
-	SETTINGS.attribute('title', 'Settings');
-	SETTINGS.parent("settings");
-	SETTINGS.mousePressed(settingsmode.bind(null, 0));
-	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white");
 
 	if(goodsound)
 		SETTINGS.position(cnv_div.offsetWidth-140,5);
@@ -1036,7 +1032,7 @@ function reSetup(rot) {
 	else
 		CAM.zoom(CAMZOOM);
 
-	if(window.matchMedia("(max-width: 767px)").matches)
+	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)
 	{
 		ROTX = 3;
 		ROTY = 6;
@@ -2534,7 +2530,7 @@ function settingsmode()
 	//regular();
 	REGULAR.style('background-color', '#10caf0');
 	//REGULAR.class('btn btn-info');
-	if(!isIpad() && !window.matchMedia("(max-width: 767px)"))
+	if(!isIpad() && !(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
 		SETTINGS.style('background-color', "#8ef5ee");
 
 	document.getElementById("s_instruct2").innerHTML = "";
@@ -4362,7 +4358,7 @@ function startAction() {
 					bandaged2.push(cuby);
 					
 				}
-				else if(!window.matchMedia("(max-width: 767px)").matches){
+				else if(!(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)){
 					bandaged2 = bandaged2.filter(item => item != cuby)
 					if(bandaged2.length == 0) bandaged2 = [-1];
 				}
@@ -5276,6 +5272,7 @@ function refreshButtons()
 	MOVESMODE.remove();
 	IDMODE.remove();
 	SETTINGS.remove();
+	VOLUME.remove();
 	SPEEDMODE2.remove();
 	REGULAR2.remove();
 	TIMEDMODE2.remove();
@@ -5311,9 +5308,7 @@ function refreshButtons()
 
 	SETTINGS = p.createButton('⚙️');
 	SETTINGS.attribute('title', 'Settings');
-	SETTINGS.parent("settings");
-	SETTINGS.mousePressed(settingsmode.bind(null, 0));
-	SETTINGS.style("font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;");
+	setButton(SETTINGS, "settings", '', 'font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;', settingsmode.bind(null, 0));
 	if(goodsound)
 		SETTINGS.position(cnv_div.offsetWidth-140,5);
 	else{
@@ -5321,7 +5316,6 @@ function refreshButtons()
 		SETTINGS.style("background-color: #e6e6e6;")
 	}
 
-	let VOLUME;
 	if(audioon){
 		VOLUME = p.createButton('🔊');
 		VOLUME.attribute('title', 'Sound on');
@@ -5331,7 +5325,7 @@ function refreshButtons()
 		VOLUME.attribute('title', 'Sound off');
 	}
 	VOLUME.parent("audio");
-	VOLUME.style("font-size: 40px; border: none;"); // Replace 'image.png' with your image's path
+	VOLUME.style("font-size: 40px; border: none;"); 
 	VOLUME.style("background-size: cover; background-color: white; border-radius: 10px; height: 60px; width: 60px;");
 	VOLUME.position(cnv_div.offsetWidth-60,5);
 	VOLUME.mousePressed(() => {
@@ -7586,6 +7580,9 @@ function removeTime()
 		movesarr.pop();
 		mo5.pop();
 		ao5.pop();
+		if (mo5.length >= 5) {
+			ao5.splice(0, 0, mo5[mo5.length - 5]);
+		}
 	}
 }
 function hollowCube(){
@@ -8067,8 +8064,7 @@ function toGearCube(move){
 }
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
-	//VOLUME.position(cnv_div.offsetWidth-60,5);
-	if (window.matchMedia("(max-width: 767px)").matches)
+	if ((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
 	{
 		WINDOW = 0.6;
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
@@ -8078,6 +8074,13 @@ p.windowResized = () => {
 		WINDOW = 0.9;
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
+	}
+	VOLUME.position(cnv_div.offsetWidth-60,5)
+	if(goodsound)
+		SETTINGS.position(cnv_div.offsetWidth-140,5);
+	else{
+		SETTINGS.position(cnv_div.offsetWidth-80,5);
+		SETTINGS.style("background-color: #e6e6e6;")
 	}
 } 
 
@@ -8186,7 +8189,7 @@ $(document).on("keypress", "input", function(e){
 	}
 });
 function isIpad(){
-	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !(window.matchMedia("(max-width: 767px)").matches) 
+	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;
 }
 
