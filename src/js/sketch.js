@@ -649,8 +649,7 @@ p.setup = () => {
 	RESET3.mousePressed(speedSetup.bind(null, 0));
 
 	const STOP = p.createButton('Stop Time');
-	STOP.parent("stop_div");
-	STOP.mousePressed(stopTime.bind(null, 0));
+	setButton(STOP, "stop_div", 'btn btn-light', 'border-color: black;', stopTime.bind(null, 0));
 
 	const HINT = p.createButton('Hint');
 	setButton(HINT, "hint", 'btn btn-light', 'border-color: black;', Hint.bind(null, 0));
@@ -4519,9 +4518,9 @@ p.keyPressed = (event) => {
 	}	
 	if(inspect == true) return;  
 	console.log("keyCode is: " + p.keyCode);  
-	let needsnew = [53,54,81,84,89,80,65,186,88,67,66,78,188,190];
+	let needsnew = [53,54,81,84,89,80,65,186,88,67,66,78,188,190,59];
 	let newkey = {
-		53: 190, 54: 190, 81: 1000, 84: 38, 89: 38, 80: 1001, 65: 39, 186: 37, 88: 188, 67: 84, 66: 40, 78: 40, 188: 89, 190: 188
+		53: 190, 54: 190, 81: 1000, 84: 38, 89: 38, 80: 1001, 65: 39, 186: 37, 88: 188, 67: 84, 66: 40, 78: 40, 188: 89, 190: 188, 59: 37
 	}
 	if(KEYBOARD.value() == "Default"){
 		if(needsnew.includes(p.keyCode)) p.keyCode = newkey[p.keyCode];
@@ -4592,8 +4591,8 @@ p.keyPressed = (event) => {
 	{
 		setLayout();
 		//console.log("here");
-		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89 1000 1001 90 191";
-		let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89";
+		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89 1000 1001 90 191 59";
+		let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89 59";
 		let bad3 = "88c";
 		if(DIM == 100)
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81 1000 1001";
@@ -4621,7 +4620,7 @@ p.keyPressed = (event) => {
 		}
 		let onedown = false;
 		alldown = false;
-		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191]; //no rotations
+		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
 		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50)){
 			alldown = true;
 			if(p.keyCode == 83 || p.keyCode == 76){ //D
@@ -4648,7 +4647,7 @@ p.keyPressed = (event) => {
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == -50);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
 			}
-			if(p.keyCode == 65 || p.keyCode == 186){ //E
+			if(p.keyCode == 65 || p.keyCode == 186 || p.keyCode == 59){ //E
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
 			}
@@ -4699,10 +4698,10 @@ p.keyPressed = (event) => {
 		if(setup[0] == -50 || setup[0] == 50) //top
 			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
 		else if(setup[2] == -50 || setup[2] == 50) //left
-			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65,90,191];
-		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191]; // front
+			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65,90,191,59];
+		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
 			
-		let bad6 = [190,188,65,186,80,81];
+		let bad6 = [190,188,65,186,80,81,59];
 		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
 			redo = [];
 			if(p.keyCode == 83) changeArr("D2")
@@ -4718,7 +4717,7 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 87) changeArr("B2")
 			if(p.keyCode == 79) changeArr("B2'")
 			if(p.keyCode == 65) changeArr("E2")
-			if(p.keyCode == 186) changeArr("E2'")
+			if(p.keyCode == 186 || p.keyCode == 59) changeArr("E2'")
 			if(p.keyCode == 190) changeArr("M2")
 			if(p.keyCode == 188) changeArr("M2'")
 			if(p.keyCode == 80) changeArr("S2")
@@ -4878,6 +4877,7 @@ p.keyPressed = (event) => {
 			animate('x', 0, 1, true);
 			break;
 			case 186:
+			case 59:
 			undo.push("E'");
 			redo = [];
 			animate('x', 0, -1, true);
@@ -4945,6 +4945,7 @@ p.keyPressed = (event) => {
 			case 8: //backspace
 			Undo();
 			break;
+			case 61:
 			case 187: //equals
 			Redo();
 			break;
@@ -8580,7 +8581,43 @@ window.addEventListener('keydown', (e) => {
 // R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (was 41, 56)
 //WORLD RECORD SCRAMBLES 2x2
 //L' R B L' D L R' U F' B L R' F U L F' B' F R2 (4)
-/*Mr Sunshine give us your rays
+/*
+
+Im a scare to all the crows
+When I stand among the rows
+But theres really more to growing
+Than to keep the crows from crowing
+If you want to keep the garden the green
+
+I chase off the logs get outta here
+And the wave to all the frogs hi guys
+But theres really more to growing
+Than to keep the crows from crowing
+If you want to keep your garden the green
+
+I know about the sun and moon
+The planting in june
+Animals and weeds
+Watering the seeds
+
+I know the birds and the bees
+The flowers and the trees
+Plants all in rows
+Woah he dont know nothing about crows
+
+I see plants that grow so
+I see harvest in the fall
+But to keep the plants a growing
+Theres lots you should be knowing
+
+If your gonna keep your garden
+Youve gotta tend your garden
+If you want to keep your garden in the green
+
+
+
+
+Mr Sunshine give us your rays
 You're the one who brightens our days
 Without your warmth there'll be no tommorow
 Instead of smiling we'll cry tears of sorrow
