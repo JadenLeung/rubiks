@@ -3114,7 +3114,7 @@ function speedRace2(){
 	document.getElementById("scramble_par").style.display = "block";
 	document.getElementById("outertime").style.display = "block";
 	document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
-	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space/touch cube area to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!";
+	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!";
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	document.getElementById("s_RACE2").style.display = "none";
 	canMan = false;
@@ -4331,16 +4331,6 @@ function startAction() {
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
 		hoveredColor = p.get(xx, yy);
-	}
-	//if(layout[2][1][1][0] == "w")
-	//alert(getColor(hoveredColor));
-	if(hoveredColor[0] != false)
-	{
-		console.log("mousePressed");
-		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
-			canMan = true;
-			solveCube();
-		}
 	}
 
 	setLayout();
@@ -7694,6 +7684,13 @@ p.touchStarted = () => {
 	startAction();
 }
 
+p.touchEnded = () => {
+	if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
+		canMan = true;
+		solveCube();
+	}
+}
+
 p.mouseDragged = () => {
 	dragAction();
 }
@@ -8571,7 +8568,8 @@ window.addEventListener('keydown', (e) => {
 // F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
 // F2 U' L2 D2 R2 F2 R' F U' B' D' R U B2 R D' B2 R (47)
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!! 
-// B2 L2 D F' U2 R2 B2 D2 F' L' F D' F L2 F R2 U L22 (43)
+// B2 L2 D F' U2 R2 B2 D2 F' L' F D' F L2 F R2 U L2 (43)
+// B2 R' F' D R2 U' R2 F2 L2 B2 U2 B2 L D R2 F' L' D2 (43)
 //U2 B D' R2 U L2 D F D B R B2 U2 B' U B' L U' (41)
 
 //WORLD RECORD SCRAMBLES
