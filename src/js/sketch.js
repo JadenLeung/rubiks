@@ -5015,6 +5015,7 @@ p.keyPressed = (event) => {
 			changeKeys();
 			break;
 			case 51: //3
+			DARK.checked(!DARK.checked());
 			darkMode();
 			break;
 		}
