@@ -3102,6 +3102,7 @@ function speedRace(){
 	canMan = true;
 }
 function speedRace2(){
+	canMan = true;
 	shuffling = true;
 	race = 2;
 	quickSolve();
@@ -4318,7 +4319,7 @@ function getIndex(cuby)
 }
 function startAction() {	
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
-	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 1){ //racedetect
+	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 0.3){ //racedetect
 		raceDetect();
 		return;
 	}
@@ -4528,6 +4529,9 @@ p.keyPressed = (event) => {
 	if(timer.isRunning && race > 1){ //racedetect
 		raceDetect();
 		return;
+	}
+	if(p.keyCode == 32 && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
+		speedRace2();
 	}
 	if(p.keyCode == 32 && canMan == false && (MODE == "normal" || MODE == "timed")){ //space
 		stopMoving();
@@ -4980,10 +4984,6 @@ p.keyPressed = (event) => {
 			break;
 			case 32: //space
 			console.log(layout, cubyColors, CUBE)
-			if(MODE == "speed"){
-				if(document.getElementById("s_RACE2").style.display == "block")
-				speedRace2()
-			}
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
@@ -6951,7 +6951,8 @@ else
 }
 }
 function multipleCross3(nb) {
-	if(canMan == true)return;
+	if(canMan == true) return;
+	if (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block") return;
 	if(MODE != "normal" && MODE != "timed" && race == 0)
 	{
 		flipmode = 0;
@@ -6981,13 +6982,14 @@ function multipleCross3(nb) {
 	}
 }
 function multipleCross2(nb) {
-	if(canMan == true)return;
+	if(canMan == true) return;
 	if(MODE != "normal" && MODE != "timed" && race == 0)
 	{
 		flipmode = 0;
 		flipmode2 = 0;
 		return;
 	}
+	if (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block") return;
 	setLayout();
 	if (nb < arr.length) {
 		canMan = false;
@@ -7647,7 +7649,7 @@ function testAlg(){
 function raceDetect(){
 	timer.stop();
 	arr = [];
-	canMan = true;
+	//canMan = true;
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
