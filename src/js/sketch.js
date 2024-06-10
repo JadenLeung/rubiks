@@ -4319,7 +4319,7 @@ function getIndex(cuby)
 }
 function startAction() {	
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
-	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 0.3){ //racedetect
+	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
 		raceDetect();
 		return;
 	}
