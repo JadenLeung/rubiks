@@ -2602,6 +2602,7 @@ function speedmode()
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
 
+
 }
 function movesmode()
 {
@@ -4056,6 +4057,37 @@ function downloadAll()
 	}
 	download('cubestats.txt', total);
 }
+
+function getIP() {
+	fetch('https://api.ipify.org?format=json')
+    .then(response => response.json())
+    .then(data => {
+        return data.ip;
+    })
+    .catch(error => {
+        return "unknown";
+    });
+}
+
+function modeData(mode) {
+	const xhr = new XMLHttpRequest();
+	xhr.open("POST", "https://elephant4.azurewebsites.net/api/history");
+	xhr.setRequestHeader("Content-Type", "application/json");
+	const body = JSON.stringify({
+	ipaddr: getIP(),
+	mode: mode,
+	});
+	xhr.onload = () => {
+	if (xhr.readyState == 4 && xhr.status == 201) {
+		console.log(JSON.parse(xhr.responseText));
+	} else {
+		console.log(`Error: ${xhr.status}`);
+	}
+	};
+	xhr.send(body);
+	alert("sending");
+}
+
 function displayTimes()
 {
 	if(scrambles.length > 1 & scrambles[scrambles.length-2] == scrambles[scrambles.length-1] && scrambles[scrambles.length-1] != "N/A")
@@ -4294,8 +4326,6 @@ function displayAverage()
 	if(movesarr.length == 0)
 	displaymoves = "N/A";
 	document.getElementById('moves2').innerHTML = displaymoves;
-	
-	
 }
 function randomMove() {
 	const axes = ['x', 'y', 'z'];
@@ -4516,7 +4546,7 @@ p.keyPressed = (event) => {
 	if(KEYBOARD.value() == "Default"){
 		if(needsnew.includes(p.keyCode)) p.keyCode = newkey[p.keyCode];
 	}
-	if(timer.isRunning && race > 1){ //racedetect
+	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 0){ //racedetect
 		raceDetect();
 		return;
 	}
@@ -4528,8 +4558,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		setLayout();
-		console.log("fwe");
+		modeData("speed");
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
