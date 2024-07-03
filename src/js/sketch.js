@@ -116,12 +116,6 @@ export default function (p) {
 	let saveao5 = [];
 	let savesetup = [];
 	let song = "CcDdEFfGgAaB";
-	let visited = {
-		speed: false,
-		stats: false,
-		moves: false,
-		other: false,
-	}
 	const MAX_WIDTH = "767px";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
@@ -2440,10 +2434,7 @@ function timedmode()
 	document.getElementById("input").style.display = "none";
 	changeInput();
 
-	if (!visited.stats) {
-		visited.stats = true;
-		modeData("stats");
-	}
+	modeData("stats");
 }
 function cubemode()
 {
@@ -2488,10 +2479,7 @@ function cubemode()
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
 	else document.getElementById("customb").style.display = "none"; 
 
-	if (!visited.other) {
-		visited.other = true;
-		modeData("other");
-	}
+	modeData("other");
 }
 function idmode()
 {
@@ -2527,6 +2515,7 @@ function idmode()
 
 	document.getElementById("test_alg_span").innerHTML = "Paste ID here:";
 
+	modeData("id");
 }
 function settingsmode()
 {
@@ -2619,10 +2608,7 @@ function speedmode()
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
 
-	if (!visited.speed) {
-		visited.speed = true;
-		modeData("speed");
-	}
+	modeData("speed");
 }
 function movesmode()
 {
@@ -2668,10 +2654,7 @@ function movesmode()
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
 
-	if (!visited.moves) {
-		visited.moves = true;
-		modeData("moves");
-	}
+	modeData("moves");
 }
 function showSpeed()
 {
@@ -3947,6 +3930,10 @@ function shuffleCube(nb) {
 			shufflePossible(15, "", "  ");
 		return;
 	}
+
+
+	modeData("scramble");
+
 	shufflespeed = 2;
 	moves = 0;
 	timer.reset();
@@ -4553,7 +4540,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// printIP();
+		console.log();
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 

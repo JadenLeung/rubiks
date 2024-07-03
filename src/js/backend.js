@@ -1,3 +1,5 @@
+let visited = {};
+
 export async function getIP() {
 	try {
 		const response = await fetch('https://api.ipify.org?format=json');
@@ -15,13 +17,20 @@ export async function printIP() {
 }
 
 export async function modeData(mode) {
+    if (!visited[mode]) {
+		visited[mode] = true;
+	} else {
+        return;
+    }
 	const IP = await getIP();
-	console.log("IP is", IP);
+    const TIME = getDate();
+	console.log("IP is", IP, "TIME is", TIME);
 	fetch("https://elephant4.azurewebsites.net/api/history", {
 		method: "POST",
 		body: JSON.stringify([{
 		  ipaddr: IP,
-		  mode: mode
+		  mode: mode,
+          time: TIME
 		}]),
 		headers: {
 		  "Content-type": "application/json; charset=UTF-8"
@@ -29,4 +38,15 @@ export async function modeData(mode) {
 	  })
 		.then((response) => console.log(response));
 	console.log()
+}
+
+function getDate () {
+	const currentdate = new Date(); 
+	const datetime = currentdate.getDate() + "/"
+					+ (currentdate.getMonth()+1)  + "/" 
+					+ currentdate.getFullYear() + " @ "  
+					+ currentdate.getHours() + ":"  
+					+ currentdate.getMinutes() + ":" 
+					+ currentdate.getSeconds();
+	return datetime;
 }
