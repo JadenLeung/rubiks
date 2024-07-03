@@ -1,6 +1,7 @@
 import './lib/p5.easycam.js';
 import Picker from './picker.js';
 import Cuby from './cuby.js';
+import {getIP, printIP, modeData} from "./backend.js";
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -115,6 +116,12 @@ export default function (p) {
 	let saveao5 = [];
 	let savesetup = [];
 	let song = "CcDdEFfGgAaB";
+	let visited = {
+		speed: false,
+		stats: false,
+		moves: false,
+		other: false,
+	}
 	const MAX_WIDTH = "767px";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
@@ -2432,6 +2439,11 @@ function timedmode()
 	document.getElementById("type3").style.display = "block";
 	document.getElementById("input").style.display = "none";
 	changeInput();
+
+	if (!visited.stats) {
+		visited.stats = true;
+		modeData("stats");
+	}
 }
 function cubemode()
 {
@@ -2475,6 +2487,11 @@ function cubemode()
 	document.getElementById("cube").style.display = "block";
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
 	else document.getElementById("customb").style.display = "none"; 
+
+	if (!visited.other) {
+		visited.other = true;
+		modeData("other");
+	}
 }
 function idmode()
 {
@@ -2602,7 +2619,10 @@ function speedmode()
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
 
-
+	if (!visited.speed) {
+		visited.speed = true;
+		modeData("speed");
+	}
 }
 function movesmode()
 {
@@ -2647,6 +2667,11 @@ function movesmode()
 	m_4step = 0;
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
+
+	if (!visited.moves) {
+		visited.moves = true;
+		modeData("moves");
+	}
 }
 function showSpeed()
 {
@@ -4058,36 +4083,6 @@ function downloadAll()
 	download('cubestats.txt', total);
 }
 
-function getIP() {
-	fetch('https://api.ipify.org?format=json')
-    .then(response => response.json())
-    .then(data => {
-        return data.ip;
-    })
-    .catch(error => {
-        return "unknown";
-    });
-}
-
-function modeData(mode) {
-	const xhr = new XMLHttpRequest();
-	xhr.open("POST", "https://elephant4.azurewebsites.net/api/history");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	const body = JSON.stringify({
-	ipaddr: getIP(),
-	mode: mode,
-	});
-	xhr.onload = () => {
-	if (xhr.readyState == 4 && xhr.status == 201) {
-		console.log(JSON.parse(xhr.responseText));
-	} else {
-		console.log(`Error: ${xhr.status}`);
-	}
-	};
-	xhr.send(body);
-	alert("sending");
-}
-
 function displayTimes()
 {
 	if(scrambles.length > 1 & scrambles[scrambles.length-2] == scrambles[scrambles.length-1] && scrambles[scrambles.length-1] != "N/A")
@@ -4558,7 +4553,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		modeData("speed");
+		// printIP();
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
