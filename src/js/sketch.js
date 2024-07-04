@@ -1587,6 +1587,7 @@ function changeTwo()
 {
 	DIM2 = 100;
 	DIM = 100;
+	modeData("twobytwo");
 	//if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
 	THREEBYTHREE.remove();
 	THREEBYTHREE = p.createButton('3x3');
@@ -2281,6 +2282,8 @@ function sliderUpdate2(){
 }
 //Henry
 function regular(nocustom){
+	modeData("normal");
+
 	if(MODE != "timed" && MODE != "cube" && MODE != "normal")
 	{
 		ao5 = [];
@@ -5407,6 +5410,7 @@ function solveCube()
 {
 	if(canMan == false)
 	return;
+	modeData("solvecube");
 	setLayout();
 	if(!isSolved())
 	{
