@@ -2732,7 +2732,7 @@ function updateScores() {
 		const score = localStorage[mode];
 		if (score != null && mode != "oll" && mode != "pll") {
 			document.getElementById("s_" + mode + "score").innerHTML = mode.charAt(0).toUpperCase() + mode.slice(1).toLowerCase() +  ": " + score;
-		} else {
+		} else if (score != null) {
 			document.getElementById("s_" + mode + "score").innerHTML = mode.toUpperCase() + ": " + score;
 		}
 	})
