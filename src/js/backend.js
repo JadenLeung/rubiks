@@ -41,12 +41,15 @@ export async function modeData(mode) {
 }
 
 function getDate () {
-	const currentdate = new Date(); 
-	const datetime = currentdate.getDate() + "/"
-					+ (currentdate.getMonth()+1)  + "/" 
-					+ currentdate.getFullYear() + " @ "  
-					+ currentdate.getHours() + ":"  
-					+ currentdate.getMinutes() + ":" 
-					+ currentdate.getSeconds();
-	return datetime;
+    // Get the current date and time
+    const now = new Date();
+
+    // Format the date and time for the Eastern Time Zone
+    const options = { timeZone: 'America/New_York', hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const formattedDate = formatter.format(now);
+
+    console.log(formattedDate);  // Output: MM/DD/YYYY, HH:MM:SS
+
+	return formattedDate;
 }
