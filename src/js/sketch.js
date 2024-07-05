@@ -114,6 +114,10 @@ export default function (p) {
 	let realtop;
 	let colorvalues = [];
 	let saveao5 = [];
+	let ao5 = [];
+	let mo5 = [];
+	let movesarr = [];
+	let scrambles = [];
 	let savesetup = [];
 	let song = "CcDdEFfGgAaB";
 	const MAX_WIDTH = "767px";
@@ -157,6 +161,14 @@ export default function (p) {
 	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
 	[[0, 0, 0],[0, 0, 0],[0, 0, 0]]
 ];
+
+if (localStorage.saveao5) {
+	saveao5 = JSON.parse(localStorage.saveao5);
+	ao5 = saveao5[0];
+	mo5 = saveao5[1];
+	scrambles = saveao5[2];
+	movesarr = saveao5[3];
+}
 let opposite = [];
 opposite["g"] = "b";
 opposite["b"] = "g";
@@ -184,10 +196,6 @@ let colorThree = "lmaoliest";
 let cubyColors = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
 let saystep = 0;
 let moves = 0;
-let ao5 = [];
-let mo5 = [];
-let movesarr = [];
-let scrambles = [];
 let flipmode = 0;
 let flipmode2 = 0;
 let flipper = [];
@@ -764,6 +772,8 @@ p.setup = () => {
 	setButton(DELETEBAN, "deleteban", 'btn btn-danger text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', deleteBan.bind(null, 0));
 	topWhite();
 }
+
+//forever
 setInterval(() => {
 	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
 	document.getElementById('time').innerText = timeInSeconds;
@@ -788,6 +798,11 @@ setInterval(() => {
 		goodsolved = true;
 	else
 		goodsolved = false;
+
+	if (MODE != "speed" && MODE != "moves") {
+		saveao5 = [ao5, mo5, scrambles, movesarr];
+	}
+	localStorage.saveao5 = JSON.stringify(saveao5);
 	
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
 	{
@@ -993,7 +1008,7 @@ setInterval(() => {
 	else
 		realtop = TOPWHITE.value()[0].toLowerCase();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
-}, 10) //forever
+}, 10)
 function reSetup(rot) {
 	m_points = 0;
 	CUBE = {};
@@ -1063,6 +1078,7 @@ function reSetup(rot) {
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("s_bot").style.display = "none";
+	document.getElementById("s_high").style.display = "none";
 	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
@@ -2291,7 +2307,7 @@ function regular(nocustom){
 		movesarr = [];
 		scrambles = [];
 	}
-	if(MODE == "speed" || MODE == "moves"){
+	if(MODE == "speed" || MODE == "moves" || (saveao5[1] && saveao5[1].length > 0)){
 		ao5 = saveao5[0];
 		mo5 = saveao5[1];
 		scrambles = saveao5[2];
@@ -2382,6 +2398,7 @@ function regular(nocustom){
 	document.getElementById("scram").style.display = "block";
 	document.getElementById("modarrow").style.display = "none";
 	document.getElementById("s_bot").style.display = "none";
+	document.getElementById("s_high").style.display = "none";
 	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("s_RACE2").style.display = "none";
 	document.getElementById("delayuseless").style.display = "inline";
@@ -2598,6 +2615,7 @@ function speedmode()
 	document.getElementById("s_OLL").style.display = "inline";
 	document.getElementById("s_PLL").style.display = "inline";
 	document.getElementById("s_bot").style.display = "block";
+	document.getElementById("s_high").style.display = "block";
 	document.getElementById("s_RACE").style.display = "block";
 	document.getElementById("s_RACE2").style.display = "none";
 	easystep = 0;
@@ -2611,6 +2629,7 @@ function speedmode()
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
 
+	updateScores();
 	modeData("speed");
 }
 function movesmode()
@@ -2672,6 +2691,7 @@ function showSpeed()
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("s_bot").style.display = "none";
+	document.getElementById("s_high").style.display = "none";
 	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("input").style.display = "inline";
 	document.getElementById("speed").style.display = "inline";
@@ -2705,6 +2725,26 @@ function reCam()
 	else
 		CAM.zoom(CAMZOOM);
 	rotateIt();
+}
+function updateScores() {
+	const modes = ["easy", "medium", "oll", "pll"];
+	modes.forEach((mode) => {
+		const score = localStorage[mode];
+		if (score != null && mode != "oll" && mode != "pll") {
+			document.getElementById("s_" + mode + "score").innerHTML = mode.charAt(0).toUpperCase() + mode.slice(1).toLowerCase() +  ": " + score;
+		} else {
+			document.getElementById("s_" + mode + "score").innerHTML = mode.toUpperCase() + ": " + score;
+		}
+	})
+}
+function setScore(mode, total) {
+	const highscores = localStorage[mode];
+	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
+	if (!highscores || total < highscores) {
+		alert("You got a high score!");
+		localStorage[mode] = total;
+		updateScores();
+	}
 }
 function easy() 
 {
@@ -2858,7 +2898,7 @@ function easy()
 		{
 			total += ao5[i];
 		}
-		total = Math.round(total * 100) / 100
+		total = Math.round(total * 100) / 100;
 		document.getElementById("s_INSTRUCT").innerHTML = "Congrats on completing all the challenges!";
 		let grade = "F-";
 		let grades = ["A++", "A+", "A", "A-", "B+", "B", "B-", "C++", "C+", "C", "C-", "D+", "D", "D-", "F"];
@@ -2883,6 +2923,16 @@ function easy()
 		document.getElementById("s_medium").style.display = "inline";
 		document.getElementById("s_OLL").style.display = "inline";
 		document.getElementById("s_PLL").style.display = "inline";
+		document.getElementById("s_high").style.display = "block";
+		if (medstep == 8) {
+			setScore("medium", total);
+		} else if (ollstep == 8) {
+			setScore("oll", total);
+		} else if (pllstep == 8) {
+			setScore("pll", total);
+		} else if (ollstep == 8) {
+			setScore("easy", total);
+		}
 		easystep = 0;
 		medstep = 0;
 		pllstep = 0;
@@ -2992,7 +3042,6 @@ function medium(){
 	}
 	else if(medstep == 8)
 	{
-		timer.reset();
 		easystep = 8;
 		easy();
 	}
@@ -4543,7 +4592,10 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log();
+		/*delete localStorage.easy;
+		delete localStorage.highscore;
+		delete localStorage.medium;*/
+		console.log(localStorage);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
