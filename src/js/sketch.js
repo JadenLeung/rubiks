@@ -311,7 +311,13 @@ p.setup = () => {
 		});
 		GAP_SLIDER.parent("gap");
 		
-		SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
+		if (!localStorage.speed) {
+			SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
+		} else {
+			SPEED = localStorage.speed;
+			SPEED_SLIDER = p.createSlider(0.01, 2, SPEED, 0.01);
+			SPEED_SLIDER.value(SPEED);
+		}
 		SPEED_SLIDER.input(sliderUpdate);
 		SPEED_SLIDER.parent("slider_div");
 		
@@ -584,15 +590,21 @@ p.setup = () => {
 	const RNG2 = p.createButton(String.fromCharCode(0x2684));
 	setButton(RNG2, "rng2", 'btn btn-light', 'font-size:15px; border-color: black;', randomBandage.bind(null, 0));
 
-	HOLLOW = p.createCheckbox("", false);
+	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
 	HOLLOW.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	HOLLOW.changed(hollowCube.bind(null, 0));
+
+	hollowCube();
 
 	DARK = p.createCheckbox("", false);
 	DARK.parent("dark")
 	DARK.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	DARK.changed((darkMode.bind(null, 0)));
+	
+	if (localStorage.background && localStorage.background == 5) {
+		darkMode();
+	}
 
 	TOPWHITE = p.createSelect(); 
 	TOPWHITE.parent("topwhite");
@@ -603,6 +615,10 @@ p.setup = () => {
 	TOPWHITE.option("Orange");
 	TOPWHITE.option("Red");
 	TOPWHITE.changed(topWhite.bind(null, 0));
+
+	if (localStorage.topwhite) {
+		TOPWHITE.value(localStorage.topwhite);
+	}
 
 	SOUND = p.createSelect(); 
 	if(goodsound){
@@ -624,11 +640,21 @@ p.setup = () => {
 		changeKeys();
 	});
 
+	if(localStorage.keyboard) {
+		KEYBOARD.value(localStorage.keyboard);
+		changeKeys();
+	}
+
+	
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
 	TOPPLL.option("Opposite of above");
 	TOPPLL.option("Same as above");
 	TOPPLL.changed(topWhite.bind(null, 0));
+
+	if (localStorage.toppll) {
+		TOPPLL.value(localStorage.toppll);
+	}
 
 	if(goodsound)
 		SETTINGS.position(cnv_div.offsetWidth-140,5);
@@ -802,7 +828,16 @@ setInterval(() => {
 	if (MODE != "speed" && MODE != "moves") {
 		saveao5 = [ao5, mo5, scrambles, movesarr];
 	}
+	//local
 	localStorage.saveao5 = JSON.stringify(saveao5);
+	localStorage.speed = SPEED;
+	localStorage.topwhite = TOPWHITE.value();
+	localStorage.toppll = TOPPLL.value();
+	localStorage.keyboard = KEYBOARD.value();
+	localStorage.background = BACKGROUND_COLOR;
+	localStorage.hollow = HOLLOW.checked();
+	localStorage.audioon = audioon;
+	updateScores();
 	
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
 	{
@@ -1082,6 +1117,7 @@ function reSetup(rot) {
 	document.getElementById("s_RACE").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
+	document.getElementById("m_high").style.display = "none";
 	document.getElementById("points_par").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
 	document.getElementById("reset3_div").style.display = "none";
@@ -2383,6 +2419,7 @@ function regular(nocustom){
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
+	document.getElementById("m_high").style.display = "none";
 	document.getElementById("link1").style.display = "none";
 	document.getElementById("timegone").style.display = "none";
 	document.getElementById("reset2_div").style.display = "none";
@@ -2671,6 +2708,7 @@ function movesmode()
 	
 	document.getElementById("m_34").style.display = "inline";
 	document.getElementById("m_4").style.display = "inline";
+	document.getElementById("m_high").style.display = "block";
 	m_34step = 0;
 	m_4step = 0;
 	if(INPUT.value()[0] == "K")
@@ -2688,6 +2726,7 @@ function showSpeed()
 	document.getElementById("s_medium").style.display = "none";
 	document.getElementById("m_34").style.display = "none";
 	document.getElementById("m_4").style.display = "none";
+	document.getElementById("m_high").style.display = "none";
 	document.getElementById("s_OLL").style.display = "none";
 	document.getElementById("s_PLL").style.display = "none";
 	document.getElementById("s_bot").style.display = "none";
@@ -2727,21 +2766,56 @@ function reCam()
 	rotateIt();
 }
 function updateScores() {
-	const modes = ["easy", "medium", "oll", "pll"];
-	modes.forEach((mode) => {
-		const score = localStorage[mode];
-		if (score != null && mode != "oll" && mode != "pll") {
-			document.getElementById("s_" + mode + "score").innerHTML = mode.charAt(0).toUpperCase() + mode.slice(1).toLowerCase() +  ": " + score;
-		} else if (score != null) {
-			document.getElementById("s_" + mode + "score").innerHTML = mode.toUpperCase() + ": " + score;
+	if (DIM == 50) {
+		// speedmode scores
+		let modes = ["easy", "medium", "oll", "pll"];
+		let display = {easy: "Easy", medium: "Medium", oll: "OLL", pll: "PLL"};
+		modes.forEach((mode) => {
+			const score = localStorage[mode];
+			if (score != null) {
+				document.getElementById("s_" + mode + "score").innerHTML = display[mode] +  ": " + score;
+			} else {
+				document.getElementById("s_" + mode + "score").innerHTML = display[mode] +  ": " + "N/A";
+			}
+		})
+		document.getElementById("s_pllscore").style.display = "block";
+		// movesmode scores
+		modes = ["m_easy", "m_medium"];
+		display = {m_easy: "Easy", m_medium: "Medium"};
+		modes.forEach((mode) => {
+			const score  = localStorage[mode];
+			if (score != null) {
+				document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
+			}
+		})
+
+
+	} else {
+		if (localStorage["easy2"] != null) {
+			document.getElementById("s_easyscore").innerHTML = "Easy: " + localStorage["easy2"];
+		} else {
+			document.getElementById("s_easyscore").innerHTML = "Easy: N/A";
 		}
-	})
+
+		if (localStorage["oll2"] != null) {
+			document.getElementById("s_mediumscore").innerHTML = "OLL: " + localStorage["oll2"];
+		} else {
+			document.getElementById("s_mediumscore").innerHTML = "OLL: N/A";
+		}
+
+		if (localStorage["pbl2"] != null) {
+			document.getElementById("s_ollscore").innerHTML = "PBL: " + localStorage["pbl2"];
+		} else {
+			document.getElementById("s_ollscore").innerHTML = "PBL: N/A";
+		}
+		document.getElementById("s_pllscore").style.display = "none";
+	}
 }
 function setScore(mode, total) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
-	if (!highscores || total < highscores) {
-		alert("You got a high score!");
+	if (!highscores || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)) {
+		alert("You got a personal best!");
 		localStorage[mode] = total;
 		updateScores();
 	}
@@ -2927,11 +3001,11 @@ function easy()
 		if (medstep == 8) {
 			setScore("medium", total);
 		} else if (ollstep == 8) {
-			setScore("oll", total);
+			setScore(DIM == 50 ? "oll" : "oll2", total);
 		} else if (pllstep == 8) {
-			setScore("pll", total);
-		} else if (ollstep == 8) {
-			setScore("easy", total);
+			setScore(DIM == 50 ? "pll" : "pbl2", total);
+		} else {
+			setScore(DIM == 50 ? "easy" : "easy2", total);
 		}
 		easystep = 0;
 		medstep = 0;
@@ -3352,8 +3426,12 @@ function m_4()
 		let grade = "F";
 		let grades = ["A++", "A+", "A", "A-", "B", "C", "D"];
 		let scores = [100, 70, 50, 25, 15, 6, 2];
-		if(m_34step > 0)
-		scores = [40, 15, 10, 6, 3, 2, 1];
+		if (m_34step > 0) {
+			scores = [40, 15, 10, 6, 3, 2, 1];
+			setScore("m_easy", m_points)
+		} else {
+			setScore("m_medium", m_points)
+		}
 		for(let i = 0; i < grades.length; i++)
 		{
 			if(m_points >= scores[i])
@@ -3365,6 +3443,9 @@ function m_4()
 		document.getElementById("s_instruct").innerHTML = "Your final score is " + m_points + ", granting you a grade of a <span style = 'color: #bf2222'>" + grade + "</span> <p>Play again?</p>";
 		document.getElementById("m_34").style.display = "inline";
 		document.getElementById("m_4").style.display = "inline";
+		document.getElementById("m_high").style.display = "block";
+
+
 		m_34step = 0;
 		m_4step = 0;
 		timer.reset();
@@ -5372,6 +5453,10 @@ function refreshButtons()
 	else{
 		SETTINGS.position(cnv_div.offsetWidth-80,5);
 		SETTINGS.style("background-color: #e6e6e6;")
+	}
+
+	if (localStorage.audioon === "false") {
+		audioon = false;
 	}
 
 	if(audioon){
@@ -8618,7 +8703,7 @@ window.addEventListener('keydown', (e) => {
 //Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
 //Jaden WR 2x2: 3.88
 //3x3 PLL Practice: 6.9, 6.84, 6.2, 5.01
-//3x3 OLL Practice: 4.66, 4.31, 3.2
+//3x3 OLL Practice: 4.66, 4.31, 3.2, 3.06
 //3x3 Easy: 0.8, 0.52s
 //3x3 Medium: 15.4s, 13.58s
 //3x3 Easy: 1.4s
