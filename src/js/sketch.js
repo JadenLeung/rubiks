@@ -2695,7 +2695,7 @@ function updateScores() {
 		let display = {easy: "Easy", medium: "Medium", oll: "OLL", pll: "PLL"};
 		modes.forEach((mode) => {
 			const score = localStorage[mode];
-			if (score != null) {
+			if (score != null && score != -1) {
 				document.getElementById("s_" + mode + "score").innerHTML = display[mode] +  ": " + score;
 			} else {
 				document.getElementById("s_" + mode + "score").innerHTML = display[mode] +  ": " + "N/A";
@@ -2707,8 +2707,10 @@ function updateScores() {
 		display = {m_easy: "Easy", m_medium: "Medium"};
 		modes.forEach((mode) => {
 			const score  = localStorage[mode];
-			if (score != null) {
+			if (score != null && score != -1) {
 				document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
+			} else {
+				document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + "N/A";
 			}
 		})
 
