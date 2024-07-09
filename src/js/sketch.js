@@ -3184,7 +3184,7 @@ async function loadData(times) {
 	}
 	const userdata = await getUsers();
 	let index = 0;
-	if (!userdata[0].username) {
+	if (!userdata[0]) {
 		alert("Load failed, please try again");
 		document.getElementById("logindesc").innerHTML = "";
 		return;
