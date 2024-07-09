@@ -2662,7 +2662,7 @@ function showSpeed()
 	DELAY = 0;
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
-	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE"]);
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 
 	changeInput();
