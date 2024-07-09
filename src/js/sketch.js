@@ -3191,12 +3191,12 @@ async function loadData(times) {
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2"];
 		params.forEach((param) => {
-			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] < userdata[index][param]))
+			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] > userdata[index][param]))
 				localStorage[param] = userdata[index][param];
 		})
 		params = ["m_easy", "m_medium"];
 		params.forEach((param) => {
-			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] > userdata[index][param]))
+			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] < userdata[index][param]))
 				localStorage[param] = userdata[index][param];
 		})
 	}
