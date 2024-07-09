@@ -3148,15 +3148,15 @@ async function saveData(username, password, method, al) {
 		username: username,
 		password: password,
 		data: "random",
-		easy: localStorage.easy,
-		medium: localStorage.medium,
-		oll: localStorage.oll,
-		pll: localStorage.pll,
-		easy2: localStorage.easy2,
-		oll2: localStorage.oll2,
-		pbl2: localStorage.pbl2,
-		m_easy: localStorage.m_easy,
-		m_medium:localStorage.m_medium,
+		easy: localStorage.easy ?? -1,
+		medium: localStorage.medium ?? -1,
+		oll: localStorage.oll ?? -1,
+		pll: localStorage.pll ?? -1,
+		easy2: localStorage.easy2 ?? -1,
+		oll2: localStorage.oll2 ?? -1,
+		pbl2: localStorage.pbl2 ?? -1,
+		m_easy: localStorage.m_easy ?? -1,
+		m_medium:localStorage.m_medium ?? -1,
 		audioon:localStorage.audioon,
 		background:localStorage.background,
 		hollow:localStorage.hollow,
@@ -3187,11 +3187,11 @@ async function loadData(times) {
 			index = i;
 		}
 	});
-	console.log(userdata[index]);
+	console.log("Userdata is ", userdata[index]);
 	if (times) {
 		const params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "m_easy", "m_medium"];
 		params.forEach((param) => {
-			localStorage[param] = userdata[index][param];
+				localStorage[param] = userdata[index][param];
 		})
 	}
 	document.getElementById("logindesc").innerHTML = "";
