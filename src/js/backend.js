@@ -36,9 +36,64 @@ export async function modeData(mode) {
 		  "Content-type": "application/json; charset=UTF-8"
 		}
 	  })
-		.then((response) => console.log(response));
-	console.log()
+	    .then((response) => console.log(response));
 }
+
+
+export async function getUsers() {
+    const url = "https://elephant4.azurewebsites.net/api/users";
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+  
+      const json = await response.json();
+      //console.log(json.recordsets[0]);
+      return json.recordsets[0];
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  }
+
+  export async function matchPassword(username, password) {
+    const url = `https://elephant4.azurewebsites.net/api/users?username=${username}&password=${password}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      console.log(json);
+      return json;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  }
+
+  export async function putUsers(data, method) {
+    console.log("Attemping to upload");
+    await fetch("https://elephant4.azurewebsites.net/api/users", {
+		method: method,
+		body: JSON.stringify([data]),
+		headers: {
+		  "Content-type": "application/json; charset=UTF-8"
+		}
+	  }).then((response) => {
+        console.log(response);
+      });
+    return true;
+  }
+
+  export async function printUsers() {
+    const users = await getUsers();
+    if (users != null) {
+        console.log(users);
+    }
+  }
+
 
 function getDate () {
     // Get the current date and time

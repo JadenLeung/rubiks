@@ -1,7 +1,7 @@
 import './lib/p5.easycam.js';
 import Picker from './picker.js';
 import Cuby from './cuby.js';
-import {getIP, printIP, modeData} from "./backend.js";
+import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -380,12 +380,7 @@ p.setup = () => {
 	refreshButtons();
 
 
-	document.getElementById("mode4").style.display = "none";
-	document.getElementById("mode5").style.display = "none";
-	document.getElementById("mode6").style.display = "none";
-	document.getElementById("mode8").style.display = "none";
-	document.getElementById("link1").style.display = "none";
-	document.getElementById("timegone").style.display = "none";
+	setDisplay("none", ["mode4", "mode5", "mode6", "mode8", "link1", "timegone"]);
 
 	const SHUFFLE_BTN = p.createButton('Scramble');
 	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-light', 'border-color: black;', shuffleCube.bind(null, 0));
@@ -837,6 +832,16 @@ setInterval(() => {
 	localStorage.background = BACKGROUND_COLOR;
 	localStorage.hollow = HOLLOW.checked();
 	localStorage.audioon = audioon;
+	if (!localStorage.username) 
+		localStorage.username = "signedout";
+	document.getElementById("login").style.display = localStorage.username == "signedout" ? "inline" : "none";
+	document.getElementById("account").style.display = localStorage.username == "signedout" ? "inline" : "none";
+	document.getElementById("inaccount").style.display = localStorage.username == "signedout" ? "none" : "inline";
+	document.getElementById("loginname").innerHTML = localStorage.username == "signedout" ? "Not logged in" : "<i class='bi bi-file-person'></i> " + localStorage.username;
+	document.getElementById("l_form").style.display = localStorage.username == "signedout" ? "block" : "none";
+	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
+	document.getElementById("l_load").style.display = localStorage.username == "signedout"  || MODE == "account" ? "none" : "block";
+	document.getElementById("l_home").style.display = localStorage.username == "signedout" ? "none" : "block";
 	updateScores();
 	
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
@@ -1108,22 +1113,7 @@ function reSetup(rot) {
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
-	document.getElementById("s_easy").style.display = "none";
-	document.getElementById("s_medium").style.display = "none";
-	document.getElementById("s_OLL").style.display = "none";
-	document.getElementById("s_PLL").style.display = "none";
-	document.getElementById("s_bot").style.display = "none";
-	document.getElementById("s_high").style.display = "none";
-	document.getElementById("s_RACE").style.display = "none";
-	document.getElementById("m_34").style.display = "none";
-	document.getElementById("m_4").style.display = "none";
-	document.getElementById("m_high").style.display = "none";
-	document.getElementById("points_par").style.display = "none";
-	document.getElementById("reset2_div").style.display = "none";
-	document.getElementById("reset3_div").style.display = "none";
-	document.getElementById("giveup").style.display = "none";
-	document.getElementById("giveup2").style.display = "none";
-	document.getElementById("hint").style.display = "none";
+	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "reset2_div", "reset3_div", "giveup", "giveup2", "hint"]);
 	
 	let cnt = 0;
 	//allcubies = false;
@@ -2006,17 +1996,10 @@ function viewBandage(def){
 	customb = 2;
 	if(!def)
 		bannum = 1;
-	document.getElementById("okban").style.display = "block";
-	document.getElementById("addbandage").style.display = "none";
-	document.getElementById("addbandage4").style.display = "none";
-	document.getElementById("custom5").style.display = "none";
-	document.getElementById("select9").style.display = "none";
-	document.getElementById("rng2").style.display = "none";
-	document.getElementById("leftban").style.display = "inline";
-	document.getElementById("rightban").style.display = "inline";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("scram").style.display = "none";
-	document.getElementById("cancelban").style.display = "none";
+	setDisplay("block", ["okban"]); 
+	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban"]); 
+	setDisplay("inline", ["leftban", "rightban"]);
+
 	if(bandaged.length >= bannum)
 		document.getElementById("deleteban").style.display = "block";
 	document.getElementById("addbandage2").innerHTML= "<b>Bandaged Group #" + bannum + "</b>";
@@ -2035,16 +2018,8 @@ function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
-	document.getElementById("rng2").style.display = "none";
-	document.getElementById("okban").style.display = "block";
-	document.getElementById("addbandage").style.display = "none";
-	document.getElementById("addbandage4").style.display = "none";
-	document.getElementById("custom5").style.display = "none";
-	document.getElementById("select9").style.display = "none";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("scram").style.display = "none";
-	document.getElementById("deleteban").style.display = "none";
-	document.getElementById("cancelban").style.display = "block";
+	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban"]);
+	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
 	reSetup();
@@ -2052,18 +2027,10 @@ function addBandage(){
 function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
 	document.getElementById("addbandage3").innerHTML= "";
-	document.getElementById("okban").style.display = "none";
-	document.getElementById("addbandage").style.display = "block";
-	document.getElementById("addbandage4").style.display = "block";
-	document.getElementById("leftban").style.display = "none";
-	document.getElementById("rightban").style.display = "none";
-	document.getElementById("custom5").style.display = "inline";
-	document.getElementById("select9").style.display = "inline";
-	document.getElementById("rng2").style.display = "inline";
-	document.getElementById("input").style.display = "block";
-	document.getElementById("scram").style.display = "block";
-	document.getElementById("deleteban").style.display = "none";
-	document.getElementById("cancelban").style.display = "none";
+	setDisplay("none", ["okban", "leftban", "rightban", "deleteban", "cancelban"]); 
+	setDisplay("block", ["addbandage", "addbandage4", "input", "scram"]); 
+	setDisplay("inline", ["custom5", "select9", "rng2"]); 
+
 	if(bandaged2.length > 1 && customb == 1)
 		bandaged.push(bandaged2);
 	bandaged2 = [];
@@ -2252,6 +2219,7 @@ function Custom2(){
 	changeCam(3);
 	doneBandage()
 	bandaged = bandaged3;
+	modeData("custombandage");
 	ban9();
 }
 function Custom()
@@ -2263,6 +2231,7 @@ function Custom()
 	document.getElementById("input").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	document.getElementById("custom4").style.display = "none";
+	modeData("customshape");
 	change9();
 }
 function Reverse(move)
@@ -2350,6 +2319,7 @@ function regular(nocustom){
 		movesarr = saveao5[3];
 	}
 	document.getElementById("scramble").innerHTML = "N/A";
+	document.getElementById('password').value = '';
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = true;
@@ -2376,70 +2346,16 @@ function regular(nocustom){
 	refreshButtons();
 	REGULAR.style('background-color', '#8ef5ee');
 	//REGULAR.class('btn btn-secondary');
+
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
-	document.getElementById("or_instruct").style.display = "block";
-	document.getElementById("or_instruct2").style.display = "block";
-	document.getElementById("or_instruct4").style.display = "block";
-	document.getElementById("test_alg_div").style.display = "block";
-	document.getElementById("type3").style.display = "block";
-	document.getElementById("shuffle_div").style.display = "inline";
-	document.getElementById("reset_div").style.display = "inline";
-	document.getElementById("solve").style.display = "inline";
-	document.getElementById("undo").style.display = "inline";
-	document.getElementById("redo").style.display = "inline";
-	document.getElementById("speed").style.display = "inline";
-	document.getElementById("slider_div").style.display = "inline";
-	document.getElementById("outermoves").style.display = "inline";
-	document.getElementById("outertime").style.display = "inline";
-	document.getElementById("or_instruct3").style.display = "none";
-	document.getElementById("points_par").style.display = "none";
-	document.getElementById("readybot").style.display = "none";
-	document.getElementById("mode").style.display = "block";
-	document.getElementById("mode2").style.display = "block";
-	document.getElementById("mode3").style.display = "block";
-	document.getElementById("mode7").style.display = "block";
-	document.getElementById("mode4").style.display = "none";
-	document.getElementById("mode5").style.display = "none";
-	document.getElementById("mode6").style.display = "none";
-	document.getElementById("mode8").style.display = "none";
-	document.getElementById("ID1").style.display = "block";
-	document.getElementById("settings").style.display = "block";
-	document.getElementById("alltimes").style.display = "none";
-	document.getElementById("s_INSTRUCT").innerHTML = "";
-	document.getElementById("s_instruct").innerHTML = "";
-	document.getElementById("s_instruct2").innerHTML = "";
-	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("s_difficulty").innerHTML = "";
-	document.getElementById("ID3").style.display = "none";
+	setDisplay("block", ["or_instruct", "or_instruct2", "or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram"]);
+	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
+	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
+		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
+
 	changeInput();
-	document.getElementById("input").style.display = "inline";
-	document.getElementById("s_easy").style.display = "none";
-	document.getElementById("s_medium").style.display = "none";
-	document.getElementById("s_OLL").style.display = "none";
-	document.getElementById("s_PLL").style.display = "none";
-	document.getElementById("m_34").style.display = "none";
-	document.getElementById("m_4").style.display = "none";
-	document.getElementById("m_high").style.display = "none";
-	document.getElementById("link1").style.display = "none";
-	document.getElementById("timegone").style.display = "none";
-	document.getElementById("reset2_div").style.display = "none";
-	document.getElementById("reset3_div").style.display = "none";
-	document.getElementById("giveup").style.display = "none";
-	document.getElementById("giveup2").style.display = "none";
-	document.getElementById("hint").style.display = "none";
-	document.getElementById("cube").style.display = "none";
-	document.getElementById("custom2").style.display = "none";
-	document.getElementById("custom4").style.display = "none";
-	document.getElementById("spacetime").style.display = "none";
-	document.getElementById("stop_div").style.display = "none";
-	document.getElementById("scram").style.display = "block";
-	document.getElementById("modarrow").style.display = "none";
-	document.getElementById("s_bot").style.display = "none";
-	document.getElementById("s_high").style.display = "none";
-	document.getElementById("s_RACE").style.display = "none";
-	document.getElementById("s_RACE2").style.display = "none";
-	document.getElementById("delayuseless").style.display = "inline";
-	document.getElementById("settings1").style.display = "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -2466,29 +2382,12 @@ function timedmode()
 	refreshButtons();
 	TIMEDMODE2.style('background-color', "#8ef5ee");
 
-	document.getElementById("mode").style.display = "none";
-	document.getElementById("ID1").style.display = "none";
-	document.getElementById("settings").style.display = "none";
-	document.getElementById("mode2").style.display = "none";
-	document.getElementById("mode3").style.display = "none";
-	document.getElementById("mode7").style.display = "none";
-	document.getElementById("or_instruct").style.display = "none";
-	document.getElementById("or_instruct2").style.display = "none";
-	document.getElementById("or_instruct3").style.display = "none";
-	document.getElementById("or_instruct4").style.display = "none";
-	document.getElementById("mode4").style.display = "inline";
-	document.getElementById("mode5").style.display = "inline";
-	document.getElementById("mode6").style.display = "inline";
-	document.getElementById("mode8").style.display = "inline";
+	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct", "or_instruct2", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input"]);
+	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
+	setDisplay("block", ["alltimes", "type3"]);
+
 	document.getElementById("or_instruct3").innerHTML = "";
-	document.getElementById("alltimes").style.display = "block";
-	document.getElementById("scram").style.display = "none";
-	document.getElementById("timegone").style.display = "none";
-	document.getElementById("custom2").style.display = "none";
-	document.getElementById("custom4").style.display = "none";
-	document.getElementById("cube").style.display = "none";
-	document.getElementById("type3").style.display = "block";
-	document.getElementById("input").style.display = "none";
+
 	changeInput();
 
 	modeData("stats");
@@ -2507,32 +2406,9 @@ function cubemode()
 	regular(true);
 	reSetup();
 	MODE = "cube";
-	document.getElementById("mode").style.display = "none";
-	document.getElementById("ID1").style.display = "none";
-	document.getElementById("settings").style.display = "none";
-	document.getElementById("mode2").style.display = "none";
-	document.getElementById("mode3").style.display = "none";
-	document.getElementById("mode7").style.display = "none";
-	document.getElementById("solve").style.display = "none";
-	document.getElementById("scram").style.display = "block";
-	document.getElementById("input").style.display = "block";
-	document.getElementById("allmodes").style.display = "block";
-	//document.getElementById("outermoves").style.display = "none";
-	//document.getElementById("outertime").style.display = "none";
-	//document.getElementById("times_par").style.display = "none";
-	//document.getElementById("moves_par").style.display = "none";
-	document.getElementById("mode4").style.display = "inline";
-	document.getElementById("mode5").style.display = "inline";
-	document.getElementById("mode6").style.display = "inline";
-	document.getElementById("mode8").style.display = "inline";
-	document.getElementById("type3").style.display = "none";
-	document.getElementById("or_instruct").style.display = "none";
-	document.getElementById("or_instruct2").style.display = "none";
-	document.getElementById("modarrow").style.display = "block";
-	document.getElementById("or_instruct4").style.display = "none";
-	document.getElementById("custom2").style.display = "none";
-	document.getElementById("custom4").style.display = "none";
-	document.getElementById("cube").style.display = "block";
+	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct", "or_instruct2", "or_instruct4", "custom2", "custom4"]);
+	setDisplay("block", ["scram", "input", "allmodes", "modarrow", "cube"]);
+	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
 	else document.getElementById("customb").style.display = "none"; 
 
@@ -2556,15 +2432,10 @@ function idmode()
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("shuffle_div").style.display = "none";
-	document.getElementById("settings").style.display = "none";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("reset_div").style.display = "none";
-	document.getElementById("solve").style.display = "none";
-	document.getElementById("settings1").style.display = "none";
-	document.getElementById("input2").style.display = "none";
-	document.getElementById("ID3").style.display = "block";
-	document.getElementById("test_alg_div").style.display = "block";
+
+	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2"]);
+	setDisplay("block", ["ID3", "test_alg_div"]);
+	
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -2573,6 +2444,59 @@ function idmode()
 	document.getElementById("test_alg_span").innerHTML = "Paste ID here:";
 
 	modeData("id");
+}
+document.getElementById("account").onclick = accountmode;
+function accountmode() {
+	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
+	{
+		ao5 = [];
+		mo5 = [];
+		movesarr = [];
+		scrambles = [];
+	}
+	regular(true);
+	DIM = DIM2;
+	MODE = "account";
+	reSetup();
+
+	refreshButtons();
+	document.getElementById("l_title").innerHTML = "Create an Account";
+	document.getElementById("l_forgot").innerText = "Have an account?";
+	document.getElementById("l_link").innerText = "Log in";
+	setDisplay("none", ["test_alg_div"]);
+	setDisplay("block", ["loginform"]);
+	
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+}
+document.getElementById("login").onclick = loginmode;
+document.getElementById("l_link").onclick = () => MODE == "account" ? loginmode() : accountmode();
+function loginmode() {
+	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
+	{
+		ao5 = [];
+		mo5 = [];
+		movesarr = [];
+		scrambles = [];
+	}
+	regular(true);
+	DIM = DIM2;
+	MODE = "login";
+	reSetup();
+
+	refreshButtons();
+	document.getElementById("l_title").innerHTML = "Enter your Login Credentials";
+	document.getElementById("l_forgot").innerText = "Don't have an account?";
+	document.getElementById("l_link").innerText = "Sign up";
+	setDisplay("none", ["test_alg_div"]);
+	setDisplay("block", ["loginform"]);
+	
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
 }
 function settingsmode()
 {
@@ -2597,13 +2521,8 @@ function settingsmode()
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("shuffle_div").style.display = "none";
-	document.getElementById("reset_div").style.display = "none";
-	document.getElementById("solve").style.display = "none";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("input2").style.display = "none";
-	document.getElementById("test_alg_div").style.display = "none";
-	document.getElementById("settings1").style.display = "block";
+	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div"]);
+	setDisplay("block", ["settings1"]);
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -2628,17 +2547,12 @@ function speedmode()
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
 
-	document.getElementById("test_alg_div").style.display = "none";
+	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2"]);
+	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
+	setDisplay("block", ["s_bot", "s_high", "s_RACE"]);
+
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("shuffle_div").style.display = "none";
-	document.getElementById("ID1").style.display = "none";
-	document.getElementById("settings").style.display = "none";
-	document.getElementById("reset_div").style.display = "none";
-	document.getElementById("solve").style.display = "none";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("input2").style.display = "none";
-	document.getElementById("scram").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for Speed Mode";
 	document.getElementById("s_instruct").innerHTML = "In one game of speed mode, there will be <b>4</b> stages, each requiring you to complete a challenge. Your score will be the time it takes to do all the tasks.";
 	document.getElementById("s_difficulty").innerHTML = "Select Difficulty/Mode";
@@ -2646,19 +2560,12 @@ function speedmode()
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	}
-	document.getElementById("s_easy").style.display = "inline";
-	if(DIM == 50)
-	document.getElementById("s_medium").style.display = "inline";
-	document.getElementById("s_OLL").style.display = "inline";
-	document.getElementById("s_PLL").style.display = "inline";
-	document.getElementById("s_bot").style.display = "block";
-	document.getElementById("s_high").style.display = "block";
-	document.getElementById("s_RACE").style.display = "block";
-	document.getElementById("s_RACE2").style.display = "none";
+	if(DIM == 50) document.getElementById("s_medium").style.display = "inline";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
 	pllstep = 0;
+	
 	if(DIM == 50)
 		PLL.html("PLL Practice");
 	else
@@ -2689,15 +2596,12 @@ function movesmode()
 	refreshButtons();
 	MOVESMODE.style('background-color', '#8ef5ee');
 
-	document.getElementById("test_alg_div").style.display = "none";
-	document.getElementById("shuffle_div").style.display = "none";
-	document.getElementById("reset_div").style.display = "none";
-	document.getElementById("ID1").style.display = "none";
-	document.getElementById("settings").style.display = "none";
-	document.getElementById("solve").style.display = "none";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("input2").style.display = "none";
-	document.getElementById("scram").style.display = "none";
+
+	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", "solve", "input", "input2", "scram"]);
+	setDisplay("inline", ["m_34", "m_4"]);
+	setDisplay("block", ["m_high"]);
+
+
 	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for the Fewest Moves Challenge";
 	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
 	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
@@ -2705,10 +2609,6 @@ function movesmode()
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	}
-	
-	document.getElementById("m_34").style.display = "inline";
-	document.getElementById("m_4").style.display = "inline";
-	document.getElementById("m_high").style.display = "block";
 	m_34step = 0;
 	m_4step = 0;
 	if(INPUT.value()[0] == "K")
@@ -2716,27 +2616,55 @@ function movesmode()
 
 	modeData("moves");
 }
+function setSettings(obj) {
+	// localStorage.speed = SPEED;
+	// localStorage.topwhite = TOPWHITE.value();
+	// localStorage.toppll = TOPPLL.value();
+	// localStorage.keyboard = KEYBOARD.value();
+	// localStorage.background = BACKGROUND_COLOR;
+	// localStorage.hollow = HOLLOW.checked();
+	// localStorage.audioon = audioon;
+	// TOPWHITE.selected("Blue");
+	// TOPPLL.selected("Same as above");
+	// SPEED_SLIDER.value(2);
+	// SPEED = 2;
+	// topWhite();
+	// KEYBOARD.value("Alt Keyboard");
+	// changeKeys();
+	SPEED_SLIDER.value(obj.speed);
+	SPEED = obj.speed;
+	audioon = obj.audioon;
+	localStorage.audioon = obj.audioon;
+	KEYBOARD.value(obj.keyboard);
+	TOPWHITE.selected(obj.topwhite);
+	TOPPLL.selected(obj.toppll);
+	HOLLOW.checked(obj.hollow);
+	let newdarkmode = obj.background;
+	if (newdarkmode != BACKGROUND_COLOR) {
+		DARK.checked(!DARK.checked());
+		darkMode();
+	}
+	topWhite();
+	changeKeys();
+	refreshButtons();
+	hollowCube();
+	if (MODE != "login") regular();
+}
+function setDisplay (display, ids) {
+	ids.forEach(id => document.getElementById(id).style.display = display)
+};
+function setInnerHTML (ids) {
+	 ids.forEach(id => document.getElementById(id).innerHTML = "");
+}
 function showSpeed()
 {
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
-	document.getElementById("s_easy").style.display = "none";
-	document.getElementById("s_medium").style.display = "none";
-	document.getElementById("m_34").style.display = "none";
-	document.getElementById("m_4").style.display = "none";
-	document.getElementById("m_high").style.display = "none";
-	document.getElementById("s_OLL").style.display = "none";
-	document.getElementById("s_PLL").style.display = "none";
-	document.getElementById("s_bot").style.display = "none";
-	document.getElementById("s_high").style.display = "none";
-	document.getElementById("s_RACE").style.display = "none";
-	document.getElementById("input").style.display = "inline";
-	document.getElementById("speed").style.display = "inline";
-	document.getElementById("slider_div").style.display = "inline";
-	document.getElementById("undo").style.display = "inline";
-	document.getElementById("redo").style.display = "inline";
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE"]);
+	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
+
 	changeInput();
 	if(MODE == "speed")
 	{
@@ -2747,12 +2675,7 @@ function showSpeed()
 	}
 	if(MODE == "moves")
 	{
-		document.getElementById("points_par").style.display = "inline";
-		document.getElementById("outermoves").style.display = "inline";
-		document.getElementById("reset2_div").style.display = "inline";
-		document.getElementById("giveup").style.display = "inline";
-		document.getElementById("giveup2").style.display = "inline";
-		document.getElementById("hint").style.display = "inline";
+		setDisplay("inline", ["points_par", "outermoves", "reset2_div", "giveup", "giveup2", "hint"]);
 	}
 }
 function reCam()
@@ -2815,7 +2738,8 @@ function setScore(mode, total) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
 	if (!highscores || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)) {
-		alert("You got a personal best!");
+		if (localStorage.username != "signedout")
+			document.getElementById("highscore").style.display = "block";
 		localStorage[mode] = total;
 		updateScores();
 	}
@@ -3007,6 +2931,7 @@ function easy()
 		} else {
 			setScore(DIM == 50 ? "easy" : "easy2", total);
 		}
+		modeData("speedwin");
 		easystep = 0;
 		medstep = 0;
 		pllstep = 0;
@@ -3211,29 +3136,149 @@ function speedOLL()
 		easy();
 	}
 }
+//onclick
+document.getElementById("l_home").onclick = regular;
+document.getElementById("l_load").onclick = () => loadData(true);
+document.getElementById("savedata").onclick = () => saveData(localStorage.username, localStorage.password, "POST", true);
+document.getElementById("savedata2").onclick = () => saveData(localStorage.username, localStorage.password, "POST", true);
+async function saveData(username, password, method, al) {
+	if (document.getElementById("logindesc").innerHTML == "")
+		document.getElementById("logindesc").innerHTML = "Saving data...";
+	const data = {
+		username: username,
+		password: password,
+		data: "random",
+		easy: localStorage.easy,
+		medium: localStorage.medium,
+		oll: localStorage.oll,
+		pll: localStorage.pll,
+		easy2: localStorage.easy2,
+		oll2: localStorage.oll2,
+		pbl2: localStorage.pbl2,
+		m_easy: localStorage.m_easy,
+		m_medium:localStorage.m_medium,
+		audioon:localStorage.audioon,
+		background:localStorage.background,
+		hollow:localStorage.hollow,
+		keyboard:localStorage.keyboard,
+		speed:localStorage.speed,
+		toppll:localStorage.toppll,
+		topwhite:localStorage.topwhite
+	};
+	const obj = await putUsers(data, method);
+	document.getElementById("logindesc").innerHTML = "";
+	if (al) alert("Data saved");
+}
+document.getElementById("loaddata").onclick = () => loadData(true);
+async function loadData(times) {
+	if (document.getElementById("logindesc").innerHTML == "") {
+		document.getElementById("logindesc").innerHTML = "Loading data...";
+	}
+	if (times) {
+		if (!confirm("This may rewrite your current scores. Are you sure?")) {
+			document.getElementById("logindesc").innerHTML = "";
+			return;
+		}
+	}
+	const userdata = await getUsers();
+	let index = 0;
+	userdata.forEach((obj, i) => {
+		if (localStorage.username == obj.username) {
+			index = i;
+		}
+	});
+	console.log(userdata[index]);
+	if (times) {
+		const params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "m_easy", "m_medium"];
+		params.forEach((param) => {
+			localStorage[param] = userdata[index][param];
+		})
+	}
+	document.getElementById("logindesc").innerHTML = "";
+	if (times)
+		alert("Loaded data");
+	updateScores();
+	setSettings(userdata[index]);
+}
+document.getElementById("signout").onclick = () => {
+	localStorage.username = "signedout";
+	localStorage.password = "signedout";
+};
+document.getElementById("l_submit").onclick = () => MODE == "account" ? submitAccount() : submitLogin();
+async function submitLogin() {
+	const username = document.getElementById("username").value;
+	if (username == "") {
+		alert("Please enter a username");
+		return;
+	}
+	const password = document.getElementById("password").value;
+	if (password == "") {
+		alert("Please enter a password");
+		return;
+	}
+	document.getElementById("l_message").innerHTML = "Attemping to log in...";
+	const success = await matchPassword(username, password);
+	document.getElementById('password').value = '';
+	if (!success) {
+		alert("Incorrect credentials");
+		document.getElementById("l_message").innerHTML = "";
+		return;
+	} else {
+		document.getElementById("l_message").innerHTML = "Logged in successfully! Your settings have been updated. To load your previously saved scores, click Load Data.";
+		localStorage.username = username;
+		localStorage.password = password;
+	
+		loadData(false);
+	}
+}
+async function submitAccount() {
+	const username = document.getElementById("username").value;
+	if (username == "") {
+		alert("Please enter a username");
+		return;
+	}
+	const password = document.getElementById("password").value;
+	if (password == "") {
+		alert("Please enter a password");
+		return;
+	}
+	document.getElementById("l_message").innerHTML = "Attemping to create account...";
+	const userdata = await getUsers();
+	console.log("UserData", userdata);
+
+	let matches = false;
+	
+	userdata.forEach((obj) => {
+		if (obj.username == username) {
+			document.getElementById("l_message").innerHTML = "";
+			matches = true;
+		}
+	})
+
+	if (matches) {
+		alert("This username is taken.")
+		return;
+	}
+	document.getElementById('password').value = '';
+	await saveData(username, password, "PUT", false);
+	document.getElementById("l_message").innerHTML = "Account Created! You are logged in.";
+	localStorage.username = username;
+	localStorage.password = password;
+}
 function speedRace(){
 	race = 1;
 	round = 1;
 	roundresult = [0, 0];
 	showSpeed();
-	document.getElementById("keymap").style.display = "none";
-	document.getElementById("input").style.display = "none";
-	document.getElementById("input2").style.display = "none";
+	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par"]); 
+	setDisplay("block", ["readybot", "delaywhole"]);
+
+
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("undo").style.display = "none";
-	document.getElementById("scram").style.display = "none";
-	document.getElementById("redo").style.display = "none";
-	document.getElementById("reset3_div").style.display = "none";
-	document.getElementById("outermoves").style.display = "none";
-	document.getElementById("outertime").style.display = "none";
-	document.getElementById("times_par").style.display = "none";
 	document.getElementById("s_INSTRUCT").innerHTML = "Pre-Setup";
 	document.getElementById("s_instruct").innerHTML = "First, adjust bot turn speed (1 = slow, 200 = fast)<br>Then, adjust bot turn delay (in seconds)";
-	document.getElementById("readybot").style.display = "block";
-	document.getElementById("delaywhole").style.display = "block";
-	document.getElementById("delayuseless").style.display = "none";
-	document.getElementById("scramble_par").style.display = "none";
+	modeData("race");
 	canMan = true;
 }
 function speedRace2(){
@@ -3883,62 +3928,29 @@ function getCubyIndexByColor2(arr1) //original
 		return false;
 	}
 
-	if(JSON.stringify(arr1) == "[218,124,24,255]") return 0;
-	if(JSON.stringify(arr1) == "[218,125,24,255]") return 3;
-	if(JSON.stringify(arr1) == "[218,126,24,255]") return 6;
-	if(JSON.stringify(arr1) == "[219,124,24,255]") return 9;
-	if(JSON.stringify(arr1) == "[219,125,24,255]") return 12;
-	if(JSON.stringify(arr1) == "[219,126,24,255]") return 15;
-	if(JSON.stringify(arr1) == "[220,124,24,255]") return 18;
-	if(JSON.stringify(arr1) == "[220,125,24,255]") return 21;
-	if(JSON.stringify(arr1) == "[220,126,24,255]") return 24;
-	if(JSON.stringify(arr1) == "[249,251,249,255]") return 6;
-	if(JSON.stringify(arr1) == "[249,251,250,255]") return 7;
-	if(JSON.stringify(arr1) == "[249,251,251,255]") return 8;
-	if(JSON.stringify(arr1) == "[250,251,249,255]") return 15;
-	if(JSON.stringify(arr1) == "[250,251,250,255]") return 16;
-	if(JSON.stringify(arr1) == "[250,251,251,255]") return 17;
-	if(JSON.stringify(arr1) == "[251,251,249,255]") return 24;
-	if(JSON.stringify(arr1) == "[251,251,250,255]") return 25;
-	if(JSON.stringify(arr1) == "[251,251,251,255]") return 26;
-	if(JSON.stringify(arr1) == "[24,104,218,255]") return 0;
-	if(JSON.stringify(arr1) == "[24,104,219,255]") return 1;
-	if(JSON.stringify(arr1) == "[24,104,220,255]") return 2;
-	if(JSON.stringify(arr1) == "[24,105,218,255]") return 3;
-	if(JSON.stringify(arr1) == "[24,105,219,255]") return 4;
-	if(JSON.stringify(arr1) == "[24,105,220,255]") return 5;
-	if(JSON.stringify(arr1) == "[24,106,218,255]") return 6;
-	if(JSON.stringify(arr1) == "[24,106,219,255]") return 7;
-	if(JSON.stringify(arr1) == "[24,106,220,255]") return 8;
-	if(JSON.stringify(arr1) == "[218,26,26,255]") return 8;
-	if(JSON.stringify(arr1) == "[218,25,26,255]") return 5;
-	if(JSON.stringify(arr1) == "[218,24,26,255]") return 2;
-	if(JSON.stringify(arr1) == "[219,26,26,255]") return 17;
-	if(JSON.stringify(arr1) == "[219,25,26,255]") return 14;
-	if(JSON.stringify(arr1) == "[219,24,26,255]") return 11;
-	if(JSON.stringify(arr1) == "[220,26,26,255]") return 26;
-	if(JSON.stringify(arr1) == "[220,25,26,255]") return 23;
-	if(JSON.stringify(arr1) == "[220,24,26,255]") return 20;
-	if(JSON.stringify(arr1) == "[26,220,30,255]") return 24;
-	if(JSON.stringify(arr1) == "[26,220,31,255]") return 25;
-	if(JSON.stringify(arr1) == "[26,220,32,255]") return 26;
-	if(JSON.stringify(arr1) == "[26,219,30,255]") return 21;
-	if(JSON.stringify(arr1) == "[26,219,31,255]") return 22;
-	if(JSON.stringify(arr1) == "[26,219,32,255]") return 23;
-	if(JSON.stringify(arr1) == "[26,218,30,255]") return 18;
-	if(JSON.stringify(arr1) == "[26,218,31,255]") return 19;
-	if(JSON.stringify(arr1) == "[26,218,32,255]") return 20;
-	if(JSON.stringify(arr1) == "[208,218,26,255]") return 2;
-	if(JSON.stringify(arr1) == "[208,218,25,255]") return 1;
-	if(JSON.stringify(arr1) == "[208,218,24,255]") return 0;
-	if(JSON.stringify(arr1) == "[209,218,26,255]") return 11;
-	if(JSON.stringify(arr1) == "[209,218,25,255]") return 10;
-	if(JSON.stringify(arr1) == "[209,218,24,255]") return 9;
-	if(JSON.stringify(arr1) == "[210,218,26,255]") return 20;
-	if(JSON.stringify(arr1) == "[210,218,25,255]") return 19;
-	if(JSON.stringify(arr1) == "[210,218,24,255]") return 18;
+	const lookup = {
+		"[218,124,24,255]": 0, "[218,125,24,255]": 3, "[218,126,24,255]": 6,
+		"[219,124,24,255]": 9, "[219,125,24,255]": 12, "[219,126,24,255]": 15,
+		"[220,124,24,255]": 18, "[220,125,24,255]": 21, "[220,126,24,255]": 24,
+		"[249,251,249,255]": 6, "[249,251,250,255]": 7, "[249,251,251,255]": 8,
+		"[250,251,249,255]": 15, "[250,251,250,255]": 16, "[250,251,251,255]": 17,
+		"[251,251,249,255]": 24, "[251,251,250,255]": 25, "[251,251,251,255]": 26,
+		"[24,104,218,255]": 0, "[24,104,219,255]": 1, "[24,104,220,255]": 2,
+		"[24,105,218,255]": 3, "[24,105,219,255]": 4, "[24,105,220,255]": 5,
+		"[24,106,218,255]": 6, "[24,106,219,255]": 7, "[24,106,220,255]": 8,
+		"[218,26,26,255]": 8, "[218,25,26,255]": 5, "[218,24,26,255]": 2,
+		"[219,26,26,255]": 17, "[219,25,26,255]": 14, "[219,24,26,255]": 11,
+		"[220,26,26,255]": 26, "[220,25,26,255]": 23, "[220,24,26,255]": 20,
+		"[26,220,30,255]": 24, "[26,220,31,255]": 25, "[26,220,32,255]": 26,
+		"[26,219,30,255]": 21, "[26,219,31,255]": 22, "[26,219,32,255]": 23,
+		"[26,218,30,255]": 18, "[26,218,31,255]": 19, "[26,218,32,255]": 20,
+		"[208,218,26,255]": 2, "[208,218,25,255]": 1, "[208,218,24,255]": 0,
+		"[209,218,26,255]": 11, "[209,218,25,255]": 10, "[209,218,24,255]": 9,
+		"[210,218,26,255]": 20, "[210,218,25,255]": 19, "[210,218,24,255]": 18
+	};
+
+	return lookup[JSON.stringify(arr1)] ?? false;
 	//if(JSON.stringify(arr1) == "[0,0,0,255]")
-	return false;
 }
 
 function getActionStartCuby() {
@@ -4673,10 +4685,9 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		/*delete localStorage.easy;
-		delete localStorage.highscore;
-		delete localStorage.medium;*/
-		console.log(localStorage);
+		//postUsers("Jaden", "Leung", "cool");
+		matchPassword("a", "a");
+		//console.log("audioon is "+ audioon);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -5091,7 +5102,7 @@ p.keyPressed = (event) => {
 			Redo();
 			break;
 			case 27: //escape
-			if(MODE == "normal" || MODE == "timed" || MODE == "cube") 
+			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login") 
 			reSetup();
 			if(MODE == "moves")
 			moveSetup();
@@ -5099,7 +5110,7 @@ p.keyPressed = (event) => {
 			speedSetup();
 			break;
 			case 192: //`
-			if(MODE == "normal" || MODE == "cube" || MODE == "timed")
+			if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login")
 				shuffleCube();
 			break;
 			case 49: //1
@@ -7195,7 +7206,6 @@ function darkMode(){
 		BACKGROUND_COLOR = 5;
 		document.body.style.backgroundColor = "black";
 		document.body.style.color = "lightblue";
-		
 	}
 	else{
 		BACKGROUND_COLOR = 230;
@@ -8339,6 +8349,11 @@ function renderCube() {
 $(document).on("keypress", "input", function(e){
 	if(e.which == 13){
 		testAlg();
+	}
+});
+$(document).on("keypress", "#password", function(e){
+	if(e.which == 13){
+		document.getElementById('l_submit').click();
 	}
 });
 function isIpad(){

@@ -93,6 +93,10 @@
 			-ms-user-select: none; /* Internet Explorer/Edge */
 			user-select: none; 
 		}
+		.login {
+			margin-top:10px;
+			margin-left:5px;
+		}
 	</style>	
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <meta charset="utf-8">
@@ -100,7 +104,16 @@
 <body oncontextmenu="return false">
 	<!--h1 style = "text-align: center;">Virtual Cubing</h1-->
 	<ul class = "noselect">
+		<li style = "float:left;"><a style = "color:white"  id = "loginname">Not logged in </a></li>
+		<button class = "btn btn-light btn-sm login" id = "account">Create an Account</button>
+		<button class = "btn btn-light btn-sm login" id = "login">Log in</button>
+		<div id = "inaccount" style = "float:left;">
+			<button class = "btn btn-danger btn-sm login" id = "signout">Sign out</button>
+			<button class = "btn btn-light btn-sm login" id = "loaddata">Load data</button>
+			<button class = "btn btn-light btn-sm login" id = "savedata">Save data</button>
+		</div>
 		<li style = "float:right;"><a style = "color:white">The Virtual Cube</a></li>
+		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
 	
 	<div class="row">
@@ -255,6 +268,40 @@
 				</div>
 				<p style = "font-size:20px; text-align:left; padding-top:20px;"><b>Load Cube Position from ID:</b></p>
 			</div>
+			<div id="loginform">
+				<div id = "l_form">
+					<p style = "font-size:20px; text-align:left; padding-top:15px; text-align: left"><b id = "l_title">Create an Account</b></p>
+					<label for="username">
+						Username:
+					</label>
+					<input type="text" 
+							id="username" 
+							name="username" 
+							placeholder="Enter your Username" required>
+					<br>
+					<label for="password" style = "margin-right: 4px;">
+						Password: 
+					</label>
+					
+					<input type="password"
+							id="password" 
+							name="password"
+							placeholder="Enter your Password" required>
+					<br>
+					<button class = "btn btn-success btn-sm" id = "l_submit">
+							Submit
+					</button>
+				</div>
+				<p style = "margin-top: 10px;" id = "l_message"></p>
+				<div style = "display:inline;" id = "l_bigforgot">
+				<p id = "l_forgot" style = "display:inline;">Have an account?</p>
+				<a href="#" style="text-decoration: none; display:inline;" id = "l_link"> Load Data</a>
+				<a href="#" style="text-decoration: none; display:inline;" id = "l_link2"> Log in</a>
+				<br>
+				</div>
+				<button class = "btn btn-light" style = "font-size:25px; border-color:black; margin-bottom: 20px;" id = "l_load">Load Data</button>
+				<button class = "btn btn-light" style = "font-size:25px; border-color:black; margin-bottom: 20px;" id = "l_home">Home</button>
+		  	</div>
 			<div id = "settings1" class = "noselect">
 				<div style = "margin-top: 10px;">
 					<p id="settingsback" class = "button" style = "text-align:left; display: inline;"></p>
@@ -382,6 +429,10 @@
 				<p style = "display: inline; font-size:12px;"><span id = "stepbig"></span><span id = "fraction"></span></h5>
 				<p style = "display: inline; font-size:12px;" id = "step"></p>
 				<p style = "font-size:15px;" id = "spacetime"> <b>Press "Stop Time" or press space to stop the timer.</b></p>
+			</div>
+			<div id = "highscore" class = "noselect">
+				<h5>You got a personal best!</h5>
+				<button class = "btn btn-light" style = "font-size:25px; border-color:black; margin-bottom: 20px;" id = "savedata2">Save score</button>
 			</div>
 			<h5 id = "s_INSTRUCT" class = "noselect"></h5>
 			<p id = "s_instruct" class = "noselect"></p>
