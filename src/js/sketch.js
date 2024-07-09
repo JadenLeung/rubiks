@@ -599,6 +599,7 @@ p.setup = () => {
 	
 	if (localStorage.background && localStorage.background == 5) {
 		darkMode();
+		DARK.checked(true);
 	}
 
 	TOPWHITE = p.createSelect(); 
@@ -2666,7 +2667,7 @@ function showSpeed()
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 
 	changeInput();
-	if(MODE == "speed")
+	if(MODE == "speed")2
 	{
 		document.getElementById("reset3_div").style.display = "inline";
 		document.getElementById("times_par").style.display = "block";
