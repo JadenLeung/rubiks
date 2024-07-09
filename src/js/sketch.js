@@ -2716,19 +2716,19 @@ function updateScores() {
 
 
 	} else {
-		if (localStorage["easy2"] != null) {
+		if (localStorage["easy2"] != null  && localStorage["easy2"] != -1) {
 			document.getElementById("s_easyscore").innerHTML = "Easy: " + localStorage["easy2"];
 		} else {
 			document.getElementById("s_easyscore").innerHTML = "Easy: N/A";
 		}
 
-		if (localStorage["oll2"] != null) {
+		if (localStorage["oll2"] != null  && localStorage["oll2"] != -1) {
 			document.getElementById("s_mediumscore").innerHTML = "OLL: " + localStorage["oll2"];
 		} else {
 			document.getElementById("s_mediumscore").innerHTML = "OLL: N/A";
 		}
 
-		if (localStorage["pbl2"] != null) {
+		if (localStorage["pbl2"] != null && localStorage["pbl2"] != -1) {
 			document.getElementById("s_ollscore").innerHTML = "PBL: " + localStorage["pbl2"];
 		} else {
 			document.getElementById("s_ollscore").innerHTML = "PBL: N/A";
@@ -2739,7 +2739,7 @@ function updateScores() {
 function setScore(mode, total) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
-	if (!highscores || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)) {
+	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
 		localStorage[mode] = total;
@@ -3168,19 +3168,12 @@ async function saveData(username, password, method, al) {
 		topwhite:localStorage.topwhite
 	};
 	const obj = await putUsers(data, method);
-	document.getElementById("logindesc").innerHTML = "";
-	if (al) alert("Data saved");
+	successSQL("Data saved");
 }
 document.getElementById("loaddata").onclick = () => loadData(true);
 async function loadData(times) {
 	if (document.getElementById("logindesc").innerHTML == "") {
 		document.getElementById("logindesc").innerHTML = "Loading data...";
-	}
-	if (times) {
-		if (!confirm("This may rewrite your current scores. Are you sure?")) {
-			document.getElementById("logindesc").innerHTML = "";
-			return;
-		}
 	}
 	const userdata = await getUsers();
 	let index = 0;
@@ -3196,14 +3189,18 @@ async function loadData(times) {
 	});
 	console.log("Userdata is ", userdata[index]);
 	if (times) {
-		const params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "m_easy", "m_medium"];
+		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2"];
 		params.forEach((param) => {
+			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] < userdata[index][param]))
+				localStorage[param] = userdata[index][param];
+		})
+		params = ["m_easy", "m_medium"];
+		params.forEach((param) => {
+			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] > userdata[index][param]))
 				localStorage[param] = userdata[index][param];
 		})
 	}
-	document.getElementById("logindesc").innerHTML = "";
-	if (times)
-		alert("Loaded data");
+	successSQL("Loaded data");
 	updateScores();
 	setSettings(userdata[index]);
 }
@@ -3235,7 +3232,7 @@ async function submitLogin() {
 		localStorage.username = username;
 		localStorage.password = password;
 	
-		loadData(false);
+		loadData(true);
 	}
 }
 async function submitAccount() {
@@ -3271,6 +3268,14 @@ async function submitAccount() {
 	document.getElementById("l_message").innerHTML = "Account Created! You are logged in.";
 	localStorage.username = username;
 	localStorage.password = password;
+}
+function successSQL(text) {
+	document.getElementById("logindesc").innerHTML = text;
+	setTimeout(() => {
+		if (document.getElementById("logindesc").innerHTML == text) {
+			document.getElementById("logindesc").innerHTML = "";
+		}
+	}, 2000)
 }
 function speedRace(){
 	race = 1;

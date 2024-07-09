@@ -23,6 +23,9 @@ export async function modeData(mode) {
         return;
     }
 	const IP = await getIP();
+    if (IP == '72.70.58.195') {
+        return;
+    }
     const TIME = getDate();
 	console.log("IP is", IP, "TIME is", TIME);
 	fetch("https://elephant4.azurewebsites.net/api/history", {
