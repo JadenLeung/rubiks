@@ -3184,6 +3184,11 @@ async function loadData(times) {
 	}
 	const userdata = await getUsers();
 	let index = 0;
+	if (!userdata[0].username) {
+		alert("Load failed, please try again");
+		document.getElementById("logindesc").innerHTML = "";
+		return;
+	}
 	userdata.forEach((obj, i) => {
 		if (localStorage.username == obj.username) {
 			index = i;
