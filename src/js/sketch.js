@@ -838,7 +838,7 @@ setInterval(() => {
 	document.getElementById("login").style.display = localStorage.username == "signedout" ? "inline" : "none";
 	document.getElementById("account").style.display = localStorage.username == "signedout" ? "inline" : "none";
 	document.getElementById("inaccount").style.display = localStorage.username == "signedout" ? "none" : "inline";
-	document.getElementById("loginname").innerHTML = localStorage.username == "signedout" ? "Not logged in" : "<i class='bi bi-file-person'></i> " + localStorage.username;
+	document.getElementById("loginname").innerHTML = localStorage.username == "signedout" ? "Not logged in" : "<i style = 'float:left; margin-right:5px; ' class='bi bi-file-person'></i>" + escapeHtml(localStorage.username);
 	document.getElementById("l_form").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_home").style.display = localStorage.username == "signedout" ? "none" : "block";
@@ -1282,6 +1282,14 @@ function IDtoReal(id){
 	return a;
 	//[front,back,right,left,bottom,top]
 	//alert(allcubies);
+}
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 function IDtoLayout(num){
 	let copynum = num;

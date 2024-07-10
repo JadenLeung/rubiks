@@ -104,7 +104,7 @@
 <body oncontextmenu="return false">
 	<!--h1 style = "text-align: center;">Virtual Cubing</h1-->
 	<ul class = "noselect">
-		<li style = "float:left;"><a style = "color:white"  id = "loginname">Not logged in </a></li>
+		<li style = "float:left;"><a style = "color:white"  id = "loginname"> Not logged in </a></li>
 		<button class = "btn btn-light btn-sm login" id = "account">Create an Account</button>
 		<button class = "btn btn-light btn-sm login" id = "login">Log in</button>
 		<div id = "inaccount" style = "float:left;">
@@ -277,6 +277,7 @@
 					<input type="text" 
 							id="username" 
 							name="username" 
+							maxlength="50"
 							placeholder="Enter your Username" required>
 					<br>
 					<label for="password" style = "margin-right: 4px;">
@@ -286,6 +287,7 @@
 					<input type="password"
 							id="password" 
 							name="password"
+							maxlength="50"
 							placeholder="Enter your Password" required>
 					<br>
 					<button class = "btn btn-success btn-sm" id = "l_submit">
