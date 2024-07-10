@@ -3140,14 +3140,14 @@ function speedOLL()
 }
 //onclick
 document.getElementById("l_home").onclick = regular;
-document.getElementById("savedata").onclick = () => saveData(localStorage.username, localStorage.password, "POST", true);
-document.getElementById("savedata2").onclick = () => saveData(localStorage.username, localStorage.password, "POST", true);
+document.getElementById("savedata").onclick = () => saveData(localStorage.username, null, "POST", true);
+document.getElementById("savedata2").onclick = () => saveData(localStorage.username, null, "POST", true);
 async function saveData(username, password, method, al) {
 	if (document.getElementById("logindesc").innerHTML == "")
 		document.getElementById("logindesc").innerHTML = "Saving data...";
 	const data = {
 		username: username,
-		password: password,
+		password: password ?? "bruh",
 		data: "random",
 		easy: localStorage.easy ?? -1,
 		medium: localStorage.medium ?? -1,
@@ -3205,7 +3205,6 @@ async function loadData(times) {
 }
 document.getElementById("signout").onclick = () => {
 	localStorage.username = "signedout";
-	localStorage.password = "signedout";
 };
 document.getElementById("l_submit").onclick = () => MODE == "account" ? submitAccount() : submitLogin();
 async function submitLogin() {
@@ -3229,7 +3228,6 @@ async function submitLogin() {
 	} else {
 		document.getElementById("l_message").innerHTML = "Logged in successfully! Your settings and high scores have been updated.";
 		localStorage.username = username;
-		localStorage.password = password;
 	
 		loadData(true);
 	}
@@ -3266,7 +3264,6 @@ async function submitAccount() {
 	await saveData(username, password, "PUT", false);
 	document.getElementById("l_message").innerHTML = "Account Created! You are logged in.";
 	localStorage.username = username;
-	localStorage.password = password;
 }
 function successSQL(text) {
 	document.getElementById("logindesc").innerHTML = text;
@@ -4698,7 +4695,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		//postUsers("Jaden", "Leung", "cool");
 		matchPassword("a", "a");
-		//console.log("audioon is "+ audioon);
+		console.log(localStorage);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
