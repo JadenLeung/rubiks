@@ -841,7 +841,6 @@ setInterval(() => {
 	document.getElementById("loginname").innerHTML = localStorage.username == "signedout" ? "Not logged in" : "<i class='bi bi-file-person'></i> " + localStorage.username;
 	document.getElementById("l_form").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
-	document.getElementById("l_load").style.display = localStorage.username == "signedout"  || MODE == "account" ? "none" : "block";
 	document.getElementById("l_home").style.display = localStorage.username == "signedout" ? "none" : "block";
 	updateScores();
 	
@@ -3141,7 +3140,6 @@ function speedOLL()
 }
 //onclick
 document.getElementById("l_home").onclick = regular;
-document.getElementById("l_load").onclick = () => loadData(true);
 document.getElementById("savedata").onclick = () => saveData(localStorage.username, localStorage.password, "POST", true);
 document.getElementById("savedata2").onclick = () => saveData(localStorage.username, localStorage.password, "POST", true);
 async function saveData(username, password, method, al) {
@@ -3229,7 +3227,7 @@ async function submitLogin() {
 		document.getElementById("l_message").innerHTML = "";
 		return;
 	} else {
-		document.getElementById("l_message").innerHTML = "Logged in successfully! Your settings have been updated. To load your previously saved scores, click Load Data.";
+		document.getElementById("l_message").innerHTML = "Logged in successfully! Your settings and high scores have been updated.";
 		localStorage.username = username;
 		localStorage.password = password;
 	
