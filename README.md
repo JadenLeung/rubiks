@@ -70,5 +70,12 @@ Use the ID generator to generate the corresponding position in the virtual cube 
 
 I made this cube because I wanted to an easy way to practice cubing online. Hope you find this fun/useful!
 
+<h1>Login System</h1>
+
+<img width="315" alt="image" src="https://github.com/user-attachments/assets/93f4377d-81b5-4754-a2ca-f76daef94a4a">
+
+Log in to save your settings and high-score data! Passwords are encrypted using CryptoJS.
+
+
 
 
