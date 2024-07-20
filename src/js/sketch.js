@@ -8789,7 +8789,7 @@ The flowers and the trees
 Plants all in rows
 Woah he dont know nothing about crows
 
-I see plants that grow so
+I see plants that grow so tall
 I see harvest in the fall
 But to keep the plants a growing
 Theres lots you should be knowing
@@ -8798,9 +8798,34 @@ If your gonna keep your garden
 Youve gotta tend your garden
 If you want to keep your garden in the green
 
+7:25
 
+I may not be a people but I live on farmlands too
+If I don't get my greens and grains there'd be no milk for you
+So the next time you are eating and you'd like to drink some moo
+Just think about this song and how the moo juice gets to you
 
+First the farmer grows the grass and grains that moo cows like the best
+Wheat, corn, hay, and rye are better than the rest
+Barns, sheds, and silos and the right home all along
+It keeps me strong and healthy so I can sing this song
 
+She may not be a people but she lives on farmlands too
+If I don't get my greens and grains there'd be no milk for you
+So the next time you are eating and you'd like to drink some moo
+Just think about this song and how the moo juice gets to you
+
+All day long I chew my cud as any cow would do
+Until the grain has turned to milk my job is never through
+Then it's off to the dairy where they turn the milk into
+All the things you love to eat and drink (And they're all from me to you)
+
+She may not be a people but she lives on farmlands too
+If I don't get my greens and grains there'd be no milk for you
+So the next time you are eating and you'd like to drink some moo
+Just think about this song and how the moo juice gets to you
+
+9:05
 Mr Sunshine give us your rays
 You're the one who brightens our days
 Without your warmth there'll be no tommorow
@@ -8812,7 +8837,13 @@ Your precious rays will brighten our days
 Mr. Sunshine give us your rays/*
 
 
+12:50
 
+Start out with a seed
+Plant it snuggly in the ground
+Take a can of water and sprinkle all around
+The sun comes out for warming the clouds will bring us rain
+Stop the weeds from growing and the plants will be your friends
 
 It's growing time in story land
 All the plants have their done part
@@ -8821,7 +8852,7 @@ They'll help to give your day a healthy start
 
 We hope you had a good time at our show
 And I hope you learned a lot from things I know
-You've really been grand for our guest at storyland
+You've really been quite grand for our guest at storyland
 And we surely hate to see you have to go
 
 (repeat)
