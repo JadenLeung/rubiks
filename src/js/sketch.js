@@ -2455,6 +2455,7 @@ function idmode()
 }
 document.getElementById("account").onclick = accountmode;
 function accountmode() {
+	modeData("accountmode");
 	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
 	{
 		ao5 = [];
@@ -2482,6 +2483,7 @@ function accountmode() {
 document.getElementById("login").onclick = loginmode;
 document.getElementById("l_link").onclick = () => MODE == "account" ? loginmode() : accountmode();
 function loginmode() {
+	modeData("loginmode");
 	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
 	{
 		ao5 = [];
