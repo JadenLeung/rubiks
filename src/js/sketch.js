@@ -2643,12 +2643,12 @@ function setSettings(obj) {
 	// changeKeys();
 	SPEED_SLIDER.value(obj.speed);
 	SPEED = obj.speed;
-	audioon = obj.audioon;
-	localStorage.audioon = obj.audioon;
+	audioon = (obj.audioon == 1);
+	localStorage.audioon = (obj.audioon == 1);
 	KEYBOARD.value(obj.keyboard);
 	TOPWHITE.selected(obj.topwhite);
 	TOPPLL.selected(obj.toppll);
-	HOLLOW.checked(obj.hollow);
+	HOLLOW.checked(obj.hollow == 1);
 	let newdarkmode = obj.background;
 	if (newdarkmode != BACKGROUND_COLOR) {
 		DARK.checked(!DARK.checked());
@@ -3168,9 +3168,9 @@ async function saveData(username, password, method, al) {
 		pbl2: localStorage.pbl2 ?? -1,
 		m_easy: localStorage.m_easy ?? -1,
 		m_medium:localStorage.m_medium ?? -1,
-		audioon:localStorage.audioon,
+		audioon:localStorage.audioon == 'true' ? 1 : 0,
 		background:localStorage.background,
-		hollow:localStorage.hollow,
+		hollow: localStorage.hollow == 'true' ? 1 : 0,
 		keyboard:localStorage.keyboard,
 		speed:localStorage.speed,
 		toppll:localStorage.toppll,
@@ -4704,7 +4704,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		//postUsers("Jaden", "Leung", "cool");
-		console.log(getUsers());
+		console.log(localStorage);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
