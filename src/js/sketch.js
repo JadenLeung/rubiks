@@ -4704,8 +4704,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		//postUsers("Jaden", "Leung", "cool");
-		matchPassword("a", "a");
-		console.log(localStorage);
+		console.log(getUsers());
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
