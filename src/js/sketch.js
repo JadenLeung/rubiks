@@ -3176,15 +3176,34 @@ async function saveData(username, password, method, al) {
 		toppll:localStorage.toppll,
 		topwhite:localStorage.topwhite
 	};
-	const obj = await putUsers(data, method);
+	await repeatUntilSuccess(() => putUsers(data, method));
 	successSQL("Data saved");
 }
+
+
+  async function repeatUntilSuccess(callFunction){
+	let obj = null;
+	let time = -100;
+	return new Promise((resolve, reject) => {
+		const intervalId = setInterval(async () => {
+			time += 100;
+			if (obj == null && time % 5000 == 0) {
+				console.log("Call #" + (time / 5000 + 1));
+				obj = await callFunction();
+			} else if (obj != null){
+				clearInterval(intervalId);
+				resolve(obj);
+			}
+		}, 100);
+	});
+  }
+
 document.getElementById("loaddata").onclick = () => loadData(true);
 async function loadData(times) {
 	if (document.getElementById("logindesc").innerHTML == "") {
 		document.getElementById("logindesc").innerHTML = "Loading data...";
 	}
-	const userdata = await getUsers();
+	const userdata = await repeatUntilSuccess(() => getUsers());
 	let index = 0;
 	if (!userdata[0]) {
 		alert("Load failed, please try again");
@@ -3214,6 +3233,7 @@ async function loadData(times) {
 	setSettings(userdata[index]);
 }
 document.getElementById("signout").onclick = () => {
+	document.getElementById("l_message").innerHTML = "";
 	localStorage.username = "signedout";
 };
 document.getElementById("l_submit").onclick = () => MODE == "account" ? submitAccount() : submitLogin();
@@ -3229,13 +3249,14 @@ async function submitLogin() {
 		return;
 	}
 	document.getElementById("l_message").innerHTML = "Attemping to log in...";
-	const success = await matchPassword(username, password);
+	const success = await repeatUntilSuccess(() => matchPassword(username, password));
 	document.getElementById('password').value = '';
 	if (!success) {
 		alert("Incorrect credentials");
 		document.getElementById("l_message").innerHTML = "";
 		return;
 	} else {
+		loginmode();
 		document.getElementById("l_message").innerHTML = "Logged in successfully! Your settings and high scores have been updated.";
 		localStorage.username = username;
 	
@@ -3254,6 +3275,7 @@ async function submitAccount() {
 		return;
 	}
 	document.getElementById("l_message").innerHTML = "Attemping to create account...";
+	//const userdata = await repeatUntilSuccess(() => getUsers());
 	const userdata = await getUsers();
 	console.log("UserData", userdata);
 
@@ -4704,7 +4726,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		//postUsers("Jaden", "Leung", "cool");
-		console.log(localStorage);
+		console.log(bandaged3, bandaged);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 

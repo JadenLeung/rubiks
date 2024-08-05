@@ -56,7 +56,7 @@ export async function getUsers() {
       return json;
     } catch (error) {
       console.error(error.message);
-      return null;
+      //return null;
     }
   }
 
@@ -77,6 +77,7 @@ export async function getUsers() {
   }
 
   export async function putUsers(data, method) {
+    //data = {waitfor: 0, ...data};
     console.log("Attemping to upload");
     await fetch("https://elephant4.azurewebsites.net/api/users2", {
 		method: method,
@@ -86,7 +87,9 @@ export async function getUsers() {
 		}
 	  }).then((response) => {
         console.log(response);
-      });
+    }).catch((err) => {
+      console.log("Error " + err);
+    });
     return true;
   }
 
