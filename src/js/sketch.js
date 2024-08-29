@@ -5481,9 +5481,9 @@ function refreshButtons()
 	CUBE13.remove();
 	CUBE14.remove();
 
-	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 1.5 : 1;
-	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 2.5 : 1;
-	let m = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? "" : " Mode";
+	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches? 1.5 : 1;
+	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? 2.5 : 1;
+	let m = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? "" : " Mode";
 
 	REGULAR = p.createButton(`Normal${m}`);
 	setButton(REGULAR, "mode", 'btn btn-info', `text-align:center; font-size: ${20/d}px; width:${180/d2}px; border: none;`, regular.bind(null, 0));
