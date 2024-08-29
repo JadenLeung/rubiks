@@ -8729,6 +8729,12 @@ document.onkeydown = function (e) {
 		}
 	}
   }
+document.getElementById('account').addEventListener('click', function() {
+	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
+});
+document.getElementById('login').addEventListener('click', function() {
+	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
+});
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
 		switch (e.keyCode) {
