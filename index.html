@@ -97,6 +97,16 @@
 			margin-top:10px;
 			margin-left:5px;
 		}
+		@media screen and (max-width: 1199px) {
+			.buttoncontainer {
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+			}
+			.buttonitems {
+				padding:5px;
+			}
+		}
 	</style>	
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <meta charset="utf-8">
@@ -134,10 +144,12 @@
 			<p id = "or_instruct2" style = "font-size:12px;">Drag the mouse on a cube layer to turn it; drag the mouse in the gray area to turn the camera. Alternatively, you can use the 
 			keyboard. <a href="FAQ.html" target="_blank">FAQs</a></p>
 			<p id = "or_instruct4" style = "font-size:20px; text-align:center; padding-left:0px;"><b>Select Modes:</b></p>
-			<p id="mode" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 5px; display:inline;"></p>
-			<p id="mode3" class = "button" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
-			<p id="mode2" class = "button" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
-			<p id="mode7" class = "button" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
+			<div class = "buttoncontainer">	
+				<p id="mode" class = "button buttonitems" style = "text-align:center; margin-top: 0px; margin-bottom: 5px; display:inline;"></p>
+				<p id="mode3" class = "button buttonitems" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
+				<p id="mode2" class = "button buttonitems" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
+				<p id="mode7" class = "button buttonitems" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
+			</div>
 			<div id = "ID1">
 				<p id = "or_instruct6" style = "font-size:20px; text-align:center; padding-top:10px;"><b>Position ID:</b></p>
 				<p id = "or_instruct7" style = "font-size:12px;">Save any cube position (on your own cube or on the virtual cube) as an ID.</p>

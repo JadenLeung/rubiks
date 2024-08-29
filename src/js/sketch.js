@@ -841,7 +841,7 @@ setInterval(() => {
 	document.getElementById("loginname").innerHTML = localStorage.username == "signedout" ? "Not logged in" : "<i style = 'float:left; margin-right:5px; ' class='bi bi-file-person'></i>" + escapeHtml(localStorage.username);
 	document.getElementById("l_form").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
-	document.getElementById("l_home").style.display = localStorage.username == "signedout" ? "none" : "block";
+	document.getElementById("l_home").style.display = localStorage.username != "signedout" && MODE == "login" ? "block" : "none";
 	updateScores();
 	
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
@@ -5480,17 +5480,22 @@ function refreshButtons()
 	CUBE12.remove();
 	CUBE13.remove();
 	CUBE14.remove();
-	REGULAR = p.createButton('Normal Mode');
-	setButton(REGULAR, "mode", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', regular.bind(null, 0));
 
-	TIMEDMODE = p.createButton('Stats Mode');
-	setButton(TIMEDMODE, "mode3", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', timedmode.bind(null, 0));
+	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 1.5 : 1;
+	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 2.5 : 1;
+	let m = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? "" : " Mode";
+
+	REGULAR = p.createButton(`Normal${m}`);
+	setButton(REGULAR, "mode", 'btn btn-info', `text-align:center; font-size: ${20/d}px; width:${180/d2}px; border: none;`, regular.bind(null, 0));
+
+	TIMEDMODE = p.createButton(`Stats${m}`);
+	setButton(TIMEDMODE, "mode3", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d2}px; border: none;`, timedmode.bind(null, 0));
 	
-	MOVESMODE = p.createButton('Fewest Moves');
-	setButton(MOVESMODE, "mode7", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', movesmode.bind(null, 0));
+	MOVESMODE = p.createButton(`Fewest Moves`);
+	setButton(MOVESMODE, "mode7", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d}px; border: none;`, movesmode.bind(null, 0));
 
-	SPEEDMODE = p.createButton('Speed Mode');
-	setButton(SPEEDMODE, "mode2", 'btn btn-info', 'text-align:center; font-size:20px; width:180px; border: none;', speedmode.bind(null, 0));
+	SPEEDMODE = p.createButton(`Speed${m}`);
+	setButton(SPEEDMODE, "mode2", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d2}px; border: none;`, speedmode.bind(null, 0));
 
 	IDMODE = p.createButton('Save/Load ID');
 	setButton(IDMODE, "ID2", 'btn btn-info', 'text-align:center; border: none;', idmode.bind(null, 0));
@@ -8284,6 +8289,7 @@ p.windowResized = () => {
 		SETTINGS.position(cnv_div.offsetWidth-80,5);
 		SETTINGS.style("background-color: #e6e6e6;")
 	}
+	refreshButtons();
 } 
 
 p.draw = () => {
