@@ -5194,15 +5194,14 @@ p.keyPressed = (event) => {
 			removeTime();
 			break;
 			case 57: //9
-			if(MODE != "normal" && MODE != "timed")
+			if((MODE != "normal" && MODE != "timed") || localStorage.username == "signedout")
 				break;
-			TOPWHITE.selected("Blue");
-			TOPPLL.selected("Same as above");
-			SPEED_SLIDER.value(2);
-			SPEED = 2;
-			topWhite();
-			KEYBOARD.value("Alt Keyboard");
-			changeKeys();
+			loadData();
+			break;
+			case 48: //0
+			if((MODE != "normal" && MODE != "timed" )|| localStorage.username == "signedout")
+				break;
+			saveData();
 			break;
 			case 51: //3
 			darkMode();
@@ -8725,8 +8724,8 @@ function settingsDefault(){
 	BACKGROUND_COLOR = "#e6e6e6";
 	document.body.style.backgroundColor = "#c9ffda";
 	document.body.style.color = "#0a1970";
-	document.getElementById("colorPicker").value="#e6e6e6";
-	document.getElementById("colorPicker2").value="#c9ffda";
+	document.getElementById("colorPicker").value="#c9ffda";
+	document.getElementById("colorPicker2").value="#e6e6e6";
 	document.getElementById("colorPicker3").value="#0a1970";
 	changeKeys();
 	CAMZOOM = -170;
