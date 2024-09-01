@@ -97,6 +97,17 @@
 			margin-top:10px;
 			margin-left:5px;
 		}
+		.colorPicker {
+            width: 20px;
+            height: 20px;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.3s ease;
+        }
+        #colorPicker:hover {
+            transform: scale(1.1);
+        }
 		@media screen and (max-width: 1199px) {
 			.buttoncontainer {
 				display: flex;
@@ -354,8 +365,16 @@
 					<p style = "display: inline; font-size:15px;">(not recommended for mouse turning)</p>	
 				</div>
 				<div style = "padding-bottom:7px; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Dark Mode:</p>
-					<p id = "dark" style = "display: inline;"></p>			
+					<p style = "display: inline; font-size:15px; text-align:left; ">Outer Background Color:</p>
+					<input type="color" class="colorPicker" id="colorPicker" value="#c9ffda">
+				</div>
+				<div style = "padding-bottom:7px; margin-top:0px;">
+					<p style = "display: inline; font-size:15px; text-align:left; ">Inner Background Color:</p>
+					<input type="color" class="colorPicker" id="colorPicker2" value="#e6e6e6">
+				</div>
+				<div style = "padding-bottom:7px; margin-top:0px;">
+					<p style = "display: inline; font-size:15px; text-align:left; ">Text Color:</p>
+					<input type="color" class="colorPicker" id="colorPicker3" value="#0a1970">
 				</div>
 				<div style = "padding-bottom:7px; margin-top:0px;">
 					<p style = "display: inline; font-size:15px; text-align:left; ">Additional Hotkeys:</p>

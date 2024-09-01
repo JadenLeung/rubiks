@@ -73,7 +73,7 @@ export default function (p) {
 	let minaction;
 	let WINDOW = 0.9
 	let special = [false, 0.3, false, 0];
-	let BACKGROUND_COLOR = 230; //p.color(201, 255, 218);
+	let BACKGROUND_COLOR = "#e6e6e6"; //p.color(230,230,230);
 	let arr = [];
 	let obj2 = [];
 	let pbls = [];
@@ -86,7 +86,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, DARK;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -120,6 +120,7 @@ export default function (p) {
 	let scrambles = [];
 	let savesetup = [];
 	let song = "CcDdEFfGgAaB";
+	let savedark = [];
 	const MAX_WIDTH = "767px";
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
@@ -591,15 +592,10 @@ p.setup = () => {
 	HOLLOW.changed(hollowCube.bind(null, 0));
 
 	hollowCube();
-
-	DARK = p.createCheckbox("", false);
-	DARK.parent("dark")
-	DARK.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
-	DARK.changed((darkMode.bind(null, 0)));
 	
-	if (localStorage.background && localStorage.background == 5) {
-		darkMode();
-		DARK.checked(true);
+	if (localStorage.background) {
+		let temp = localStorage.background.split(' ');
+		setColors(temp[0], temp[1], temp[2]);
 	}
 
 	TOPWHITE = p.createSelect(); 
@@ -830,7 +826,7 @@ setInterval(() => {
 	localStorage.topwhite = TOPWHITE.value();
 	localStorage.toppll = TOPPLL.value();
 	localStorage.keyboard = KEYBOARD.value();
-	localStorage.background = BACKGROUND_COLOR;
+	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color);
 	localStorage.hollow = HOLLOW.checked();
 	localStorage.audioon = audioon;
 	if (!localStorage.username) 
@@ -2649,11 +2645,11 @@ function setSettings(obj) {
 	TOPWHITE.selected(obj.topwhite);
 	TOPPLL.selected(obj.toppll);
 	HOLLOW.checked(obj.hollow == 1);
-	let newdarkmode = obj.background;
-	if (newdarkmode != BACKGROUND_COLOR) {
-		DARK.checked(!DARK.checked());
-		darkMode();
-	}
+	let d = obj.background;
+	localStorage.background = d;
+	console.log("d is " + d)
+	let temp = d.split(' ');
+	setColors(temp[0], temp[1], temp[2]);
 	topWhite();
 	changeKeys();
 	refreshButtons();
@@ -4514,6 +4510,10 @@ function getIndex(cuby)
 	}
 	return null;
 }
+function arraysEqual(arr1, arr2) {
+    return arr1.length === arr2.length && arr1.every((value, index) => value == arr2[index]);
+}
+
 function startAction() {	
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
@@ -4532,7 +4532,9 @@ function startAction() {
 
 	setLayout();
 	console.log(hoveredColor);
-	if (hoveredColor !== false && hoveredColor[0] != BACKGROUND_COLOR) { 
+	console.log(p.color(BACKGROUND_COLOR).levels);
+	console.log(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels));
+	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log(cuby);
 		if (cuby !== false) {
@@ -4726,7 +4728,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		//postUsers("Jaden", "Leung", "cool");
-		console.log(bandaged3, bandaged);
+		console.log(localStorage);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -5202,7 +5204,6 @@ p.keyPressed = (event) => {
 			changeKeys();
 			break;
 			case 51: //3
-			DARK.checked(!DARK.checked());
 			darkMode();
 			break;
 		}
@@ -7245,16 +7246,70 @@ function multipleCross(nb) {
 		console.log("done");
 	}
 }
+
+document.getElementById('colorPicker').addEventListener('input', (event) => {
+	document.body.style.backgroundColor = event.target.value;
+});
+
+document.getElementById('colorPicker2').addEventListener('input', (event) => {
+	let hoveredColor = p.color(event.target.value).levels;
+	if (getCubyIndexByColor2(hoveredColor) == false) {
+		BACKGROUND_COLOR = event.target.value;
+	}
+	document.getElementById('colorPicker2').value = BACKGROUND_COLOR;
+	reSetup();
+});
+document.getElementById('colorPicker3').addEventListener('input', (event) => {
+	document.body.style.color = event.target.value;
+	reSetup();
+});
+
+function rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
+
+function stringrgbToHex(rgb) {
+    const rgbValues = rgb.match(/\d+/g);  // This extracts the 3 numbers from 'rgb(r, g, b)'
+
+    if (rgbValues) {
+        const r = parseInt(rgbValues[0], 10);
+        const g = parseInt(rgbValues[1], 10);
+        const b = parseInt(rgbValues[2], 10);
+        
+        return rgbToHex(r, g, b);
+    }
+
+    return null;  // In case backgroundColor is not set
+}
+
+function setColors(a, b, c) {
+	document.body.style.backgroundColor = a;
+	BACKGROUND_COLOR = b;
+	document.body.style.color = c;
+	document.getElementById("colorPicker").value=a;
+	document.getElementById("colorPicker2").value=b;
+	document.getElementById("colorPicker3").value=c;
+}
 function darkMode(){
-	if(BACKGROUND_COLOR != 5){
-		BACKGROUND_COLOR = 5;
-		document.body.style.backgroundColor = "black";
-		document.body.style.color = "lightblue";
+	if(BACKGROUND_COLOR != "#050505"){
+		savedark[0] = document.body.style.backgroundColor == '' ? "#c9ffda" : stringrgbToHex(document.body.style.backgroundColor);
+		savedark[1] = BACKGROUND_COLOR;
+		savedark[2] = document.body.style.color  == '' ? "#0a1970" : stringrgbToHex(document.body.style.color);
+		BACKGROUND_COLOR = "#050505"
+		document.body.style.backgroundColor = "#050505";
+		document.body.style.color = "#add8e6";
+		document.getElementById("colorPicker").value="#050505";
+		document.getElementById("colorPicker2").value="#050505";
+		document.getElementById("colorPicker3").value="#add8e6";
 	}
 	else{
-		BACKGROUND_COLOR = 230;
-		document.body.style.backgroundColor = "#c9ffda";
-		document.body.style.color = "#0a1970";
+		document.body.style.backgroundColor = savedark[0];
+		BACKGROUND_COLOR = savedark[1];
+		document.body.style.color = savedark[2];
+		document.getElementById("colorPicker").value=savedark[0];
+		document.getElementById("colorPicker2").value=savedark[1];
+		document.getElementById("colorPicker3").value=savedark[2];
+		reSetup();
 	}
 }
 function greenLayer(){
@@ -8307,7 +8362,7 @@ p.draw = () => {
 	if (hoveredColor && getCubyByColor(hoveredColor) && !(p.mouseIsPressed && p.touches.length == 0)) {
 		CAM.removeMouseListeners();
 	} else {
-		if(hoveredColor[0] == BACKGROUND_COLOR)
+		if(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels))
 		{
 			if(p.touches.length == 0)
 			CAM.attachMouseListeners();
@@ -8666,6 +8721,12 @@ function settingsDefault(){
 	SOUND.value("Speedcube")
 	TOPPLL.value("Opposite of above");
 	KEYBOARD.value("Default");
+	BACKGROUND_COLOR = "#e6e6e6";
+	document.body.style.backgroundColor = "#c9ffda";
+	document.body.style.color = "#0a1970";
+	document.getElementById("colorPicker").value="#e6e6e6";
+	document.getElementById("colorPicker2").value="#c9ffda";
+	document.getElementById("colorPicker3").value="#0a1970";
 	changeKeys();
 	CAMZOOM = -170;
 	SIZE_SLIDER2.value(-CAMZOOM);
