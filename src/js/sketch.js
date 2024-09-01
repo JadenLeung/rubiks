@@ -593,10 +593,11 @@ p.setup = () => {
 
 	hollowCube();
 	
-	if (localStorage.background) {
-		let temp = localStorage.background.split(' ');
-		setColors(temp[0], temp[1], temp[2]);
+	let temp = ["#c9ffda", "#e6e6e6", "#0a1970"]
+	if (localStorage.background && localStorage.background.length == 23) {
+		temp = localStorage.background.split(' ');
 	}
+	setColors(temp[0], temp[1], temp[2]);
 
 	TOPWHITE = p.createSelect(); 
 	TOPWHITE.parent("topwhite");
