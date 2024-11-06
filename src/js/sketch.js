@@ -7289,6 +7289,7 @@ function setColors(a, b, c) {
 	document.getElementById("colorPicker").value=a;
 	document.getElementById("colorPicker2").value=b;
 	document.getElementById("colorPicker3").value=c;
+	p.background(BACKGROUND_COLOR);
 }
 function darkMode(){
 	if(BACKGROUND_COLOR != "#050505"){
