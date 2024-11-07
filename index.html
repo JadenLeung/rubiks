@@ -108,6 +108,16 @@
         #colorPicker:hover {
             transform: scale(1.1);
         }
+		#dnf {
+			position: absolute;
+			top: 15%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 128px;
+			color: red;
+			opacity: 0; /* Start fully opaque */
+			transition: opacity 0.4s ease-out; /* 1-second fade-out effect */
+		}
 		@media screen and (max-width: 1199px) {
 			.buttoncontainer {
 				display: flex;
@@ -133,10 +143,10 @@
 			<button class = "btn btn-light btn-sm login" id = "loaddata">Load data</button>
 			<button class = "btn btn-light btn-sm login" id = "savedata">Save data</button>
 		</div>
+		<button class = "btn btn-warning btn-sm login bi bi-trophy" id = "challenge">&nbsp;Weekly Challenges</button>
 		<li style = "float:right;"><a style = "color:white">The Virtual Cube</a></li>
 		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
-	
 	<div class="row">
 		<div class = "col-xl-2 noselect" style = "padding-left:30px; padding-right:0px">
 			<div class = "noselect" id = "type3" style = "font-size:14px; padding-top: 5px;">
@@ -259,6 +269,7 @@
 		<div class="col-xl-6 noselect" style = "padding-right: 0px;"  id="cnv_div" disabled="disabled">
 			<p id = "settings" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
 			<p id = "audio" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
+			<p id="dnf" style = "text-align: center"></p>
 		</div>
 		<!--div class="col-lg-6" style = "padding-right: 0px;"  id="cnv_div2" ></div-->
 		<div class="col-xl-4" style = "padding-left:35px;">
@@ -471,6 +482,19 @@
 				<h5>You got a personal best!</h5>
 				<button class = "btn btn-light" style = "font-size:25px; border-color:black; margin-bottom: 20px;" id = "savedata2">Save score</button>
 			</div>
+			<div id = "c_INSTRUCT">
+				<h4 id = "c_title" class = "noselect"></h4>
+				<p id = "c_desc"></p>
+				<p id = "c_desc2"></p>
+				<div id = "c_start"></div>
+				<div id = "cd"> 
+					<h4 style = "padding-top:25px;" id = "cd_title" class = "noselect"></h4>
+					<p id = "cd_desc"></p>
+					<p id = "cd_desc2"></p>
+					<div id = "cd_start"></div>
+				</div>
+				<div id = "challengeback"></div>
+			</div>
 			<h5 id = "s_INSTRUCT" class = "noselect"></h5>
 			<p id = "s_instruct" class = "noselect"></p>
 			<p id = "s_instruct2" class = "noselect"></p>
@@ -489,6 +513,11 @@
 				<h5>Your Best Scores</h5>
 				<p id = "m_easyscore">Easy: N/A</p>
 				<p id = "m_mediumscore">Medium: N/A</p>
+			</div>
+			<div id = "c_week">
+				<h5>Your Best Scores</h5>
+				<p id = "c_weekscore">Weekly #1: N/A</p>
+				<p id = "c_dayscore">Daily: N/A</p>
 			</div>
 			<p id = "readybot"></p>
 			<div id = "s_bot">

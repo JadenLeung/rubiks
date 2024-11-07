@@ -1,11 +1,13 @@
 import './lib/p5.easycam.js';
 import Picker from './picker.js';
 import Cuby from './cuby.js';
+import {weeklyscrambles} from '../weekly.js'
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
 	const DEBUG = false;
+	let week = sinceNov3('w') % weeklyscrambles.length;
 	let bruh = 0;
 	let CAM;
 	let CAM_PICKER;
@@ -18,6 +20,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let DIM5 = 50;
+	let timeInSeconds;
 	let goodsound = true;
 	let goodsolved = false;
 	let RND_COLORS;
@@ -52,6 +55,7 @@ export default function (p) {
 	let m_34step = 0;
 	let m_type = 0;
 	let m_4step = 0;
+	let cstep = 0, dstep = false;
 	let PLL;
 	let REGULAR;
 	let SPEEDMODE;
@@ -210,6 +214,12 @@ class Timer {
 		this.isRunning = false;
 		this.startTime = 0;
 		this.overallTime = 0;
+		this.inspection = false;
+	}
+
+	setTime(s) {
+		this.startTime = s;
+		this.overallTime = s;
 	}
 	
 	_getTimeElapsedSinceLastStart () {
@@ -220,14 +230,14 @@ class Timer {
 		return Date.now() - this.startTime;
 	}
 	
-	start () {
+	start (inspection = false) {
 		if (this.isRunning) {
 			return;
 			//return console.error('Timer is already running');
 		}
 		
 		this.isRunning = true;
-		
+		this.inspection = inspection;
 		this.startTime = Date.now();
 	}
 	
@@ -563,6 +573,9 @@ p.setup = () => {
 	const SETTINGSBACK = p.createButton('Back');
 	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
 
+	const CHALLENGEBACK = p.createButton('Return to Challenges');
+	setButton(CHALLENGEBACK, "challengeback", 'btn btn-light', 'font-size:20px; border-color: black;', challengemode.bind(null, 0));
+
 	const IDDEFAULT = p.createButton('Restore defaults');
 	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', () => {
 		allcubies = false;
@@ -742,6 +755,12 @@ p.setup = () => {
 	const RACE2 = p.createButton('Continue');
 	setButton(RACE2, "s_RACE2", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
 	
+	const STARTCHAL = p.createButton('Start Weekly');
+	setButton(STARTCHAL, "c_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', startchallenge);
+
+	const STARTDCHAL = p.createButton('Start Daily');
+	setButton(STARTDCHAL, "cd_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', dailychallenge);
+
 	inp = p.createInput('');
 	inp.parent("test_alg_div");
 	inp.size(150);
@@ -794,7 +813,7 @@ p.setup = () => {
 
 //forever
 setInterval(() => {
-	const timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
+	timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
 	document.getElementById('time').innerText = timeInSeconds;
 	document.getElementById('moves').innerText = moves;
 	document.getElementById('speed').innerText = Math.round(SPEED*100);
@@ -1009,6 +1028,21 @@ setInterval(() => {
 		{
 			document.getElementById("s_instruct").innerHTML = "Even though the cube might be solved, you used too many moves! Tip: You can press the 'reset' button to reset the scramble.";
 		}
+	} else if (MODE == "challenge") {
+		if (isSolved() && cstep == 2) {
+			timer.stop();
+			cstep++;
+			endchallenge();
+		} else if (timer.isRunning && timer.inspection && timer.getTime() > 0 && cstep < 2) {
+			timer.stop();
+			cstep++;
+			endchallenge(false);
+		} else if (timer.isRunning && timer.inspection && timer.getTime() > -3000 && cstep == 1) {
+			fadeInText(1, "3 secs");
+			setTimeout(() => {fadeInText(0, "3 secs")}, 400);
+			cstep = 1.5;
+		}
+
 	}
 	if(MODE != "cube")
 	{
@@ -2357,7 +2391,7 @@ function regular(nocustom){
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
-		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore"]);
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 
 	changeInput();
@@ -2449,6 +2483,139 @@ function idmode()
 	document.getElementById("test_alg_span").innerHTML = "Paste ID here:";
 
 	modeData("id");
+}
+function sinceNov3(what) {
+	const startDate = new Date('2024-11-03');
+	const currentDate = new Date();
+	const msDifference = currentDate - startDate;
+	let div = what == "w" ? 1000 * 60 * 60 * 24 * 7 : 1000 * 60 * 60 * 24;
+	const weeksDifference = msDifference / div;
+	
+	return Math.floor(weeksDifference); // Return whole weeks
+  }
+document.getElementById("challenge").onclick = challengemode;
+function challengemode() {
+	// modeData("accountmode");
+	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
+	{
+		ao5 = [];
+		mo5 = [];
+		movesarr = [];
+		scrambles = [];
+	}
+	regular(true);
+	MODE = "challenge";
+
+	refreshButtons();
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback"]);
+	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
+	SCRAM.value("normal");
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+	cstep = 0;
+	dstep = false;
+	document.getElementById('c_title').innerHTML = "Weekly Challenge";
+	document.getElementById('c_desc').innerHTML = "You have <b>unlimited</b> attempts to solve the weekly scramble. There are 15 seconds of inspection time.";
+	document.getElementById('c_desc2').innerHTML = "Scores are reset every Sunday.";
+	document.getElementById('cd_title').innerHTML = "Daily Scramble";
+	if (localStorage.cdate2 == sinceNov3()) {
+		document.getElementById('cd_desc').innerHTML = "Today, you achieved a score of <b>" + localStorage.c_today + "</b>. Come back tomorow for another attempt!";
+		document.getElementById('cd_start').style.display = "none";
+	} else {
+		document.getElementById('cd_desc').innerHTML = "You have <b>1</b> attempt to solve the daily scramble. There are 15 seconds of inspection time.";
+		document.getElementById('cd_start').style.display = "block";
+	}
+}
+function dailychallenge() {
+	if (localStorage.cdate2 == sinceNov3('d')) return;
+	if (weeklyscrambles[week].cube == 3 && DIM != 50) {
+		changeThree();
+	}
+	reSetup();
+	shuffleCube();
+	timer.stop();
+	timer.reset();
+	// special[2] = savesetup;
+	quickSolve();
+	cstep = 1;
+	setDisplay("none", ["c_INSTRUCT", "c_week"]);
+	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
+	setDisplay("block", []);
+	waitStopTurning();
+	dstep = true;
+	localStorage.cdate2 = sinceNov3('d');
+	localStorage.c_today = "DNF";
+}
+function waitStopTurning() {
+	const interval = setInterval(() => {
+	console.log("canMan?" + canMan)
+	  if (canMan) {
+		clearInterval(interval); // Stop the interval when the cube stops animating
+		timer.setTime(-15000); // Set the timer to -15000
+		timer.start(true);      // Start the timer
+		savesetup = IDtoReal(IDtoLayout(decode(getID())));
+		special[2] = savesetup;
+	  }
+	}, 10);
+  }
+  
+function startchallenge() {
+	if (weeklyscrambles[week].cube == 3 && DIM != 50) {
+		changeThree();
+	}
+	if (weeklyscrambles[week].cube == 2 && DIM != 100) {
+		changeTwo();
+	}
+	reSetup();
+	timer.stop();
+	timer.reset();
+	timer.setTime(-15000);
+	timer.start(true);
+	savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
+	special[2] = savesetup;
+	quickSolve();
+	cstep = 1;
+	setDisplay("none", ["c_INSTRUCT", "c_week"]);
+	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
+	setDisplay("block", []);
+}
+function endchallenge(passed = true) {
+	setDisplay("none", ["test_alg_div"]);
+	setDisplay("block", ["c_INSTRUCT", "c_week"]);
+	
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+	if (passed) {
+		document.getElementById('c_title').innerHTML = "Good Job!";
+		document.getElementById('c_desc').innerHTML = "You got the scramble in " + timeInSeconds + " seconds!";
+		if (!dstep) {
+			setScore("c_week", timeInSeconds);
+		} else {
+			setScore("c_day", timeInSeconds);
+			localStorage.c_today = timeInSeconds;
+		}
+	} else {
+		fadeInText(1, "DNF");
+		setTimeout(() => {fadeInText(0, "DNF")}, 400);
+		document.getElementById('c_title').innerHTML = "DNF (Did not finish)";
+		document.getElementById('c_desc').innerHTML = "You exceeded the inspection time limit of 15 seconds.";
+	}
+	document.getElementById('c_desc2').innerHTML = "Try again?";
+	if (dstep) {
+		setDisplay("none", ["c_start", "cd", "c_desc2"]);
+		setDisplay("block", ["challengeback"]);
+	}
+	dstep = false;
+}
+async function fadeInText(o, text) {
+	const dnfElement = document.getElementById('dnf');
+	dnfElement.style.display='block';
+	dnfElement.innerHTML = text;
+	dnfElement.style.opacity = o;
 }
 document.getElementById("account").onclick = accountmode;
 function accountmode() {
@@ -2673,7 +2840,7 @@ function showSpeed()
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 
 	changeInput();
-	if(MODE == "speed")2
+	if(MODE == "speed")
 	{
 		document.getElementById("reset3_div").style.display = "inline";
 		document.getElementById("times_par").style.display = "block";
@@ -2696,10 +2863,10 @@ function reCam()
 	rotateIt();
 }
 function updateScores() {
+	let modes = ["easy", "medium", "oll", "pll"];
+	let display = {easy: "Easy", medium: "Medium", oll: "OLL", pll: "PLL"};
 	if (DIM == 50) {
 		// speedmode scores
-		let modes = ["easy", "medium", "oll", "pll"];
-		let display = {easy: "Easy", medium: "Medium", oll: "OLL", pll: "PLL"};
 		modes.forEach((mode) => {
 			const score = localStorage[mode];
 			if (score != null && score != -1) {
@@ -2709,19 +2876,6 @@ function updateScores() {
 			}
 		})
 		document.getElementById("s_pllscore").style.display = "block";
-		// movesmode scores
-		modes = ["m_easy", "m_medium"];
-		display = {m_easy: "Easy", m_medium: "Medium"};
-		modes.forEach((mode) => {
-			const score  = localStorage[mode];
-			if (score != null && score != -1) {
-				document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
-			} else {
-				document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + "N/A";
-			}
-		})
-
-
 	} else {
 		if (localStorage["easy2"] != null  && localStorage["easy2"] != -1) {
 			document.getElementById("s_easyscore").innerHTML = "Easy: " + localStorage["easy2"];
@@ -2742,14 +2896,29 @@ function updateScores() {
 		}
 		document.getElementById("s_pllscore").style.display = "none";
 	}
+	// movesmode scores
+	modes = ["m_easy", "m_medium", "c_week", "c_day"];
+	display = {m_easy: "Easy", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day: "Daily"};
+	modes.forEach((mode) => {
+		const score  = localStorage[mode];
+		if (score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
+			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
+		} else {
+			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + "N/A";
+		}
+	})
 }
 function setScore(mode, total) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
-	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)) {
+	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)
+	|| (MODE == "challenge" && (localStorage["cdate"] != week || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
 		localStorage[mode] = total;
+		if (MODE == "challenge") {
+			localStorage["cdate"] = week;
+		}
 		updateScores();
 	}
 }
@@ -3156,6 +3325,11 @@ async function saveData(username, password, method, al) {
 		username: username,
 		password: password ?? "bruh",
 		data: "random",
+		c_day: localStorage.c_day ?? -1,
+		c_today: localStorage.c_today ?? -1,
+		c_week: localStorage.c_week ?? -1,
+		cdate: localStorage.cdate ?? -1,
+		cdate2: localStorage.cdate2 ?? -1,
 		easy: localStorage.easy ?? -1,
 		medium: localStorage.medium ?? -1,
 		oll: localStorage.oll ?? -1,
@@ -3173,8 +3347,10 @@ async function saveData(username, password, method, al) {
 		toppll:localStorage.toppll,
 		topwhite:localStorage.topwhite
 	};
+	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
 	successSQL("Data saved");
+	document.getElementById("highscore").style.display = "none";
 }
 
 
@@ -3214,7 +3390,7 @@ async function loadData(times) {
 	});
 	console.log("Userdata is ", userdata[index]);
 	if (times) {
-		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2"];
+		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", ];
 		params.forEach((param) => {
 			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] > userdata[index][param]))
 				localStorage[param] = userdata[index][param];
@@ -3222,6 +3398,11 @@ async function loadData(times) {
 		params = ["m_easy", "m_medium"];
 		params.forEach((param) => {
 			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] < userdata[index][param]))
+				localStorage[param] = userdata[index][param];
+		})
+		params = ["c_today", "c_week", "c_day","cdate", "cdate2"];
+		params.forEach((param) => {
+			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1))
 				localStorage[param] = userdata[index][param];
 		})
 	}
@@ -3844,10 +4025,12 @@ function animate(axis, row, dir, time) {
 			return;
 		}
 	}
-	if(Math.round(timer.getTime() / 10)/100.0 == 0 && time)
+	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && time)
 	{
 		if(!(MODE == "cube" && alldown == true) && document.getElementById("ID3").style.display == "none")
+			timer.reset();
 			timer.start();
+			if (cstep == 1 || cstep == 1.5) cstep++;
 	}
 	
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -4115,7 +4298,7 @@ function shuffleCube(nb) {
 
 
 	modeData("scramble");
-
+	console.log("shuffling");
 	shufflespeed = 2;
 	moves = 0;
 	timer.reset();
@@ -4128,7 +4311,7 @@ function shuffleCube(nb) {
 	arr = [];
 	let bad = "";
 	let total = "";
-	if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "speed" && race > 0)
+	if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "challenge" || MODE == "speed" && race > 0)
 	{
 		if(SCRAM.value() == "Middle Slices")
 			possible = ["E", "M", "S"];
@@ -4634,10 +4817,12 @@ function animateWide(axis, row, dir, timed) {
 		}
 	}
 
-	if(Math.round(timer.getTime() / 10)/100.0 == 0 && timed)
+	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && timed)
 	{
 		if(!(MODE == "cube" && alldown == true) && document.getElementById("ID3").style.display == "none")
+			timer.reset();
 			timer.start();
+			if (cstep == 1 || cstep == 1.5) cstep++;
 	}
 
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -4728,8 +4913,11 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
+		// quickSolve();
+		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
-		console.log(localStorage);
+		localStorage.cdate2 = -1;
+		console.log(localStorage.cdate, week);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -5146,7 +5334,7 @@ p.keyPressed = (event) => {
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login") 
 			reSetup();
-			if(MODE == "moves")
+			if(MODE == "moves" || MODE == "challenge")
 			moveSetup();
 			if(MODE == "speed")
 			speedSetup();
@@ -5160,6 +5348,14 @@ p.keyPressed = (event) => {
 			regular();
 			if(MODE == "moves")
 			movesmode();
+		    if(MODE == "challenge"){
+				if (cstep == 0) {
+					regular();
+				} else {
+					cstep = 0;
+					challengemode();
+				}
+			}
 			if(MODE == "speed")
 			speedmode();
 			if(MODE == "timed" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
