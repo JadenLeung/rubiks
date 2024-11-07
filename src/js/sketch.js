@@ -2495,7 +2495,7 @@ function sinceNov3(what) {
   }
 document.getElementById("challenge").onclick = challengemode;
 function challengemode() {
-	// modeData("accountmode");
+	modeData("challenge");
 	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
 	{
 		ao5 = [];
