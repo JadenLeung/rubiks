@@ -1029,7 +1029,7 @@ setInterval(() => {
 			document.getElementById("s_instruct").innerHTML = "Even though the cube might be solved, you used too many moves! Tip: You can press the 'reset' button to reset the scramble.";
 		}
 	} else if (MODE == "challenge") {
-		if (isSolved() && cstep == 2) {
+		if (isSolved() && cstep >= 2) {
 			timer.stop();
 			cstep++;
 			endchallenge();
@@ -2509,7 +2509,7 @@ function challengemode() {
 	refreshButtons();
 	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
-	SCRAM.value("normal");
+	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -3402,7 +3402,6 @@ async function loadData(times) {
 		})
 		params = ["c_today", "c_week", "c_day","cdate", "cdate2"];
 		params.forEach((param) => {
-			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1))
 				localStorage[param] = userdata[index][param];
 		})
 	}
@@ -4916,7 +4915,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
-		localStorage.cdate2 = -1;
+		// localStorage.cdate2 = -1;
 		console.log(localStorage.cdate, week);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
