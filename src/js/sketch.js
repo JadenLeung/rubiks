@@ -20,6 +20,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let DIM5 = 50;
+	let SOLVE;
 	let timeInSeconds;
 	let goodsound = true;
 	let goodsolved = false;
@@ -711,7 +712,7 @@ p.setup = () => {
 	const REDO = p.createButton('Redo');
 	setButton(REDO, "redo", 'btn btn-light', 'border-color: black;', Redo.bind(null, 0));
 	
-	const SOLVE = p.createButton('Auto-Solve');
+	SOLVE = p.createButton(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	setButton(SOLVE, "solve", 'btn btn-light', 'border-color: black;', solveCube.bind(null, 0));
 	
 	const EASY = p.createButton('Easy');
@@ -822,7 +823,7 @@ p.setup = () => {
 setInterval(() => {
 	timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
 	document.getElementById('time').innerText = timeInSeconds;
-	document.getElementById('moves').innerText = moves;
+	document.getElementById('moves').innerText = moves + (window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? " m" : " moves");
 	document.getElementById('speed').innerText = Math.round(SPEED*100);
 	document.getElementById('delay2').innerText = DELAY;
 	document.getElementById('size2').innerText = CAMZOOM * -1;
@@ -5690,7 +5691,7 @@ function refreshButtons()
 	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches? 1.5 : 1;
 	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? 2.5 : 1;
 	let m = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? "" : " Mode";
-
+	
 	REGULAR = p.createButton(`Normal${m}`);
 	setButton(REGULAR, "mode", 'btn btn-info', `text-align:center; font-size: ${20/d}px; width:${180/d2}px; border: none;`, regular.bind(null, 0));
 
@@ -8552,6 +8553,7 @@ p.windowResized = () => {
 		SETTINGS.position(cnv_div.offsetWidth-80,5);
 		SETTINGS.style("background-color: #e6e6e6;")
 	}
+	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	refreshButtons();
 } 
 
