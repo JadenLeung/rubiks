@@ -127,6 +127,7 @@ export default function (p) {
 	let song = "CcDdEFfGgAaB";
 	let savedark = [];
 	const MAX_WIDTH = "767px";
+	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
 	colorvalues["y"] = "4oìyÖ@A 5v8GÜOô 6BAQ3Úô 4vP";
@@ -832,6 +833,7 @@ setInterval(() => {
 	displayAverage();
 	displayTimes();
 	setLayout();
+	isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
 	let secs = 375-SPEED*225;
 	if(secs < 20)
 	secs = 20;
@@ -2404,7 +2406,9 @@ function regular(nocustom){
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
-
+	if (isthin) {
+		setDisplay("none", ["or_instruct", "or_instruct2"]);
+	}
 	changeInput();
 	easystep = 0;
 	medstep = 0;
@@ -4927,7 +4931,7 @@ p.keyPressed = (event) => {
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
 		// localStorage.cdate2 = -1;
-		console.log(localStorage.cdate, week);
+		console.log(isthin);
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -8554,6 +8558,13 @@ p.windowResized = () => {
 		SETTINGS.style("background-color: #e6e6e6;")
 	}
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
+	if (MODE == "normal") {
+		if (isthin) {
+			setDisplay("none", ["or_instruct", "or_instruct2"]);
+		} else {
+			setDisplay("block", ["or_instruct", "or_instruct2"]);
+		}
+	}
 	refreshButtons();
 } 
 
