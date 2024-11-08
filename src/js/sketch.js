@@ -278,6 +278,7 @@ class Timer {
 	}
 }
 function setWidth() {
+	let change = [ZOOM2, ZOOM3];
 	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches) //phone computer
 	{
 		ZOOM3 = -250;
@@ -287,8 +288,8 @@ function setWidth() {
 		document.getElementById("audio").style.display = 'none';
 		goodsound = false;
 	} else {
-		let ZOOM3 = -170;
-		let ZOOM2 = -25;
+		ZOOM3 = -170;
+		ZOOM2 = -25;
 		CAMZOOM = ZOOM3;
 	}
 	var isSafari = window.safari !== undefined || isIpad(); //safari
@@ -296,6 +297,9 @@ function setWidth() {
 		audioon = false;
 		document.getElementById("audio").style.display = 'none';
 		goodsound = false;
+	}
+	if (change[0] != ZOOM2 && change[1] != ZOOM3) {
+		reSetup();
 	}
 }
 const timer = new Timer();
@@ -2691,7 +2695,6 @@ function settingsmode()
 {
 	//regular(true);
 	//MODE = "speed"
-
 	if(document.getElementById("settings1").style.display == "block"){
 		regular();
 		return;
@@ -2716,6 +2719,7 @@ function settingsmode()
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
 	}
+	document.getElementById('settings1').scrollIntoView({ behavior: 'smooth' });
 
 }
 function speedmode()
@@ -5713,7 +5717,7 @@ function refreshButtons()
 
 	SETTINGS = p.createButton('⚙️');
 	SETTINGS.attribute('title', 'Settings');
-	setButton(SETTINGS, "settings", '', 'font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;', settingsmode.bind(null, 0));
+	setButton(SETTINGS, "settings", '', 'font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;', () => {settingsmode()});
 	if(goodsound)
 		SETTINGS.position(cnv_div.offsetWidth-140,5);
 	else{
@@ -8538,7 +8542,6 @@ function toGearCube(move){
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
 	setWidth();
-	reSetup();
 	if ((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
 	{
 		WINDOW = 0.6;
