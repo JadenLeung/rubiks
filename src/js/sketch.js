@@ -275,6 +275,27 @@ class Timer {
 		return this.overallTime;
 	}
 }
+function setWidth() {
+	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches) //phone computer
+	{
+		ZOOM3 = -250;
+		ZOOM2 = -100;
+		CAMZOOM = ZOOM3;
+		audioon = false;
+		document.getElementById("audio").style.display = 'none';
+		goodsound = false;
+	} else {
+		let ZOOM3 = -170;
+		let ZOOM2 = -25;
+		CAMZOOM = ZOOM3;
+	}
+	var isSafari = window.safari !== undefined || isIpad(); //safari
+	if(isSafari) {
+		audioon = false;
+		document.getElementById("audio").style.display = 'none';
+		goodsound = false;
+	}
+}
 const timer = new Timer();
 p.setup = () => {
 	
@@ -337,21 +358,7 @@ p.setup = () => {
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
 
-		if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches) //phone computer
-		{
-			ZOOM3 = -250;
-			ZOOM2 = -100;
-			CAMZOOM = ZOOM3;
-			audioon = false;
-			document.getElementById("audio").style.display = 'none';
-			goodsound = false;
-		}
-		var isSafari = window.safari !== undefined || isIpad(); //safari
-		if(isSafari) {
-			audioon = false;
-			document.getElementById("audio").style.display = 'none';
-			goodsound = false;
-		}
+		setWidth();
 		SIZE_SLIDER2 = p.createSlider(-1000, 300, -(ZOOM3), 5);
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
@@ -1422,7 +1429,10 @@ function setButton(BUTTON, parent, className, style, event) {
 	BUTTON.parent(parent);
 	BUTTON.class(className);
 	BUTTON.style(style);
-	BUTTON.mousePressed(event);
+	BUTTON.mousePressed((e) => {
+		event();
+		e.preventDefault()
+	});
 }
 function getID(){
 	let ID = "";
@@ -8522,6 +8532,8 @@ function toGearCube(move){
 }
 p.windowResized = () => {
 	let cnv_div = document.getElementById("cnv_div");
+	setWidth();
+	reSetup();
 	if ((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
 	{
 		WINDOW = 0.6;
