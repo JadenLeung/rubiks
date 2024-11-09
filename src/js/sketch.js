@@ -2526,7 +2526,7 @@ function challengemode() {
 	MODE = "challenge";
 
 	refreshButtons();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback"]);
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');

@@ -433,8 +433,7 @@ export default class Cuby {
     if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || (Array.isArray(this.cubysize) && this.cubysize[7] == 2))
       r = 50;
 
-      
-      r -= this.special[3] * (r/25);
+      if (!this.special[0]) r -= this.special[3] * (r/25);
     this.p.push();
 	this.p.translate(this.x, this.y, this.z);
   let bandaged = [];
@@ -468,35 +467,36 @@ export default class Cuby {
     this.stroke = 0.5;
   }
 	// p1, p2, p3, p4 coordinates
-	
+
+  let g = !this.special[0] ? 0 : this.special[3] * (r/25);
   if(this.back != ""){
     this.p.fill(this.back);
-    this.p.quad(-r, -r, -r,    r, -r, -r,  r, r, -r,   -r, r, -r, 2, 2);
+    this.p.quad(-r + g, -r + g, -r,    r - g, -r + g, -r,  r - g, r - g, -r,   -r + g, r - g, -r, 2, 2);
   }
 	
   if(this.front != ""){
     this.p.fill(this.front);
-    this.p.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r, 2, 2);	 
+    this.p.quad(-r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, r, 2, 2);	 
   } 
 
   if(this.bottom != ""){
     this.p.fill(this.bottom);
-    this.p.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r, 2, 2);	  	 
+    this.p.quad(-r+g, -r, -r+g, r-g, -r, -r+g, r-g, -r, r-g, -r+g, -r, r-g, 2, 2);	  	 
   } 
 
   if(this.top != ""){
     this.p.fill(this.top);
-    this.p.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r, 2, 2);	  
+    this.p.quad(-r+g, r, -r+g, r-g, r, -r+g, r-g, r, r-g, -r+g, r, r-g, 2, 2);	  
   }
   
   if(this.right != ""){
     this.p.fill(this.right);
-    this.p.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r, 2, 2);     	 
+    this.p.quad(-r, -r+g, -r+g, -r, r-g, -r+g, -r, r-g, r-g, -r, -r+g, r-g, 2, 2);     	 
   } 	  
 
   if(this.left != ""){
     this.p.fill(this.left);
-    this.p.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r, 2, 2);
+    this.p.quad(r, -r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, 2, 2);
   }
 	/*this.p.line(r,r,r,-r,-r,-r);
 	this.p.line(r,r,r,-r,-r,-r);
