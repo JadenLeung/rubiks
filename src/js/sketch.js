@@ -1105,11 +1105,16 @@ setInterval(() => {
 	}
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
+	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	if (!ismid) {
 		document.getElementById("fullscreen").style.display = "block";
 		FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+		document.getElementById('ID_left').appendChild(document.getElementById('ID1'));
+		document.getElementById('timed_left').appendChild(document.getElementById('timed_all'));
 	} else {
 		document.getElementById("fullscreen").style.display = "none";
+		document.getElementById('ID_right').appendChild(document.getElementById('ID1'));
+		document.getElementById('timed_right').appendChild(document.getElementById('timed_all'));
 	}
 }, 10)
 //forever
@@ -2457,12 +2462,11 @@ function timedmode()
 	reSetup();
 
 	refreshButtons();
+	TIMEDMODE.style('background-color', '#8ef5ee');
 	TIMEDMODE2.style('background-color', "#8ef5ee");
 
 	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct", "or_instruct2", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input"]);
-	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
-	setDisplay("block", ["alltimes", "type3"]);
-
+	setDisplay("block", ["type3"]);
 	document.getElementById("or_instruct3").innerHTML = "";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	changeInput();
@@ -4496,17 +4500,25 @@ function displayTimes()
 		scrambles.pop();
 	if(canMan == false) return;
 	if(MODE != "timed") return;
-	if(mo5.length == 0)
-	{
-		document.getElementById('alltimes').innerHTML = "Your times/moves will be displayed here";
-		document.getElementById("timegone").style.display = "none";
-		document.getElementById("link1").style.display = "none";
-		return;
-	}
-	else
-	{
-		document.getElementById("timegone").style.display = "block";
-		document.getElementById("link1").style.display = "block";
+	const whichtime = "alltimes";
+	if (MODE == "timed") {
+		if(mo5.length == 0)
+		{
+			document.getElementById(whichtime).innerHTML = "Your times/moves will be displayed here";
+			document.getElementById("timegone").style.display = "none";
+			document.getElementById("link1").style.display = "none";
+			return;
+		}
+		setDisplay("block", ["alltimes", "timegone", "link1"]);
+		if (!ismid) {
+			setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
+			setDisplay("none", ["mode", "mode2", "mode3", "mode7", "or_instruct4"]);
+
+		} else {
+			setDisplay("inline", ["mode", "mode2", "mode3", "mode7"]);
+			setDisplay("none", ["mode4", "mode5", "mode6", "mode8"]);
+			setDisplay("block", ["or_instruct4"]);
+		}
 	}
 	document.getElementById("or_instruct3").style.display = "none";
 	let alltimes = "";
@@ -4627,7 +4639,7 @@ function displayTimes()
 		alltimes += "<br>"
 	}
 
-	document.getElementById('alltimes').innerHTML = alltimes;
+	document.getElementById(whichtime).innerHTML = alltimes;
 }
 function displayAverage()
 {
