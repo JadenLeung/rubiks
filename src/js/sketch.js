@@ -283,6 +283,16 @@ class Timer {
 	}
 }
 function setWidth() {
+	if (!ismid) {
+		document.getElementById("fullscreen").style.display = "block";
+		if(FULLSCREEN) FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+		document.getElementById('ID_left').appendChild(document.getElementById('ID1'));
+		document.getElementById('timed_left').appendChild(document.getElementById('timed_all'));
+	} else {
+		document.getElementById("fullscreen").style.display = "none";
+		document.getElementById('ID_right').appendChild(document.getElementById('ID1'));
+		document.getElementById('timed_right').appendChild(document.getElementById('timed_all'));
+	}
 	if (isthin == trackthin) return;
 	trackthin = isthin;
 	let change = [ZOOM2, ZOOM3];
@@ -1188,16 +1198,6 @@ setInterval(() => {
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
-	if (!ismid) {
-		document.getElementById("fullscreen").style.display = "block";
-		FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
-		document.getElementById('ID_left').appendChild(document.getElementById('ID1'));
-		document.getElementById('timed_left').appendChild(document.getElementById('timed_all'));
-	} else {
-		document.getElementById("fullscreen").style.display = "none";
-		document.getElementById('ID_right').appendChild(document.getElementById('ID1'));
-		document.getElementById('timed_right').appendChild(document.getElementById('timed_all'));
-	}
 }, 10)
 //forever
 function reSetup(rot) {
