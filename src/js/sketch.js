@@ -349,7 +349,7 @@ async function preloadAllAudio() {
 }
 
 function playAudio() {
-	if (!audioon) return;
+	// if (!audioon) return;
 	if (!audioContext) {
 		console.warn("AudioContext not initialized");
 		return;
@@ -4193,38 +4193,6 @@ function animate(axis, row, dir, time) {
 	initAudioContext(); // Ensure AudioContext is active
     playAudio();
 	return;
-	if(!audioon) return; //sound audio
-	let m = Math.random();
-	if(SOUND.value() == "Windows XP"){
-		if(m < 0.1)
-			var audio = document.getElementById("audio6");
-		else if(m < 0.2)
-			var audio = document.getElementById("audio7");
-		else
-			var audio = document.getElementById("audio8");
-		audio.volume = 0.7;
-	}
-	else if(row == 0){
-		var audio = document.getElementById("audio5");
-		audio.volume = 0.7;
-	}
-	else if(m < 0.25){
-		var audio = document.getElementById("audio4");
-		audio.volume = 0.2;
-	}else if(m<0.5){
-		var audio = document.getElementById("audio1");
-		audio.volume = 0.5;
-	}else if(m<0.75){
-		var audio = document.getElementById("audio2");
-		audio.volume = 0.8;
-	}
-	else{
-		var audio = document.getElementById("audio3");
-		audio.volume = 0.5;
-	}
-	console.log(m)
-	audio.currentTime = 0;
-    audio.play();
 }
 
 function cleanAllSelectedCubies() {
@@ -4994,33 +4962,8 @@ function animateWide(axis, row, dir, timed) {
 			}
 		}
 	}
-	if(!audioon) return;
-
-    let m = Math.random();
-	let audio;
-    if(SOUND.value() == "Windows XP"){
-        if(m < 0.1) audio = document.getElementById("audio6");
-        else if(m < 0.2) audio = document.getElementById("audio7");
-        else audio = document.getElementById("audio8");
-        audio.volume = 0.7;
-    } else if(m < 0.25) {
-        audio = document.getElementById("audio4");
-        audio.volume = 0.2;
-    } else if(m < 0.5) {
-        audio = document.getElementById("audio1");
-        audio.volume = 0.5;
-    } else if(m < 0.75) {
-        audio = document.getElementById("audio2");
-        audio.volume = 0.8;
-    } else {
-        audio = document.getElementById("audio3");
-        audio.volume = 0.5;
-    }
-
-    audio.currentTime = 0;
-    audio.addEventListener('canplaythrough', function() {
-        audio.play();
-    }, { once: true });
+	initAudioContext(); // Ensure AudioContext is active
+    playAudio();
 }
 function sleep(milliseconds) {
 	const date = Date.now();
