@@ -21,7 +21,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let DIM5 = 50;
-	let trackthin = false; // false means thin
+	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
 	let SOLVE;
 	let timeInSeconds;
@@ -292,24 +292,113 @@ function setWidth() {
 		ZOOM3 = -250;
 		ZOOM2 = -100;
 		CAMZOOM = ZOOM3;
-		audioon = false;
+		// audioon = false;
 		document.getElementById("audio").style.display = 'none';
-		goodsound = false;
+		// goodsound = false;
 	} else {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
 		CAMZOOM = ZOOM3;
 	}
-	var isSafari = window.safari !== undefined || isIpad(); //safari
-	if(isSafari) {
-		audioon = false;
-		document.getElementById("audio").style.display = 'none';
-		goodsound = false;
-	}
+	// var isSafari = false; //window.safari !== undefined || isIpad(); //safari
+	// if(isSafari) {
+	// 	audioon = false;
+	// 	document.getElementById("audio").style.display = 'none';
+	// 	goodsound = false;
+	// }
 	if (change[0] != ZOOM2 && change[1] != ZOOM3) {
 		reSetup();
 	}
 }
+let audioContext;
+const audioFiles = {
+	audio1: "audio/cubesound1.mp3",
+	audio2: "audio/cubesound2.mp3",
+	audio3: "audio/cubesound3.mp3",
+	audio4: "audio/cubesound4.mp3",
+	audio5: "audio/cubesound5.mp3",
+	audio6: "audio/winxp.mp3",
+	audio7: "audio/winxpshutdown.mp3",
+	audio8: "audio/erro.mp3"
+};
+
+const audioBuffers = {};
+
+function initAudioContext() {
+	if (!audioContext) {
+		audioContext = new (window.AudioContext || window.webkitAudioContext)();
+	}
+}
+
+async function preloadAudio(url, key) {
+	try {
+		const response = await fetch(url);
+		const arrayBuffer = await response.arrayBuffer();
+		const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+		audioBuffers[key] = audioBuffer;
+	} catch (error) {
+		console.error(`Error loading ${key}:`, error);
+	}
+}
+
+async function preloadAllAudio() {
+	initAudioContext(); // Ensure AudioContext is initialized
+	const preloadPromises = Object.entries(audioFiles).map(([key, url]) => preloadAudio(url, key));
+	await Promise.all(preloadPromises);
+	console.log("All audio files preloaded");
+}
+
+function playAudio() {
+	if (!audioon) return;
+	if (!audioContext) {
+		console.warn("AudioContext not initialized");
+		return;
+	}
+	const m = Math.random();
+	let selectedBuffer;
+	let volume = 1.0;
+
+	if (SOUND.value() === "Windows XP") {
+		if (m < 0.1) {
+			selectedBuffer = audioBuffers.audio6;
+			volume = 0.7;
+		} else if (m < 0.2) {
+			selectedBuffer = audioBuffers.audio7;
+			volume = 0.7;
+		} else {
+			selectedBuffer = audioBuffers.audio8;
+			volume = 0.7;
+		}
+	} else if (m < 0.25) {
+		selectedBuffer = audioBuffers.audio4;
+		volume = 0.2;
+	} else if (m < 0.5) {
+		selectedBuffer = audioBuffers.audio1;
+		volume = 0.5;
+	} else if (m < 0.75) {
+		selectedBuffer = audioBuffers.audio2;
+		volume = 0.8;
+	} else {
+		selectedBuffer = audioBuffers.audio3;
+		volume = 0.5;
+	}
+
+	if (!selectedBuffer) {
+		console.warn("No audio buffer selected");
+		return;
+	}
+
+	const source = audioContext.createBufferSource();
+	source.buffer = selectedBuffer;
+
+	const gainNode = audioContext.createGain();
+	gainNode.gain.value = volume;
+
+	source.connect(gainNode).connect(audioContext.destination);
+	source.start(0);
+}
+
+window.onload = preloadAllAudio;
 const timer = new Timer();
 p.setup = () => {
 	
@@ -1100,7 +1189,7 @@ setInterval(() => {
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	if (document.getElementById("settings1").style.display == "none") {
 		SETTINGS.style("background-color: transparent; color: " + document.body.style.color);
-	} else {
+	} else if (!isthin){
 		SETTINGS.style("background-color: #8ef4ee; color: " + document.body.style.color);
 	}
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
@@ -2434,7 +2523,7 @@ function regular(nocustom){
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
-	if (isthin) {
+	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
 	}
 	changeInput();
@@ -4101,8 +4190,10 @@ function animate(axis, row, dir, time) {
 			CUBE[i].anim_angle = CUBE[i].dir * SPEED;
 		}
 	}
-
-	if(!audioon) return;
+	initAudioContext(); // Ensure AudioContext is active
+    playAudio();
+	return;
+	if(!audioon) return; //sound audio
 	let m = Math.random();
 	if(SOUND.value() == "Windows XP"){
 		if(m < 0.1)
@@ -4904,33 +4995,32 @@ function animateWide(axis, row, dir, timed) {
 		}
 	}
 	if(!audioon) return;
-	let m = Math.random();
-	if(SOUND.value() == "Windows XP"){
-		if(m < 0.1)
-			var audio = document.getElementById("audio6");
-		else if(m < 0.2)
-			var audio = document.getElementById("audio7");
-		else
-			var audio = document.getElementById("audio8");
-		audio.volume = 0.7;
-	}
-	else if(m < 0.25){
-		var audio = document.getElementById("audio4");
-		audio.volume = 0.2;
-	}else if(m<0.5){
-		var audio = document.getElementById("audio1");
-		audio.volume = 0.5;
-	}else if(m<0.75){
-		var audio = document.getElementById("audio2");
-		audio.volume = 0.8;
-	}
-	else{
-		var audio = document.getElementById("audio3");
-		audio.volume = 0.5;
-	}
-	console.log(m)
-	audio.currentTime = 0;
-    audio.play();
+
+    let m = Math.random();
+	let audio;
+    if(SOUND.value() == "Windows XP"){
+        if(m < 0.1) audio = document.getElementById("audio6");
+        else if(m < 0.2) audio = document.getElementById("audio7");
+        else audio = document.getElementById("audio8");
+        audio.volume = 0.7;
+    } else if(m < 0.25) {
+        audio = document.getElementById("audio4");
+        audio.volume = 0.2;
+    } else if(m < 0.5) {
+        audio = document.getElementById("audio1");
+        audio.volume = 0.5;
+    } else if(m < 0.75) {
+        audio = document.getElementById("audio2");
+        audio.volume = 0.8;
+    } else {
+        audio = document.getElementById("audio3");
+        audio.volume = 0.5;
+    }
+
+    audio.currentTime = 0;
+    audio.addEventListener('canplaythrough', function() {
+        audio.play();
+    }, { once: true });
 }
 function sleep(milliseconds) {
 	const date = Date.now();
@@ -4984,7 +5074,7 @@ p.keyPressed = (event) => {
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
 		// localStorage.cdate2 = -1;
-		console.log(document.getElementById("settings").style.display);
+		console.log(goodsound);
 	}
 	if(p.keyCode == 9){ //tab
 		fullScreen(!fullscreen);
@@ -8622,7 +8712,7 @@ function resized(){
 	}
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	if (MODE == "normal") {
-		if (isthin) {
+		if (ismid) {
 			setDisplay("none", ["or_instruct", "or_instruct2"]);
 		} else {
 			setDisplay("block", ["or_instruct", "or_instruct2"]);
