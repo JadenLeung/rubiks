@@ -1,0 +1,167 @@
+body{
+    background-color:#c9ffda; /*#dae3d3*/
+    color:#0a1970;
+    font:courier;
+    
+}
+button:focus {
+    outline: none;
+}
+.actualbody{
+    padding-left:0px;
+    padding-right:0px;
+}
+table, th, td{
+    border: 1px solid;
+    text-align:center;
+    padding:2px;
+}
+weird{
+    float:left;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+li {
+    float: left;
+}
+li a{
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+li a:hover {
+    background-color: #111;
+}
+.active {
+    background-color: #04AA6D;
+}
+.caption{
+    text-align:center;
+    color: red;
+    font-size: 15px;
+}
+img{
+    padding: 0px;
+    margin-left:auto;
+    margin-right:auto;
+}		
+.row{
+    max-width:100%;
+}
+sub{
+    font-weight: bold;
+}
+button{
+    touch-action: manipulation;
+}
+button:hover {
+    cursor: pointer;
+    background-color: #FABD44;
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; 
+}
+.login {
+    margin-top:10px;
+    margin-left:5px;
+}
+.colorPicker {
+    width: 20px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: transform 0.3s ease;
+}
+#colorPicker:hover {
+    transform: scale(1.1);
+}
+#dnf {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    font-family: 'Orbitron';
+    color: red;
+    opacity: 0; /* Start fully opaque */
+    transition: opacity 0.4s ease-out; /* 1-second fade-out effect */
+}
+#outertime {
+        position: absolute;
+        top: 9%;
+        left: 5%;
+        font-family: 'Orbitron';
+        font-size: 30px;
+    }
+    #outermoves {
+        position: absolute;
+        top: 9%;
+        right: 1%;
+        font-family: 'Orbitron';
+        font-size: 30px;
+        text-align: right;
+    }
+#cnvbuttons {
+    position: absolute;
+    top: 1%;
+    left: 5%;
+    font-size: 30px;
+}
+@media screen and (max-width: 1199px) {
+    .buttoncontainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .buttonitems {
+        padding:5px;
+    }
+    #outertime {
+        position: absolute;
+        top: 90%;
+        left: 5%;
+        font-family: 'Orbitron';
+        font-size: 30px;
+    }
+    #outermoves {
+        position: absolute;
+        top: 90%;
+        right: 2%;
+        font-family: 'Orbitron';
+        font-size: 30px;
+        text-align: right;
+    }
+}
+@media screen and (max-width: 767px) {
+    #outertime {
+        position: absolute;
+        top: 90%;
+        left: 5%;
+        font-family: 'Orbitron';
+        font-size: 20px;
+    }
+    #outermoves {
+        position: absolute;
+        top: 90%;
+        right: 2%;
+        font-family: 'Orbitron';
+        font-size: 20px;
+        text-align: right;
+    }
+    #cnvbuttons {
+        padding-top: 10px;
+    }
+}	

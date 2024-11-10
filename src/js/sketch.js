@@ -14,12 +14,15 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
+	let fullscreen = false;
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let DIM5 = 50;
+	let trackthin = false; // false means thin
+	const bstyle = "btn btn-secondary";
 	let SOLVE;
 	let timeInSeconds;
 	let goodsound = true;
@@ -91,7 +94,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -127,7 +130,9 @@ export default function (p) {
 	let song = "CcDdEFfGgAaB";
 	let savedark = [];
 	const MAX_WIDTH = "767px";
+	const MAX_WIDTH2 = "1199px";
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
+	let ismid = window.matchMedia("(max-width: " + MAX_WIDTH2 + ")").matches;
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
 	colorvalues["y"] = "4oìyÖ@A 5v8GÜOô 6BAQ3Úô 4vP";
@@ -278,7 +283,10 @@ class Timer {
 	}
 }
 function setWidth() {
+	if (isthin == trackthin) return;
+	trackthin = isthin;
 	let change = [ZOOM2, ZOOM3];
+	document.getElementById("audio").style.display = 'block';
 	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches) //phone computer
 	{
 		ZOOM3 = -250;
@@ -380,8 +388,8 @@ p.setup = () => {
 	TIMEDMODE = p.createButton('Stats Mode');
 	MOVESMODE = p.createButton('Fewest Moves');
 	IDMODE = p.createButton('Save/Load ID');
-	SETTINGS = p.createButton('⚙️');
-	VOLUME = p.createButton('🔊');
+	SETTINGS = p.createButton('');
+	VOLUME = p.createButton('');
 	REGULAR2 = p.createButton('Normal');
 	SPEEDMODE2 = p.createButton('Speed');
 	TIMEDMODE2 = p.createButton('Stat');
@@ -406,8 +414,6 @@ p.setup = () => {
 
 	setDisplay("none", ["mode4", "mode5", "mode6", "mode8", "link1", "timegone"]);
 
-	const SHUFFLE_BTN = p.createButton('Scramble');
-	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-light', 'border-color: black;', shuffleCube.bind(null, 0));
 
 	TWOBYTWO = p.createButton('2x2');
 	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
@@ -675,10 +681,7 @@ p.setup = () => {
 		TOPPLL.value(localStorage.toppll);
 	}
 
-	if(goodsound)
-		SETTINGS.position(cnv_div.offsetWidth-140,5);
-	else
-		SETTINGS.position(cnv_div.offsetWidth-80,5);
+
 
 
 	CUSTOM = p.createButton('Custom Shape');
@@ -688,37 +691,34 @@ p.setup = () => {
 	setButton(CUSTOM2, "customb", 'btn btn-primary', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', Custom2.bind(null, 0));
 	
 	const RESET = p.createButton('Reset');
-	setButton(RESET, "reset_div", 'btn btn-light', 'border-color: black;', reSetup.bind(null, 0));
+	setButton(RESET, "reset_div", bstyle, '', reSetup.bind(null, 0));
 
 	const RESET2 = p.createButton('Reset');
-	RESET2.parent("reset2_div");
-	RESET2.class('btn btn-light');
-	RESET2.style('border-color: black;');
-	RESET2.mousePressed(moveSetup.bind(null, 0));
+	setButton(RESET2, "reset2_div", bstyle, '', moveSetup.bind(null, 0));
 
 	const RESET3 = p.createButton('Reset');
-	RESET3.parent("reset3_div");
-	RESET3.class('btn btn-light');
-	RESET3.style('border-color: black;');
-	RESET3.mousePressed(speedSetup.bind(null, 0));
+	setButton(RESET3, "reset3_div", bstyle, '', speedSetup.bind(null, 0));
+
+	const SHUFFLE_BTN = p.createButton('Scramble');
+	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-primary', '', shuffleCube.bind(null, 0));
 
 	const STOP = p.createButton('Stop Time');
-	setButton(STOP, "stop_div", 'btn btn-light', 'border-color: black;', stopTime.bind(null, 0));
+	setButton(STOP, "stop_div", bstyle, '', stopTime.bind(null, 0));
 
 	const HINT = p.createButton('Hint');
-	setButton(HINT, "hint", 'btn btn-light', 'border-color: black;', Hint.bind(null, 0));
+	setButton(HINT, "hint", bstyle, '', Hint.bind(null, 0));
 	
 	const GIVEUP = p.createButton('Give Up');
-	setButton(GIVEUP, "giveup", 'btn btn-light', 'border-color: black;', giveUp.bind(null, 0));
+	setButton(GIVEUP, "giveup", 'btn btn-danger', '', giveUp.bind(null, 0));
 
 	const UNDO = p.createButton('Undo');
-	setButton(UNDO, "undo", 'btn btn-light', 'border-color: black;', Undo.bind(null, 0));
+	setButton(UNDO, "undo", bstyle, '', Undo.bind(null, 0));
 	
 	const REDO = p.createButton('Redo');
-	setButton(REDO, "redo", 'btn btn-light', 'border-color: black;', Redo.bind(null, 0));
+	setButton(REDO, "redo", bstyle, '', Redo.bind(null, 0));
 	
 	SOLVE = p.createButton(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
-	setButton(SOLVE, "solve", 'btn btn-light', 'border-color: black;', solveCube.bind(null, 0));
+	setButton(SOLVE, "solve", 'btn btn-success', '', solveCube.bind(null, 0));
 	
 	const EASY = p.createButton('Easy');
 	setButton(EASY, "s_easy", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', easy.bind(null, 0));
@@ -732,6 +732,11 @@ p.setup = () => {
 	const IDCOPY = p.createButton('Copy');
 	IDCOPY.parent("idcopy");
 	IDCOPY.mousePressed();
+
+	FULLSCREEN = p.createButton('');
+	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
+	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 
 	document.getElementById('idcopy').addEventListener('click', function() { //copy button
 		// Thank you Stack Overflow
@@ -775,13 +780,11 @@ p.setup = () => {
 	setButton(STARTDCHAL, "cd_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', dailychallenge);
 
 	inp = p.createInput('');
-	inp.parent("test_alg_div");
-	inp.size(150);
+	inp.parent("test_alg_input");
 	
 	const GO_BTN = p.createButton('Go!');
-	GO_BTN.parent("test_alg_div");
-	
-	GO_BTN.mousePressed(testAlg.bind(null, 0));	
+	setButton(GO_BTN, 'test_alg_button', 'btn btn-success', 'height: 30px; width: 40px; display: flex; padding: 0;', testAlg.bind(null, 0));
+	GO_BTN.style("display", "inline-block");
 
 	TIMEGONE = p.createButton('Remove previous time');
 	setButton(TIMEGONE, "timegone2", 'btn btn-light', 'border-color: black;', removeTime.bind(null, 0));
@@ -824,7 +827,7 @@ p.setup = () => {
 	topWhite();
 }
 
-//forever
+
 setInterval(() => {
 	timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
 	document.getElementById('time').innerText = timeInSeconds;
@@ -838,6 +841,7 @@ setInterval(() => {
 	displayTimes();
 	setLayout();
 	isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
+	ismid = window.matchMedia("(max-width: " + MAX_WIDTH2 + ")").matches;
 	let secs = 375-SPEED*225;
 	if(secs < 20)
 	secs = 20;
@@ -1093,7 +1097,22 @@ setInterval(() => {
 	else
 		realtop = TOPWHITE.value()[0].toLowerCase();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
+	if (document.getElementById("settings1").style.display == "none") {
+		SETTINGS.style("background-color: transparent; color: " + document.body.style.color);
+	} else {
+		SETTINGS.style("background-color: #8ef4ee; color: " + document.body.style.color);
+	}
+	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
+	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
+	if (!ismid) {
+		document.getElementById("fullscreen").style.display = "block";
+		FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+	} else {
+		document.getElementById("fullscreen").style.display = "none";
+	}
 }, 10)
+//forever
 function reSetup(rot) {
 	m_points = 0;
 	CUBE = {};
@@ -2388,6 +2407,7 @@ function regular(nocustom){
 			changeThree();
 	}
 	MODE = "normal";
+	fullScreen(false);
 	reSetup();
 	race = 0;
 	var elements = document.getElementsByClassName('normal');
@@ -2402,7 +2422,6 @@ function regular(nocustom){
 	refreshButtons();
 	REGULAR.style('background-color', '#8ef5ee');
 	//REGULAR.class('btn btn-secondary');
-
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
 	setDisplay("block", ["or_instruct", "or_instruct2", "or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram"]);
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
@@ -2420,7 +2439,7 @@ function regular(nocustom){
 	pllstep = 0;
 	m_34step = 0;
 	m_4step = 0;
-	
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 }
 function timedmode()
 {
@@ -2445,7 +2464,7 @@ function timedmode()
 	setDisplay("block", ["alltimes", "type3"]);
 
 	document.getElementById("or_instruct3").innerHTML = "";
-
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	changeInput();
 
 	modeData("stats");
@@ -2469,7 +2488,7 @@ function cubemode()
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
 	else document.getElementById("customb").style.display = "none"; 
-
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	modeData("other");
 }
 function idmode()
@@ -2549,7 +2568,7 @@ function challengemode() {
 }
 function dailychallenge() {
 	if (localStorage.cdate2 == sinceNov3('d')) return;
-	if (weeklyscrambles[week].cube == 3 && DIM != 50) {
+	if (DIM != 50) {
 		changeThree();
 	}
 	reSetup();
@@ -2609,14 +2628,14 @@ function endchallenge(passed = true) {
 		elements[i].style.display='none';
 	}
 	if (passed) {
-		document.getElementById('c_title').innerHTML = "Good Job!";
-		document.getElementById('c_desc').innerHTML = "You got the scramble in " + timeInSeconds + " seconds!";
 		if (!dstep) {
 			setScore("c_week", timeInSeconds);
 		} else {
 			setScore("c_day", timeInSeconds);
 			localStorage.c_today = timeInSeconds;
 		}
+		document.getElementById('c_title').innerHTML = "Good Job!";
+		document.getElementById('c_desc').innerHTML = "You got the scramble in " + timeInSeconds + " seconds!";
 	} else {
 		fadeInText(1, "DNF");
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
@@ -2629,6 +2648,21 @@ function endchallenge(passed = true) {
 		setDisplay("block", ["challengeback"]);
 	}
 	dstep = false;
+}
+function fullScreen(isfull) {
+	if (isfull) {
+		document.getElementById("cnv_div").className = "col-xl-12 noselect";
+		document.getElementById("right").style.display = "none";
+		document.getElementById("left").style.display = "none";
+		FULLSCREEN.class("bi bi-fullscreen-exit");
+	} else {
+		document.getElementById("cnv_div").className = "col-xl-6 noselect";
+		document.getElementById("left").style.display = "block";
+		document.getElementById("right").style.display = "block";
+		FULLSCREEN.class("bi bi-arrows-fullscreen");
+	}
+	fullscreen = isfull;
+	resized();
 }
 async function fadeInText(o, text) {
 	const dnfElement = document.getElementById('dnf');
@@ -2702,15 +2736,16 @@ function settingsmode()
 	DIM = DIM2;
 	reSetup();
 	stopMoving();
+	fullScreen(false);
 	//quickSolve();
 	refreshButtons();
 
 	//regular();
 	REGULAR.style('background-color', '#10caf0');
 	//REGULAR.class('btn btn-info');
-	if(!isIpad() && !(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
-		SETTINGS.style('background-color', "#8ef5ee");
-
+	// if(!isIpad() && !(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
+	// 	SETTINGS.style('background-color', "#8ef5ee");
+	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div"]);
@@ -2765,7 +2800,7 @@ function speedmode()
 		PLL.html("PBL Practice");
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
-
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	updateScores();
 	modeData("speed");
 }
@@ -2806,7 +2841,7 @@ function movesmode()
 	m_4step = 0;
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
-
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	modeData("moves");
 }
 function setSettings(obj) {
@@ -4896,6 +4931,9 @@ document.addEventListener('keydown', function(event) {
     if (event.ctrlKey || event.metaKey) {
         inspect = true;
     }
+	if (event.key == "Tab") {
+        event.preventDefault();
+    }
 });
 
 document.addEventListener('keyup', function(event) {
@@ -4905,7 +4943,6 @@ document.addEventListener('keyup', function(event) {
 });
 
 p.keyPressed = (event) => {
-	console.log(special);
 	if (event.srcElement.nodeName == "INPUT") {
 		event.stopPropagation;
 		return;
@@ -4935,7 +4972,11 @@ p.keyPressed = (event) => {
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
 		// localStorage.cdate2 = -1;
-		console.log(isthin);
+		console.log(document.getElementById("settings").style.display);
+	}
+	if(p.keyCode == 9){ //tab
+		fullScreen(!fullscreen);
+		return;
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
@@ -5715,14 +5756,18 @@ function refreshButtons()
 	IDMODE = p.createButton('Save/Load ID');
 	setButton(IDMODE, "ID2", 'btn btn-info', 'text-align:center; border: none;', idmode.bind(null, 0));
 
-	SETTINGS = p.createButton('⚙️');
+	SETTINGS = p.createButton('');
 	SETTINGS.attribute('title', 'Settings');
-	setButton(SETTINGS, "settings", '', 'font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px;', () => {settingsmode()});
-	if(goodsound)
-		SETTINGS.position(cnv_div.offsetWidth-140,5);
-	else{
-		SETTINGS.position(cnv_div.offsetWidth-80,5);
-		SETTINGS.style("background-color: #e6e6e6;")
+	setButton(SETTINGS, "settings", 'bi bi-gear-wide-connected', 'font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px; background-color: transparent; color:' + document.body.style.color, () => {settingsmode()});
+	SETTINGS.position(cnv_div.offsetWidth-60,5);
+
+	if (FULLSCREEN) {
+		if (!ismid) {
+			document.getElementById("fullscreen").style.display = "block";
+			FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+		} else {
+			document.getElementById("fullscreen").style.display = "none";
+		}
 	}
 
 	if (localStorage.audioon === "false") {
@@ -5730,24 +5775,28 @@ function refreshButtons()
 	}
 
 	if(audioon){
-		VOLUME = p.createButton('🔊');
+		VOLUME = p.createButton('');
+		VOLUME.class('btn btn-light bi bi-volume-up');
 		VOLUME.attribute('title', 'Sound on');
 	}
 	else{
-		VOLUME = p.createButton('🔇');
+		VOLUME = p.createButton('');
+		VOLUME.class('btn btn-light bi bi-volume-mute');
 		VOLUME.attribute('title', 'Sound off');
 	}
 	VOLUME.parent("audio");
-	VOLUME.style("font-size: 40px; border: none;"); 
-	VOLUME.style("background-size: cover; background-color: white; border-radius: 10px; height: 60px; width: 60px;");
-	VOLUME.position(cnv_div.offsetWidth-60,5);
-	VOLUME.mousePressed(() => {
+	VOLUME.style("font-size: 40px; border: none; background-color: transparent; color: " + document.body.style.color); 
+	VOLUME.style("border-radius: 10px; height: 60px; width: 60px;");
+	VOLUME.style("display: flex; align-items: center; justify-content: center");
+	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
+	VOLUME.mousePressed((e) => {
+		e.preventDefault();
 		if(audioon){
-			VOLUME.html("🔇");
+			VOLUME.class('btn btn-light bi bi-volume-mute');
 			VOLUME.attribute('title', 'Sound off');
 		}
 		else{
-			VOLUME.html("🔊");
+			VOLUME.class('btn btn-light bi bi-volume-up');
 			VOLUME.attribute('title', 'Sound on');
 		}
 		audioon = !audioon;
@@ -6151,7 +6200,7 @@ function stepFive()
 			}
 			else if(a == 0 && b == 4)
 			{
-				changeArr("R' U R' F2 R F' U R' F2 R F' R");
+				changeArr("R U' R' U' F2 U' R U R' U F2");
 
 				
 			}
@@ -8108,8 +8157,10 @@ function testAlg(){
 			let shortpll = inp.value().substring(1);
 			changeArr(obj2[shortpll][1])
 		}
-		else
-		changeArr(inp.value());
+		else {
+			changeArr(inp.value());
+			console.log("HAHAHHA" + inp.value());
+		}
 		multiple(0, false);	
 	}
 }
@@ -8539,7 +8590,8 @@ function toGearCube(move){
 	}
 	return move + "w";
 }
-p.windowResized = () => {
+p.windowResized = resized;
+function resized(){
 	let cnv_div = document.getElementById("cnv_div");
 	setWidth();
 	if ((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
@@ -8552,13 +8604,6 @@ p.windowResized = () => {
 		WINDOW = 0.9;
 		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
 		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
-	}
-	VOLUME.position(cnv_div.offsetWidth-60,5)
-	if(goodsound)
-		SETTINGS.position(cnv_div.offsetWidth-140,5);
-	else{
-		SETTINGS.position(cnv_div.offsetWidth-80,5);
-		SETTINGS.style("background-color: #e6e6e6;")
 	}
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	if (MODE == "normal") {
