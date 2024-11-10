@@ -5759,7 +5759,10 @@ function refreshButtons()
 	SETTINGS = p.createButton('');
 	SETTINGS.attribute('title', 'Settings');
 	setButton(SETTINGS, "settings", 'bi bi-gear-wide-connected', 'font-size: 40px; height: 60px; width: 60px; background-color: white; border: none; border-radius: 10px; background-color: transparent; color:' + document.body.style.color, () => {settingsmode()});
-	SETTINGS.position(cnv_div.offsetWidth-60,5);
+	if (!isthin)
+		SETTINGS.position(cnv_div.offsetWidth-60,5);
+	else
+		SETTINGS.position(cnv_div.offsetWidth-80,5);
 
 	if (FULLSCREEN) {
 		if (!ismid) {
