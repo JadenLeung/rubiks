@@ -292,20 +292,13 @@ function setWidth() {
 		ZOOM3 = -250;
 		ZOOM2 = -100;
 		CAMZOOM = ZOOM3;
-		// audioon = false;
 		document.getElementById("audio").style.display = 'none';
-		// goodsound = false;
 	} else {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
 		CAMZOOM = ZOOM3;
 	}
 	// var isSafari = false; //window.safari !== undefined || isIpad(); //safari
-	// if(isSafari) {
-	// 	audioon = false;
-	// 	document.getElementById("audio").style.display = 'none';
-	// 	goodsound = false;
-	// }
 	if (change[0] != ZOOM2 && change[1] != ZOOM3) {
 		reSetup();
 	}
@@ -349,7 +342,7 @@ async function preloadAllAudio() {
 }
 
 function playAudio() {
-	// if (!audioon) return;
+	if (!audioon && !isthin) return;
 	if (!audioContext) {
 		console.warn("AudioContext not initialized");
 		return;
