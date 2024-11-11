@@ -2706,6 +2706,7 @@ function startchallenge() {
 	setDisplay("block", []);
 }
 function endchallenge(passed = true) {
+	cstep = 0;
 	setDisplay("none", ["test_alg_div"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week"]);
 	
