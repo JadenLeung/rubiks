@@ -868,8 +868,11 @@ p.setup = () => {
 	const STARTCHAL = p.createButton('Start Weekly');
 	setButton(STARTCHAL, "c_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', startchallenge);
 
-	const STARTDCHAL = p.createButton('Start Daily');
-	setButton(STARTDCHAL, "cd_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', dailychallenge);
+	const STARTDCHAL = p.createButton('Start Daily 3x3');
+	setButton(STARTDCHAL, "cd_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {dailychallenge(3)});
+
+	const STARTDCHAL2 = p.createButton('Start Daily 2x2');
+	setButton(STARTDCHAL2, "cd2_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', () => {dailychallenge(2)});
 
 	inp = p.createInput('');
 	inp.parent("test_alg_input");
@@ -2645,17 +2648,27 @@ function challengemode() {
 	document.getElementById('c_desc2').innerHTML = "Scores are reset every Sunday.";
 	document.getElementById('cd_title').innerHTML = "Daily Scramble";
 	if (localStorage.cdate2 == sinceNov3()) {
-		document.getElementById('cd_desc').innerHTML = "Today, you achieved a score of <b>" + localStorage.c_today + "</b>. Come back tomorow for another attempt!";
+		document.getElementById('cd_desc').innerHTML = "Today, you achieved a score of <b>" + localStorage.c_today + "</b> in the Daily 3x3. Come back tomorow for another attempt!";
 		document.getElementById('cd_start').style.display = "none";
 	} else {
-		document.getElementById('cd_desc').innerHTML = "You have <b>1</b> attempt to solve the daily scramble. There are 15 seconds of inspection time.";
+		document.getElementById('cd_desc').innerHTML = "You have <b>1</b> attempt to solve the daily 3x3 scramble. There are 15 seconds of inspection time.";
 		document.getElementById('cd_start').style.display = "block";
 	}
+	if (localStorage.cdate3 == sinceNov3()) {
+		document.getElementById('cd2_desc').innerHTML = "Today, you achieved a score of <b>" + localStorage.c_today2 + "</b> in the Daily 2x2. Come back tomorow for another attempt!";
+		document.getElementById('cd2_start').style.display = "none";
+	} else {
+		document.getElementById('cd2_desc').innerHTML = "You have <b>1</b> attempt to solve the daily 2x2 scramble. There are 15 seconds of inspection time.";
+		document.getElementById('cd2_start').style.display = "block";
+	}
 }
-function dailychallenge() {
-	if (localStorage.cdate2 == sinceNov3('d')) return;
-	if (DIM != 50) {
+function dailychallenge(cube) {
+	if (localStorage.cdate3 == sinceNov3('d') && cube == 2) return;
+	if (localStorage.cdate2 == sinceNov3('d') && cube == 3) return;
+	if (DIM != 50 && cube == 3) {
 		changeThree();
+	} else if (DIM != 100 && cube == 2) {
+		changeTwo();
 	}
 	reSetup();
 	shuffleCube();
@@ -2669,8 +2682,13 @@ function dailychallenge() {
 	setDisplay("block", []);
 	waitStopTurning();
 	dstep = true;
-	localStorage.cdate2 = sinceNov3('d');
-	localStorage.c_today = "DNF";
+	if (cube == 3) {
+		localStorage.cdate2 = sinceNov3('d');
+		localStorage.c_today = "DNF";
+	} else {
+		localStorage.cdate3 = sinceNov3('d');
+		localStorage.c_today2 = "DNF";
+	}
 }
 function waitStopTurning() {
 	const interval = setInterval(() => {
@@ -2718,8 +2736,13 @@ function endchallenge(passed = true) {
 		if (!dstep) {
 			setScore("c_week", timeInSeconds);
 		} else {
-			setScore("c_day", timeInSeconds);
-			localStorage.c_today = timeInSeconds;
+			if (DIM == 50) {
+				setScore("c_day", timeInSeconds);
+				localStorage.c_today = timeInSeconds;
+			} else {
+				setScore("c_day2", timeInSeconds);
+				localStorage.c_today2 = timeInSeconds;
+			}
 		}
 		document.getElementById('c_title').innerHTML = "Good Job!";
 		document.getElementById('c_desc').innerHTML = "You got the scramble in " + timeInSeconds + " seconds!";
@@ -3038,8 +3061,8 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day"];
-	display = {m_easy: "Easy", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day: "Daily"};
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2"];
+	display = {m_easy: "Easy", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2", c_day: "Daily 3x3"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
 		if (score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
@@ -3467,10 +3490,13 @@ async function saveData(username, password, method, al) {
 		password: password ?? "bruh",
 		data: "random",
 		c_day: localStorage.c_day ?? -1,
+		c_day2: localStorage.c_day2 ?? -1,
 		c_today: localStorage.c_today ?? -1,
+		c_today2: localStorage.c_today2 ?? -1,
 		c_week: localStorage.c_week ?? -1,
 		cdate: localStorage.cdate ?? -1,
 		cdate2: localStorage.cdate2 ?? -1,
+		cdate3: localStorage.cdate3 ?? -1,
 		easy: localStorage.easy ?? -1,
 		medium: localStorage.medium ?? -1,
 		oll: localStorage.oll ?? -1,
@@ -5010,7 +5036,8 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
-		// localStorage.cdate2 = -1;
+		localStorage.cdate2 = -1;
+		localStorage.cdate3 = -1;
 		console.log(goodsound);
 	}
 	if(p.keyCode == 9){ //tab
