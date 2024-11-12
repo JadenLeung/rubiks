@@ -3567,7 +3567,7 @@ async function loadData(times) {
 			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || localStorage[param] < userdata[index][param]))
 				localStorage[param] = userdata[index][param];
 		})
-		params = ["c_today", "c_week", "c_day","cdate", "cdate2"];
+		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3"];
 		params.forEach((param) => {
 				localStorage[param] = userdata[index][param];
 		})
