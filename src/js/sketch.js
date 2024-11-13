@@ -962,6 +962,8 @@ setInterval(() => {
 	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color);
 	localStorage.hollow = HOLLOW.checked();
 	localStorage.audioon = audioon;
+	if (localStorage.c_today == 0) localStorage.c_today = "DNF";
+	if (localStorage.c_today2 == 0) localStorage.c_today2 = "DNF";
 	if (!localStorage.username) 
 		localStorage.username = "signedout";
 	document.getElementById("login").style.display = localStorage.username == "signedout" ? "inline" : "none";
@@ -5036,8 +5038,6 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
-		localStorage.cdate2 = -1;
-		localStorage.cdate3 = -1;
 		console.log(goodsound);
 	}
 	if(p.keyCode == 9){ //tab
