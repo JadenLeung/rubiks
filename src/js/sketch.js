@@ -5457,9 +5457,9 @@ p.keyPressed = (event) => {
 			Redo();
 			break;
 			case 27: //escape
-			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login") 
+			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
-			if(MODE == "moves" || MODE == "challenge")
+			if(MODE == "moves" || (MODE == "challenge" && cstep > 0))
 			moveSetup();
 			if(MODE == "speed")
 			speedSetup();
