@@ -16,6 +16,11 @@ You can input an algorithm into the algorithm bar and the cube will perform it.
 The Auto-Solve feature is my best attempt and making the cube solve using the CFOP method. You can adjust the turn speed to make it solve faster or slower.
 There are undo and redo buttons in case you misturn.
 
+<h1>Cube settings</h1>
+<img width=50% alt="image" src="https://github.com/user-attachments/assets/fcc260d1-87d0-4e21-ae44-40e86666fca1"> <br>
+You can change the cube settings to make the cube hollow, change the background color, change the size of the cube, and more!
+
+
 <h1>Turning</h1>
 
 <img width=20% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/628e787e-da03-458c-8e5e-478b9cd4554a">
@@ -49,6 +54,10 @@ For the custom bandaging, you can even create bandage cubies that usually cannot
 See, analyze, and delete your times.
 
 <h1>Speed Mode</h1>
+
+<img width=30% alt="image" src="https://github.com/user-attachments/assets/dae759d4-33aa-4dfa-8565-440d1f068c28">
+
+
 
 You are given 4 challenges, and your time is the sum of the times it takes to complete the 4 challenges. This is a good way to practice OLL/PLL.
 Bot Racing: Race against the Auto-Solver with your own physical cube! You can adjust how fast the Auto-Solver solves, and it simulates a race.
