@@ -469,6 +469,7 @@ export default class Cuby {
 	// p1, p2, p3, p4 coordinates
 
   let g = !this.special[0] ? 0 : this.special[3] * (r/25);
+
   if(this.back != ""){
     this.p.fill(this.back);
     this.p.quad(-r + g, -r + g, -r,    r - g, -r + g, -r,  r - g, r - g, -r,   -r + g, r - g, -r, 2, 2);
@@ -498,28 +499,7 @@ export default class Cuby {
     this.p.fill(this.left);
     this.p.quad(r, -r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, 2, 2);
   }
-	/*this.p.line(r,r,r,-r,-r,-r);
-	this.p.line(r,r,r,-r,-r,-r);
-	this.p.line(r,r,r,-r,-r,-r);*/
 	this.p.pop();
-    /*
-	this.picker.buffer.push();
-      
-    this.picker.buffer.strokeWeight(0);
-    this.picker.buffer.translate(this.x, this.y, this.z);
-    this.picker.buffer.fill(this.buff_back);
-    this.picker.buffer.quad(-r, -r, -r, r, -r, -r, r, r, -r, -r, r, -r);
-    this.picker.buffer.fill(this.buff_front);
-    this.picker.buffer.quad(-r, -r, r, r, -r, r, r, r, r, -r, r, r);
-    this.picker.buffer.fill(this.buff_bottom);
-    this.picker.buffer.quad(-r, -r, -r, r, -r, -r, r, -r, r, -r, -r, r);
-    this.picker.buffer.fill(this.buff_top);
-    this.picker.buffer.quad(-r, r, -r, r, r, -r, r, r, r, -r, r, r);
-    this.picker.buffer.fill(this.buff_right);
-    this.picker.buffer.quad(-r, -r, -r, -r, r, -r, -r, r, r, -r, -r, r);
-    this.picker.buffer.fill(this.buff_left);
-    this.picker.buffer.quad(r, -r, -r, r, r, -r, r, r, r, r, -r, r);
-      
-    this.picker.buffer.pop();*/
   }
+  
 }

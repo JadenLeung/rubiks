@@ -643,13 +643,8 @@ p.setup = () => {
 			CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
 		else
 			CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
-		if(i < 9)
-			CHECK[i].parent("check1");
-		else if(i < 18)
-			CHECK[i].parent("check2");
-		else
-			CHECK[i].parent("check3");
-		CHECK[i].style("display:inline; padding-right:5px")
+		CHECK[i].parent(`check${Math.floor(i / 9) + 1 + Math.floor((i % 9) / 3) * 0.1}`);
+		CHECK[i].style(`display:inline; padding-right:5px`)
 		CHECK[i].changed(change9.bind(null, 0));
 	}
 	SEL7 = p.createSelect();
@@ -798,7 +793,7 @@ p.setup = () => {
 	setButton(STOP, "stop_div", bstyle, '', stopTime.bind(null, 0));
 
 	const HINT = p.createButton('Hint');
-	setButton(HINT, "hint", bstyle, '', Hint.bind(null, 0));
+	setButton(HINT, "hint", 'btn btn-primary', '', Hint.bind(null, 0));
 	
 	const GIVEUP = p.createButton('Give Up');
 	setButton(GIVEUP, "giveup", 'btn btn-danger', '', giveUp.bind(null, 0));
@@ -1853,21 +1848,15 @@ function changeZero()
 	{
 		CHECK[i].remove();
 	}
-	for(let i = 0; i < 27; i++)
-	{
+	for(let i = 0; i < 27; i++) {
 		if(i < 9)
 			CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
 		else if(i < 18)
 			CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
 		else
 			CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
-		if(i < 9)
-			CHECK[i].parent("check1");
-		else if(i < 18)
-			CHECK[i].parent("check2");
-		else
-			CHECK[i].parent("check3");
-		CHECK[i].style("display:inline; padding-right:5px")
+		CHECK[i].parent(`check${Math.floor(i / 9) + 1 + Math.floor((i % 9) / 3) * 0.1}`);
+		CHECK[i].style(`display:inline; padding-right:5px`)
 		CHECK[i].changed(change9.bind(null, 0));
 	}
 	change9();
@@ -2021,13 +2010,8 @@ function change9(cubies)
 					else
 						CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
 				}
-				if(i < 9)
-					CHECK[i].parent("check1");
-				else if(i < 18)
-					CHECK[i].parent("check2");
-				else
-					CHECK[i].parent("check3");
-				CHECK[i].style("display:inline; padding-right:5px")
+				CHECK[i].parent(`check${Math.floor(i / 9) + 1 + Math.floor((i % 9) / 3) * 0.1}`);
+				CHECK[i].style(`display:inline; padding-right:5px`)
 				CHECK[i].changed(change9.bind(null, 0));
 			}
 			DIM3 = 3;
@@ -2623,6 +2607,11 @@ function sinceNov3(what) {
 	return Math.floor(weeksDifference); // Return whole weeks
   }
 document.getElementById("challenge").onclick = challengemode;
+document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.target.blur();
+    });
+});
 function challengemode() {
 	modeData("challenge");
 	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
@@ -4957,7 +4946,7 @@ function animateWide(axis, row, dir, timed) {
 		}
 		if(cuthrough){
 			undo.pop();
-			if(timer.isRunning())
+			if(timer.isRunning)
 				moves--;
 			return;
 		}
@@ -5038,7 +5027,8 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
-		console.log(goodsound);
+		
+		console.log(undo, redo, DIM);
 	}
 	if(p.keyCode == 9){ //tab
 		fullScreen(!fullscreen);
@@ -5450,11 +5440,11 @@ p.keyPressed = (event) => {
 			animateWide('x', 50, -1, true);
 			break;
 			case 8: //backspace
-			Undo();
+			flexDo(Undo, undo);
 			break;
 			case 61:
 			case 187: //equals
-			Redo();
+			flexDo(Redo, redo);
 			break;
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
@@ -5465,10 +5455,16 @@ p.keyPressed = (event) => {
 			speedSetup();
 			break;
 			case 192: //`
-			if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login")
+			if (p.keyIsDown(p.SHIFT)) {
+				(MODE == "normal" || MODE == "timed")  && solveCube();
+			} else if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login")
 				shuffleCube();
 			break;
 			case 49: //1
+			if (p.keyIsDown(p.SHIFT)) {
+				regular();
+				break;
+			}
 			if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
 			regular();
 			if(MODE == "moves")
@@ -5512,7 +5508,11 @@ p.keyPressed = (event) => {
 			console.log("erger");
 			break;
 			case 56: //8
-			removeTime();
+			if (p.keyIsDown(p.SHIFT)) {
+				removeAllTimes();
+			} else {
+				removeTime();
+			}
 			break;
 			case 57: //9
 			if((MODE != "normal" && MODE != "timed") || localStorage.username == "signedout")
@@ -5699,6 +5699,40 @@ function changeArr2(str, len)
 	if(arr.length == 0 || len < arr.length)
 		changeArr(str);
 }
+function flexDo(foo, arr) {
+	if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c)) || bandaged.length > 0) {
+		foo();
+	} else if (INPUT.value() == "Key-Double" || INPUT.value() == "Key-Gearcube") {
+		funcMult(foo, 2);
+	} else if (INPUT.value() == "Key-3x3x2") {
+		let bad5 = [];
+		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
+		if(setup[0] == -50 || setup[0] == 50) bad5 = ['L','R','F','B','S','M'];
+		else if(setup[2] == -50 || setup[2] == 50) bad5 = ['U','D','F','B','E','S'];
+		else bad5 = ['L','R','U','D','E','M']; // front
+		if (bad5.includes(arr[arr.length - 1][0])) {
+			funcMult(foo, 2);
+		} else {
+			funcMult(foo, 1);
+		}
+	} else {
+		foo();
+	}
+}
+function funcMult(foo, times) {
+	if (isAnimating() || times == 0) return;
+	foo();
+	let interval = setInterval(() => {
+		if (!isAnimating()) {
+			clearInterval(interval);
+			canMan = true;
+			funcMult(foo, times - 1);
+			return;
+		} else {
+			canMan = false;
+		}
+	}, 0);
+}
 function Undo()
 {
 	
@@ -5734,7 +5768,7 @@ function Undo()
 	multiple2(0);
 	undo.pop();
 	redo.push(move);
-	
+
 }
 function Redo()
 {
@@ -9184,6 +9218,7 @@ window.addEventListener('keydown', (e) => {
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
 // F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
 // F2 U' L2 D2 R2 F2 R' F U' B' D' R U B2 R D' B2 R (47)
+// L2 F2 R2 B' U L' U' B U' R B2 U2 F2 L2 B U2 R2 D'
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!! 
 // B2 L2 D F' U2 R2 B2 D2 F' L' F D' F L2 F R2 U L2 (43)
 // B2 R' F' D R2 U' R2 F2 L2 B2 U2 B2 L D R2 F' L' D2 (43)
