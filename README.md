@@ -2,8 +2,9 @@
 
 <h1>Introducing ... virtual-cube.net!</h1>
 
-<img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/415f8b2e-8ff3-48da-a485-73869e375c84">
-<img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/91d85959-64df-4d0b-82d2-220dd6c61596">
+<img width=50% alt="image" src="https://github.com/user-attachments/assets/11d78ea2-e80a-498f-80b8-78cfb39cdc69">
+<img width=50% alt="image" src="https://github.com/user-attachments/assets/f43ba05c-2683-4c8d-9935-75078118108e">
+
 
 virtual-cube.net is a passion project of mine that allows you to learn and practice your cubing skills virtually. I used [Antoine Gaubert’s cube](https://github.com/angauber/p5-js-rubik-s-cube) for the basic animation, but coded my own mouse and keyboard movements to support many features it doesn’t have. You can choose cubes of a variety of shapes: the traditional 2x2 and 3x3, as well as other cubes like the Sandwich Cube and bandaged cubes. You can use the Auto-Solver to solve any positions, input and test other algorithms, set turning/scrambling restrictions to challenge yourself, and analyze your own solve. It can also scan your physical 3x3 and transpose its position to the virtual cube.
 
@@ -14,6 +15,11 @@ virtual-cube.net is a passion project of mine that allows you to learn and pract
 You can input an algorithm into the algorithm bar and the cube will perform it.
 The Auto-Solve feature is my best attempt and making the cube solve using the CFOP method. You can adjust the turn speed to make it solve faster or slower.
 There are undo and redo buttons in case you misturn.
+
+<h1>Cube settings</h1>
+<img width=50% alt="image" src="https://github.com/user-attachments/assets/fcc260d1-87d0-4e21-ae44-40e86666fca1"> <br>
+You can change the cube settings to make the cube hollow, change the background color, change the size of the cube, and more!
+
 
 <h1>Turning</h1>
 
@@ -49,12 +55,21 @@ See, analyze, and delete your times.
 
 <h1>Speed Mode</h1>
 
+<img width=30% alt="image" src="https://github.com/user-attachments/assets/dae759d4-33aa-4dfa-8565-440d1f068c28">
+
+
+
 You are given 4 challenges, and your time is the sum of the times it takes to complete the 4 challenges. This is a good way to practice OLL/PLL.
 Bot Racing: Race against the Auto-Solver with your own physical cube! You can adjust how fast the Auto-Solver solves, and it simulates a race.
 
 <h1>Fewest Moves Challenge</h1>
 
 Given a short scramble, you must figure out an efficient way to solve it.
+
+<h1>Weekly Challenges</h1>
+
+Daily scamble: Each day you have one attempt to solve a 2x2 and a 3x3.
+Weekly scramble: Everyone has the same scramble for a week. So how fast you can cut down that scramble!
 
 <h1>Position ID</h1>
 
