@@ -1746,6 +1746,8 @@ function stopMoving(){
 	timer.stop();
 	arr = [];
 	canMan = true;
+	let flipmode = 0;
+	let flipmode2 = 0;
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
@@ -3066,13 +3068,14 @@ function updateScores() {
 function setScore(mode, total) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
+	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)
-	|| (MODE == "challenge" && (localStorage["cdate"] != week || total < highscores))) {
+	|| (MODE == "challenge" && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
-		localStorage[mode] = total;
+			localStorage[mode] = total;
 		if (MODE == "challenge") {
-			localStorage["cdate"] = week;
+			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceNov3('d'));
 		}
 		updateScores();
 	}
@@ -4162,7 +4165,9 @@ function isAnimating() {
 	return false;
 }
 function animate(axis, row, dir, time) {
-	if (isAnimating()) return;
+	if (isAnimating()) {
+		return;
+	}
 	let total = 0;
 	let cuthrough = false;
 	if(bandaged.length > 0){
@@ -4887,13 +4892,7 @@ function startAction() {
 //   *************************************
 function animateRotate(axis, dir) {
 	let rows = [-50, 0, 50];
-	
-	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		if (CUBE[i].animating()) {
-			// some cube is already in animation
-			return;
-		}
-	}
+	if (isAnimating()) return;
 	let sum = 0;
 	for(let i = 0; i < 27; i++)
 	{
@@ -4923,14 +4922,10 @@ function animateRotate(axis, dir) {
 	}
 }
 function animateWide(axis, row, dir, timed) {
+	console.log("first")
 	let rows = [row, 0];
 	
-	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		if (CUBE[i].animating()) {
-			// some cube is already in animation
-			return;
-		}
-	}
+	if(isAnimating()) return;
 	
 	let total = 0;
 	let cuthrough = false;
@@ -5025,9 +5020,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		// localStorage.c_week = 1000;
 		//postUsers("Jaden", "Leung", "cool");
-		
 		console.log(undo, redo, DIM);
 	}
 	if(p.keyCode == 9){ //tab
@@ -6954,13 +6947,15 @@ else
 			if(cornerF2L() == true)
 			{
 				console.log("WEfwe7");
-				if(layout[0][2][1][0] == colorTwo && layout[3][1][0][0] == colorThree)
-				{
+				if(layout[0][2][1][0] == colorTwo && layout[3][1][0][0] == colorThree) {
 					changeArr("R' D' R");
-					console.log("WEfwe9");
+				} else if(layout[4][2][1][0] == colorThree && layout[3][0][1][0] == colorTwo) changeArr("F D F'");
+				else if(layout[5][2][1][0] == colorThree && layout[3][2][1][0] == colorTwo) {
+					changeArr("F D2 F'");
+				} 
+				else if(layout[1][2][1][0] == colorTwo && layout[3][1][2][0] == colorThree) {
+					changeArr("R' D2 R");
 				}
-				else if(layout[4][2][1][0] == colorThree && layout[3][0][1][0] == colorTwo)
-				changeArr("F D F'");
 				else
 				{
 					if(layout[5][2][1][0] == colorTwo && layout[3][2][1][0] == colorThree)
