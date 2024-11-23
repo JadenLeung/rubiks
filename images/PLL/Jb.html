@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)https://cubingapp.com/algorithms/2x2-PBL/ -->
+<html><style class="adjust-screen-brightness" media="screen"></style><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Jb_files/main.css">
+    <link rel="icon" href="./Jb_files/favicon.svg" type="image/x-icon">
+    <title>2x2 PBL Algorithms</title>
+<style>
+    main {
+        display: flex;
+        gap: 32px;
+    }
+
+    .subsetsWideScreen {
+        display: block;
+        width: 250px;
+        height: fit-content;
+        max-height: 100%;
+        position: sticky;
+        top: 0;
+        border: solid 1px var(--gray-500);
+        padding: 8px;
+        overflow-y: auto;
+    }
+
+    .subsetsNarrowScreen {
+        display: none;
+    }
+
+    @media (max-width: 600px) {
+        .alg-card .diagram {
+            width: 60px;
+            height: 60px;
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .subsetsWideScreen {
+            display: none;
+        }
+
+        .subsetsNarrowScreen {
+            display: block;
+            border: solid 1px var(--gray-600);
+            margin: 16px 0;
+
+            & .expandableChild {
+                border-top: solid 1px var(--gray-600);
+                padding: 0 1rem 12px 1rem;
+            }
+        }
+    }
+
+    .subsetsWideScreen, .subsetsNarrowScreen {
+        a {
+            display: block;
+            padding-top: 12px;
+            color: var(--gray-100);
+            transition: all 0.15s ease-in-out;
+
+            &:hover {
+                color: var(--lightBlue-500);
+            }
+        }
+    }
+
+    .bodytext {
+        line-height: 1.5rem;
+        margin: 20px 0;
+    }
+
+    h2 {
+        padding-top: 32px;
+    }
+
+    .alg-card {
+        width: 100%;
+        padding: 16px 0;
+        border-bottom: solid 1px var(--gray-600);
+        display: flex;
+        justify-content: start;
+        gap: 12px;
+
+        & h3 {
+            font-size: 16px;
+            line-height: 22px;
+        }
+
+
+        & p {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        & .note {
+            color: var(--gray-400);
+            font-size: 14px;
+            margin-left: 12px;
+        }
+
+        & .vid {
+            color: var(--gray-400);
+            font-size: 14px;
+            background: transparent;
+            padding: 0;
+            margin-left: 12px;
+
+            &:hover {
+                color: var(--lightBlue-500);
+            }
+        }
+    }
+
+    .viz-2d-2x2, .viz-2d-3x3, .viz-2d-4x4 {
+        min-width: 100px;
+        width: 100px;
+        height: 100px;
+        display: grid;
+
+        & > div {
+            background: gray;
+        }
+        & > * {
+            border: solid 1px black;
+        }
+    }
+
+    .viz-2d-2x2 {
+        grid-template-rows: 1fr 2fr 2fr 1fr;
+        grid-template-columns: 1fr 2fr 2fr 1fr;
+    }
+
+    .viz-2d-3x3 {
+        grid-template-rows: 2fr 3fr 3fr 3fr 2fr;
+        grid-template-columns: 2fr 3fr 3fr 3fr 2fr;
+    }
+
+    .viz-2d-4x4 {
+        grid-template-rows: 2fr 3fr 3fr 3fr 3fr 2fr;
+        grid-template-columns: 2fr 3fr 3fr 3fr 3fr 2fr;
+    }
+
+    .viz-2x2, .viz-3x3, .viz-4x4 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 100px;
+        width: 100px;
+        height: 100px;
+
+        & > div {
+            transform: rotateX(-30deg) rotateY(-30deg); transform-style: preserve-3d;
+            width: 65%;
+            height: 65%;
+
+            & > div {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: column;
+
+                &:nth-child(1) {
+                    transform: translateY(-50%) rotateX(90deg);
+                }
+                &:nth-child(2) {
+                    transform: rotateX(90deg) translateY(50%) rotateX(-90deg);
+                }
+                &:nth-child(3) {
+                    transform: translateX(50%) rotateY(90deg);
+                }
+            }
+        }
+    }
+
+    .viz-2x2 > div > div > * {
+        width: 50%;
+        height: 50%;
+        border: solid 1px black;
+        box-sizing: border-box;
+        background: gray;
+    }
+    .viz-3x3 > div > div > * {
+        width: 33.33%;
+        height: 33.33%;
+        border: solid 1px black;
+        box-sizing: border-box;
+        background: gray;
+    }
+    .viz-sq1 {
+        min-width: 150px;
+        display: flex;
+
+        & svg {
+            width: 100px;
+            height: 100px;
+            stroke: black;
+        }
+    }
+    .viz-pyraminx {
+        width: 200px;
+    }
+
+    video {
+        max-width: 400px;
+        max-height: 400px;
+        width: 100%;
+    }
+
+    .modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+</style><style>* { --u-face: yellow; --d-face: white; --f-face: blue; --b-face: green; --l-face: orange; --r-face: red }</style></head>
+
+
+<body data-new-gr-c-s-check-loaded="14.1209.0" data-gr-ext-installed="">
+    <style>
+    body {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .hoverHighlight:hover {
+        transition: all 0.15s ease-in-out;
+        background: var(--gray-600);
+    }
+
+    .iconButton {
+        width: 48px;
+        height: 48px;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    #menu {
+        min-width: 250px;
+        max-width: 250px;
+        border-right: solid 1px var(--gray-600);
+        padding-bottom: 100px;
+        overflow-y: auto;
+    }
+
+    /* Hide by default */
+    .topBar, #menuClose { display: none; }
+
+    @media (max-width: 700px) {
+
+        /* Make body a column since we show .topBar */
+        body {
+            flex-direction: column;
+        }
+
+        /* Show .topBar if narrow screen */
+        .topBar {
+            display: flex;
+            width: 100%;
+            border-bottom: solid 1px var(--gray-600);
+        }
+
+        /* Hide menu by default */
+        #menu {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--gray-800);
+            height: 100%;
+            z-index: 2;
+        }
+
+        /* Show menu if .menuOpen */
+        .menuOpen #menu {
+            display: block;
+        }
+
+        /* Show menuClose if narrow screen */
+        #menuClose {
+            display: block;
+        }
+
+        /* Show menuBackground if narrow screen */
+        .menuOpen #menuBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #00000088;
+            z-index: 1;
+        }
+    }
+
+    .expandable {
+        & svg {
+            transition: transform 0.3s;
+            width: 16px;
+            height: 16px;
+        }
+    }
+    .expandableOpen {
+        /* Show child */
+        & .expandableChild {
+            display: block;
+        }
+
+        /* Rotate arrow */
+        & svg {
+            transform: rotate(90deg);
+        }
+    }
+    .expandableButton {
+        width: 100%;
+        background: transparent;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        border-radius: 0;
+
+        &:hover { background: var(--gray-600); }
+    }
+
+    /* Hide child by default */
+    .expandableChild {
+        display: none;
+    }
+
+    .menuLink {
+        display: block;
+        padding: 0.5rem 1rem 0.5rem 2rem;
+        color: var(--gray-100);
+
+        &:hover {
+            background: var(--gray-600);
+        }
+    }
+</style>
+
+<div class="topBar">
+    <svg id="menuIcon" class="iconButton hoverHighlight" viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="10">
+        <path d="M 0,15 h 100"></path>
+        <path d="M 0,50 h 100"></path>
+        <path d="M 0,85 h 100"></path>
+    </svg>
+</div>
+
+<div id="menuBackground"></div>
+
+
+<div id="menu">
+    <svg id="menuClose" class="iconButton hoverHighlight" viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="12" stroke-linecap="round">
+        <path d="M 10,10 L 90,90"></path>
+        <path d="M 90,10 L 10,90"></path>
+    </svg>
+    <a href="https://cubingapp.com/" class="hoverHighlight" style="display: flex; align-items: center; gap: 12px; padding: 8px 16px; color: var(--gray-100); font-weight: bold;">
+        <img src="./Jb_files/favicon.svg" alt="Logo" width="24" height="24">
+        CubingApp
+    </a>
+    <div class="expandable"><button class="expandableButton hoverHighlight"><p>3x3 Algs</p><svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg></button><div class="expandableChild"><a href="https://cubingapp.com/algorithms/F2L" class="menuLink hoverHighlight">F2L</a><a href="https://cubingapp.com/algorithms/OLL" class="menuLink hoverHighlight">OLL</a><a href="https://cubingapp.com/algorithms/PLL" class="menuLink hoverHighlight">PLL</a><a href="https://cubingapp.com/algorithms/Winter-Variation" class="menuLink hoverHighlight">Winter Variation</a><a href="https://cubingapp.com/algorithms/COLL" class="menuLink hoverHighlight">COLL</a><a href="https://cubingapp.com/algorithms/OLLCP" class="menuLink hoverHighlight">OLLCP</a><a href="https://cubingapp.com/algorithms/ZBLL" class="menuLink hoverHighlight">ZBLL</a></div></div><div class="expandable"><button class="expandableButton hoverHighlight"><p>Roux Algs</p><svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg></button><div class="expandableChild"><a href="https://cubingapp.com/algorithms/CMLL" class="menuLink hoverHighlight">CMLL</a><a href="https://cubingapp.com/algorithms/OH-CMLL" class="menuLink hoverHighlight">OH CMLL</a><a href="https://cubingapp.com/algorithms/LSE-EO" class="menuLink hoverHighlight">LSE EO</a><a href="https://cubingapp.com/algorithms/LSE-EOLR" class="menuLink hoverHighlight">LSE EOLR</a></div></div><div class="expandable"><button class="expandableButton hoverHighlight"><p>2x2 Algs</p><svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg></button><div class="expandableChild"><a href="https://cubingapp.com/algorithms/2x2-PBL" class="menuLink hoverHighlight">2x2 PBL</a><a href="https://cubingapp.com/algorithms/2x2-CLL" class="menuLink hoverHighlight">2x2 CLL</a><a href="https://cubingapp.com/algorithms/2x2-EG1" class="menuLink hoverHighlight">2x2 EG1</a><a href="https://cubingapp.com/algorithms/2x2-EG2" class="menuLink hoverHighlight">2x2 EG2</a></div></div><div class="expandable"><button class="expandableButton hoverHighlight"><p>Pyraminx Algs</p><svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg></button><div class="expandableChild"><a href="https://cubingapp.com/algorithms/Pyraminx-Last-Layer" class="menuLink hoverHighlight">Pyraminx Last Layer</a><a href="https://cubingapp.com/algorithms/Pyraminx-L4E" class="menuLink hoverHighlight">Pyraminx L4E</a></div></div><div class="expandable"><button class="expandableButton hoverHighlight"><p>Square-1 Algs</p><svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg></button><div class="expandableChild"><a href="https://cubingapp.com/algorithms/SQ1-Cube-Shape" class="menuLink hoverHighlight">SQ1 Cube Shape</a><a href="https://cubingapp.com/algorithms/SQ1-CSP" class="menuLink hoverHighlight">SQ1 CSP</a><a href="https://cubingapp.com/algorithms/SQ1-EP" class="menuLink hoverHighlight">SQ1 EP</a><a href="https://cubingapp.com/algorithms/SQ1-OBL" class="menuLink hoverHighlight">SQ1 OBL</a></div></div><div class="expandable"><button class="expandableButton hoverHighlight"><p>Other Algs</p><svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg></button><div class="expandableChild"><a href="https://cubingapp.com/algorithms/4x4-PLL-Parity" class="menuLink hoverHighlight">4x4 PLL Parity</a></div></div>    <div class="expandable">
+        <button class="expandableButton hoverHighlight">
+            <p>Calculators</p>
+            <svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg>
+        </button>
+        <div class="expandableChild">
+            <a href="https://cubingapp.com/am-i-sub-x" class="menuLink hoverHighlight">Am I Sub-X?</a>
+            <a href="https://cubingapp.com/birthdays" class="menuLink hoverHighlight">WCA Birthdays</a>
+            <a href="https://cubingapp.com/competitions" class="menuLink hoverHighlight">Competition Distance</a>
+            <a href="https://cubingapp.com/kinch-ranks" class="menuLink hoverHighlight">Kinch Ranks</a>
+            <a href="https://cubingapp.com/name-ranks" class="menuLink hoverHighlight">Name Ranks</a>
+            <a href="https://cubingapp.com/record-streak" class="menuLink hoverHighlight">Record Streak</a>
+            <a href="https://cubingapp.com/sum-of-ranks" class="menuLink hoverHighlight">Sum of Ranks</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll(".expandableButton").forEach(ele => {
+        ele.onclick = () => {
+            ele.parentElement.classList.toggle("expandableOpen");
+        }
+    });
+
+    menuIcon.onclick = () => document.body.classList.toggle("menuOpen");
+    menuClose.onclick = () => document.body.classList.remove("menuOpen");
+    menuBackground.onclick = () => document.body.classList.remove("menuOpen");
+</script>
+    <main>
+        <div style="width: 100%; max-width: 700px; height: 100%;">
+            <h1>2x2 PBL Algorithms</h1>
+            <p class="bodytext">PBL stands for Permutation of Both Layers, and it is the third step of the Ortega method. Ortega is a good intermediate method for 2x2 solvers who have already learned the beginner method.</p>
+			<p class="bodytext">Here is how the Ortega method works: Beginner method starts with the first layer, but Ortega starts with just a face. In other words, the first layer doesn't have to be permuted correctly. The second step of Ortega is to orient the last layer, and lastly, you do PBL to finish the 2x2.</p>
+			<p class="bodytext">PBL only has 6 cases, and you may already know 2 of the cases from other methods: J Perm and Y Perm. For this reason, PBL is a very easy algorithm set to learn.</p>
+            
+            <select id="bottomColorSelect">
+    <option value="white" selected="">White bottom</option><option value="yellow">Yellow bottom</option><option value="green">Green bottom</option><option value="blue">Blue bottom</option><option value="orange">Orange bottom</option><option value="red">Red bottom</option></select>
+<script>
+    bottomColorSelect.onchange = (event) => {
+        console.log(`bottomColor=${event.target.value}`);
+        document.cookie = `bottomColor=${event.target.value}`;
+        location.reload();
+    }
+</script><div class="expandable subsetsNarrowScreen">
+    <button class="expandableButton">
+        <p>Subsets</p>
+        <svg viewBox="0 0 100 100" stroke="var(--gray-100)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M 25,8 L 75,50 L 25,92"></path></svg>
+    </button>
+    <div class="expandableChild">
+        <a href="https://cubingapp.com/algorithms/2x2-PBL/#Adj">Adj</a><a href="https://cubingapp.com/algorithms/2x2-PBL/#Diag">Diag</a>    </div>
+</div>
+<script>
+class Up extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "var(--u-face)";
+    }
+}
+class Down extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "var(--d-face)";
+    }
+}
+class Right extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "var(--r-face)";
+    }
+}
+class Left extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "var(--l-face)";
+    }
+}
+class Front extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "var(--f-face)";
+    }
+}
+class Back extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "var(--b-face)";
+    }
+}
+class Transparent extends HTMLElement {
+    connectedCallback() {
+        this.style.background = "transparent";
+        this.style.border = "none";
+    }
+}
+
+customElements.define("x-u", Up);
+customElements.define("x-f", Front);
+customElements.define("x-d", Down);
+customElements.define("x-b", Back);
+customElements.define("x-l", Left);
+customElements.define("x-r", Right);
+customElements.define("x-t", Transparent);
+</script>
+<h2 id="Adj">Adj</h2>
+<div class="alg-card">
+    <div class="viz-2x2">
+        <div><div><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u></div><div><x-f style="background: var(--f-face);"></x-f><x-f style="background: var(--f-face);"></x-f><x-r style="background: var(--r-face);"></x-r><x-f style="background: var(--f-face);"></x-f></div><div><x-b style="background: var(--b-face);"></x-b><x-r style="background: var(--r-face);"></x-r><x-f style="background: var(--f-face);"></x-f><x-r style="background: var(--r-face);"></x-r></div></div>
+    </div>
+    <div class="info">
+        <h3>Adj</h3>
+        <p>• R U R' F' R U R' U' R' F R2 U' R' U'</p><p>• U R' F R F' R U2 R' U R U2 R'</p>
+    </div>
+</div>
+<div class="alg-card">
+    <div class="viz-2x2">
+        <div><div><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u></div><div><x-r style="background: var(--r-face);"></x-r><x-r style="background: var(--r-face);"></x-r><x-l style="background: var(--l-face);"></x-l><x-l style="background: var(--l-face);"></x-l></div><div><x-f style="background: var(--f-face);"></x-f><x-f style="background: var(--f-face);"></x-f><x-r style="background: var(--r-face);"></x-r><x-r style="background: var(--r-face);"></x-r></div></div>
+    </div>
+    <div class="info">
+        <h3>Adj Adj</h3>
+        <p>• R2 U' R2 U2 F2 U' R2</p><p>• R2 U' B2 U2 R2 U' R2'</p>
+    </div>
+</div>
+<div class="alg-card">
+    <div class="viz-2x2">
+        <div><div><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u></div><div><x-f style="background: var(--f-face);"></x-f><x-b style="background: var(--b-face);"></x-b><x-f style="background: var(--f-face);"></x-f><x-f style="background: var(--f-face);"></x-f></div><div><x-r style="background: var(--r-face);"></x-r><x-r style="background: var(--r-face);"></x-r><x-b style="background: var(--b-face);"></x-b><x-l style="background: var(--l-face);"></x-l></div></div>
+    </div>
+    <div class="info">
+        <h3>Adj Diag</h3>
+        <p>• U2 R' U R' F2 R F' R</p><p>• R' F R' F2 R U' R</p>
+    </div>
+</div>
+<h2 id="Diag">Diag</h2>
+<div class="alg-card">
+    <div class="viz-2x2">
+        <div><div><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u></div><div><x-f style="background: var(--f-face);"></x-f><x-f style="background: var(--f-face);"></x-f><x-b style="background: var(--b-face);"></x-b><x-f style="background: var(--f-face);"></x-f></div><div><x-l style="background: var(--l-face);"></x-l><x-r style="background: var(--r-face);"></x-r><x-r style="background: var(--r-face);"></x-r><x-r style="background: var(--r-face);"></x-r></div></div>
+    </div>
+    <div class="info">
+        <h3>Diag</h3>
+        <p>• R U' R' U' F2 U' R U R' U F2</p><p>• F R U' R' U' R U R' F' R U R' U' R' F R F'</p>
+    </div>
+</div>
+<div class="alg-card">
+    <div class="viz-2x2">
+        <div><div><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u></div><div><x-b style="background: var(--b-face);"></x-b><x-b style="background: var(--b-face);"></x-b><x-f style="background: var(--f-face);"></x-f><x-f style="background: var(--f-face);"></x-f></div><div><x-r style="background: var(--r-face);"></x-r><x-r style="background: var(--r-face);"></x-r><x-l style="background: var(--l-face);"></x-l><x-l style="background: var(--l-face);"></x-l></div></div>
+    </div>
+    <div class="info">
+        <h3>Diag Diag</h3>
+        <p>• R2 F2 R2</p><p>• R2 B2 R2</p>
+    </div>
+</div>
+<div class="alg-card">
+    <div class="viz-2x2">
+        <div><div><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u><x-u style="background: var(--u-face);"></x-u></div><div><x-f style="background: var(--f-face);"></x-f><x-f style="background: var(--f-face);"></x-f><x-b style="background: var(--b-face);"></x-b><x-r style="background: var(--r-face);"></x-r></div><div><x-l style="background: var(--l-face);"></x-l><x-b style="background: var(--b-face);"></x-b><x-r style="background: var(--r-face);"></x-r><x-f style="background: var(--f-face);"></x-f></div></div>
+    </div>
+    <div class="info">
+        <h3>Diag Adj</h3>
+        <p>• R2 U R2 U' R2 U R2 U' R2</p><p>• R' D R' F2 R D' R</p>
+    </div>
+</div>        </div>
+
+        <div class="subsetsWideScreen">
+    <p style="font-weight: bold; font-size: 20px;">Subsets</p>
+    <a href="https://cubingapp.com/algorithms/2x2-PBL/#Adj">Adj</a><a href="https://cubingapp.com/algorithms/2x2-PBL/#Diag">Diag</a></div>
+    </main>
+
+
+<script>
+    document.querySelectorAll(".expandableButton").forEach(ele => {
+        ele.onclick = () => {
+            ele.parentElement.classList.toggle("expandableOpen");
+        }
+    });
+
+    function E(name, props, children) {
+        const ele = document.createElement(name);
+        for (const [key, value] of Object.entries(props)) {
+            ele[key] = value;
+        }
+
+        children = children || [];
+        for (const child of children) {
+            ele.appendChild(child);
+        }
+        return ele;
+    }
+    function modal(content) {
+        const modal = E("div", {
+            className: "modal",
+            onclick: e => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            },
+        }, [
+            E("div", {}, [content]),
+        ]);
+        document.body.appendChild(modal);
+
+        // Close modal on escape key
+        const keydownHandler = e => {
+            if (e.key === "Escape") {
+                modal.remove();
+            }
+            document.body.removeEventListener("keydown", keydownHandler);   
+        };
+        document.body.onkeydown = keydownHandler;
+    }
+
+    document.querySelectorAll(".vid").forEach(ele => {
+        ele.onclick = () => {
+            console.log(ele.getAttribute("data-url"));
+            modal(E("video", {
+                src: ele.getAttribute("data-url"),
+                preload: "metadata",
+                controls: true,
+                loop: true
+            }));
+        }
+    });
+</script><!-- Google tag (gtag.js) -->
+<script async="" src="./Jb_files/js"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YR33BDCQDY');
+</script>
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>

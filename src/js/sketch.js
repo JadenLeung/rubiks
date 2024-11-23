@@ -21,6 +21,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let DIM5 = 50;
+	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
 	let SOLVE;
@@ -648,6 +649,33 @@ p.setup = () => {
 		CHECK[i].changed(change9.bind(null, 0));
 	}
 
+	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"], 4: ["AD", "DD", "Jb", "AA", "Y"]};
+	let a = 0;
+	for (const plltype in allplls) {
+		allplls[plltype].forEach((pll, n) => {
+			// Create and configure the checkbox
+			const checkbox = p.createCheckbox(" " + pll, true);
+			checkbox.parent("s_checkbox" + plltype);
+			checkbox.style(`display:inline; padding-right:1px;`);
+			PLLS.push(checkbox);
+	
+			// Create and configure the image
+			const img = document.createElement("img");
+			img.src = `../../images/${plltype == 4 ? "PBL" : "PLL"}/` + pll + ".png"; // Set the source of the image
+			img.alt = pll; // Optional: Add alt text for accessibility
+			img.style = "display:inline; padding-right:10px; width:15%; height:auto;"; // Set size to 20% of original
+			document.getElementById("s_checkbox" + plltype).appendChild(img); // Append the image to the parent
+	
+			// Add a <br> element for line breaks every 4 iterations
+			if ((a + 1) % 4 === 0) {
+				const br = document.createElement("br");
+				document.getElementById("s_checkbox" + plltype).appendChild(br);
+				SPACE.push(br);
+			}
+			++a;
+		});
+	} // images from https://cubingapp.com/algorithms/2x2-PBL/
+
 	SEL7 = p.createSelect();
 	SEL7.option("2x2");
 	SEL7.option("3x3");
@@ -717,6 +745,12 @@ p.setup = () => {
 
 	const BACK2 = p.createButton('Back');
 	setButton(BACK2, "custom5", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
+
+	const S_SELECTALL = p.createButton('Select All');
+	setButton(S_SELECTALL, "s_selectall", 'btn btn-light', 'border-color: black;', togglePLL.bind(null, "all"));
+
+	const S_DESELECTALL = p.createButton('Deselect All');
+	setButton(S_DESELECTALL, "s_deselectall", 'btn btn-light', 'border-color: black;', togglePLL.bind(null, "none"));
 
 	const IDBACK = p.createButton('Back');
 	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
@@ -1231,6 +1265,19 @@ setInterval(() => {
 			document.getElementById("spacetime").style.display = "none";
 			document.getElementById("stop_div").style.display = "none";
 		}
+	}
+	let tempalg = [];
+	const possible = DIM == 50 ? ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
+		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"] : ["AA", "AD", "DD", "Jb", "Y"];
+	PLLS.forEach((checkbox) => {
+		if (checkbox.checked() && possible.includes(checkbox.elt.querySelector('span').innerText.substring(1))) {
+		  let labelText = checkbox.elt.querySelector('span').innerText;		  
+		  tempalg.push(labelText.substring(1));
+		}
+	  });
+	pracalgs = tempalg;
+	if (getEl("s_prac2").style.display != "none") {
+		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
 	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
@@ -3060,6 +3107,7 @@ function showSpeed()
 {
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
+	moves = 0;
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac", "s_prac2"]);
@@ -3451,40 +3499,28 @@ function medium(){
 		easy();
 	}
 }
+function togglePLL(action, arr) {
+	if (action == "all") {
+		PLLS.forEach(el => {el.checked(true)})
+	} else if (action == "none") {
+		PLLS.forEach(el => {el.checked(false)});
+	} else {
+		PLLS.forEach(el => {
+			console.log(el.elt.value.substring(1));
+			if (arr.includes(el.elt.value.substring(1))) {
+				el.checked(action == "check");
+			}
+		});
+	}
+}
 function selectPLL() {
+	moves = 0;
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac"]);
 	setDisplay("inline", ["s_prac2"]);
+	getEl("s_plltitle").innerHTML = DIM == 50 ? "Select PLL Algorithms" : "Select PBL Algorithms" 
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	setDisplay(DIM == 50 ? "none": "block", ["s_prac2x2"]);
 	setDisplay(DIM == 100 ? "none": "block", ["s_prac3x3"]);
-
-	// if (s_savedim == DIM) return;
-	s_savedim = DIM;
-	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"]};
-	if (DIM == 100) allplls = {4: ["AD", "DD", "Jb", "AA", "Y"]};
-	for (let i = 0; i < PLLS.length; i++) {
-		PLLS[i].remove();
-	}
-	for (let i = 0; i < SPACE.length; i++) {
-		SPACE[i].remove();
-	}
-	PLLS = [];
-	SPACE = [];
-	let a = 0;
-	for (const plltype in allplls) {
-		allplls[plltype].forEach((pll, n) => {
-			PLLS.push(p.createCheckbox(" " + pll, true));
-			PLLS[PLLS.length-1].parent("s_checkbox" + plltype);
-			PLLS[PLLS.length-1].style(`display:inline; padding-right:20px;`)
-
-			if ((a + 1) % 4 === 0) {
-				const br = document.createElement("br"); // Create a <br> element
-				document.getElementById("s_checkbox"  + plltype).appendChild(br); // Append it to the parent
-				SPACE.push(br);
-			}
-			++a;
-		})
-	}
 }
 function practicePLL() {
 	undo = [];
@@ -3503,21 +3539,10 @@ function practicePLL() {
 		setDisplay("block", ["moves_par", "outermoves"]);
 		timer.stop();
 		timer.reset();
-		let possible = [];
-		PLLS.forEach((checkbox) => {
-			// Ensure checkbox.elt is defined and that it's a checkbox element
-			if (checkbox.checked()) {
-			  console.log("pushing p");
+
 		  
-			  // Find the span inside the label and get its text content
-			  let labelText = checkbox.elt.querySelector('span').innerText;
-			  
-			  possible.push(labelText.substring(1));  // Push the label text (e.g., "Ua") to the possible array
-			}
-		  });
-		  
-		console.log(possible);
-		let rnd = p.random(possible);
+		console.log(pracalgs);
+		let rnd = p.random(pracalgs);
 		let str = "";
 		if(DIM == 50) 
 		{
@@ -5228,7 +5253,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(race)
+		console.log(pracalgs)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -5664,7 +5689,7 @@ p.keyPressed = (event) => {
 			reSetup();
 			if(MODE == "moves" || (MODE == "challenge" && cstep > 0))
 			moveSetup();
-			if(MODE == "speed" && getEl("s_high").style.display == "none")
+			if(MODE == "speed" && getEl("s_high").style.display == "none" && getEl("s_prac2").style.display == "none")
 			speedSetup();
 			break;
 			case 192: //`
