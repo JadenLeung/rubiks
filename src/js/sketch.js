@@ -45,6 +45,8 @@ export default function (p) {
 	let ZOOM3 = -170;
 	let ZOOM2 = -25;
 	let CHECK = [];
+	let PLLS = [];
+	let SPACE = [];
 	let custom = 0;
 	let inp;
 	let MODE = "normal";
@@ -56,11 +58,12 @@ export default function (p) {
 	let medstep = 0;
 	let pllstep = 0;
 	let ollstep = 0;
+	let pllpracstep = 0;
 	let m_34step = 0;
 	let m_type = 0;
 	let m_4step = 0;
 	let cstep = 0, dstep = false;
-	let PLL;
+	let PLL, PLLPRAC;
 	let REGULAR;
 	let SPEEDMODE;
 	let TIMEDMODE;
@@ -79,6 +82,7 @@ export default function (p) {
 	let easytime;
 	let mindist;
 	let minaction;
+	let s_savedim = 0;
 	let WINDOW = 0.9
 	let special = [false, 0.3, false, 0];
 	let BACKGROUND_COLOR = "#e6e6e6"; //p.color(230,230,230);
@@ -282,6 +286,9 @@ class Timer {
 		return this.overallTime;
 	}
 }
+function isMobile() {  //phone computer
+	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 function setWidth() {
 	if (!ismid) {
 		document.getElementById("fullscreen").style.display = "block";
@@ -407,18 +414,10 @@ p.setup = () => {
 	
 	PICKER = new Picker(p, DEBUG);
 	let cnv_div = document.getElementById("cnv_div");
-	if (window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)
-	{
-		WINDOW = 0.6;
-		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
-	}
-	else
-	{
-		WINDOW = 0.9;
-		p.createCanvas(DEBUG ? p.windowWidth / 2 : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
-	}
+	const WINDOW = (window.matchMedia("(max-width: 767px)").matches || isMobile) ? 0.6 : 0.9;
+
+	p.createCanvas(cnv_div.offsetWidth, window.innerHeight * WINDOW, p.WEBGL);
+	PICKER.buffer.resizeCanvas(cnv_div.offsetWidth, window.innerHeight * WINDOW);
 	
 	p.pixelDensity(1);
 	p.frameRate(60);
@@ -436,6 +435,7 @@ p.setup = () => {
 	
 	reSetup();
 	
+
 	
 	// hardcoded to do size 50 (3x3x3) 
 	//SIZE_SLIDER = p.createSlider(2, 5, 3, 1);
@@ -647,6 +647,7 @@ p.setup = () => {
 		CHECK[i].style(`display:inline; padding-right:5px`)
 		CHECK[i].changed(change9.bind(null, 0));
 	}
+
 	SEL7 = p.createSelect();
 	SEL7.option("2x2");
 	SEL7.option("3x3");
@@ -666,6 +667,50 @@ p.setup = () => {
 	
 	INPUT.changed(changeInput.bind(null, 0));
 
+	const hotkeys = [
+		["`", "Scramble"],
+		["⇧ `", "Autosolve"],
+		["=", "Redo"],
+		["⇧ =", "Redo x3"],
+		["Bspace", "Undo"],
+		["⇧ Bspace", "Undo x3"],
+		["Tab", "Toggle fullscreen"],
+		["⇧ Tab", "Toggle halfscreen"],
+		["Space", "Stop Time"],
+		["", ""],
+		["1", "Quit"],
+		["⇧ 1", "Home"],
+		["2", "Max/Min turn speed"],
+		["⇧ 2", "Stats Mode"],
+		["3", "On/Off Dark Mode"],
+		["⇧ 3", "Speed Mode"],
+		["4", "Align Camera"],
+		["⇧ 4", "Fewest Moves"],
+		["7", "Alert Position ID"],
+		["", ""],
+		["8", "Delete previous time"],
+		["⇧ 8", "Remove all times"],
+		["9", "Load Data"],
+		["", ""],
+		["0", "Save Data"],
+		["", ""],
+	];
+
+    const table = document.getElementById('hotkeytable');
+
+    for (let i = 0; i < hotkeys.length; i += 2) {
+        const row = document.createElement('tr');
+        
+        // Create first cell set (number and description)
+        row.innerHTML += `<td><b>${hotkeys[i][0]}</b></td><td>${hotkeys[i][1]}</td>`;
+        
+        // Check if there's a second cell set (for odd-length arrays)
+        if (i + 1 < hotkeys.length) {
+            row.innerHTML += `<td><b>${hotkeys[i + 1][0]}</b></td><td>${hotkeys[i + 1][1]}</td>`;
+        }
+        
+        table.appendChild(row);
+    }
 
 	const BACK = p.createButton('Back');
 	setButton(BACK, "custom3", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
@@ -678,6 +723,9 @@ p.setup = () => {
 
 	const SETTINGSBACK = p.createButton('Back');
 	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
+
+	const HOTKEYBACK = p.createButton('Back');
+	setButton(HOTKEYBACK, "hotkeyback", 'btn btn-light', 'font-size:20px; border-color: black;', settingsmode.bind(null, 0));
 
 	const CHALLENGEBACK = p.createButton('Return to Challenges');
 	setButton(CHALLENGEBACK, "challengeback", 'btn btn-light', 'font-size:20px; border-color: black;', challengemode.bind(null, 0));
@@ -692,6 +740,9 @@ p.setup = () => {
 
 	const SETTINGSDEFAULT = p.createButton('Restore defaults');
 	setButton(SETTINGSDEFAULT, "settingsdefault", 'btn btn-light', 'font-size:20px; border-color: black;', settingsDefault.bind(null, 0));
+
+	const SETTINGSHOTKEY = p.createButton('View Hotkeys');
+	setButton(SETTINGSHOTKEY, "settingshotkey", 'btn btn-light', 'font-size:20px; border-color: black;', hotkeymode);
 
 	const DEFAULT = p.createButton('Restore');
 	setButton(DEFAULT, "select7", 'btn btn-light', 'font-size:15px; border-color: black;', changeZero.bind(null, 0));
@@ -845,14 +896,20 @@ p.setup = () => {
 	const MED = p.createButton('Medium');
 	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
 
-	const OLL = p.createButton('OLL Practice');
+	const OLL = p.createButton('OLL Attack');
 	setButton(OLL, "s_OLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedOLL.bind(null, 0));
 	
-	PLL = p.createButton('PLL/PBL Practice');
+	PLL = p.createButton('PLL/PBL Attack');
 	setButton(PLL, "s_PLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedPLL.bind(null, 0));
 
 	const RACE = p.createButton('Start Race');
 	setButton(RACE, "s_RACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, 0));
+
+	const S_START = p.createButton('Start Practice');
+	setButton(S_START, "s_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', practicePLL.bind(null, 0));
+
+	PLLPRAC = p.createButton('PLL Practice');
+	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, 0));
 
 	const READYBOT = p.createButton('Ready');
 	setButton(READYBOT, "readybot", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
@@ -970,25 +1027,21 @@ setInterval(() => {
 	document.getElementById("l_home").style.display = localStorage.username != "signedout" && MODE == "login" ? "block" : "none";
 	updateScores();
 	
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1 || (pllpracstep % 2 == 1)))
 	{
 		timer.stop();
 		flipmode2 = 0;
-		console.log("okk " + canMan + " k");
 		movesarr.push(moves);
-		if(true == true)
+		if(ao5.length<5)
 		{
-			if(ao5.length<5)
-			{
-				ao5.push(timeInSeconds);
-				mo5.push(timeInSeconds);
-			}
-			else
-			{
-				ao5.push(timeInSeconds);
-				mo5.push(timeInSeconds);
-				ao5.shift();
-			}
+			ao5.push(timeInSeconds);
+			mo5.push(timeInSeconds);
+		}
+		else
+		{
+			ao5.push(timeInSeconds);
+			mo5.push(timeInSeconds);
+			ao5.shift();
 		}
 		if(race > 1){ //racedetect
 			console.log("racedetect");
@@ -1081,18 +1134,17 @@ setInterval(() => {
 			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			else
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			console.log("you", ao5);
 			pllstep++;
 			speedPLL();
-		}
-		else if(sideSolved(realtop) && ollstep % 2 == 1)
-		{
+		} else if(isSolved() && pllpracstep % 2 == 1) {
+			pllpracstep++;
+			practicePLL();
+		} else if(sideSolved(realtop) && ollstep % 2 == 1) {
 			timer.stop();
 			if(ao5 == 0)
 			ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			else
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			console.log("you", ao5);
 			ollstep++;
 			speedOLL();
 		}
@@ -1215,6 +1267,7 @@ function reSetup(rot) {
 	m_34step = 0;
 	ollstep = 0;
 	pllstep = 0;
+	pllpracstep = 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 
@@ -2505,7 +2558,7 @@ function regular(nocustom){
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
-		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback"]);
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -2515,6 +2568,7 @@ function regular(nocustom){
 	medstep = 0;
 	ollstep = 0;
 	pllstep = 0;
+	pllpracstep = 0;
 	m_34step = 0;
 	m_4step = 0;
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -2767,6 +2821,21 @@ function fullScreen(isfull) {
 	fullscreen = isfull;
 	resized();
 }
+function halfScreen(isfull) {
+	if (isfull) {
+		document.getElementById("cnv_div").className = "col-xl-8 noselect";
+		document.getElementById("right").style.display = "col-xl-4 noselect";
+		document.getElementById("left").style.display = "none";
+		FULLSCREEN.class("bi bi-fullscreen-exit");
+	} else {
+		document.getElementById("cnv_div").className = "col-xl-6 noselect";
+		document.getElementById("left").style.display = "block";
+		document.getElementById("right").style.display = "block";
+		FULLSCREEN.class("bi bi-arrows-fullscreen");
+	}
+	fullscreen = isfull;
+	resized();
+}
 async function fadeInText(o, text) {
 	const dnfElement = document.getElementById('dnf');
 	dnfElement.style.display='block';
@@ -2828,10 +2897,12 @@ function loginmode() {
 		elements[i].style.display='none';
 	}
 }
+function hotkeymode() {
+	setDisplay("none", ["settings1"]);
+	setDisplay("block", ["hotkey1"]);
+}
 function settingsmode()
 {
-	//regular(true);
-	//MODE = "speed"
 	if(document.getElementById("settings1").style.display == "block"){
 		regular();
 		return;
@@ -2842,17 +2913,11 @@ function settingsmode()
 	fullScreen(false);
 	//quickSolve();
 	refreshButtons();
-
-	//regular();
 	REGULAR.style('background-color', '#10caf0');
-	//REGULAR.class('btn btn-info');
-	// if(!isIpad() && !(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
-	// 	SETTINGS.style('background-color', "#8ef5ee");
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
-	document.getElementById("s_instruct2").innerHTML = "";
-	document.getElementById("s_RACE3").innerHTML = "";
-	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div"]);
+	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1"]);
 	setDisplay("block", ["settings1"]);
+	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -2880,12 +2945,12 @@ function speedmode()
 
 	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
-	setDisplay("block", ["s_bot", "s_high", "s_RACE"]);
+	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for Speed Mode";
-	document.getElementById("s_instruct").innerHTML = "In one game of speed mode, there will be <b>4</b> stages, each requiring you to complete a challenge. Your score will be the time it takes to do all the tasks.";
+	document.getElementById("s_INSTRUCT").innerHTML = "Time Attack";
+	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!";
 	document.getElementById("s_difficulty").innerHTML = "Select Difficulty/Mode";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -2896,11 +2961,15 @@ function speedmode()
 	medstep = 0;
 	ollstep = 0;
 	pllstep = 0;
-	
-	if(DIM == 50)
-		PLL.html("PLL Practice");
-	else
-		PLL.html("PBL Practice");
+	pllpracstep = 0;
+	if(DIM == 50) {
+		PLL.html("PLL Attack");
+		PLLPRAC.html("PLL Practice");
+	}
+	else {
+		PLL.html("PBL Attack");
+		PLLPRAC.html("PBL Practice");
+	}
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -2993,7 +3062,7 @@ function showSpeed()
 	DELAY = 0;
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
-	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore"]);
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac", "s_prac2"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 
 	changeInput();
@@ -3272,6 +3341,7 @@ function easy()
 		medstep = 0;
 		pllstep = 0;
 		ollstep = 0;
+		pllpracstep = 0;
 		timer.reset();
 	}
 	
@@ -3380,6 +3450,95 @@ function medium(){
 		easystep = 8;
 		easy();
 	}
+}
+function selectPLL() {
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac"]);
+	setDisplay("inline", ["s_prac2"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
+	setDisplay(DIM == 50 ? "none": "block", ["s_prac2x2"]);
+	setDisplay(DIM == 100 ? "none": "block", ["s_prac3x3"]);
+
+	// if (s_savedim == DIM) return;
+	s_savedim = DIM;
+	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"]};
+	if (DIM == 100) allplls = {4: ["AD", "DD", "Jb", "AA", "Y"]};
+	for (let i = 0; i < PLLS.length; i++) {
+		PLLS[i].remove();
+	}
+	for (let i = 0; i < SPACE.length; i++) {
+		SPACE[i].remove();
+	}
+	PLLS = [];
+	SPACE = [];
+	let a = 0;
+	for (const plltype in allplls) {
+		allplls[plltype].forEach((pll, n) => {
+			PLLS.push(p.createCheckbox(" " + pll, true));
+			PLLS[PLLS.length-1].parent("s_checkbox" + plltype);
+			PLLS[PLLS.length-1].style(`display:inline; padding-right:20px;`)
+
+			if ((a + 1) % 4 === 0) {
+				const br = document.createElement("br"); // Create a <br> element
+				document.getElementById("s_checkbox"  + plltype).appendChild(br); // Append it to the parent
+				SPACE.push(br);
+			}
+			++a;
+		})
+	}
+}
+function practicePLL() {
+	undo = [];
+	redo = [];
+	if(pllpracstep % 2 == 0)
+	{
+		timer.reset();
+		if(pllpracstep == 0) {
+			reCam();
+			ao5 = [];
+			mo5 = [];
+		}
+		quickSolve();
+		document.getElementById("s_INSTRUCT").innerHTML = "Suggested Algorithm";
+		showSpeed();
+		setDisplay("block", ["moves_par", "outermoves"]);
+		timer.stop();
+		timer.reset();
+		let possible = [];
+		PLLS.forEach((checkbox) => {
+			// Ensure checkbox.elt is defined and that it's a checkbox element
+			if (checkbox.checked()) {
+			  console.log("pushing p");
+		  
+			  // Find the span inside the label and get its text content
+			  let labelText = checkbox.elt.querySelector('span').innerText;
+			  
+			  possible.push(labelText.substring(1));  // Push the label text (e.g., "Ua") to the possible array
+			}
+		  });
+		  
+		console.log(possible);
+		let rnd = p.random(possible);
+		let str = "";
+		if(DIM == 50) 
+		{
+			changeArr(obj2[rnd][1])
+			str = obj2[rnd][0];
+		}
+		else
+		{
+			changeArr(pbls[rnd][1])
+			str = pbls[rnd][0];
+		}
+		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:12px;'>" + str + "</p>";
+		shufflespeed = 2;
+		let rnd2 = Math.floor(Math.random()*4);
+		for(let i = 0; i < rnd2; i++)
+		{
+			arr.push("U");
+		}
+		multipleEasy(0, 6);
+	}
+
 }
 function speedPLL()
 {
@@ -3949,6 +4108,14 @@ function multipleEasy(nb, dificil) {
 		{
 			speedOLL();
 		}
+		else if(dificil == 6)
+		{
+			if(!isSolved())
+				pllpracstep++;
+			practicePLL();
+		} else if (dificil == 6.5) {
+			practicePLL();
+		}
 		canMan = true;
 	}
 }
@@ -4345,7 +4512,13 @@ function randomLL()
 		}
 	}
 	let rnd2 = p.random(possible2);
-	changeArr(obj2[rnd][1] + " " + olls[rnd2][1])
+	let rnd3 = Math.floor(Math.random()*4);
+	let auf = "";
+	for(let i = 0; i < rnd3; i++)
+	{
+		auf += "U ";
+	}
+	changeArr(obj2[rnd][1] + " " + olls[rnd2][1] + " " + auf);
 	document.getElementById("scramble").innerHTML = (stringArray());
 }
 function shufflePossible(len, total2, prev){
@@ -4577,13 +4750,6 @@ function displayTimes()
 	if(MODE != "timed") return;
 	const whichtime = "alltimes";
 	if (MODE == "timed") {
-		if(mo5.length == 0)
-		{
-			document.getElementById(whichtime).innerHTML = "Your times/moves will be displayed here";
-			document.getElementById("timegone").style.display = "none";
-			document.getElementById("link1").style.display = "none";
-			return;
-		}
 		setDisplay("block", ["alltimes", "timegone", "link1"]);
 		if (!ismid) {
 			setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
@@ -4593,6 +4759,13 @@ function displayTimes()
 			setDisplay("inline", ["mode", "mode2", "mode3", "mode7"]);
 			setDisplay("none", ["mode4", "mode5", "mode6", "mode8"]);
 			setDisplay("block", ["or_instruct4"]);
+		}
+		if(mo5.length == 0)
+		{
+			document.getElementById(whichtime).innerHTML = "Your times/moves will be displayed here";
+			document.getElementById("timegone").style.display = "none";
+			document.getElementById("link1").style.display = "none";
+			return;
 		}
 	}
 	document.getElementById("or_instruct3").style.display = "none";
@@ -4778,7 +4951,7 @@ function displayAverage()
 	display += " &nbsp;&nbsp;Mo" + mo5.length + ": " + (Math.round((meano5/(mo5.length * 1.0))*100)/100);
 	if(ao5.length == 0)
 	display = "N/A";
-	if(MODE == "speed")
+	if(MODE == "speed" && pllpracstep == 0)
 	{
 		display = "";
 		let total = 0;
@@ -5018,13 +5191,50 @@ p.keyPressed = (event) => {
 		stopMoving();
 		return;
 	}
+	if(p.keyCode == 49) {
+		if (p.keyIsDown(p.SHIFT)) {
+			regular();
+			return;
+		}
+		if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
+		regular();
+		if(MODE == "moves")
+		movesmode();
+		if(MODE == "challenge"){
+			if (cstep == 0) {
+				regular();
+			} else {
+				cstep = 0;
+				challengemode();
+			}
+		}
+		if(MODE == "speed") {
+			if (getEl("s_prac").style.display == "block") {
+				regular();
+			} else {
+				speedmode();
+			}
+		} 
+		if(MODE == "timed" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
+		regular();
+		if(document.getElementById("settings1").style.display == "block")
+		regular();
+		if(document.getElementById("hotkey1").style.display == "block")
+		settingsmode();
+		if(MODE == "cube" && custom > 0)
+		{
+			cubemode();
+			custom = 0
+		}
+	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
-		//postUsers("Jaden", "Leung", "cool");
-		console.log(undo, redo, DIM);
+		console.log(race)
 	}
 	if(p.keyCode == 9){ //tab
-		fullScreen(!fullscreen);
+		if (p.keyIsDown(p.SHIFT)) 
+			halfScreen(!fullscreen);
+		else
+			fullScreen(!fullscreen);
 		return;
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
@@ -5034,7 +5244,7 @@ p.keyPressed = (event) => {
 		reSetup();
 		return;
 	}
-	if(p.keyCode == 27 && (MODE == "speed" && race == 1)) //escape
+	if(p.keyCode == 27 && (MODE == "speed" && (race == 1 || getEl("s_high").style.display != "none"))) //escape
 	{
 		quickSolve();
 		return;
@@ -5045,12 +5255,12 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 50 && race < 1) //2 //two
 	{
-		if(SPEED != 2)
-		{
+		if (p.keyIsDown(p.SHIFT) && (getEl("mode3").style.display != "none" || getEl("mode6").style.display != "none")) {
+			timedmode();
+		} else if(SPEED != 2) {
 			SPEED_SLIDER.value(2);
 			SPEED = 2;
-		}
-		else{
+		} else {
 			SPEED_SLIDER.value(0.01);
 			SPEED = 0.01;
 		}
@@ -5058,13 +5268,17 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 52) //4
 	{
-		CAM = p.createEasyCam(p._renderer);
-		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		if(DIM2 == 100)
-			CAM.zoom(CAMZOOM+140);
-		else
-			CAM.zoom(CAMZOOM);
-		rotateIt();
+		if (p.keyIsDown(p.SHIFT) && (getEl("mode7").style.display != "none" || getEl("mode8").style.display != "none"))
+			movesmode();
+		else {
+			CAM = p.createEasyCam(p._renderer);
+			CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+			if(DIM2 == 100)
+				CAM.zoom(CAMZOOM+140);
+			else
+				CAM.zoom(CAMZOOM);
+			rotateIt();
+		}
 		return;
 	}
 	if(p.keyCode == 55){ //7
@@ -5433,18 +5647,24 @@ p.keyPressed = (event) => {
 			animateWide('x', 50, -1, true);
 			break;
 			case 8: //backspace
-			flexDo(Undo, undo);
+			if (p.keyIsDown(p.SHIFT))
+				flexDo(Undo, undo, 3);
+			else
+				flexDo(Undo, undo);
 			break;
 			case 61:
 			case 187: //equals
-			flexDo(Redo, redo);
+			if (p.keyIsDown(p.SHIFT))
+				flexDo(Redo, redo, 3);
+			else
+				flexDo(Redo, redo);
 			break;
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
 			if(MODE == "moves" || (MODE == "challenge" && cstep > 0))
 			moveSetup();
-			if(MODE == "speed")
+			if(MODE == "speed" && getEl("s_high").style.display == "none")
 			speedSetup();
 			break;
 			case 192: //`
@@ -5452,35 +5672,6 @@ p.keyPressed = (event) => {
 				(MODE == "normal" || MODE == "timed")  && solveCube();
 			} else if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login")
 				shuffleCube();
-			break;
-			case 49: //1
-			if (p.keyIsDown(p.SHIFT)) {
-				regular();
-				break;
-			}
-			if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
-			regular();
-			if(MODE == "moves")
-			movesmode();
-		    if(MODE == "challenge"){
-				if (cstep == 0) {
-					regular();
-				} else {
-					cstep = 0;
-					challengemode();
-				}
-			}
-			if(MODE == "speed")
-			speedmode();
-			if(MODE == "timed" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
-			regular();
-			if(document.getElementById("settings1").style.display == "block")
-			regular();
-			if(MODE == "cube" && custom > 0)
-			{
-				cubemode();
-				custom = 0
-			}
 			break;
 			case 32: //space
 			console.log(layout, cubyColors, CUBE)
@@ -5518,7 +5709,10 @@ p.keyPressed = (event) => {
 			saveData();
 			break;
 			case 51: //3
-			darkMode();
+			if (p.keyIsDown(p.SHIFT) && (getEl("mode2").style.display != "none" || getEl("mode5").style.display != "none"))
+				speedmode();
+			else
+				darkMode();
 			break;
 		}
 		let bad = -1;
@@ -5692,11 +5886,11 @@ function changeArr2(str, len)
 	if(arr.length == 0 || len < arr.length)
 		changeArr(str);
 }
-function flexDo(foo, arr) {
+function flexDo(foo, arr, mul = 1) {
 	if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c)) || bandaged.length > 0) {
-		foo();
+		funcMult(foo, mul);
 	} else if (INPUT.value() == "Key-Double" || INPUT.value() == "Key-Gearcube") {
-		funcMult(foo, 2);
+		funcMult(foo, 2 * mul);
 	} else if (INPUT.value() == "Key-3x3x2") {
 		let bad5 = [];
 		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
@@ -5704,12 +5898,12 @@ function flexDo(foo, arr) {
 		else if(setup[2] == -50 || setup[2] == 50) bad5 = ['U','D','F','B','E','S'];
 		else bad5 = ['L','R','U','D','E','M']; // front
 		if (bad5.includes(arr[arr.length - 1][0])) {
-			funcMult(foo, 2);
+			funcMult(foo, 2 * mul);
 		} else {
-			funcMult(foo, 1);
+			funcMult(foo, 1 * mul);
 		}
 	} else {
-		foo();
+		funcMult(foo, mul);
 	}
 }
 function funcMult(foo, times) {
@@ -5725,6 +5919,9 @@ function funcMult(foo, times) {
 			canMan = false;
 		}
 	}, 0);
+}
+function getEl(id) {
+	return document.getElementById(id);
 }
 function Undo()
 {
@@ -7671,7 +7868,7 @@ function darkMode(){
 		document.getElementById("colorPicker").value=savedark[0];
 		document.getElementById("colorPicker2").value=savedark[1];
 		document.getElementById("colorPicker3").value=savedark[2];
-		reSetup();
+		// reSetup();
 	}
 }
 function greenLayer(){
@@ -8315,6 +8512,16 @@ p.touchEnded = () => {
 		solveCube();
 	}
 }
+function isTouchingGrayArea(x, y) {
+    // Define gray area bounds (update based on your app's layout)
+    const grayArea = document.getElementById("cnv_div"); // ID for the gray area
+    const rect = grayArea.getBoundingClientRect();
+
+    return x >= rect.left &&
+           x <= rect.right &&
+           y >= rect.top &&
+           y <= rect.bottom;
+}
 
 p.mouseDragged = () => {
 	dragAction();
@@ -8691,18 +8898,13 @@ function toGearCube(move){
 p.windowResized = resized;
 function resized(){
 	let cnv_div = document.getElementById("cnv_div");
-	setWidth();
-	if ((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches))
-	{
-		WINDOW = 0.6;
-		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
-	}
-	else{
-		WINDOW = 0.9;
-		p.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight*WINDOW, p.WEBGL);
-		PICKER.buffer.resizeCanvas(DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth, p.windowHeight * WINDOW);
-	}
+    setWidth(); // Ensure UI elements are adjusted
+    const isMobile = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
+    const WINDOW = isMobile ? 0.6 : 0.9;
+    const width = DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth;
+    const height = window.innerHeight * WINDOW;
+    p.resizeCanvas(width, height, p.WEBGL);
+    PICKER.buffer.resizeCanvas(width, height);
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	if (MODE == "normal") {
 		if (ismid) {
@@ -8714,6 +8916,8 @@ function resized(){
 	refreshButtons();
 } 
 
+
+
 p.draw = () => {
 	let hoveredColor;
 	if(p.touches.length == 0)
@@ -8724,6 +8928,10 @@ p.draw = () => {
 		let yy = p.touches[0].y;
 		hoveredColor = p.get(xx, yy);
 		CAM.removeMouseListeners();
+
+		if (arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) {
+            return; // Skip further event handling to allow scrolling
+        }
 	}
 	
 	if (hoveredColor && getCubyByColor(hoveredColor) && !(p.mouseIsPressed && p.touches.length == 0)) {
@@ -8731,8 +8939,10 @@ p.draw = () => {
 	} else {
 		if(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels))
 		{
-			if(p.touches.length == 0)
-			CAM.attachMouseListeners();
+			if(p.touches.length == 0) {
+				CAM.attachMouseListeners();
+			}
+		
 		}
 	}
 	
@@ -8780,7 +8990,6 @@ function F2ldist(color1, color2, color3, center1, center2, center3, center4, xx)
 function renderCube() {
 	PICKER.buffer.background(0);
 	p.background(BACKGROUND_COLOR);
-	
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].animating()) {
 			if (CUBE[i].dir === 1 && CUBE[i].anim_angle < p.HALF_PI ||
@@ -9196,8 +9405,8 @@ window.addEventListener('keydown', (e) => {
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
 //Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
 //Jaden WR 2x2: 3.88
-//3x3 PLL Practice: 6.9, 6.84, 6.2, 5.01
-//3x3 OLL Practice: 4.66, 4.31, 3.2, 3.06
+//3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01
+//3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06
 //3x3 Easy: 0.8, 0.52s
 //3x3 Medium: 15.4s, 13.58s
 //3x3 Easy: 1.4s

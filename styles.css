@@ -120,6 +120,9 @@ button:hover {
     left: 5%;
     font-size: 30px;
 }
+.skinnyscore {
+    margin:0px;
+}
 @media screen and (max-width: 1199px) {
     .buttoncontainer {
         display: flex;

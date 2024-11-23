@@ -12,7 +12,9 @@
     <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"/>
 	<!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
 	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
@@ -250,6 +252,7 @@
 				<div style = "margin-top: 10px;">
 					<p id="settingsback" class = "button" style = "text-align:left; display: inline;"></p>
 					<p id="settingsdefault" class = "button" style = "text-align:left; display: inline;"></p>
+					<p id="settingshotkey" class = "button" style = "text-align:left; display: inline;"></p>
 				</div>
 				<p style = "font-size:20px; text-align:left; padding-top:15px; text-align: center"><b>Advanced Settings</b></p>
 				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
@@ -297,50 +300,14 @@
 					<p style = "display: inline; font-size:15px; text-align:left; ">Text Color:</p>
 					<input type="color" class="colorPicker" id="colorPicker3" value="#0a1970">
 				</div>
-				<div style = "margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Additional Hotkeys:</p>
-					<table >
-						<tr>
-						  <td><b>1</b></td>
-						  <td>Quit</td>
-						  <td><b>2</b></td>
-						  <td>Max/Min turn speed</td>
-						</tr>
-						<tr>
-						  <td><b>3</b></td>
-						  <td>On/Off Dark Mode</td>
-						  <td><b>4</b></td>
-						  <td>Align Camera</td>
-						</tr>
-						<tr>
-						  <td><b>7</b></td>
-						  <td>Alert Position ID</td>
-						  <td><b>8</b></td>
-						  <td>Delete previous time</td>
-						</tr>
-						<tr>
-							<td><b>9</b></td>
-							<td>Load Data</td>
-							<td><b>0</b></td>
-							<td>Save Data</td>
-						</tr>
-						<tr>
-							<td><b>Tab</b></td>
-							<td>Toggle fullscreen</td>
-							<td><b>Shift `</b></td>
-							<td>Autosolve</td>
-						</tr>
-						<tr>
-							<td><b>Shift 1</b></td>
-							<td>Home</td>
-							<td><b>Shift 8</b></td>
-							<td>Remove all times</td>
-						</tr>
-					  </table>	
+			</div>
+			<div id = "hotkey1">
+				<div style = "margin-top:11px;">
+					<p id="hotkeyback" class = "button" style = "text-align:left;"></p>
+					<h3 style = "display: block; text-align:left; margin-bottom: 10;">All Hotkeys:</h3>
+					<table id="hotkeytable"></table>	
+					<p><i>⇧ denotes the shift key</i></p>
 				</div>
-				
-				
-				
 			</div>
 			<div id="test_alg_div" style="margin-top: 4px; display: flex; align-items: center;" class="noselect">
 				<span id="test_alg_span" style="margin-right: 5px;">Test Algorithm:</span>
@@ -420,19 +387,41 @@
 				<p style = "display: inline;" id = "s_PLL"></p>
 			</div>
 			<div id = "m_high">
-				<h5>Your Best Scores</h5>
-				<p id = "m_easyscore">Easy: N/A</p>
-				<p id = "m_mediumscore">Medium: N/A</p>
+				<h5 style = "margin-top:10px;">Your Best Scores</h5>
+				<p id = "m_easyscore" class = "skinnyscore">Easy: N/A</p>
+				<p id = "m_mediumscore" class = "skinnyscore">Medium: N/A</p>
 			</div>
 			<div id = "c_week">
 				<h5>Your Best Scores</h5>
-				<p id = "c_weekscore">Weekly #1: N/A</p>
-				<p id = "c_day2score">Daily 2x2: N/A</p>
-				<p id = "c_dayscore">Daily 3x3: N/A</p>
+				<p id = "c_weekscore" class = "skinnyscore">Weekly #1: N/A</p>
+				<p id = "c_day2score" class = "skinnyscore">Daily 2x2: N/A</p>
+				<p id = "c_dayscore" class = "skinnyscore">Daily 3x3: N/A</p>
 			</div>
 			<p id = "readybot"></p>
+			<div id = "s_prac" style = "padding-top: 30px;">
+				<h5>Speed Practice</h5>
+				<p>Drill your favorite cubing alogirthms.</p>
+				<p style = "display: inline;" id = "s_pllprac"></p>
+			</div>
+			<div id = "s_prac2" style = "padding-top: 0px;" class = "noselect">
+				<div id = "s_prac3x3">
+					<h5>Select PLL Algorithms</h5>
+					<br>
+					<p>All corners matching</p>
+					<p id = "s_checkbox1"></p>
+					<p>One pair of headlights</p>
+					<p id = "s_checkbox2"></p>
+					<p>No headlights</p>
+					<p id = "s_checkbox3"></p>
+				</div>
+				<div id = "s_prac2x2">
+					<h5 style = "padding-bottom:10px">Select PBL Algorithms</h5>
+					<p id = "s_checkbox4"></p>
+				</div>
+				<p id = "s_start"></p>
+			</div>
 			<div id = "s_bot" style = "padding-top: 30px;">
-				<h5>Instructions for Bot Racing</h5>
+				<h5>Bot Racing</h5>
 				<p>Race the autosolve bot using your OWN CUBE.</p>
 			</div>
 			<p style = "display: inline;" id = "s_RACE"></p>
@@ -440,10 +429,10 @@
 			<p style = "display: inline;" id = "s_RACE3"></p>
 			<div id = "s_high" style = "padding-top: 10px">
 				<h5>Your Best Scores</h5>
-				<p id = "s_easyscore">Easy: N/A</p>
-				<p id = "s_mediumscore">Medium: N/A</p>
-				<p id = "s_ollscore">OLL: N/A</p>
-				<p id = "s_pllscore">PLL: N/A</p>
+				<p id = "s_easyscore" class = "skinnyscore">Easy: N/A</p>
+				<p id = "s_mediumscore" class = "skinnyscore">Medium: N/A</p>
+				<p id = "s_ollscore" class = "skinnyscore">OLL: N/A</p>
+				<p id = "s_pllscore" class = "skinnyscore">PLL: N/A</p>
 			</div>
 			<div id = "ID_right">
 				<div id = "ID1">
@@ -488,7 +477,7 @@
 			"solved.JPG", "IMG_1871.JPG", "IMG_1870.JPG", "IMG_1872.JPG", "IMG_1874.JPG", "IMG_1875.JPG"
 			,"IMG_1876.JPG", "IMG_1874.JPG", "IMG_1877.JPG"];
 			for(let i = 1; i <= 15; i++){
-				document.getElementById("pic" + i).src = arr[i-1];  
+				document.getElementById("pic" + i).src = "images/" + arr[i-1];  
 			}
 
 		}
