@@ -632,8 +632,8 @@ p.setup = () => {
 	}
 	INPUT2[16].mousePressed(inputPressed.bind(null, INPUT2[16].value()));
 	INPUT2[17].mousePressed(inputPressed.bind(null, INPUT2[17].value()));
-	INPUT2[18].mousePressed(Undo.bind(null, 0));
-	INPUT2[19].mousePressed(Redo.bind(null, 0));
+	INPUT2[18].mousePressed(() => {flexDo(Undo, undo)});
+	INPUT2[19].mousePressed(() => {flexDo(Redo, redo)});
 	
 
 	for(let i = 0; i < 27; i++)
@@ -667,7 +667,7 @@ p.setup = () => {
 			document.getElementById("s_checkbox" + plltype).appendChild(img); // Append the image to the parent
 	
 			// Add a <br> element for line breaks every 4 iterations
-			if ((a + 1) % 4 === 0) {
+			if ((a + 1) % (isMobile() && isthin? 3 : 4) === 0) {
 				const br = document.createElement("br");
 				document.getElementById("s_checkbox" + plltype).appendChild(br);
 				SPACE.push(br);
@@ -884,10 +884,10 @@ p.setup = () => {
 	setButton(GIVEUP, "giveup", 'btn btn-danger', '', giveUp.bind(null, 0));
 
 	const UNDO = p.createButton('Undo');
-	setButton(UNDO, "undo", bstyle, '', Undo.bind(null, 0));
+	setButton(UNDO, "undo", bstyle, '', () => {flexDo(Undo, undo)});
 	
 	const REDO = p.createButton('Redo');
-	setButton(REDO, "redo", bstyle, '', Redo.bind(null, 0));
+	setButton(REDO, "redo", bstyle, '', () => {flexDo(Redo, redo)});
 	
 	SOLVE = p.createButton(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	setButton(SOLVE, "solve", 'btn btn-success', '', solveCube.bind(null, 0));
@@ -1006,6 +1006,8 @@ p.setup = () => {
 	const DELETEBAN = p.createButton('Delete');
 	setButton(DELETEBAN, "deleteban", 'btn btn-danger text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', deleteBan.bind(null, 0));
 	topWhite();
+	if (localStorage.startcube == 2)
+		changeTwo();
 }
 
 
@@ -1763,6 +1765,12 @@ function speedSetup()
 	}
 	special[2] = savesetup;
 	quickSolve();
+	if (pllpracstep > 0) {
+		moves = 0;
+		timer.stop();
+		timer.reset();
+
+	}
 	//reSetup();
 }
 function moveSetup()
@@ -1893,6 +1901,7 @@ function changeTwo()
 {
 	DIM2 = 100;
 	DIM = 100;
+	localStorage.startcube = 2;
 	modeData("twobytwo");
 	//if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
 	THREEBYTHREE.remove();
@@ -1914,7 +1923,7 @@ function changeThree()
 {
 	DIM2 = 50;
 	DIM = 50;
-
+	localStorage.startcube = 3;
 	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
 	TWOBYTWO.remove();
 	TWOBYTWO = p.createButton('2x2');
@@ -5209,9 +5218,6 @@ p.keyPressed = (event) => {
 		raceDetect();
 		return;
 	}
-	if(p.keyCode == 32 && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
-		speedRace2();
-	}
 	if(p.keyCode == 32 && canMan == false && (MODE == "normal" || MODE == "timed")){ //space
 		stopMoving();
 		return;
@@ -8471,15 +8477,15 @@ function testAlg(){
 		else if(inp.value() == "dark"){
 			darkMode();
 		}
-		else if(inp.value()[0] == "p")
+		else if(inp.value()[0].toLowerCase() == "p")
 		{
-			console.log("mimni")
 			let shortpll = inp.value().substring(1);
 			changeArr(obj2[shortpll][1])
-		}
-		else {
+		} else if(inp.value()[0].toLowerCase() == "o") {
+			let shortoll = inp.value().substring(1);
+			changeArr(olls[shortoll][1])
+		} else {
 			changeArr(inp.value());
-			console.log("HAHAHHA" + inp.value());
 		}
 		multiple(0, false);	
 	}
@@ -9383,14 +9389,22 @@ document.onkeydown = function (e) {
 	//console.log("here67")
 	INPUT.elt.blur();
   };
-  document.onkeyup = function(e) { //space
+let activeKeys = new Set();
+document.onkeyup = function(e) { //space
 	if (e.keyCode == 32) {
 		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
 			canMan = true;
 			solveCube();
 		}
 	}
-  }
+	activeKeys.delete(e.code);
+}
+document.onkeydown = function(event) {
+	activeKeys.add(event.code);
+	if(activeKeys.size === 1 && activeKeys.has('Space') && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
+		speedRace2();
+	}
+}
 document.getElementById('account').addEventListener('click', function() {
 	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
 });
