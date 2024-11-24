@@ -47,6 +47,7 @@ export default function (p) {
 	let ZOOM2 = -25;
 	let CHECK = [];
 	let PLLS = [];
+	let pracmode;
 	let SPACE = [];
 	let custom = 0;
 	let inp;
@@ -64,7 +65,7 @@ export default function (p) {
 	let m_type = 0;
 	let m_4step = 0;
 	let cstep = 0, dstep = false;
-	let PLL, PLLPRAC;
+	let PLL, PLLPRAC, OLLPRAC;
 	let REGULAR;
 	let SPEEDMODE;
 	let TIMEDMODE;
@@ -106,6 +107,9 @@ export default function (p) {
 	let bandaged = [];
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
 	let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
+	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"], 4: ["AD", "DD", "AU", "AA", "DU"],
+		5:[1,2,3,4,17,18,19,20], 6:[5,6,7,8,9,10,11,12,28,29,30,31,32,35,36,37,38,41,42,43,44,47,48,49,50], 7:[13,14,15,16,33,34,39,40,45,46,51,52,55,56,57], 8:[21,22,23,24,25,26,27]
+	};
 	let LEFTMOD;
 	let RIGHTMOD;
 	let LEFTBAN, RIGHTBAN;
@@ -649,9 +653,8 @@ p.setup = () => {
 		CHECK[i].changed(change9.bind(null, 0));
 	}
 
-	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"], 4: ["AD", "DD", "Jb", "AA", "Y"]};
-	let a = 0;
 	for (const plltype in allplls) {
+		let a = 0;
 		allplls[plltype].forEach((pll, n) => {
 			// Create and configure the checkbox
 			const checkbox = p.createCheckbox(" " + pll, true);
@@ -661,13 +664,16 @@ p.setup = () => {
 	
 			// Create and configure the image
 			const img = document.createElement("img");
-			img.src = `../../images/${plltype == 4 ? "PBL" : "PLL"}/` + pll + ".png"; // Set the source of the image
-			img.alt = pll; // Optional: Add alt text for accessibility
-			img.style = "display:inline; padding-right:10px; width:15%; height:auto;"; // Set size to 20% of original
+			img.src = `../../images/${plltype > 4 ? "OLL" : plltype == 4 ? "PBL" : "PLL"}/` + pll + ".png"; // Set the source of the image
+			img.alt = pracmode; // Optional: Add alt text for accessibility
+			img.style = "display:inline; padding-right:10px; width:60px; height:auto;"; // Set size to 20% of original
+			img.onclick = function () {
+				checkbox.checked(!checkbox.checked());
+			};
 			document.getElementById("s_checkbox" + plltype).appendChild(img); // Append the image to the parent
 	
 			// Add a <br> element for line breaks every 4 iterations
-			if ((a + 1) % (isMobile() && isthin? 3 : 4) === 0) {
+			if ((a + 1) % ((isMobile() && isthin || plltype == 4) ? 3 : plltype >= 4? 10 : 4) === 0) {
 				const br = document.createElement("br");
 				document.getElementById("s_checkbox" + plltype).appendChild(br);
 				SPACE.push(br);
@@ -746,11 +752,24 @@ p.setup = () => {
 	const BACK2 = p.createButton('Back');
 	setButton(BACK2, "custom5", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
 
+	function setTogglePLL(c) {
+		let arr = [];
+		if (pracmode == "OLL") {
+			arr = allplls[5].concat(allplls[6].concat(allplls[7].concat(allplls[8])));
+		} else if (DIM == 100) {
+			arr = allplls[4];
+		} else {
+			arr = allplls[1].concat(allplls[2].concat(allplls[3]))
+		}
+		console.log(arr)
+		togglePLL(c, arr)
+	}
+
 	const S_SELECTALL = p.createButton('Select All');
-	setButton(S_SELECTALL, "s_selectall", 'btn btn-light', 'border-color: black;', togglePLL.bind(null, "all"));
+	setButton(S_SELECTALL, "s_selectall", 'btn btn-light', 'border-color: black;', setTogglePLL.bind(null, "check"));
 
 	const S_DESELECTALL = p.createButton('Deselect All');
-	setButton(S_DESELECTALL, "s_deselectall", 'btn btn-light', 'border-color: black;', togglePLL.bind(null, "none"));
+	setButton(S_DESELECTALL, "s_deselectall", 'btn btn-light', 'border-color: black;', setTogglePLL.bind(null, "uncheck"));
 
 	const IDBACK = p.createButton('Back');
 	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
@@ -943,7 +962,10 @@ p.setup = () => {
 	setButton(S_START, "s_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', practicePLL.bind(null, 0));
 
 	PLLPRAC = p.createButton('PLL Practice');
-	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, 0));
+	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, "PLL"));
+
+	OLLPRAC = p.createButton('OLL Practice');
+	setButton(OLLPRAC, "s_ollprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, "OLL"));
 
 	const READYBOT = p.createButton('Ready');
 	setButton(READYBOT, "readybot", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
@@ -1063,7 +1085,7 @@ setInterval(() => {
 	document.getElementById("l_home").style.display = localStorage.username != "signedout" && MODE == "login" ? "block" : "none";
 	updateScores();
 	
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1 || (pllpracstep % 2 == 1)))
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
 	{
 		timer.stop();
 		flipmode2 = 0;
@@ -1172,7 +1194,20 @@ setInterval(() => {
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
 			pllstep++;
 			speedPLL();
-		} else if(isSolved() && pllpracstep % 2 == 1) {
+		} else if(((isSolved() && pracmode == "PLL") || (sideSolved(realtop) && pracmode == "OLL")) && pllpracstep % 2 == 1) {
+			timer.stop();
+			movesarr.push(moves);
+			if(ao5.length<5)
+			{
+				ao5.push(timeInSeconds);
+				mo5.push(timeInSeconds);
+			}
+			else
+			{
+				ao5.push(timeInSeconds);
+				mo5.push(timeInSeconds);
+				ao5.shift();
+			}
 			pllpracstep++;
 			practicePLL();
 		} else if(sideSolved(realtop) && ollstep % 2 == 1) {
@@ -1269,8 +1304,8 @@ setInterval(() => {
 		}
 	}
 	let tempalg = [];
-	const possible = DIM == 50 ? ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
-		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"] : ["AA", "AD", "DD", "Jb", "Y"];
+	const possible = pracmode == "OLL" ? Array.from({ length: 57 }, (_, i) => (i + 1).toString()) : DIM == 50 ? ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
+		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"] : ["AA", "AD", "DD", "AU", "DU"];
 	PLLS.forEach((checkbox) => {
 		if (checkbox.checked() && possible.includes(checkbox.elt.querySelector('span').innerText.substring(1))) {
 		  let labelText = checkbox.elt.querySelector('span').innerText;		  
@@ -1296,6 +1331,16 @@ setInterval(() => {
 	} else if (!isthin){
 		SETTINGS.style("background-color: #8ef4ee; color: " + document.body.style.color);
 	}
+	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
+		document.getElementById("cnv_div").style.display = "block";
+		fullScreen(false);
+		reCam();
+		resized();
+	} 
+	if (MODE == "speed") SPEEDMODE.style('background-color', '#8ef5ee');
+	if (MODE == "timed") { TIMEDMODE2.style('background-color', '#8ef5ee');  TIMEDMODE.style('background-color', '#8ef5ee');}
+	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
+	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
@@ -2619,6 +2664,14 @@ function regular(nocustom){
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
 	}
+	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
+		document.getElementById("cnv_div").style.display = "block";
+		fullScreen(false);
+		
+		reCam();
+		resized();
+	} 
+	document.getElementById("right").className = "col-xl-4 noselect";
 	changeInput();
 	easystep = 0;
 	medstep = 0;
@@ -2627,6 +2680,7 @@ function regular(nocustom){
 	pllpracstep = 0;
 	m_34step = 0;
 	m_4step = 0;
+	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 }
 function timedmode()
@@ -2863,6 +2917,7 @@ function endchallenge(passed = true) {
 	dstep = false;
 }
 function fullScreen(isfull) {
+	if (document.getElementById("cnv_div").style.display == "none") return;
 	if (isfull) {
 		document.getElementById("cnv_div").className = "col-xl-12 noselect";
 		document.getElementById("right").style.display = "none";
@@ -3021,10 +3076,12 @@ function speedmode()
 	if(DIM == 50) {
 		PLL.html("PLL Attack");
 		PLLPRAC.html("PLL Practice");
+		setDisplay("inline", ["s_ollprac"]);
 	}
 	else {
 		PLL.html("PBL Attack");
 		PLLPRAC.html("PBL Practice");
+		setDisplay("none", ["s_ollprac"]);
 	}
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
@@ -3509,27 +3566,36 @@ function medium(){
 	}
 }
 function togglePLL(action, arr) {
+	const parent = pracmode == "OLL" ? ["5","6","7","8"] : DIM == 100 ? ["4"] : [1,2,3];
 	if (action == "all") {
 		PLLS.forEach(el => {el.checked(true)})
 	} else if (action == "none") {
 		PLLS.forEach(el => {el.checked(false)});
 	} else {
 		PLLS.forEach(el => {
-			console.log(el.elt.value.substring(1));
-			if (arr.includes(el.elt.value.substring(1))) {
+			if (parent.some(item => item == el.elt.parentElement.id.substring(10))) {
 				el.checked(action == "check");
 			}
 		});
 	}
 }
-function selectPLL() {
+function selectPLL(mode) {
+	pracmode = mode;
 	moves = 0;
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac"]);
 	setDisplay("inline", ["s_prac2"]);
-	getEl("s_plltitle").innerHTML = DIM == 50 ? "Select PLL Algorithms" : "Select PBL Algorithms" 
+	getEl("s_plltitle").innerHTML = mode == "OLL" ? "Select OLL Algorithms" : DIM == 50 ? "Select PLL Algorithms" : "Select PBL Algorithms" 
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
-	setDisplay(DIM == 50 ? "none": "block", ["s_prac2x2"]);
-	setDisplay(DIM == 100 ? "none": "block", ["s_prac3x3"]);
+	setDisplay(DIM == 100 && mode == "PLL"? "block": "none", ["s_prac2x2"]);
+	setDisplay(DIM == 50 && mode == "PLL"? "block": "none", ["s_prac3x3"]);
+	setDisplay(DIM == 50 && mode == "OLL"? "block": "none", ["s_prac3x3o"]);
+	if (mode == "OLL") {
+		document.getElementById("cnv_div").style.display = "none";
+		document.getElementById("right").className = "col-xl-10 noselect";
+		canMan = false;
+		// document.getElementById("left").style.display = "block";
+		// document.getElementById("right").style.display = "block";
+	}
 }
 function practicePLL() {
 	undo = [];
@@ -3538,7 +3604,11 @@ function practicePLL() {
 	{
 		timer.reset();
 		if(pllpracstep == 0) {
+			document.getElementById("cnv_div").style.display = "block";
+			fullScreen(false);
+			document.getElementById("right").className = "col-xl-4 noselect";
 			reCam();
+			resized();
 			ao5 = [];
 			mo5 = [];
 		}
@@ -3548,21 +3618,11 @@ function practicePLL() {
 		setDisplay("block", ["moves_par", "outermoves"]);
 		timer.stop();
 		timer.reset();
-
-		  
-		console.log(pracalgs);
 		let rnd = p.random(pracalgs);
 		let str = "";
-		if(DIM == 50) 
-		{
-			changeArr(obj2[rnd][1])
-			str = obj2[rnd][0];
-		}
-		else
-		{
-			changeArr(pbls[rnd][1])
-			str = pbls[rnd][0];
-		}
+		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? obj2 : pbls;
+		changeArr(tempobj[rnd][1])
+		str = tempobj[rnd][0];
 		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:12px;'>" + str + "</p>";
 		shufflespeed = 2;
 		let rnd2 = Math.floor(Math.random()*4);
@@ -5222,7 +5282,7 @@ p.keyPressed = (event) => {
 		stopMoving();
 		return;
 	}
-	if(p.keyCode == 49) {
+	if(p.keyCode == 49) { //1 //one
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
 			return;
@@ -5240,11 +5300,12 @@ p.keyPressed = (event) => {
 			}
 		}
 		if(MODE == "speed") {
-			if (getEl("s_prac").style.display == "block") {
+			if (getEl("s_prac").style.display != "none") {
 				regular();
 			} else {
 				speedmode();
 			}
+			return;
 		} 
 		if(MODE == "timed" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
 		regular();
@@ -5259,7 +5320,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(pracalgs)
+		console.log(pracalgs, PLLS)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
