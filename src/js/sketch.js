@@ -703,6 +703,8 @@ p.setup = () => {
 	INPUT.changed(changeInput.bind(null, 0));
 
 	const hotkeys = [
+		["Esc", "Reset"],
+		["⇧ Esc", "Restart"],
 		["`", "Scramble"],
 		["⇧ `", "Autosolve"],
 		["=", "Redo"],
@@ -922,16 +924,7 @@ p.setup = () => {
 	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
-	IDCOPY.parent("idcopy");
-	IDCOPY.mousePressed();
-
-	FULLSCREEN = p.createButton('');
-	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
-	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
-	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
-
-	document.getElementById('idcopy').addEventListener('click', function() { //copy button
-		// Thank you Stack Overflow
+	setButton(IDCOPY, "idcopy", 'btn btn-primary', 'margin-left: 10px', () => {
 		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
 			function(){
 
@@ -940,12 +933,15 @@ p.setup = () => {
 			 function() {
 				alert("Copying didn't work :("); // error
 		  });
-	  });
+	});
+
+	FULLSCREEN = p.createButton('');
+	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
+	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 
 	GENERATE = p.createButton('Generate');
-	GENERATE.style("background-color: #42ff58;")
-	GENERATE.parent("generate");
-	GENERATE.mousePressed(generateID.bind(null, 0));
+	setButton(GENERATE, 'generate', 'btn btn-success', '', generateID.bind(null, 0));
 	
 	const MED = p.createButton('Medium');
 	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
@@ -5338,17 +5334,41 @@ p.keyPressed = (event) => {
 	}
 	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
 
-	if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) //escape
-	{
+	if (p.keyCode == 27 && p.keyIsDown(p.SHIFT)) { //escape
+		if (MODE == "speed") {
+			let func = null;
+			if (pllstep > 0) func = speedPLL;
+			if (ollstep > 0) func = speedOLL; 
+			if (easystep > 0) func = easy; 
+			if (medstep > 0) func = medium; 
+			if (pllpracstep > 0) {movesarr = []; mo5 = []; ao5 = [];}
+			if (func) {
+				speedmode();
+				func();
+			}
+		} else if (MODE == "moves") {
+			let func = null;
+			if (m_34step > 0) func = m_34;
+			if (m_4step > 0) func = m_4; 
+			if (func) {
+				movesmode();
+				func();
+			}
+		} else if (MODE == "challenge") {
+			let func = null;
+			if (cstep > 0) func = startchallenge;
+			if (func) {
+				challengemode();
+				func();
+			}
+		}
+	} else if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) {
 		reSetup();
 		return;
-	}
-	if(p.keyCode == 27 && (MODE == "speed" && (race == 1 || getEl("s_high").style.display != "none"))) //escape
-	{
+	} else if(p.keyCode == 27 && (MODE == "speed" && (race == 1 || getEl("s_high").style.display != "none"))) {
 		quickSolve();
 		return;
-	}
-	if(race > 1 && p.keyCode == 27 && document.getElementById("s_RACE2").style.display == "block"){
+	} else if(race > 1 && p.keyCode == 27 && document.getElementById("s_RACE2").style.display == "block"){
 		quickSolve();
 		return;
 	}
@@ -8489,7 +8509,7 @@ function removeSpecificTime(){
 }
 function removeTime()
 {
-	if(["normal","cube","timed"].includes(MODE)){
+	if(["normal","cube","timed"].includes(MODE) || pllpracstep > 0){
 		movesarr.pop();
 		mo5.pop();
 		ao5.pop();
