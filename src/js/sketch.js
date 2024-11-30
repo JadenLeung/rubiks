@@ -108,7 +108,8 @@ export default function (p) {
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
 	let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
 	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"], 4: ["AD", "DD", "AU", "AA", "DU"],
-		5:[1,2,3,4,17,18,19,20], 6:[5,6,7,8,9,10,11,12,28,29,30,31,32,35,36,37,38,41,42,43,44,47,48,49,50], 7:[13,14,15,16,33,34,39,40,45,46,51,52,55,56,57], 8:[21,22,23,24,25,26,27]
+		5:[1,2,3,4,17,18,19,20], 6:[5,6,7,8,9,10,11,12,28,29,30,31,32,35,36,37,38,41,42,43,44,47,48,49,50], 7:[13,14,15,16,33,34,39,40,45,46,51,52,55,56,57],
+		8:[21,22,23,24,25,26,27], 9:["h","pi","antisune","sune","l","t","u"]
 	};
 	let LEFTMOD;
 	let RIGHTMOD;
@@ -673,7 +674,7 @@ p.setup = () => {
 			document.getElementById("s_checkbox" + plltype).appendChild(img); // Append the image to the parent
 	
 			// Add a <br> element for line breaks every 4 iterations
-			if ((a + 1) % ((isMobile() && isthin || plltype == 4) ? 3 : plltype >= 4? 10 : 4) === 0) {
+			if ((a + 1) % ((isMobile() && isthin || plltype == 4) ? 3 : plltype == 9? 2 : plltype >= 4 ? 10 : 4) === 0) {
 				const br = document.createElement("br");
 				document.getElementById("s_checkbox" + plltype).appendChild(br);
 				SPACE.push(br);
@@ -1304,8 +1305,8 @@ setInterval(() => {
 		}
 	}
 	let tempalg = [];
-	const possible = pracmode == "OLL" ? Array.from({ length: 57 }, (_, i) => (i + 1).toString()) : DIM == 50 ? ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
-		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"] : ["AA", "AD", "DD", "AU", "DU"];
+	const possible = pracmode == "OLL" ? (DIM == 50 ?Array.from({ length: 57 }, (_, i) => (i + 1).toString()) : allplls[9]) : 
+	DIM == 50 ? ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", "Nb", "V", "Y", "H", "Ua", "Ub", "Z"] : ["AA", "AD", "DD", "AU", "DU"];
 	PLLS.forEach((checkbox) => {
 		if (checkbox.checked() && possible.includes(checkbox.elt.querySelector('span').innerText.substring(1))) {
 		  let labelText = checkbox.elt.querySelector('span').innerText;		  
@@ -2659,7 +2660,7 @@ function regular(nocustom){
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
-		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2"]);
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3076,12 +3077,10 @@ function speedmode()
 	if(DIM == 50) {
 		PLL.html("PLL Attack");
 		PLLPRAC.html("PLL Practice");
-		setDisplay("inline", ["s_ollprac"]);
 	}
 	else {
 		PLL.html("PBL Attack");
 		PLLPRAC.html("PBL Practice");
-		setDisplay("none", ["s_ollprac"]);
 	}
 	if(INPUT.value()[0] == "K")
 		INPUT.selected("Keyboard");
@@ -3410,6 +3409,7 @@ function easy()
 		for(var i=0; i<elements.length; i++) { 
 			elements[i].style.display='none';
 		}
+		setDisplay("none", ["s_image"]);
 		let total = 0;
 		for(let i = 0; i < ao5.length; i++)
 		{
@@ -3524,7 +3524,7 @@ function medium(){
 		}
 		canMan = false;
 		console.log("bruh", arr);
-		document.getElementById("s_instruct").innerHTML = "Use your beginner last layer techniques to solve it! <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + sugalg[rnd2] +  " </p>";
+		document.getElementById("s_instruct").innerHTML = "Use your beginner last layer techniques to solve it! <p style = 'font-size:15px;'>Suggested algorithm with unsolved layer in the top: <br>" + sugalg[rnd2] +  " </p>";
 		multipleEasy(0, 1);
 	}
 	else if(medstep == 4)
@@ -3566,7 +3566,7 @@ function medium(){
 	}
 }
 function togglePLL(action, arr) {
-	const parent = pracmode == "OLL" ? ["5","6","7","8"] : DIM == 100 ? ["4"] : [1,2,3];
+	const parent = pracmode == "OLL" ? (DIM == 100 ? ["9"] : ["5","6","7","8"]) : DIM == 100 ? ["4"] : [1,2,3];
 	if (action == "all") {
 		PLLS.forEach(el => {el.checked(true)})
 	} else if (action == "none") {
@@ -3589,7 +3589,8 @@ function selectPLL(mode) {
 	setDisplay(DIM == 100 && mode == "PLL"? "block": "none", ["s_prac2x2"]);
 	setDisplay(DIM == 50 && mode == "PLL"? "block": "none", ["s_prac3x3"]);
 	setDisplay(DIM == 50 && mode == "OLL"? "block": "none", ["s_prac3x3o"]);
-	if (mode == "OLL") {
+	setDisplay(DIM == 100 && mode == "OLL"? "block": "none", ["s_prac2x2o"]);
+	if (mode == "OLL" && DIM == 50) {
 		document.getElementById("cnv_div").style.display = "none";
 		document.getElementById("right").className = "col-xl-10 noselect";
 		canMan = false;
@@ -3623,7 +3624,9 @@ function practicePLL() {
 		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? obj2 : pbls;
 		changeArr(tempobj[rnd][1])
 		str = tempobj[rnd][0];
-		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:12px;'>" + str + "</p>";
+		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>" + str + "</p>";
+		getEl("s_image").src = `images/${pracmode == "OLL" ? "OLL" : DIM == 50 ? "PLL" : "PBL"}/${rnd}.png`;
+		setDisplay("block", ["s_image"]);
 		shufflespeed = 2;
 		let rnd2 = Math.floor(Math.random()*4);
 		for(let i = 0; i < rnd2; i++)
@@ -3652,7 +3655,7 @@ function speedPLL()
 		let possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
 		"Nb", "V", "Y", "H", "Ua", "Ub", "Z"];
 		if(DIM == 100)
-			possible = ["AA", "AD", "DD", "Jb", "Y"];
+			possible = ["AD", "DD", "AU", "AA", "DU"];
 		let rnd = p.random(possible);
 		let str = "";
 		if(DIM == 50) 
@@ -3665,7 +3668,9 @@ function speedPLL()
 			changeArr(pbls[rnd][1])
 			str = pbls[rnd][0];
 		}
-		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + str +  " </p>";
+		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>Suggested algorithm with unsolved layer in the top: <br>" + str +  " </p>";
+		getEl("s_image").src = `images/${DIM == 50 ? "PLL" : "PBL"}/${rnd}.png`;
+		setDisplay("block", ["s_image"]);
 		shufflespeed = 2;
 		let rnd2 = Math.floor(Math.random()*4);
 		for(let i = 0; i < rnd2; i++)
@@ -3696,7 +3701,7 @@ function speedOLL()
 		showSpeed();
 		timer.stop();
 		timer.reset();
-		let possible = ["21", "51", "45", "33", "37", "26", "27"];
+		let possible = allplls[9];
 		if(DIM == 50)
 		{
 			possible = [];
@@ -3709,7 +3714,9 @@ function speedOLL()
 		let str = "";
 		changeArr(olls[rnd][1])
 		str = olls[rnd][0];
-		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it. <p style = 'font-size:12px;'>Suggested algorithm with unsolved layer in the top: <br>" + str +  " </p>";
+		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>Suggested algorithm with unsolved layer in the top: <br>" + str +  " </p>";
+		getEl("s_image").src = `images/OLL/${rnd}.png`;
+		setDisplay("block", ["s_image"]);
 		shufflespeed = 2;
 		let rnd2 = Math.floor(Math.random()*4);
 		for(let i = 0; i < rnd2; i++)
@@ -5320,7 +5327,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(pracalgs, PLLS)
+		console.log(pracmode)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

@@ -120,6 +120,11 @@ button:hover {
     left: 5%;
     font-size: 30px;
 }
+#s_image {
+    height: 30%;
+    width: 30%;
+}
+
 .skinnyscore {
     margin:0px;
 }
