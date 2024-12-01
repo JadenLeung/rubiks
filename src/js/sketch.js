@@ -1833,6 +1833,8 @@ function moveSetup()
 	moves = 0;
 	special[2] = savesetup;
 	quickSolve();
+	undo = [];
+	redo = [];
 	
 }
 function Hint()
@@ -1983,6 +1985,11 @@ function changeThree()
 }
 function changeCam(dim)
 {
+	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) //phone computer
+		INPUT.selected('Button');
+	else
+		INPUT.selected('Keyboard');
+	SCRAM.value("Normal");
 	reSetup();
 }
 function bandageZero(){
@@ -2023,6 +2030,8 @@ function changeFour(){
 function changeFive(){
 	DIM = 2;
 	changeCam(3);
+	INPUT.value("Key-3x3x2");
+	SCRAM.value("Like a 3x3x2");
 	refreshButtons();
 	SANDWICH.style('background-color', "#8ef5ee");
 }
@@ -2532,7 +2541,6 @@ function Custom()
 	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("cube").style.display = "none";
 	document.getElementById("modarrow").style.display = "none";
-	document.getElementById("input").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	document.getElementById("custom4").style.display = "none";
 	modeData("customshape");
@@ -2670,6 +2678,11 @@ function regular(nocustom){
 	} 
 	document.getElementById("right").className = "col-xl-4 noselect";
 	changeInput();
+	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) //phone computer
+		INPUT.selected('Button');
+	else
+		INPUT.selected('Keyboard');
+	SCRAM.value("Normal");
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
@@ -2704,7 +2717,7 @@ function timedmode()
 	document.getElementById("or_instruct3").innerHTML = "";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	changeInput();
-
+	
 	modeData("stats");
 }
 function cubemode()
@@ -2748,7 +2761,7 @@ function idmode()
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 
-	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2"]);
+	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram"]);
 	setDisplay("block", ["ID3", "test_alg_div"]);
 	
 	var elements = document.getElementsByClassName('normal');
@@ -3023,7 +3036,7 @@ function settingsmode()
 	refreshButtons();
 	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
-	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1"]);
+	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
@@ -5323,7 +5336,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(pracmode)
+		console.log(savesetup);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

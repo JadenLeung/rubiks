@@ -51,8 +51,6 @@ export default class Cuby {
     this.right = this.colors.blue;
     this.back = this.colors.orange;
     this.left = this.colors.green;
-
-    
     
     if(size == 4 || size == 5)
     {
@@ -89,6 +87,14 @@ export default class Cuby {
       if(size == 6 && this.index > 2) this.bottom = this.c[custom[this.index-3][1]];
       if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
 
+    }
+    if(size == 2){
+      this.back = this.colors.orange;
+      this.front = this.colors.red;
+      this.bottom = this.colors.yellow;
+      this.top = this.colors.white;
+      this.right = this.colors.blue;
+      this.left = this.colors.green;
     }
     if(size == 13){
       let a = "";
@@ -137,7 +143,7 @@ export default class Cuby {
         }
       }
     }
-    if(special[0] == true){
+    if(special[0] == true && size != 2){
       let badarr = ["tlf", "tfbl", "blt", "tlfd", "tdfbl", "bltd", "dfl", "fbld", "bdl",
                     "rtfl", "tfbrl", "rbtl", "tdfrl", "tdfbrl", "tdbrl", "rdfl", "dfbrl", "rbdl",
                     "rtf", "rbtf", "rbt", "rtdf", "tdfbr", "rtdb", "rfd", "rbfd", "rbd"];
@@ -470,36 +476,194 @@ export default class Cuby {
 
   let g = !this.special[0] ? 0 : this.special[3] * (r/25);
 
-  if(this.back != ""){
-    this.p.fill(this.back);
-    this.p.quad(-r + g, -r + g, -r,    r - g, -r + g, -r,  r - g, r - g, -r,   -r + g, r - g, -r, 2, 2);
+
+  if (this.cubysize != 2) {
+    if(this.back != ""){
+      this.p.fill(this.back);
+      this.p.quad(-r + g, -r + g, -r,    r - g, -r + g, -r,  r - g, r - g, -r,   -r + g, r - g, -r, 2, 2);
+    }
+    
+    if(this.front != ""){
+      this.p.fill(this.front);
+      this.p.quad(-r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, r, 2, 2);	 
+    } 
+  
+    if(this.bottom != ""){
+      this.p.fill(this.bottom);
+      this.p.quad(-r+g, -r, -r+g, r-g, -r, -r+g, r-g, -r, r-g, -r+g, -r, r-g, 2, 2);	  	 
+    } 
+  
+    if(this.top != ""){
+      this.p.fill(this.top);
+      this.p.quad(-r+g, r, -r+g, r-g, r, -r+g, r-g, r, r-g, -r+g, r, r-g, 2, 2);	  
+    }
+    
+    if(this.right != ""){
+      this.p.fill(this.right);
+      this.p.quad(-r, -r+g, -r+g, -r, r-g, -r+g, -r, r-g, r-g, -r, -r+g, r-g, 2, 2);     	 
+    } 	  
+  
+    if(this.left != ""){
+      this.p.fill(this.left);
+      this.p.quad(r, -r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, 2, 2);
+    }
+    this.p.pop();
+  } else {
+    if(this.back != ""){ // orange
+      this.p.fill(this.back);
+      if (!["b","g"].includes(getColor(this.back.levels)) && 
+      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+        if (this.y == 50)
+          this.p.quad(-r, -2*r, -r, r, -2*r, -r, r, 0, -r, -r, 0, -r, 2, 2);
+        if (this.y == -50)
+          this.p.quad(-r, 0, -r, r, 0, -r, r, 2*r, -r, -r, 2*r, -r, 2, 2);
+      }else if (["b","g"].includes(getColor(this.back.levels))) {
+        this.p.quad(-r, -r, 0, r, -r, 0,  r, r, 0,   -r, r, 0, 2, 2);
+      } else if (this.x == -50) {
+        this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, r, -r, 0, r, -r, 2, 2);
+      } else if (this.x == 50) {
+        this.p.quad(0, -r, -r, -2*r, -r, -r, -2*r, r, -r, 0, r, -r, 2, 2);
+      }
+    }
+    
+    if(this.front != ""){ // red
+      this.p.fill(this.front);
+      if (!["b","g"].includes(getColor(this.front.levels)) && 
+      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+        if (this.y == 50)
+          this.p.quad(-r, -2*r, r, r, -2*r, r, r, 0, r, -r, 0, r, 2, 2);	
+        if (this.y == -50)
+          this.p.quad(-r, 2*r, r, r, 2*r, r, r, 0, r, -r, 0, r, 2, 2);	
+      }else if (["b","g"].includes(getColor(this.front.levels))) {
+        this.p.quad(-r, -r, 0, r, -r, 0, r, r, 0, -r, r, 0, 2, 2);	 
+      } else if (this.x == -50) {
+        this.p.quad(0, -r, r, 2*r, -r, r, 2*r, r, r, 0, r, r, 2, 2);
+      } else if (this.x == 50) {
+        this.p.quad(0, -r, r, -2*r, -r, r, -2*r, r, r, 0, r, r, 2, 2);
+      } 
+    } 
+  
+    if(this.bottom != ""){ // yellow
+      this.p.fill(this.bottom);
+      if (!["b","g"].includes(getColor(this.bottom.levels)) && 
+      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+        if (this.z == 50)
+          this.p.quad(-r, -r, -2*r, r, -r, -2*r, r, -r, 0, -r, -r, 0, 2, 2);
+        if (this.z == -50)
+          this.p.quad(-r, -r, 2*r, r, -r, 2*r, r, -r, 0, -r, -r, 0, 2, 2);
+      } else 
+      if (["b","g"].includes(getColor(this.bottom.levels))) {
+        this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2);
+      } else if (this.x == -50) {
+        this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, -r, r, 0, -r, r, 2, 2);	 
+      } else if (this.x == 50) {
+        this.p.quad(0, -r, -r, -2*r, -r, -r, -2*r, -r, r, 0, -r, r, 2, 2);	 
+      } 	 
+    } 
+  
+    if(this.top != ""){ // white
+      this.p.fill(this.top);
+      if (!["b","g"].includes(getColor(this.top.levels)) && 
+      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+        if (this.z == 50)
+          this.p.quad(-r, r, -2*r, r, r, -2*r, r, r, 0, -r, r, 0, 2, 2);	 
+        if (this.z == -50)
+          this.p.quad(-r, r, 2*r, r, r, 2*r, r, r, 0, -r, r, 0, 2, 2);	
+      } else 
+      if (["b","g"].includes(getColor(this.top.levels))) {
+        this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2)
+      } else if (this.x == -50)
+        this.p.quad(0, r, -r, 4*r/2, r, -r, 4*r/2, r, r, 0, r, r, 2, 2);	 
+      else if (this.x == 50)
+        this.p.quad(-2*r, r, -r, 0, r, -r, 0, r, r, -2 * r, r, r, 2, 2);	 
+    }
+    
+    if(this.right != ""){ // blue
+      this.p.fill(this.right);
+      if (["b","g"].includes(getColor(this.top.levels))) {
+        if (this.y == -50)
+          this.p.quad(-r, 0, -r, -r, 2*r, -r, -r, 2*r, r, -r, 0, r, 2, 2);   
+        if (this.y == 50)
+          this.p.quad(-r, 0, -r, -r, -2*r, -r, -r, -2*r, r, -r, 0, r, 2, 2);  
+      } else if (["b","g"].includes(getColor(this.front.levels))) {
+        if (this.z == -50)
+          this.p.quad(-r, -r, 0, -r, r, 0, -r, r, 2*r, -r, -r, 2*r, 2, 2);  
+        if (this.z == 50)
+          this.p.quad(-r, -r, 0, -r, r, 0, -r, r, -2*r, -r, -r, -2*r, 2, 2);  
+      } else if (this.x == -50)
+        this.p.quad(0, -r, -r, 0, r, -r, 0, r, r, 0, -r, r, 2, 2);     	 
+    } 	  
+  
+    if(this.left != ""){ // green
+      this.p.fill(this.left);
+      if (["b","g"].includes(getColor(this.top.levels))) {
+        if (this.y == -50)
+          this.p.quad(r, 0, -r, r, 2*r, -r, r, 2*r, r, r, 0, r, 2, 2);
+        if (this.y == 50)
+          this.p.quad(r, 0, -r, r, -2*r, -r, r, -2*r, r, r, 0, r, 2, 2);
+      } else if (["b","g"].includes(getColor(this.front.levels))) {
+        if (this.z == -50)
+          this.p.quad(r, -r, 0, r, r, 0, r, r, 2*r, r, -r, 2*r, 2, 2); 
+        if (this.z == 50)
+          this.p.quad(r, -r, 0, r, r, 0, r, r, -2*r, r, -r, -2*r, 2, 2); 
+      } 
+      else if (this.x == 50)
+        this.p.quad(0, -r+g, -r+g, 0, r-g, -r+g, 0, r-g, r-g, 0, -r+g, r-g, 2, 2);
+    }
+    this.p.pop();
   }
-	
-  if(this.front != ""){
-    this.p.fill(this.front);
-    this.p.quad(-r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, r, 2, 2);	 
-  } 
 
-  if(this.bottom != ""){
-    this.p.fill(this.bottom);
-    this.p.quad(-r+g, -r, -r+g, r-g, -r, -r+g, r-g, -r, r-g, -r+g, -r, r-g, 2, 2);	  	 
-  } 
-
-  if(this.top != ""){
-    this.p.fill(this.top);
-    this.p.quad(-r+g, r, -r+g, r-g, r, -r+g, r-g, r, r-g, -r+g, r, r-g, 2, 2);	  
+  
   }
   
-  if(this.right != ""){
-    this.p.fill(this.right);
-    this.p.quad(-r, -r+g, -r+g, -r, r-g, -r+g, -r, r-g, r-g, -r, -r+g, r-g, 2, 2);     	 
-  } 	  
+}
 
-  if(this.left != ""){
-    this.p.fill(this.left);
-    this.p.quad(r, -r+g, -r+g, r, r-g, -r+g, r, r-g, r-g, r, -r+g, r-g, 2, 2);
-  }
-	this.p.pop();
-  }
-  
+function getColor(color)
+{
+	/*
+	if(color[0] == 250)
+	return "w";
+	if(color[1] == 18)
+	return "r";
+	if(color[2] == 219)
+	return "b";
+	if(color[1] == 125)
+	return "o";
+	if(color[0] == 209)
+	return "y";
+	return "g";
+	*/
+	let cl = [];
+	cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
+	cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);
+	cl[2] = Math.abs(color[0] - 18) + Math.abs(color[1] - 105) + Math.abs(color[2] - 219);
+	cl[3] = Math.abs(color[0] - 219) + Math.abs(color[1] - 125) + Math.abs(color[2] - 18);
+	cl[4] = Math.abs(color[0] - 209) + Math.abs(color[1] - 219) + Math.abs(color[2] - 18);
+	cl[5] = Math.abs(color[0] - 18) + Math.abs(color[1] - 219) + Math.abs(color[2] - 31);
+	cl[6] = Math.abs(color[0] - 25) + Math.abs(color[1] - 25) + Math.abs(color[2] - 25);
+	cl[7] = Math.abs(color[0] - 245) + Math.abs(color[1] - 25) + Math.abs(color[2] - 245);
+	let minpos = 0;
+	for(let i = 0; i < 8; i++)
+	{
+		if(cl[i] < cl[minpos])
+		{
+			minpos = i
+		}
+	}
+	if(minpos == 0)
+	return "w";
+	if(minpos == 1)
+	return "r";
+	if(minpos == 2)
+	return "b";
+	if(minpos == 3)
+	return "o";
+	if(minpos == 4)
+	return "y";
+	if(minpos == 5)
+	return "g";
+	if(minpos == 6)
+	return "k";
+	if(minpos == 7)
+	return "m"
 }
