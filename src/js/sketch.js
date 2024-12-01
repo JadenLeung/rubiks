@@ -1990,6 +1990,7 @@ function changeCam(dim)
 	else
 		INPUT.selected('Keyboard');
 	SCRAM.value("Normal");
+	changeInput();
 	reSetup();
 }
 function bandageZero(){
