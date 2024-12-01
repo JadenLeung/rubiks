@@ -4788,7 +4788,6 @@ function shuffleCube(nb) {
 		while(true)
 		{
 			let rnd = p.random(possible);
-			console.log("rnd is " + rnd);
 			if(rnd == bad || (arr.length>1 && rnd == arr[i-2] ))
 			continue;
 
@@ -4796,6 +4795,12 @@ function shuffleCube(nb) {
 				continue;
 			
 			let rnd2 = Math.random();
+			let col = TOPWHITE.value()[0];
+			col = col.toLowerCase();
+			let op = opposite[col];
+			if (DIM == 2) {
+				[col, op] = ['g', 'b'];
+			}
 			if(SCRAM.value() == "Gearcube"){
 				if(rnd2 < 0.5){
 					arr.push((rnd + "w"));
@@ -4808,8 +4813,12 @@ function shuffleCube(nb) {
 					total += rnd + "w' " + rnd + "' ";
 				}
 			}
-			else if(doubly || (SCRAM.value() == "Like a 3x3x2" && rnd != "U" && rnd != "D"))
+			else if(doubly || (SCRAM.value() == "Like a 3x3x2" && 
+			([col, op].includes(layout[2][1][1][0]) && rnd != "U" && rnd != "D" ||
+			[col, op].includes(layout[5][1][1][0]) && rnd != "F" && rnd != "B" ||
+			[col,op].includes(layout[0][1][1][0]) && rnd != "L" && rnd != "R")))
 			{
+				console.log("HEREEEE")
 				arr.push(rnd);
 				arr.push(rnd);
 				total += rnd + "2 ";
