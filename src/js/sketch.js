@@ -2888,10 +2888,11 @@ function startchallenge() {
 	savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
 	special[2] = savesetup;
 	quickSolve();
+	setInput();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
 	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
-	setDisplay("block", []);
+	setDisplay("block", ["input"]);
 }
 function endchallenge(passed = true) {
 	cstep = 0;

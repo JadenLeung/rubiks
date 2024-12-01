@@ -4,7 +4,7 @@ export const weeklyscrambles =
     {cube: 2, scramble: "6AVfQJr 2^gX1úY 3äöþìHV 4vP"},
     {cube: 3, scramble: "2SÒ)×ïþ 3fÖâo^G 1ãzòôNä 5W3"},
     {cube: 3, scramble: "3iãÝNyÓ 6Bgìc!J 5bMÙwëA 5þ÷"},
-    {cube: 2, scramble: "3iãÝNyÓ 6Bgìc!J 5bMÙwëA 5þ÷"},
+    {cube: 2, scramble: "67SáC~ê 1(ùnXo4 6tîJgàú 4dV"},
     {cube: 2, scramble: "4YðãècË 3l}PfaÙ 3ðaùÛz2 5þ÷"},
     {cube: 3, scramble: "1ÙÊöûÚÙ 1GéTÿõý 3Wù)%ai 4äÍ"},
     {cube: 2, scramble: "5l(6Ywî 1áæÝü0V 4mÕ9íÏx 5þ÷"},
@@ -17,7 +17,6 @@ export const weeklyscrambles =
     {cube: 3, scramble: "3@ê#þs$ 2CüKBùû 4oíKæÉc 2OJ"},
     {cube: 3, scramble: "6b}ÈÊÒÓ 2PîB%80 2ëRí|çß 4vP"},
     {cube: 3, scramble: "5sÉÌYYÏ 4I)ñUSõ 5ëaKhVè 56D"},
-    {cube: 2, scramble: "1ÿ2!WLv 5ÕKàÖÖs 21õøEä× 4vP"},
-    
+    {cube: 2, scramble: "1ÿ2!WLv 5ÕKàÖÖs 21õøEä× 4vP"},    
 ];
 
