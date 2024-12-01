@@ -1236,6 +1236,7 @@ setInterval(() => {
 			if(m_type == 0) m_points += 2;
 			if(m_type == 1) m_points += 3;
 			if(m_type == 2) m_points += 5;
+			setScore("m_easy", m_points)
 			m_34();
 		}
 		else if(m_4step > 0 && m_4step % 2 == 1 && isSolved() && moves <= m_type && moves > 0)
@@ -1848,11 +1849,13 @@ function Hint()
 	{
 		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
 		giveups -= 0.5;
+		localSetup("m_4", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
 	}
 	else if(m_34step > 0 && m_34step % 2 == 1)
 	{
 		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
 		giveups -= 0.5;
+		localSetup("m_34", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
 	}
 }
 function difColors()
@@ -1918,6 +1921,8 @@ function giveUp()
 			m_4step += 0.5;
 			m_4();
 		}
+		if (giveups > 0) localSetup("m_4", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		else localStorage.removeItem("m_4");
 	}
 	else if(m_34step > 0 && m_34step % 2 == 1)
 	{
@@ -1925,6 +1930,10 @@ function giveUp()
 			giveups--;
 		else
 			giveups = 0;
+
+		if (giveups > 0) localSetup("m_34", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		else localStorage.removeItem("m_34");
+		
 		if(giveups > 0)
 		{
 			m_34step++;
@@ -2291,6 +2300,7 @@ function changeInput()
 		DELAY = 0;
 	}
 	input = INPUT.value();
+	setInput();
 }
 function ban9(){
 	DIM = [];
@@ -3160,6 +3170,10 @@ function setSettings(obj) {
 	changeKeys();
 	refreshButtons();
 	hollowCube();
+	if (obj.m_34 != "none") localStorage.m_34 = obj.m_34;
+	else localStorage.removeItem("m_34")
+	if (obj.m_4 != "none") localStorage.m_4 = obj.m_4;
+	else localStorage.removeItem("m_4")
 	if (MODE != "login") regular();
 }
 function setDisplay (display, ids) {
@@ -3177,6 +3191,7 @@ function showSpeed()
 	document.getElementById("s_difficulty").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac", "s_prac2"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
+	
 
 	changeInput();
 	if(MODE == "speed")
@@ -3766,7 +3781,9 @@ async function saveData(username, password, method, al) {
 		keyboard:localStorage.keyboard,
 		speed:localStorage.speed,
 		toppll:localStorage.toppll,
-		topwhite:localStorage.topwhite
+		topwhite:localStorage.topwhite,
+		m_34: localStorage.m_34 ?? "none",
+		m_4: localStorage.m_4 ?? "none",
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -3948,6 +3965,25 @@ function raceTimes(){
 	console.log("str is " + str);
 	document.getElementById("s_RACE3").innerHTML = "Winning times: " + str;
 }
+function displayMoveTitle(){
+	if(m_type == -1){
+		scramblemoves = 2;
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 2 moves (1 point)";
+		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 2-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+	}else if(m_type == 0){
+		scramblemoves = 3;
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves (2 points)";
+		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 3-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+	}else if(m_type == 1){
+		scramblemoves = 4;
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 4 moves (3 points)";
+		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 4-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+	}else if(m_type == 2){
+		scramblemoves = 5;
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 5 moves (5 points)";
+		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 5-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+	}
+}
 function m_34() 
 {
 	undo = [];
@@ -3959,8 +3995,22 @@ function m_34()
 		giveups = 3;
 		m_pass = 0;
 		m_points = 0;
-	}
-	if(m_34step % 2 == 0)
+	} if (localStorage.m_34 && m_34step == 0) {
+		let obj = JSON.parse(localStorage.m_34)
+		savesetup = obj.savesetup;
+		giveups = obj.giveups;
+		m_type = obj.m_type;
+		m_points = obj.m_points;
+		savesetup = IDtoReal(IDtoLayout(decode(obj.savesetup)));
+		special[2] = savesetup;
+		quickSolve();
+		arr = [];
+		showSpeed();
+		m_34step = Math.floor(obj.m_34step / 2) * 2;
+		displayMoveTitle();
+		m_34step++;
+		canMan = true;
+	} else if(m_34step % 2 == 0)
 	{
 		let rand = parseInt(Math.random()*100);
 		m_scramble = [];
@@ -3993,23 +4043,7 @@ function m_34()
 		}
 		quickSolve();
 		showSpeed();
-		if(m_type == -1){
-			scramblemoves = 2;
-			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 2 moves (1 point)";
-			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 2-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
-		}else if(m_type == 0){
-			scramblemoves = 3;
-			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves (2 points)";
-			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 3-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
-		}else if(m_type == 1){
-			scramblemoves = 4;
-			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 4 moves (3 points)";
-			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 4-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
-		}else if(m_type == 2){
-			scramblemoves = 5;
-			document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 5 moves (5 points)";
-			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 5-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
-		}
+		displayMoveTitle();
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
 		let bad = "";
@@ -4034,8 +4068,11 @@ function m_34()
 		console.log("arr.length is " + arr.length);
 		shufflespeed = 2;
 		canMan = false;
-		multipleEasy(0, 3);
+		multipleEasy(0, 3, "m_34");
 	}
+}
+function localSetup(mode, data) {
+	localStorage[mode] = JSON.stringify(data);
 }
 function m_4() 
 {
@@ -4049,7 +4086,26 @@ function m_4()
 		giveups = 3;
 		m_points = 0;
 	}
-	if(m_4step % 2 == 0)
+	if (localStorage.m_4 && m_4step == 0 && m_34step == 0) {
+		let obj = JSON.parse(localStorage.m_4)
+		console.log(obj)
+		giveups = obj.giveups;
+		m_type = obj.m_type;
+		m_points = obj.m_points;
+		savesetup = IDtoReal(IDtoLayout(decode(obj.savesetup)));
+		special[2] = savesetup;
+		quickSolve();
+		arr = [];
+		showSpeed();
+		m_4step = Math.floor(obj.m_4step / 2) * 2;
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves (" + parseInt(Math.pow(1.5, m_type)) + " points)";
+		m_4step++;
+		if(m_type < 20)
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This " + m_type + "-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
+		else
+			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 20+ move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Any scramble can be solved in at most 20 moves...HOW ARE YOU STILL PLAYING?";
+		canMan = true;
+	} else if(m_4step % 2 == 0 && m_34step == 0)
 	{
 		let rand = parseInt(Math.random()*100);
 		m_scramble = [];
@@ -4097,7 +4153,7 @@ function m_4()
 		console.log("arr.length is " + arr.length);
 		shufflespeed = 2;
 		canMan = false;
-		multipleEasy(0, 4);
+		multipleEasy(0, 4, "m_4");
 	}
 	else if((m_4step*2 % 2) == 1 || (m_34step*2) % 2 == 1)
 	{
@@ -4128,25 +4184,27 @@ function m_4()
 		document.getElementById("m_4").style.display = "inline";
 		document.getElementById("m_high").style.display = "block";
 
-
 		m_34step = 0;
 		m_4step = 0;
 		timer.reset();
 	}
 }
-function multipleEasy(nb, dificil) {
+function multipleEasy(nb, dificil, mode = "") {
 	if (nb < arr.length) {
 		canMan = false;
 		shufflespeed = 2;
 		notation(arr[nb]);
 		console.log(nb, "easy", dificil);
-		waitForCondition(multipleEasy.bind(null, nb + 1, dificil), false);
+		waitForCondition(multipleEasy.bind(null, nb + 1, dificil, mode), false);
 	}
 	else
 	{
 		shufflespeed = 5;
 		setLayout();
 		savesetup = IDtoReal(IDtoLayout(decode(getID())));
+		if (mode == "m_4" || mode == "m_34") {
+			localSetup(mode, {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		}
 		if(dificil == 0)
 		{
 			if(!isSolved())
@@ -5338,7 +5396,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(savesetup);
+		console.log(m_34step, m_4step);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
