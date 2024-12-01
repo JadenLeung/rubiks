@@ -690,15 +690,11 @@ p.setup = () => {
 	SEL7.selected('3x3');
 	SEL7.changed(change9.bind(null, 0));
 
-	INPUT.option("Keyboard");
-	INPUT.option("Key-Double");
-	INPUT.option("Key-3x3x2");
-	INPUT.option("Key-Gearcube");
-	INPUT.option("Button");
-	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) //phone computer
-		INPUT.selected('Button');
-	else
-		INPUT.selected('Keyboard');
+	INPUT.option("Standard");
+	INPUT.option("Double");
+	INPUT.option("3x3x2");
+	INPUT.option("Gearcube");
+	setInput();
 	
 	INPUT.changed(changeInput.bind(null, 0));
 
@@ -1985,10 +1981,7 @@ function changeThree()
 }
 function changeCam(dim)
 {
-	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) //phone computer
-		INPUT.selected('Button');
-	else
-		INPUT.selected('Keyboard');
+	INPUT.selected("Standard");
 	SCRAM.value("Normal");
 	changeInput();
 	reSetup();
@@ -2031,7 +2024,7 @@ function changeFour(){
 function changeFive(){
 	DIM = 2;
 	changeCam(3);
-	INPUT.value("Key-3x3x2");
+	INPUT.value("3x3x2");
 	SCRAM.value("Like a 3x3x2");
 	refreshButtons();
 	SANDWICH.style('background-color', "#8ef5ee");
@@ -2273,15 +2266,8 @@ function changeRandom()
 	console.log(cube, cubies);
 	change9(cubies);
 }
-function changeInput()
-{
-	if(MODE == "normal")
-	{
-		DELAY_SLIDER.value(0);
-		DELAY = 0;
-	}
-	input = INPUT.value();
-	if(input == "Button"){
+function setInput() {
+	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches || isIpad()) { //button
 		document.getElementById("keymap").style.display = "none";
 		document.getElementById("test_alg_div").style.display = "none";
 		document.getElementById("undo").style.display = "none";
@@ -2296,7 +2282,15 @@ function changeInput()
 		document.getElementById("undo").style.display = "inline";
 		document.getElementById("redo").style.display = "inline";
 	}
-
+}
+function changeInput()
+{
+	if(MODE == "normal")
+	{
+		DELAY_SLIDER.value(0);
+		DELAY = 0;
+	}
+	input = INPUT.value();
 }
 function ban9(){
 	DIM = [];
@@ -2679,10 +2673,8 @@ function regular(nocustom){
 	} 
 	document.getElementById("right").className = "col-xl-4 noselect";
 	changeInput();
-	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) //phone computer
-		INPUT.selected('Button');
-	else
-		INPUT.selected('Keyboard');
+	changeCam();
+	setInput();
 	SCRAM.value("Normal");
 	easystep = 0;
 	medstep = 0;
@@ -3092,8 +3084,7 @@ function speedmode()
 		PLL.html("PBL Attack");
 		PLLPRAC.html("PBL Practice");
 	}
-	if(INPUT.value()[0] == "K")
-		INPUT.selected("Keyboard");
+	INPUT.selected("Standard");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	updateScores();
 	modeData("speed");
@@ -3133,8 +3124,7 @@ function movesmode()
 	}
 	m_34step = 0;
 	m_4step = 0;
-	if(INPUT.value()[0] == "K")
-		INPUT.selected("Keyboard");
+	INPUT.selected("Standard");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	modeData("moves");
 }
@@ -4467,10 +4457,11 @@ function animate(axis, row, dir, time) {
 	}
 	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && time)
 	{
-		if(!(MODE == "cube" && alldown == true) && document.getElementById("ID3").style.display == "none")
+		if(!alldown) {
 			timer.reset();
 			timer.start();
 			if (cstep == 1 || cstep == 1.5) cstep++;
+		}
 	}
 	
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -5242,10 +5233,11 @@ function animateWide(axis, row, dir, timed) {
 
 	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && timed)
 	{
-		if(!(MODE == "cube" && alldown == true) && document.getElementById("ID3").style.display == "none")
+		if(!alldown) {
 			timer.reset();
 			timer.start();
 			if (cstep == 1 || cstep == 1.5) cstep++;
+		}
 	}
 
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -5548,7 +5540,7 @@ p.keyPressed = (event) => {
 		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
 			
 		let bad6 = [190,188,65,186,80,81,59];
-		if((INPUT.value() == "Key-Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "Key-3x3x2" && bad5.includes(p.keyCode))){
+		if((INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))){
 			redo = [];
 			if(p.keyCode == 83) changeArr("D2")
 			if(p.keyCode == 76) changeArr("D2'")
@@ -5581,7 +5573,7 @@ p.keyPressed = (event) => {
 			multiple(0, true);	
 			return;
 		}
-		else if(INPUT.value() == "Key-Gearcube" && bad4.includes(p.keyCode)){
+		else if(INPUT.value() == "Gearcube" && bad4.includes(p.keyCode)){
 			if(bad6.includes(p.keyCode))
 				return;
 			redo = [];
@@ -6031,9 +6023,9 @@ function changeArr2(str, len)
 function flexDo(foo, arr, mul = 1) {
 	if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c)) || bandaged.length > 0) {
 		funcMult(foo, mul);
-	} else if (INPUT.value() == "Key-Double" || INPUT.value() == "Key-Gearcube") {
+	} else if (INPUT.value() == "Double" || INPUT.value() == "Gearcube") {
 		funcMult(foo, 2 * mul);
-	} else if (INPUT.value() == "Key-3x3x2") {
+	} else if (INPUT.value() == "3x3x2") {
 		let bad5 = [];
 		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
 		if(setup[0] == -50 || setup[0] == 50) bad5 = ['L','R','F','B','S','M'];
@@ -8770,11 +8762,11 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["E'"]
 			else
 			arr = ["E"];
-			if(INPUT.value() == "Key-Double")
+			if(INPUT.value() == "Double")
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-Gearcube")
+			if(INPUT.value() == "Gearcube")
 				arr = [];
 			multiple(0, true);
 			selectedCuby = -1;
@@ -8802,11 +8794,11 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["S'"]
 			else
 			arr = ["S"];
-			if(INPUT.value() == "Key-Double")
+			if(INPUT.value() == "Double")
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-Gearcube")
+			if(INPUT.value() == "Gearcube")
 				arr = [];
 			multiple(0, true);
 			selectedCuby = -1;
@@ -8834,11 +8826,11 @@ function dragCube(cuby1, color1, cuby2, color2)
 			arr = ["M'"]
 			else
 			arr = ["M"];
-			if(INPUT.value() == "Key-Double")
+			if(INPUT.value() == "Double")
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-Gearcube")
+			if(INPUT.value() == "Gearcube")
 				arr = [];
 			multiple(0, true);
 			selectedCuby = -1;
@@ -9016,11 +9008,11 @@ function dragCube(cuby1, color1, cuby2, color2)
 					arr = ["F'"];
 				}
 			}
-			if(INPUT.value() == "Key-Double")
+			if(INPUT.value() == "Double")
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-3x3x2" && bad5.includes(arr[0][0]))			
+			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 				arr.push(arr[0]);
-			if(INPUT.value() == "Key-Gearcube")
+			if(INPUT.value() == "Gearcube")
 				arr.unshift(toGearCube(arr[0]));
 			multiple(0, true);
 			selectedCuby = -1;
