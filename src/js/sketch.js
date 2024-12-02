@@ -5399,7 +5399,10 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(m_34step, m_4step);
+		CAM = p.createEasyCam(p._renderer);
+		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+		CAM.zoom(CAMZOOM);
+		rotateIt();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

@@ -535,7 +535,8 @@ export default class Cuby {
         if (this.y == -50)
           this.p.quad(-r, 2*r, r, r, 2*r, r, r, 0, r, -r, 0, r, 2, 2);	
       }else if (["b","g"].includes(getColor(this.front.levels))) {
-        this.p.quad(-r, -r, 0, r, -r, 0, r, r, 0, -r, r, 0, 2, 2);	 
+        if (this.z == 50)
+          this.p.quad(-r, -r, 0, r, -r, 0, r, r, 0, -r, r, 0, 2, 2);	 
       } else if (this.x == -50) {
         this.p.quad(0, -r, r, 2*r, -r, r, 2*r, r, r, 0, r, r, 2, 2);
       } else if (this.x == 50) {
@@ -558,7 +559,7 @@ export default class Cuby {
         this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, -r, r, 0, -r, r, 2, 2);	 
       } else if (this.x == 50) {
         this.p.quad(0, -r, -r, -2*r, -r, -r, -2*r, -r, r, 0, -r, r, 2, 2);	 
-      } 	 
+      }	 
     } 
   
     if(this.top != ""){ // white
@@ -571,7 +572,8 @@ export default class Cuby {
           this.p.quad(-r, r, 2*r, r, r, 2*r, r, r, 0, -r, r, 0, 2, 2);	
       } else 
       if (["b","g"].includes(getColor(this.top.levels))) {
-        this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2)
+        if (this.y == 50)
+          this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2)
       } else if (this.x == -50)
         this.p.quad(0, r, -r, 4*r/2, r, -r, 4*r/2, r, r, 0, r, r, 2, 2);	 
       else if (this.x == 50)
