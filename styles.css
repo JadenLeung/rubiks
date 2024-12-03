@@ -120,11 +120,9 @@ button:hover {
     left: 5%;
     font-size: 30px;
 }
-#s_image {
-    height: 30%;
-    width: 30%;
+#scramble_par {
+    padding-top: 10px;
 }
-
 .skinnyscore {
     margin:0px;
 }

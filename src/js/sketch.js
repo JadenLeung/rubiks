@@ -52,7 +52,7 @@ export default function (p) {
 	let custom = 0;
 	let inp;
 	let MODE = "normal";
-	let INPUT;
+	let INPUT, SESSION;
 	let SPEED = 0.01;
 	let DELAY = 0;
 	let shufflespeed = 5;
@@ -141,6 +141,8 @@ export default function (p) {
 	let savedark = [];
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
+	let session = 0;
+	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
 	let ismid = window.matchMedia("(max-width: " + MAX_WIDTH2 + ")").matches;
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
@@ -184,12 +186,13 @@ export default function (p) {
 	[[0, 0, 0],[0, 0, 0],[0, 0, 0]]
 ];
 
+if (localStorage.saveao5[0].hasOwnProperty("ao5")) {
+	localStorage.removeItem("saveao5")
+}
 if (localStorage.saveao5) {
-	saveao5 = JSON.parse(localStorage.saveao5);
-	ao5 = saveao5[0];
-	mo5 = saveao5[1];
-	scrambles = saveao5[2];
-	movesarr = saveao5[3];
+	savetimes = JSON.parse(localStorage.saveao5);
+	session = +localStorage.session ?? 0;
+	({mo5, movesarr, ao5, scrambles} = savetimes[session]);
 }
 let opposite = [];
 opposite["g"] = "b";
@@ -542,6 +545,14 @@ p.setup = () => {
 
 	INPUT = p.createSelect(); 
 	INPUT.parent("input")
+
+	SESSION = p.createSelect(); 
+	SESSION.parent("timeselectmini");
+	for (let i = 1; i <= 5; ++i) {
+		SESSION.option(i);
+	}
+	SESSION.selected(session + 1);
+	SESSION.changed(changeSession);
 
 	IDINPUT = p.createSelect(); 
 	IDINPUT.parent("idinput")
@@ -1055,9 +1066,12 @@ setInterval(() => {
 
 	if (MODE != "speed" && MODE != "moves") {
 		saveao5 = [ao5, mo5, scrambles, movesarr];
+		updateSession();
 	}
 	//local
-	localStorage.saveao5 = JSON.stringify(saveao5);
+	// alert("here2")
+	localStorage.saveao5 = JSON.stringify(savetimes);
+	localStorage.session = session;
 	localStorage.speed = SPEED;
 	localStorage.topwhite = TOPWHITE.value();
 	localStorage.toppll = TOPPLL.value();
@@ -2292,6 +2306,14 @@ function setInput() {
 		document.getElementById("redo").style.display = "inline";
 	}
 }
+function updateSession() {
+	Object.assign(savetimes[session], { mo5, movesarr, ao5, scrambles});
+}
+function changeSession() {
+	if (!SESSION) return;
+	session = SESSION.value() - 1;
+	({mo5, movesarr, ao5, scrambles} = savetimes[session]);
+}
 function changeInput()
 {
 	if(MODE == "normal")
@@ -2665,7 +2687,7 @@ function regular(nocustom){
 	REGULAR.style('background-color', '#8ef5ee');
 	//REGULAR.class('btn btn-secondary');
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
-	setDisplay("block", ["or_instruct", "or_instruct2", "or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram"]);
+	setDisplay("block", ["or_instruct", "or_instruct2", "or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram", "timeselect"]);
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
@@ -2764,7 +2786,7 @@ function idmode()
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 
-	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram"]);
+	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram", "timeselect"]);
 	setDisplay("block", ["ID3", "test_alg_div"]);
 	
 	var elements = document.getElementsByClassName('normal');
@@ -2804,7 +2826,7 @@ function challengemode() {
 	MODE = "challenge";
 
 	refreshButtons();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings"]);
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
@@ -3040,7 +3062,7 @@ function settingsmode()
 	refreshButtons();
 	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
-	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram"]);
+	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", "timeselect"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
@@ -3068,7 +3090,7 @@ function speedmode()
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
 
-	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2"]);
+	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
 
@@ -3121,7 +3143,7 @@ function movesmode()
 	MOVESMODE.style('background-color', '#8ef5ee');
 
 
-	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", "solve", "input", "input2", "scram"]);
+	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", "solve", "input", "input2", "scram", "timeselect"]);
 	setDisplay("inline", ["m_34", "m_4"]);
 	setDisplay("block", ["m_high"]);
 
@@ -5399,10 +5421,8 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		CAM = p.createEasyCam(p._renderer);
-		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		CAM.zoom(CAMZOOM);
-		rotateIt();
+		console.log(savetimes);
+		console.log(scrambles);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
