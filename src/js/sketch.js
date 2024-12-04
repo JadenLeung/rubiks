@@ -3279,9 +3279,9 @@ function updateScores() {
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
-		if (mode.includes("bweek") && score != null && score != -1 && score != "none") {
+		if (mode.includes("bweek") && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null") {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + JSON.parse(score).score;
-		} else if (score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
+		} else if (!mode.includes("bweek") && score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
 		} else {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + "N/A";
@@ -3303,7 +3303,7 @@ function setScore(mode, total) {
 		updateScores();
 	}
 	if (["c_day", "c_day2"].includes(mode)) {
-		if (!localStorage[mode + "_bweek"] || localStorage[mode + "_bweek"] == "none" || 
+		if (!localStorage[mode + "_bweek"] || localStorage[mode + "_bweek"] == "null" || 
 			JSON.parse(localStorage[mode + "_bweek"]).week != week || total < JSON.parse(localStorage[mode + "_bweek"]).score) {
 			document.getElementById("highscore").style.display = "block";
 			localStorage[mode + "_bweek"] = JSON.stringify({week: week, score: total});
@@ -3818,8 +3818,8 @@ async function saveData(username, password, method, al) {
 		topwhite:localStorage.topwhite,
 		m_34: localStorage.m_34 ?? "none",
 		m_4: localStorage.m_4 ?? "none",
-		c_day_bweek: localStorage.c_day_bweek ?? "none",
-		c_day2_bweek: localStorage.c_day2_bweek ?? "none",
+		c_day_bweek: localStorage.c_day_bweek ?? "null",
+		c_day2_bweek: localStorage.c_day2_bweek ?? "null",
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -5431,7 +5431,8 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-
+		localStorage.cdate2 = 0;
+		localStorage.cdate3 = 0;
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
