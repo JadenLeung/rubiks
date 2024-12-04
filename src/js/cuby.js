@@ -89,12 +89,12 @@ export default class Cuby {
 
     }
     if(size == 2){
-      this.back = this.colors.orange;
-      this.front = this.colors.red;
-      this.bottom = this.colors.yellow;
-      this.top = this.colors.white;
-      this.right = this.colors.blue;
-      this.left = this.colors.green;
+      this.back = this.c[this.custom[0][3]];
+      this.front = this.c[this.custom[5][2]];
+      this.bottom = this.c[this.custom[0][1]];
+      this.top = this.c[this.custom[16][0]];
+      this.right = this.c[this.custom[0][5]];
+      this.left = this.c[this.custom[26][4]];
     }
     if(size == 13){
       let a = "";
@@ -509,15 +509,17 @@ export default class Cuby {
     }
     this.p.pop();
   } else {
+    let c1 = this.custom[0][5];
+    let c2 = this.custom[26][4];
     if(this.back != ""){ // orange
       this.p.fill(this.back);
-      if (!["b","g"].includes(getColor(this.back.levels)) && 
-      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+      if (![c1,c2].includes(getColor(this.back.levels)) && 
+      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
         if (this.y == 50)
           this.p.quad(-r, -2*r, -r, r, -2*r, -r, r, 0, -r, -r, 0, -r, 2, 2);
         if (this.y == -50)
           this.p.quad(-r, 0, -r, r, 0, -r, r, 2*r, -r, -r, 2*r, -r, 2, 2);
-      }else if (["b","g"].includes(getColor(this.back.levels))) {
+      }else if ([c1,c2].includes(getColor(this.back.levels))) {
         this.p.quad(-r, -r, 0, r, -r, 0,  r, r, 0,   -r, r, 0, 2, 2);
       } else if (this.x == -50) {
         this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, r, -r, 0, r, -r, 2, 2);
@@ -528,13 +530,13 @@ export default class Cuby {
     
     if(this.front != ""){ // red
       this.p.fill(this.front);
-      if (!["b","g"].includes(getColor(this.front.levels)) && 
-      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+      if (![c1,c2].includes(getColor(this.front.levels)) && 
+      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
         if (this.y == 50)
           this.p.quad(-r, -2*r, r, r, -2*r, r, r, 0, r, -r, 0, r, 2, 2);	
         if (this.y == -50)
           this.p.quad(-r, 2*r, r, r, 2*r, r, r, 0, r, -r, 0, r, 2, 2);	
-      }else if (["b","g"].includes(getColor(this.front.levels))) {
+      }else if ([c1,c2].includes(getColor(this.front.levels))) {
         if (this.z == 50)
           this.p.quad(-r, -r, 0, r, -r, 0, r, r, 0, -r, r, 0, 2, 2);	 
       } else if (this.x == -50) {
@@ -546,14 +548,14 @@ export default class Cuby {
   
     if(this.bottom != ""){ // yellow
       this.p.fill(this.bottom);
-      if (!["b","g"].includes(getColor(this.bottom.levels)) && 
-      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+      if (![c1,c2].includes(getColor(this.bottom.levels)) && 
+      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
         if (this.z == 50)
           this.p.quad(-r, -r, -2*r, r, -r, -2*r, r, -r, 0, -r, -r, 0, 2, 2);
         if (this.z == -50)
           this.p.quad(-r, -r, 2*r, r, -r, 2*r, r, -r, 0, -r, -r, 0, 2, 2);
       } else 
-      if (["b","g"].includes(getColor(this.bottom.levels))) {
+      if ([c1,c2].includes(getColor(this.bottom.levels))) {
         this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2);
       } else if (this.x == -50) {
         this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, -r, r, 0, -r, r, 2, 2);	 
@@ -564,14 +566,14 @@ export default class Cuby {
   
     if(this.top != ""){ // white
       this.p.fill(this.top);
-      if (!["b","g"].includes(getColor(this.top.levels)) && 
-      !["b","g"].includes(getColor(this.left.levels)) && !["b","g"].includes(getColor(this.right.levels))) {
+      if (![c1,c2].includes(getColor(this.top.levels)) && 
+      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
         if (this.z == 50)
           this.p.quad(-r, r, -2*r, r, r, -2*r, r, r, 0, -r, r, 0, 2, 2);	 
         if (this.z == -50)
           this.p.quad(-r, r, 2*r, r, r, 2*r, r, r, 0, -r, r, 0, 2, 2);	
       } else 
-      if (["b","g"].includes(getColor(this.top.levels))) {
+      if ([c1,c2].includes(getColor(this.top.levels))) {
         if (this.y == 50)
           this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2)
       } else if (this.x == -50)
@@ -582,12 +584,12 @@ export default class Cuby {
     
     if(this.right != ""){ // blue
       this.p.fill(this.right);
-      if (["b","g"].includes(getColor(this.top.levels))) {
+      if ([c1,c2].includes(getColor(this.top.levels))) {
         if (this.y == -50)
           this.p.quad(-r, 0, -r, -r, 2*r, -r, -r, 2*r, r, -r, 0, r, 2, 2);   
         if (this.y == 50)
           this.p.quad(-r, 0, -r, -r, -2*r, -r, -r, -2*r, r, -r, 0, r, 2, 2);  
-      } else if (["b","g"].includes(getColor(this.front.levels))) {
+      } else if ([c1,c2].includes(getColor(this.front.levels))) {
         if (this.z == -50)
           this.p.quad(-r, -r, 0, -r, r, 0, -r, r, 2*r, -r, -r, 2*r, 2, 2);  
         if (this.z == 50)
@@ -598,12 +600,12 @@ export default class Cuby {
   
     if(this.left != ""){ // green
       this.p.fill(this.left);
-      if (["b","g"].includes(getColor(this.top.levels))) {
+      if ([c1,c2].includes(getColor(this.top.levels))) {
         if (this.y == -50)
           this.p.quad(r, 0, -r, r, 2*r, -r, r, 2*r, r, r, 0, r, 2, 2);
         if (this.y == 50)
           this.p.quad(r, 0, -r, r, -2*r, -r, r, -2*r, r, r, 0, r, 2, 2);
-      } else if (["b","g"].includes(getColor(this.front.levels))) {
+      } else if ([c1,c2].includes(getColor(this.front.levels))) {
         if (this.z == -50)
           this.p.quad(r, -r, 0, r, r, 0, r, r, 2*r, r, -r, 2*r, 2, 2); 
         if (this.z == 50)
