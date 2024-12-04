@@ -4350,7 +4350,7 @@ function moveX(row, dir) { // switch `i` cubes and rotate theme..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].x === row) {
 			primes = rotateMatrix(CUBE[i].y, CUBE[i].z, dir);
-			tmp[i] = new Cuby(DIM, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i, false, special);
+			tmp[i] = new Cuby(DIM, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special);
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateX(dir);
 			if (CUBE[i].debugging === true) {
@@ -4371,7 +4371,7 @@ function moveY(row, dir) { // switch `j` cubes and rotate them..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].y === row) { // if cubbie in the 'Y' face
 			primes = rotateMatrix(CUBE[i].x, CUBE[i].z, dir); // calculate new position for that cube
-			tmp[i] = new Cuby(DIM, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i, false, special); // buffer theme in a new cubye
+			tmp[i] = new Cuby(DIM, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special); // buffer theme in a new cubye
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateY(dir);
 			if (CUBE[i].debugging === true) {
@@ -4392,7 +4392,7 @@ function moveZ(row, dir) { // switch `z` cubes and rotate them..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].z === row) { // if cubbie in the 'z' face
 			primes = rotateMatrix(CUBE[i].x, CUBE[i].y, dir); // calculate new position for that cube
-			tmp[i] = new Cuby(DIM, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i, false, special); // buffer theme in a new cubye
+			tmp[i] = new Cuby(DIM, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i, allcubies, special); // buffer theme in a new cubye
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateZ(dir);
 			if (CUBE[i].debugging === true) {
@@ -4873,9 +4873,6 @@ function shuffleCube(nb) {
 			let col = TOPWHITE.value()[0];
 			col = col.toLowerCase();
 			let op = opposite[col];
-			if (DIM == 2) {
-				[col, op] = ['g', 'b'];
-			}
 			if(SCRAM.value() == "Gearcube"){
 				if(rnd2 < 0.5){
 					arr.push((rnd + "w"));
