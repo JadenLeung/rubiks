@@ -3008,7 +3008,7 @@ function accountmode() {
 	document.getElementById("l_title").innerHTML = "Create an Account";
 	document.getElementById("l_forgot").innerText = "Have an account?";
 	document.getElementById("l_link").innerText = "Log in";
-	setDisplay("none", ["test_alg_div"]);
+	setDisplay("none", ["test_alg_div", "timeselect"]);
 	setDisplay("block", ["loginform"]);
 	
 	var elements = document.getElementsByClassName('normal');
@@ -3036,7 +3036,7 @@ function loginmode() {
 	document.getElementById("l_title").innerHTML = "Enter your Login Credentials";
 	document.getElementById("l_forgot").innerText = "Don't have an account?";
 	document.getElementById("l_link").innerText = "Sign up";
-	setDisplay("none", ["test_alg_div"]);
+	setDisplay("none", ["test_alg_div", "timeselect"]);
 	setDisplay("block", ["loginform"]);
 	
 	var elements = document.getElementsByClassName('normal');
@@ -3274,11 +3274,14 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2"];
-	display = {m_easy: "Easy", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2", c_day: "Daily 3x3"};
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek"];
+	display = {m_easy: "Easy", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
+		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
-		if (score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
+		if (mode.includes("bweek") && score != null && score != -1 && score != "none") {
+			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + JSON.parse(score).score;
+		} else if (score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
 		} else {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + "N/A";
@@ -3298,6 +3301,14 @@ function setScore(mode, total) {
 			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceNov3('d'));
 		}
 		updateScores();
+	}
+	if (["c_day", "c_day2"].includes(mode)) {
+		if (!localStorage[mode + "_bweek"] || localStorage[mode + "_bweek"] == "none" || 
+			JSON.parse(localStorage[mode + "_bweek"]).week != week || total < JSON.parse(localStorage[mode + "_bweek"]).score) {
+			document.getElementById("highscore").style.display = "block";
+			localStorage[mode + "_bweek"] = JSON.stringify({week: week, score: total});
+			updateScores();
+		}
 	}
 }
 function easy() 
@@ -3807,6 +3818,8 @@ async function saveData(username, password, method, al) {
 		topwhite:localStorage.topwhite,
 		m_34: localStorage.m_34 ?? "none",
 		m_4: localStorage.m_4 ?? "none",
+		c_day_bweek: localStorage.c_day_bweek ?? "none",
+		c_day2_bweek: localStorage.c_day2_bweek ?? "none",
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -3863,7 +3876,7 @@ async function loadData(times) {
 				localStorage[param] = userdata[index][param];
 			}
 		})
-		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3"];
+		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3", "c_day_bweek", "c_day2_bweek"];
 		params.forEach((param) => {
 				localStorage[param] = userdata[index][param];
 		})
@@ -5418,8 +5431,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(savetimes);
-		console.log(scrambles);
+
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
