@@ -20,7 +20,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
-	let DIM5 = 50;
+	const NOMOUSE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -1324,7 +1324,7 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && !NOMOUSE.includes(DIM) && !MODDIM.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -2040,12 +2040,14 @@ function changeZero()
 }
 function changeFour(){
 	DIM = 1;
+	DIM2 = 50;
 	changeCam(3);
 	refreshButtons();
 	ONEBYTHREE.style('background-color', "#8ef5ee");
 }
 function changeFive(){
 	DIM = 2;
+	DIM2 = 50;
 	changeCam(3);
 	INPUT.value("3x3x2");
 	SCRAM.value("Like a 3x3x2");
@@ -2054,12 +2056,15 @@ function changeFive(){
 }
 function changeSix(){
 	DIM = 3;
+	DIM2 = 50;
 	changeCam(3);
+	SCRAM.value("Middle Slices");
 	refreshButtons();
 	CUBE3.style('background-color', "#8ef5ee");
 }
 function changeSeven(){
 	DIM = 4;
+	DIM2 = 50;
 	changeCam(3);
 	refreshButtons();
 	CUBE4.style('background-color', "#8ef5ee");
@@ -2073,6 +2078,7 @@ function change8(){
 }
 function change10(){
 	DIM = 6;
+	DIM2 = 50;
 	changeCam(3);
 	refreshButtons();
 	CUBE6.style('background-color', "#8ef5ee");
@@ -2082,45 +2088,52 @@ function changeBan(dim, b)
 	bandaged = b;
 	DIM = dim;
 	changeCam(3);
+	DIM2 = 50;
 	refreshButtons();
 }
 function change11(dim, b){
 	changeBan(dim, b)
+	DIM2 = 50;
 	CUBE7.style('background-color', "#8ef5ee");
 }
 function change12(dim, b){
 	changeBan(dim, b)
+	DIM2 = 50;
 	CUBE8.style('background-color', "#8ef5ee");
 }
 function change13(dim, b){
 	changeBan(dim, b)
+	DIM2 = 50;
 	CUBE9.style('background-color', "#8ef5ee");
 }
 function change14(dim, b){
 	bandaged = b;
 	DIM = dim;
-
+	DIM2 = 100;
 	changeCam(2);
 	refreshButtons();
 	CUBE10.style('background-color', "#8ef5ee");
 }
 function change15(dim, b){
 	changeBan(dim, b)
+	DIM2 = 50;
 	CUBE11.style('background-color', "#8ef5ee");
 }
 function change16(dim, b){
 	changeBan(dim, b)
+	DIM2 = 50;
 	CUBE12.style('background-color', "#8ef5ee");
 }
 function change17(){
 	DIM = 13;
-
+	DIM2 = 50;
 	changeCam(3);
 	refreshButtons();
 	CUBE13.style('background-color', "#8ef5ee");
 }
 function change18(dim, b){
 	changeBan(dim, b)
+	DIM2 = 50;
 	CUBE14.style('background-color', "#8ef5ee");
 }
 function changeMod(){
@@ -2163,7 +2176,7 @@ function change9(cubies)
 	DIM[5] = SEL6.value();
 	if(SEL7.value() == "3x3")
 	{
-	
+		DIM2 = 50;
 		if(DIM3 == 2)
 		{
 			for(let i = 0; i < 27; i++)
@@ -2198,6 +2211,7 @@ function change9(cubies)
 	}
 	else
 	{
+		DIM2 = 100;
 		DIM3 = 2;
 		let arr3 = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
 		for(let i = 0; i < 27; i++)
@@ -2665,7 +2679,7 @@ function regular(nocustom){
 	DIM = DIM2;
 	if(MODE == "cube")
 	{
-		if(DIM == 100)
+		if(localStorage.startcube && localStorage.startcube == 2)
 			changeTwo();
 		else
 			changeThree();
@@ -4602,7 +4616,7 @@ function getCubyByColor(arr1) {
 }
 function getCubyIndexByColor2(arr1) //original
 {
-	//console.log(arr1);
+	console.log(arr1);
 	let realcolor = getColor(arr1);
 	//console.log(realcolor);
 	let allcolors = [];
@@ -4615,7 +4629,7 @@ function getCubyIndexByColor2(arr1) //original
 	allcolors["k"] = [25, 25, 25];
 	allcolors["m"] = [245, 25, 245];
 
-	if(customb == 1 || allcubies)
+	if(true || customb == 1 || allcubies)
 	{
 		let distcolor = [];
 		allcolors["k"] = [0,0,0];
@@ -4640,31 +4654,30 @@ function getCubyIndexByColor2(arr1) //original
 		else if(distcolor[2] == -1) addon += 2;
 		else if(distcolor[2] == 1) addon += 0;
 		else return false;
-		if(addon == 13) return false;
 		if(addon >= 0 && addon <= 26) return addon;
 		return false;
 	}
 
-	const lookup = {
-		"[218,124,24,255]": 0, "[218,125,24,255]": 3, "[218,126,24,255]": 6,
-		"[219,124,24,255]": 9, "[219,125,24,255]": 12, "[219,126,24,255]": 15,
-		"[220,124,24,255]": 18, "[220,125,24,255]": 21, "[220,126,24,255]": 24,
-		"[249,251,249,255]": 6, "[249,251,250,255]": 7, "[249,251,251,255]": 8,
-		"[250,251,249,255]": 15, "[250,251,250,255]": 16, "[250,251,251,255]": 17,
-		"[251,251,249,255]": 24, "[251,251,250,255]": 25, "[251,251,251,255]": 26,
-		"[24,104,218,255]": 0, "[24,104,219,255]": 1, "[24,104,220,255]": 2,
-		"[24,105,218,255]": 3, "[24,105,219,255]": 4, "[24,105,220,255]": 5,
-		"[24,106,218,255]": 6, "[24,106,219,255]": 7, "[24,106,220,255]": 8,
-		"[218,26,26,255]": 8, "[218,25,26,255]": 5, "[218,24,26,255]": 2,
-		"[219,26,26,255]": 17, "[219,25,26,255]": 14, "[219,24,26,255]": 11,
-		"[220,26,26,255]": 26, "[220,25,26,255]": 23, "[220,24,26,255]": 20,
-		"[26,220,30,255]": 24, "[26,220,31,255]": 25, "[26,220,32,255]": 26,
-		"[26,219,30,255]": 21, "[26,219,31,255]": 22, "[26,219,32,255]": 23,
-		"[26,218,30,255]": 18, "[26,218,31,255]": 19, "[26,218,32,255]": 20,
-		"[208,218,26,255]": 2, "[208,218,25,255]": 1, "[208,218,24,255]": 0,
-		"[209,218,26,255]": 11, "[209,218,25,255]": 10, "[209,218,24,255]": 9,
-		"[210,218,26,255]": 20, "[210,218,25,255]": 19, "[210,218,24,255]": 18
-	};
+	// const lookup = {
+	// 	"[218,124,24,255]": 0, "[218,125,24,255]": 3, "[218,126,24,255]": 6,
+	// 	"[219,124,24,255]": 9, "[219,125,24,255]": 12, "[219,126,24,255]": 15,
+	// 	"[220,124,24,255]": 18, "[220,125,24,255]": 21, "[220,126,24,255]": 24,
+	// 	"[249,251,249,255]": 6, "[249,251,250,255]": 7, "[249,251,251,255]": 8,
+	// 	"[250,251,249,255]": 15, "[250,251,250,255]": 16, "[250,251,251,255]": 17,
+	// 	"[251,251,249,255]": 24, "[251,251,250,255]": 25, "[251,251,251,255]": 26,
+	// 	"[24,104,218,255]": 0, "[24,104,219,255]": 1, "[24,104,220,255]": 2,
+	// 	"[24,105,218,255]": 3, "[24,105,219,255]": 4, "[24,105,220,255]": 5,
+	// 	"[24,106,218,255]": 6, "[24,106,219,255]": 7, "[24,106,220,255]": 8,
+	// 	"[218,26,26,255]": 8, "[218,25,26,255]": 5, "[218,24,26,255]": 2,
+	// 	"[219,26,26,255]": 17, "[219,25,26,255]": 14, "[219,24,26,255]": 11,
+	// 	"[220,26,26,255]": 26, "[220,25,26,255]": 23, "[220,24,26,255]": 20,
+	// 	"[26,220,30,255]": 24, "[26,220,31,255]": 25, "[26,220,32,255]": 26,
+	// 	"[26,219,30,255]": 21, "[26,219,31,255]": 22, "[26,219,32,255]": 23,
+	// 	"[26,218,30,255]": 18, "[26,218,31,255]": 19, "[26,218,32,255]": 20,
+	// 	"[208,218,26,255]": 2, "[208,218,25,255]": 1, "[208,218,24,255]": 0,
+	// 	"[209,218,26,255]": 11, "[209,218,25,255]": 10, "[209,218,24,255]": 9,
+	// 	"[210,218,26,255]": 20, "[210,218,25,255]": 19, "[210,218,24,255]": 18
+	// };
 
 	return lookup[JSON.stringify(arr1)] ?? false;
 	//if(JSON.stringify(arr1) == "[0,0,0,255]")
@@ -5216,7 +5229,7 @@ function arraysEqual(arr1, arr2) {
 }
 
 function startAction() {	
-	if(MODE == "cube" && DIM != 2 && !MODDIM.includes(DIM) && custom != 2) return; 
+	if(MODE == "cube" && !NOMOUSE.includes(DIM) && !MODDIM.includes(DIM) && custom != 2) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
 		raceDetect();
 		return;
@@ -5237,7 +5250,7 @@ function startAction() {
 	console.log(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels));
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
-		console.log(cuby);
+		console.log("Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -8797,9 +8810,6 @@ function dragAction()
 }
 function dragCube(cuby1, color1, cuby2, color2)
 {
-	let turnface = [];
-	let colorx = -1;
-	let colory = -1;
 	if(!canMan)
 	return;
 	if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
@@ -8814,324 +8824,101 @@ function dragCube(cuby1, color1, cuby2, color2)
 		bad5 = ['U','D','F','B','E','S'];
 	else bad5 = ['L','R','U','D','E','M']; // front
 
-	for(let i = 0; i < 6; i++)
-	{
-		colorx = -1;
-		colory = -1;
-		let times = 0;
-		for(let x = 0; x < 3; x++)
-		{
-			for(let y = 0; y < 3; y++)
-			{
-				let testnum = +(layout[i][x][y][2] + layout[i][x][y][3]);
-				if(testnum == cuby1 || testnum == cuby2)
-				{
-					times++;
-					if(cuby1 == cuby2) times++;
-					if(testnum == cuby2)
-					{
-						colorx = x;
-						colory = y;
-					}
-					
-				}
-			}
-		}
-		console.log("times " + times);
-		if(times >= 2)
-		{
-			turnface.push([i,colorx,colory]);
-		}
-	}
-	console.log("turnface is ", turnface);
-	if(turnface.length == 1 || (turnface.length == 2 && cuby1 == cuby2))
-	{
-		console.log("Love me some middle slices");
-		let i = turnface[0][0];
-		let cuby3 = getPos(cuby1);
-		let cuby4 = getPos(cuby2);
+	if (cuby1 == cuby2) { // turning over
+		arr = [];
 		let face1 = getFace(cuby1, color1);
 		let face2 = getFace(cuby2, color2);
-		if(getPos(cuby1)[0] == getPos(cuby2)[0] && getPos(cuby2)[0] == 0)
-		{
-			let arrange = [0, 5, 1, 4, 0];
-			if(cuby1 == cuby2)
-			{
-				let index = arrange.indexOf(face1);
-				if(arrange[index+1] == face2)
-				arr = ["E"];
-				else
-				arr = ["E'"]
-			}
-			else if(i == 0 || i == 5)
-			if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-			arr = ["E'"];
-			else
-			arr = ["E"];
-			else
-			if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-			arr = ["E'"]
-			else
-			arr = ["E"];
-			if(INPUT.value() == "Double")
-				arr.push(arr[0]);
-			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
-				arr.push(arr[0]);
-			if(INPUT.value() == "Gearcube")
-				arr = [];
-			multiple(0, true);
-			selectedCuby = -1;
-			selectedColor = [];
-			return;
-		}
-		if(getPos(cuby1)[1] == getPos(cuby2)[1] && getPos(cuby2)[1] == 0)
-		{
-			let arrange = [2, 1, 3, 0, 2];
-			if(cuby1 == cuby2)
-			{
-				let index = arrange.indexOf(face1);
-				if(arrange[index+1] == face2)
-				arr = ["S"];
-				else
-				arr = ["S'"];
-			}
-			else if(i == 1 || i == 2)
-			if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-			arr = ["S'"];
-			else
-			arr = ["S"];
-			else
-			if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-			arr = ["S'"]
-			else
-			arr = ["S"];
-			if(INPUT.value() == "Double")
-				arr.push(arr[0]);
-			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
-				arr.push(arr[0]);
-			if(INPUT.value() == "Gearcube")
-				arr = [];
-			multiple(0, true);
-			selectedCuby = -1;
-			selectedColor = [];
-			return;
-		}
-		if(getPos(cuby1)[2] == getPos(cuby2)[2] && getPos(cuby2)[2] == 0)
-		{
-			let arrange = [2, 5, 3, 4, 2];
-			if(cuby1 == cuby2)
-			{
-				let index = arrange.indexOf(face1);
-				if(arrange[index+1] == face2)
-				arr = ["M"];
-				else
-				arr = ["M'"]
-			}
-			else if(i == 2 || i == 5)
-			if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-			arr = ["M'"];
-			else
-			arr = ["M"];
-			else
-			if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-			arr = ["M'"]
-			else
-			arr = ["M"];
-			if(INPUT.value() == "Double")
-				arr.push(arr[0]);
-			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
-				arr.push(arr[0]);
-			if(INPUT.value() == "Gearcube")
-				arr = [];
-			multiple(0, true);
-			selectedCuby = -1;
-			selectedColor = [];
-			return;
-		}
-	}
-	if(turnface.length < 2)
-	{
-		//console.log("length error", turnface);
-		return false;
-	}
-	for(let i = 0; i < turnface.length; i++)
-	{
-		let testface = turnface[i][0];
-		let testx = turnface[i][1];
-		let testy = turnface[i][2];
-		let testface2 = 0;
-		if(turnface.length == 2)
-		testface2 = turnface[1-i][0];
-		if(layout[testface][testx][testy][0] != getColor(color2) && (turnface.length == 2 || layout[testface][testx][testy][0] != getColor(color1)))
-		{
-			console.log("working", turnface, layout[testface][testx][testy][0], testface, getColor(color2), getColor(color1));
-			let cuby3 = getPos(cuby1);
-			let cuby4 = getPos(cuby2);
-			let face1 = getFace(cuby1, color1);
-			let face2 = getFace(cuby2, color2);
-			if(testface == 0){
-				let arrange = [2, 5, 3, 4, 2];
-				if(turnface.length == 3)
-				{
-					let index = arrange.indexOf(face1);
-					if(arrange[index+1] == face2)
-					arr = ["L"];
-					else
-					arr = ["L'"]
-				}
-				else if(testface2 == 3 || testface2 == 4)
-				{
-					if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-					arr = ["L"]
-					else
-					arr = ["L'"];
-				}
-				else
-				{
-					if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-					arr = ["L"]
-					else
-					arr = ["L'"];
+		const vec1 = [CUBE[cuby1].x, CUBE[cuby1].y, CUBE[cuby1].z];
+		const vec2 = [CUBE[cuby2].x, CUBE[cuby2].y, CUBE[cuby2].z];
+		const TURNARRS = [
+		{dirs: [5, 2, 4, 3, 5], vec: 2, turn:["L'", "M'", "R"]},
+		{dirs: [5, 1, 4, 0, 5], vec: 0, turn:["U'", "E", "D"]},
+		{dirs: [2, 1, 3, 0], vec: 1, turn:["B'", "S", "F"]},
+		];
+		TURNARRS.forEach((TURN) => {
+			let index = TURN.dirs.indexOf(face1);
+			let index2 = TURN.dirs.indexOf(face2);
+			if (index != -1 && index2 != -1 && (TURN.dirs[index+1] == face2 || TURN.dirs[index2+1] == face1)) {
+				if (vec1[TURN.vec] == -50) arr = [TURN.turn[0]];
+				if (vec1[TURN.vec] == 0) arr = [TURN.turn[1]];
+				if (vec1[TURN.vec] == 50) arr = [TURN.turn[2]];
+				if (TURN.dirs[index2+1] == face1) {
+					arr[0] = Inverse(arr[0]);
 				}
 			}
-			if(testface == 1){
-				let arrange = [2, 5, 3, 4, 2];
-				if(turnface.length == 3)
-				{
-					let index = arrange.indexOf(face1);
-					if(arrange[index+1] == face2)
-					arr = ["R'"];
-					else
-					arr = ["R"]
-				}
-				else if(testface2 == 3 || testface2 == 4)
-				{
-					if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-					arr = ["R"]
-					else
-					arr = ["R'"];
-				}
-				else
-				{
-					if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-					arr = ["R"]
-					else
-					arr = ["R'"];
-				}
-			}
-			if(testface == 2){
-				let arrange = [0, 5, 1, 4, 0];
-				if(turnface.length == 3)
-				{
-					let index = arrange.indexOf(face1);
-					if(arrange[index+1] == face2)
-					arr = ["U'"];
-					else
-					arr = ["U"]
-				}
-				else if(testface2 == 0 || testface2 == 5)
-				{
-					if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-					arr = ["U"]
-					else
-					arr = ["U'"];
-				}
-				else
-				{
-					if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-					arr = ["U"]
-					else
-					arr = ["U'"];
-				}
-			}
-			if(testface == 3){
-				let arrange = [0, 5, 1, 4, 0];
-				if(turnface.length == 3)
-				{
-					let index = arrange.indexOf(face1);
-					if(arrange[index+1] == face2)
-					arr = ["D"];
-					else
-					arr = ["D'"]
-				}
-				else if(testface2 == 0 || testface2 == 5)
-				{
-					if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-					arr = ["D"]
-					else
-					arr = ["D'"];
-				}
-				else
-				{
-					if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-					arr = ["D"]
-					else
-					arr = ["D'"];
-				}
-			}
-			if(testface == 4){
-				let arrange = [0, 2, 1, 3, 0];
-				if(turnface.length == 3)
-				{
-					let index = arrange.indexOf(face1);
-					if(arrange[index+1] == face2)
-					arr = ["B'"];
-					else
-					arr = ["B"];
-				}
-				else if(testface2 == 2 || testface2 == 1)
-				{
-					if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-					arr = ["B"]
-					else
-					arr = ["B'"];
-				}
-				else
-				{
-					if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-					arr = ["B"]
-					else
-					arr = ["B'"];
-				}
-			}
-			if(testface == 5){
-				let arrange = [0, 2, 1, 3, 0];
-				if(turnface.length == 3)
-				{
-					let index = arrange.indexOf(face1);
-					if(arrange[index+1] == face2)
-					arr = ["F"];
-					else
-					arr = ["F'"];
-				}
-				else if(testface2 == 2 || testface2 == 1)
-				{
-					if(cuby3[0] < cuby4[0] || cuby3[1] < cuby4[1] || cuby3[2] < cuby4[2])
-					arr = ["F"]
-					else
-					arr = ["F'"];
-				}
-				else
-				{
-					if(cuby3[0] > cuby4[0] || cuby3[1] > cuby4[1] || cuby3[2] > cuby4[2])
-					arr = ["F"]
-					else
-					arr = ["F'"];
-				}
-			}
-			if(INPUT.value() == "Double")
-				arr.push(arr[0]);
-			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
-				arr.push(arr[0]);
-			if(INPUT.value() == "Gearcube")
+		})
+		if(INPUT.value() == "Double")
+			arr.push(arr[0]);
+		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
+			arr.push(arr[0]);
+		if(INPUT.value() == "Gearcube") {
+			if (['M', 'S', 'E'].includes(arr[0][0])) {
+				arr = []
+			} else {
 				arr.unshift(toGearCube(arr[0]));
-			multiple(0, true);
-			selectedCuby = -1;
-			selectedColor = [];
-			return true;
+			}
 		}
+		multiple(0, true);
+		selectedCuby = -1;
+		selectedColor = [];
+		return;
+	} else if (getFace(cuby1, color1) == getFace(cuby2, color2)) {
+		let face1 = getFace(cuby1, color1);
+		const TURNARR = [
+			{axis: "z", turn:["L'", "M'", "R"], faces:
+			[{face: 5, order: [50,0,-50], upaxis: "x"},
+			{face: 2, order: [50,0,-50], upaxis: "y"},
+			{face: 4, order: [-50,0,50], upaxis: "x"},
+			{face: 3, order: [-50,0,50], upaxis: "y"}]},
+
+			{axis: "x", turn:["U'", "E", "D"], faces:
+			[{face: 5, order: [-50,0, 50], upaxis: "z"},
+			{face: 1, order: [50,0,-50], upaxis: "y"},
+			{face: 4, order: [50,0,-50], upaxis: "z"},
+			{face: 0, order: [-50,0,50], upaxis: "y"}]},
+
+			{axis: "y", turn:["B'", "S", "F"], faces:
+			[{face: 2, order: [-50,0, 50], upaxis: "z"},
+			{face: 1, order: [-50,0,50], upaxis: "x"},
+			{face: 3, order: [50,0,-50], upaxis: "z"},
+			{face: 0, order: [50,0,-50], upaxis: "x"}]},
+	
+		];
+		let good = false;
+		TURNARR.forEach((FACE) => {
+			if (CUBE[cuby1][FACE.axis] == CUBE[cuby2][FACE.axis]) {
+				FACE.faces.forEach((f) => {
+					if (face1 == f.face && !good) {
+						if (CUBE[cuby1][FACE.axis] == -50) arr = [FACE.turn[0]];
+						if (CUBE[cuby1][FACE.axis] == 0) arr = [FACE.turn[1]];
+						if (CUBE[cuby1][FACE.axis] == 50) arr = [FACE.turn[2]];
+						let index = f.order.indexOf(CUBE[cuby1][f.upaxis]);
+						let index2 = f.order.indexOf(CUBE[cuby2][f.upaxis]);
+						if (index > index2) {
+							arr[0] = Inverse(arr[0]);
+						}
+						good = true;
+					}
+				});
+			}
+		})
+		if(INPUT.value() == "Double")
+			arr.push(arr[0]);
+		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0])) {
+			arr.push(arr[0]);
+		}
+		if(INPUT.value() == "Gearcube") {
+			if (['M', 'S', 'E'].includes(arr[0][0])) {
+				arr = []
+			} else {
+				arr.unshift(toGearCube(arr[0]));
+			}
+		}
+		multiple(0, true);
+		selectedCuby = -1;
+		selectedColor = [];
+		return true;
 	}
-	console.log("Loser_error")
 	return false;
 }
 function toGearCube(move){
@@ -9197,7 +8984,16 @@ p.draw = () => {
 }
 function getFace(cuby1, color1)
 {
-	for(let i = 0; i < 6; i++)
+	const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
+	let dir = null;
+	Object.keys(dirs).forEach((d) => {
+		if (!CUBE[cuby1] || !CUBE[cuby1].hasOwnProperty(d)) return;
+		if (getColor(CUBE[cuby1][d].levels) == getColor(color1)) {
+			dir = dirs[d];
+		}
+	})
+	return dir;
+	/*for(let i = 0; i < 6; i++)
 	{
 		for(let x = 0; x < 3; x++)
 		{
@@ -9210,7 +9006,7 @@ function getFace(cuby1, color1)
 				}
 			}
 		}
-	}
+	}*/
 	return;
 }
 function F2ldist(color1, color2, color3, center1, center2, center3, center4, xx)
