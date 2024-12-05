@@ -715,9 +715,9 @@ p.setup = () => {
 		["`", "Scramble"],
 		["⇧ `", "Autosolve"],
 		["=", "Redo"],
-		["⇧ =", "Redo x3"],
+		["⇧ =", "Redo Til Rotate"],
 		["Bspace", "Undo"],
-		["⇧ Bspace", "Undo x3"],
+		["⇧ Bspace", "Undo Til Rotate"],
 		["Tab", "Toggle fullscreen"],
 		["⇧ Tab", "Toggle halfscreen"],
 		["Space", "Stop Time"],
@@ -731,7 +731,7 @@ p.setup = () => {
 		["4", "Align Camera"],
 		["⇧ 4", "Fewest Moves"],
 		["7", "Alert Position ID"],
-		["", ""],
+		["⇧ 7", "Copy Position ID"],
 		["8", "Delete previous time"],
 		["⇧ 8", "Remove all times"],
 		["9", "Load Data"],
@@ -797,7 +797,7 @@ p.setup = () => {
 	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', () => {
 		allcubies = false;
 		reSetup();
-		TOPWHITE.value("White");
+		TOPWHITE.value(localStorage.topwhite);
 		topWhite();
 	});
 
@@ -5431,8 +5431,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		localStorage.cdate2 = 0;
-		localStorage.cdate3 = 0;
+		console.log(undoTillRotate(), undo);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -5510,7 +5509,12 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 55){ //7
-		alert(getID());
+		if (p.keyIsDown(p.SHIFT)) {
+			navigator.clipboard.writeText(getID());
+			successSQL("Position ID Copied");
+		} else {
+			alert(getID());
+		}
 		return;
 	}
 	if(p.keyCode == 45)
@@ -5876,14 +5880,14 @@ p.keyPressed = (event) => {
 			break;
 			case 8: //backspace
 			if (p.keyIsDown(p.SHIFT))
-				flexDo(Undo, undo, 3);
+				flexDo(Undo, undo, true);
 			else
 				flexDo(Undo, undo);
 			break;
 			case 61:
 			case 187: //equals
 			if (p.keyIsDown(p.SHIFT))
-				flexDo(Redo, redo, 3);
+				flexDo(Redo, redo, true);
 			else
 				flexDo(Redo, redo);
 			break;
@@ -6114,11 +6118,24 @@ function changeArr2(str, len)
 	if(arr.length == 0 || len < arr.length)
 		changeArr(str);
 }
-function flexDo(foo, arr, mul = 1) {
-	if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c)) || bandaged.length > 0) {
-		funcMult(foo, mul);
+function undoTillRotate(arr) {
+	if (arr.length == 0) return 0;
+	let cnt = 1;
+	for (let n = arr.length - 2; n >= 0; n--) {
+		if (['x', 'y','z'].includes(arr[n][0])) {
+			break;
+		}
+		cnt++;
+	}
+	return cnt;
+}
+function flexDo(foo, arr, shift = false) {
+	if (shift) {
+		funcMult(foo, undoTillRotate(arr));
+	} else if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c)) || bandaged.length > 0) {
+		funcMult(foo, 1);
 	} else if (INPUT.value() == "Double" || INPUT.value() == "Gearcube") {
-		funcMult(foo, 2 * mul);
+		funcMult(foo, 2);
 	} else if (INPUT.value() == "3x3x2") {
 		let bad5 = [];
 		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
@@ -6126,12 +6143,12 @@ function flexDo(foo, arr, mul = 1) {
 		else if(setup[2] == -50 || setup[2] == 50) bad5 = ['U','D','F','B','E','S'];
 		else bad5 = ['L','R','U','D','E','M']; // front
 		if (bad5.includes(arr[arr.length - 1][0])) {
-			funcMult(foo, 2 * mul);
+			funcMult(foo, 2);
 		} else {
-			funcMult(foo, 1 * mul);
+			funcMult(foo, 1);
 		}
 	} else {
-		funcMult(foo, mul);
+		funcMult(foo, 1);
 	}
 }
 function funcMult(foo, times) {
