@@ -4618,6 +4618,7 @@ function getCubyIndexByColor2(arr1) //original
 {
 	console.log(arr1);
 	let realcolor = getColor(arr1);
+	if (realcolor == "k") return false;
 	//console.log(realcolor);
 	let allcolors = [];
 	allcolors["w"] = [250, 250, 250];
@@ -4632,7 +4633,6 @@ function getCubyIndexByColor2(arr1) //original
 	if(true || customb == 1 || allcubies)
 	{
 		let distcolor = [];
-		// allcolors["k"] = [0,0,0];
 		distcolor[0] = allcolors[realcolor][0] - arr1[0];
 		distcolor[1] = allcolors[realcolor][1] - arr1[1];
 		distcolor[2] = allcolors[realcolor][2] - arr1[2];
