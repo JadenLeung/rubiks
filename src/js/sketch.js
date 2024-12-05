@@ -186,7 +186,7 @@ export default function (p) {
 	[[0, 0, 0],[0, 0, 0],[0, 0, 0]]
 ];
 
-if (localStorage.saveao5 && localStorage.saveao5[0] && !localStorage.saveao5[0].hasOwnProperty("ao5")) {
+if (localStorage.saveao5 && JSON.parse(localStorage.saveao5) && !JSON.parse(localStorage.saveao5)[0].hasOwnProperty("ao5")) {
 	localStorage.removeItem("saveao5")
 }
 if (localStorage.saveao5) {
