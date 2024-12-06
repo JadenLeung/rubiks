@@ -20,7 +20,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
-	const NOMOUSE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+	const NOMOUSE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -1478,6 +1478,7 @@ function reSetup(rot) {
 			}
 		}
 	}
+	reCam();
 }
 function to132(num) {
 	var order = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*(){|}~ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
@@ -1510,18 +1511,20 @@ function rotateIt(){
 }
 function changeKeys(){
 	if(KEYBOARD.value() == "Default"){
+		document.getElementById("changekeys5").innerHTML = "<td colspan = '2'><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = '2'><sup>Esc</sup><sub>reset</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '3'><sup>Bspace</sup><sub>undo</sub></td></tr>";
 		document.getElementById("changekeys0").innerHTML = "<td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td>"
 		document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>z'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>x</sub></td><td><sup>Y</sup> <sub>x</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>z</sub></td>"
 		document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>y'</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>y</sub></td>";
 		document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub>M'</sub></td><td><sup>C</sup> <sub>u'</sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>x'</sub></td><td><sup>N</sup> <sub>x'</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>u</sub></td><td><sup>.</sup> <sub>M'</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
-		document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '4'><sup>Space</sup> <sub>stop time</sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td>";
+		document.getElementById("changekeys4").innerHTML = "<td colspan = '3'><sup>Shift</sup> <sub>x2 move</sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
 	}
 	else{
+		document.getElementById("changekeys5").innerHTML = "<td colspan = '2'><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = '2'><sup>Esc</sup><sub>reset</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '3'><sup>Bspace</sup><sub>undo</sub></td></tr>";
 		document.getElementById("changekeys0").innerHTML = ""
 		document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td>"
 		document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td>";
 		document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
-		document.getElementById("changekeys4").innerHTML = "<td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
+		document.getElementById("changekeys4").innerHTML = "<td colspan = '3'><sup>Shift</sup> <sub>x2 move</sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
 	}
 }
 function decode(num){
@@ -2751,7 +2754,7 @@ function timedmode()
 	TIMEDMODE.style('background-color', '#8ef5ee');
 	TIMEDMODE2.style('background-color', "#8ef5ee");
 
-	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct", "or_instruct2", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input"]);
+	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct", "or_instruct2", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1"]);
 	setDisplay("block", ["type3"]);
 	document.getElementById("or_instruct3").innerHTML = "";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -3059,6 +3062,7 @@ function loginmode() {
 	}
 }
 function hotkeymode() {
+	MODE = "hotkey";
 	setDisplay("none", ["settings1"]);
 	setDisplay("block", ["hotkey1"]);
 }
@@ -3076,7 +3080,7 @@ function settingsmode()
 	refreshButtons();
 	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
-	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", "timeselect"]);
+	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", "timeselect", "ID1"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
@@ -5647,7 +5651,16 @@ p.keyPressed = (event) => {
 		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
 			
 		let bad6 = [190,188,65,186,80,81,59];
-		if((INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))){
+		if(p.keyIsDown(p.SHIFT) && ([37,38,39,40].includes(p.keyCode) || ([1000, 1001].includes(p.keyCode) && KEYBOARD.value() == "Default"))) {
+			if(p.keyCode == 37) changeArr("y2");
+			if(p.keyCode == 38) changeArr("x2");
+			if(p.keyCode == 39) changeArr("y2'");
+			if(p.keyCode == 40) changeArr("x2'");
+			if(p.keyCode == 1001) changeArr("z2");
+			if(p.keyCode == 1000) changeArr("z2'");
+			multiple(0, true);	
+			return;
+		} else if((INPUT.value() != "Gearcube" && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || (INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))){
 			redo = [];
 			if(p.keyCode == 83) changeArr("D2")
 			if(p.keyCode == 76) changeArr("D2'")
@@ -5679,8 +5692,7 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 191) changeArr("Dw2'")
 			multiple(0, true);	
 			return;
-		}
-		else if(INPUT.value() == "Gearcube" && bad4.includes(p.keyCode)){
+		} else if(INPUT.value() == "Gearcube" && bad4.includes(p.keyCode)){
 			if(bad6.includes(p.keyCode))
 				return;
 			redo = [];
@@ -6003,6 +6015,38 @@ function multiple(nb, timed) {
 	return;
 	if (nb < arr.length) {
 		canMan = false;
+		let cubies = [];
+		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
+		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
+		if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+		if(DIM == 50){
+			cubies = [];
+			for(let i = 0; i < 27; i++){
+				if(CUBE[i].stroke != 0) cubies.push(i);
+			}
+		}
+		if(Array.isArray(DIM) && DIM[0] != "adding")
+		{
+			cubies = [];
+			for(let i = 0; i < 27; i++)
+			{
+				if(!DIM[6].includes(i))
+					cubies.push(i);
+			}
+		}
+		alldown = false;
+		if((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50)){
+			alldown = true;
+			if(arr[0][0] == "D") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
+			if(arr[0][0] == "U") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
+			if(arr[0][0] == "L") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
+			if(arr[0][0] == "R") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
+			if(arr[0][0] == "F") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
+			if(arr[0][0] == "B") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
+			if(arr[0][0] == "E") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
+			if(arr[0][0] == "M") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
+			if(arr[0][0] == "S") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 0);
+		}
 		notation(arr[nb], timed);
 		let bad = -1;
 		if(undo.length > 0)
@@ -6127,7 +6171,7 @@ function changeArr2(str, len)
 		changeArr(str);
 }
 function undoTillRotate(arr) {
-	if (arr.length == 0) return 0;
+	if (!arr || arr.length == 0) return 0;
 	let cnt = 1;
 	for (let n = arr.length - 2; n >= 0; n--) {
 		if (['x', 'y','z'].includes(arr[n][0])) {
@@ -8852,6 +8896,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				arr.unshift(toGearCube(arr[0]));
 			}
 		}
+		alldown = false;
 		multiple(0, true);
 		selectedCuby = -1;
 		selectedColor = [];
