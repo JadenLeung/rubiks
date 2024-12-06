@@ -4616,7 +4616,7 @@ function getCubyByColor(arr1) {
 }
 function getCubyIndexByColor2(arr1) //original
 {
-	console.log(arr1);
+	// console.log(arr1);
 	let realcolor = getColor(arr1);
 	if (realcolor == "k") return false;
 	//console.log(realcolor);
@@ -4636,8 +4636,6 @@ function getCubyIndexByColor2(arr1) //original
 		distcolor[0] = allcolors[realcolor][0] - arr1[0];
 		distcolor[1] = allcolors[realcolor][1] - arr1[1];
 		distcolor[2] = allcolors[realcolor][2] - arr1[2];
-
-		console.log(distcolor);
 
 		let addon = 0;
 		if(distcolor[0] == 0) addon += 9;
@@ -8866,29 +8864,29 @@ function dragCube(cuby1, color1, cuby2, color2)
 		let face1 = getFace(cuby1, color1);
 		const TURNARR = [
 			{axis: "z", turn:["L'", "M'", "R"], faces:
-			[{face: 5, order: [50,0,-50], upaxis: "x"},
-			{face: 2, order: [50,0,-50], upaxis: "y"},
-			{face: 4, order: [-50,0,50], upaxis: "x"},
-			{face: 3, order: [-50,0,50], upaxis: "y"}]},
+			[{face: 5, order: [50,0,-50], upaxis: "x", lastaxis: "y"},
+			{face: 2, order: [50,0,-50], upaxis: "y", lastaxis: "x"},
+			{face: 4, order: [-50,0,50], upaxis: "x", lastaxis: "y"},
+			{face: 3, order: [-50,0,50], upaxis: "y", lastaxis: "x"}]},
 
 			{axis: "x", turn:["U'", "E", "D"], faces:
-			[{face: 5, order: [-50,0, 50], upaxis: "z"},
-			{face: 1, order: [50,0,-50], upaxis: "y"},
-			{face: 4, order: [50,0,-50], upaxis: "z"},
-			{face: 0, order: [-50,0,50], upaxis: "y"}]},
+			[{face: 5, order: [-50,0, 50], upaxis: "z", lastaxis: "y"},
+			{face: 1, order: [50,0,-50], upaxis: "y", lastaxis: "z"},
+			{face: 4, order: [50,0,-50], upaxis: "z", lastaxis: "y"},
+			{face: 0, order: [-50,0,50], upaxis: "y", lastaxis: "z"}]},
 
 			{axis: "y", turn:["B'", "S", "F"], faces:
-			[{face: 2, order: [-50,0, 50], upaxis: "z"},
-			{face: 1, order: [-50,0,50], upaxis: "x"},
-			{face: 3, order: [50,0,-50], upaxis: "z"},
-			{face: 0, order: [50,0,-50], upaxis: "x"}]},
+			[{face: 2, order: [-50,0, 50], upaxis: "z", lastaxis: "x"},
+			{face: 1, order: [-50,0,50], upaxis: "x", lastaxis: "z"},
+			{face: 3, order: [50,0,-50], upaxis: "z", lastaxis: "x"},
+			{face: 0, order: [50,0,-50], upaxis: "x", lastaxis: "z"}]},
 	
 		];
 		let good = false;
 		TURNARR.forEach((FACE) => {
 			if (CUBE[cuby1][FACE.axis] == CUBE[cuby2][FACE.axis]) {
 				FACE.faces.forEach((f) => {
-					if (face1 == f.face && !good) {
+					if (face1 == f.face && !good && CUBE[cuby1][f.lastaxis] == CUBE[cuby2][f.lastaxis]) {
 						if (CUBE[cuby1][FACE.axis] == -50) arr = [FACE.turn[0]];
 						if (CUBE[cuby1][FACE.axis] == 0) arr = [FACE.turn[1]];
 						if (CUBE[cuby1][FACE.axis] == 50) arr = [FACE.turn[2]];
@@ -8914,6 +8912,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				arr.unshift(toGearCube(arr[0]));
 			}
 		}
+		if (!good) return;
 		multiple(0, true);
 		selectedCuby = -1;
 		selectedColor = [];
