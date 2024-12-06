@@ -4936,8 +4936,6 @@ function shuffleCube(nb) {
 			}
 			
 			bad = rnd;
-
-			console.log("bad is " + bad);
 			break;
 		}
 	}
@@ -5243,9 +5241,9 @@ function startAction() {
 	}
 
 	setLayout();
-	console.log(hoveredColor);
-	console.log(p.color(BACKGROUND_COLOR).levels);
-	console.log(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels));
+	// console.log(hoveredColor);
+	// console.log(p.color(BACKGROUND_COLOR).levels);
+	// console.log(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels));
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log("Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
@@ -6030,7 +6028,6 @@ function multiple(nb, timed) {
 			else
 				moves++;
 		}
-		console.log(nb);
 		waitForCondition(multiple.bind(null, nb + 1), true);
 	}
 	else
@@ -6053,7 +6050,7 @@ function multiple2(nb, timed) {
 		shufflespeed = 2;
 		canMan = false;
 		notation(arr[nb], timed);
-		console.log(nb);
+		// console.log(nb);
 		waitForCondition(multiple2.bind(null, nb + 1));
 	}
 	else
@@ -8812,7 +8809,6 @@ function dragCube(cuby1, color1, cuby2, color2)
 	return;
 	if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
 	return;
-	console.log(cuby1, color1, cuby2, color2)
 	
 	let bad5 = [];
 	let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
