@@ -2092,21 +2092,19 @@ function changeBan(dim, b)
 	DIM = dim;
 	changeCam(3);
 	DIM2 = 50;
+	reCam();
 	refreshButtons();
 }
 function change11(dim, b){
 	changeBan(dim, b)
-	DIM2 = 50;
 	CUBE7.style('background-color', "#8ef5ee");
 }
 function change12(dim, b){
 	changeBan(dim, b)
-	DIM2 = 50;
 	CUBE8.style('background-color', "#8ef5ee");
 }
 function change13(dim, b){
 	changeBan(dim, b)
-	DIM2 = 50;
 	CUBE9.style('background-color', "#8ef5ee");
 }
 function change14(dim, b){
@@ -2119,24 +2117,20 @@ function change14(dim, b){
 }
 function change15(dim, b){
 	changeBan(dim, b)
-	DIM2 = 50;
 	CUBE11.style('background-color', "#8ef5ee");
 }
 function change16(dim, b){
 	changeBan(dim, b)
-	DIM2 = 50;
 	CUBE12.style('background-color', "#8ef5ee");
 }
 function change17(){
 	DIM = 13;
-	DIM2 = 50;
 	changeCam(3);
 	refreshButtons();
 	CUBE13.style('background-color', "#8ef5ee");
 }
 function change18(dim, b){
 	changeBan(dim, b)
-	DIM2 = 50;
 	CUBE14.style('background-color', "#8ef5ee");
 }
 function changeMod(){
