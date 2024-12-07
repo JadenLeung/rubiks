@@ -1866,13 +1866,13 @@ function Hint()
 	{
 		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
 		giveups -= 0.5;
-		localSetup("m_4", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		localSetup("m_4");
 	}
 	else if(m_34step > 0 && m_34step % 2 == 1)
 	{
 		document.getElementById("s_instruct").innerHTML = "The first move is a " + Reverse(m_scramble[m_scramble.length-1]) + " and the last move is a " + Reverse(m_scramble[0]);
 		giveups -= 0.5;
-		localSetup("m_34", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		localSetup("m_34");
 	}
 }
 function difColors()
@@ -1938,7 +1938,7 @@ function giveUp()
 			m_4step += 0.5;
 			m_4();
 		}
-		if (giveups > 0) localSetup("m_4", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		if (giveups > 0) localSetup("m_4");
 		else localStorage.removeItem("m_4");
 	}
 	else if(m_34step > 0 && m_34step % 2 == 1)
@@ -1948,7 +1948,7 @@ function giveUp()
 		else
 			giveups = 0;
 
-		if (giveups > 0) localSetup("m_34", {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+		if (giveups > 0) localSetup("m_34");
 		else localStorage.removeItem("m_34");
 		
 		if(giveups > 0)
@@ -4121,8 +4121,8 @@ function m_34()
 		multipleEasy(0, 3, "m_34");
 	}
 }
-function localSetup(mode, data) {
-	localStorage[mode] = JSON.stringify(data);
+function localSetup(mode) {
+	localStorage[mode] = JSON.stringify({savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step, m_offset: m_offset});
 }
 function m_4() 
 {
@@ -4135,13 +4135,15 @@ function m_4()
 		m_pass = 0;
 		giveups = 3;
 		m_points = 0;
+		m_offset = 1;
 	}
 	if (localStorage.m_4 && m_4step == 0 && m_34step == 0) {
 		let obj = JSON.parse(localStorage.m_4)
 		console.log(obj)
 		giveups = obj.giveups;
 		m_type = obj.m_type;
-		m_points = obj.m_points;
+		m_points = obj.m_points ?? 0;
+		m_offset = obj.m_offset ?? 1;
 		savesetup = IDtoReal(IDtoLayout(decode(obj.savesetup)));
 		special[2] = savesetup;
 		quickSolve();
@@ -4160,7 +4162,6 @@ function m_4()
 		let rand = parseInt(Math.random()*100);
 		m_scramble = [];
 		arr = [];
-		m_type = m_4step/2+4;
 		if(m_4step == 0)
 			m_type = 2;
 		else 
@@ -4253,7 +4254,7 @@ function multipleEasy(nb, dificil, mode = "") {
 		setLayout();
 		savesetup = IDtoReal(IDtoLayout(decode(getID())));
 		if (mode == "m_4" || mode == "m_34") {
-			localSetup(mode, {savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step});
+			localSetup(mode);
 		}
 		if(dificil == 0)
 		{
@@ -8865,7 +8866,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 		const TURNARRS = [
 		{dirs: [5, 2, 4, 3, 5], vec: 2, turn:["L'", "M'", "R"]},
 		{dirs: [5, 1, 4, 0, 5], vec: 0, turn:["U'", "E", "D"]},
-		{dirs: [2, 1, 3, 0], vec: 1, turn:["B'", "S", "F"]},
+		{dirs: [2, 1, 3, 0, 2], vec: 1, turn:["B'", "S", "F"]},
 		];
 		TURNARRS.forEach((TURN) => {
 			let index = TURN.dirs.indexOf(face1);
