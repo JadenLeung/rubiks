@@ -3291,7 +3291,7 @@ function updateScores() {
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
-		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null") {
+		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + JSON.parse(score).score;
 		} else if (!mode.includes("bweek") && score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + score;
