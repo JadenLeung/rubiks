@@ -2702,7 +2702,7 @@ function regular(nocustom){
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
-		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image"]);
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3102,7 +3102,7 @@ function speedmode()
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
 
-	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect"]);
+	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect","s_start"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
 
@@ -5397,9 +5397,14 @@ p.keyPressed = (event) => {
 		raceDetect();
 		return;
 	}
-	if(p.keyCode == 32 && canMan == false && (MODE == "normal" || MODE == "timed")){ //space
-		stopMoving();
-		return;
+	if(p.keyCode == 32){ //space
+		if (canMan == false && (MODE == "normal" || MODE == "timed")) {
+			stopMoving();
+			return;
+		}
+		if (getEl("s_start").style.display == "block") {
+			practicePLL();
+		}
 	}
 	if(p.keyCode == 49) { //1 //one
 		if (p.keyIsDown(p.SHIFT)) {
@@ -5439,7 +5444,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(undoTillRotate(), undo);
+		console.log(getEl("s_start").style.display == "block");
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
