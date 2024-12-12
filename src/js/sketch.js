@@ -2907,12 +2907,15 @@ function waitStopTurning() {
   }
   
 function startchallenge() {
-	if (weeklyscrambles[week].cube == 3 && DIM != 50) {
-		changeThree();
+	DIM = weeklyscrambles[week].cube == 3 ? 50 : 100;
+	DIM2 = DIM;
+	changeCam(weeklyscrambles[week].cube);
+	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
+		changeBan(DIM, weeklyscrambles[week].bandaged);
+		ban9();
 	}
-	if (weeklyscrambles[week].cube == 2 && DIM != 100) {
-		changeTwo();
-	}
+	refreshButtons();
+	CUBE4.style('background-color', "#8ef5ee");
 	reSetup();
 	timer.stop();
 	timer.reset();
@@ -5444,7 +5447,17 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(getEl("s_start").style.display == "block");
+		// DIM = 3;
+		// DIM2 = 50;
+		// changeCam(3);
+		// console.log(getEl("s_start").style.display == "block");
+		// changeBan(50, [[3,4,5,6,7,8]]);
+		// ban9();
+		// savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
+		// special[2] = savesetup;
+		// quickSolve();
+		// changeFive();
+		console.log(DIM, DIM2);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
