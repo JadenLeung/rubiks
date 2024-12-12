@@ -148,7 +148,7 @@ export default function (p) {
 	colorvalues["b"] = "6BAPpVI 3iÐqtUì 4oìz÷óÐ 5þ÷";
 	colorvalues["w"] = "4oìyzI# 5v8Hj*Ø 3iÐrò00 4dV";
 	colorvalues["y"] = "4oìyÖ@A 5v8GÜOô 6BAQ3Úô 4vP";
-	colorvalues["g"] = "2cUin*s 16saûók 5v8HýçA 2OJ";
+	colorvalues["g"] = "16saûók 2cUin*s 5v8HýçA 1ë9";
 	colorvalues["o"] = "5v8H}Ô# 4oìAL6U 16s9DI0 5Hñ";
 	colorvalues["r"] = "5v8Iècì 4oìzdÎ8 2cUhJvÐ 5ÝP";
 	let expandc = {
@@ -5457,7 +5457,7 @@ p.keyPressed = (event) => {
 		// special[2] = savesetup;
 		// quickSolve();
 		// changeFive();
-		console.log(DIM, DIM2);
+		console.log(m_offset);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -5965,12 +5965,12 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 57: //9
-			if((MODE != "normal" && MODE != "timed") || localStorage.username == "signedout")
+			if(localStorage.username == "signedout")
 				break;
 			loadData();
 			break;
 			case 48: //0
-			if((MODE != "normal" && MODE != "timed" )|| localStorage.username == "signedout")
+			if(localStorage.username == "signedout")
 				break;
 			saveData();
 			break;
