@@ -5457,6 +5457,7 @@ p.keyPressed = (event) => {
 		// special[2] = savesetup;
 		// quickSolve();
 		// changeFive();
+		isSolved();
 		console.log(m_offset);
 	}
 	if(p.keyCode == 9){ //tab
@@ -9306,8 +9307,15 @@ function isSolved()
 		let right = getColor(CUBE[13].front.levels);
 		let left = getColor(CUBE[13].back.levels);
 		let cubies = [4,5,7,8,13,14,16,17];
-		if((Array.isArray(DIM)  && DIM[0] != "adding" && (DIM4 == 2 || goodsolved)))
-		{
+		if (DIM == 6) {
+			const opposite3 = {r:"o", o:"r", g:"b", b:"g", y:"w", w:"y"};
+			if (top == 'k') top = opposite3[bottom];
+			if (bottom == 'k') bottom = opposite3[top];
+			if (back == 'k') back = opposite3[front];
+			if (front == 'k') front = opposite3[back];
+			if (right == 'k') right = opposite3[left];
+			if (left == 'k') left = opposite3[right];
+		} else if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
 			cubies = [];
 			for(let i = 0; i < 27; i++)
 			{
