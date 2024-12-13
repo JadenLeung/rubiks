@@ -478,8 +478,8 @@ p.setup = () => {
 		SIZE_SLIDER2.input(sliderUpdate2);
 		SIZE_SLIDER2.parent("size");
 		SIZE_SLIDER2.style('width', '100px');
-
-		BORDER_SLIDER = p.createSlider(0, 4, 0.3, 0.1);
+		BORDER_SLIDER = p.createSlider(0, 4, localStorage.border_width ?? 0.3, 0.1);
+		special[1] = localStorage.border_width ?? 0.3;
 		BORDER_SLIDER.input(sliderUpdate);
 		BORDER_SLIDER.parent("border");
 		BORDER_SLIDER.style('width', '100px');
@@ -822,15 +822,15 @@ p.setup = () => {
 	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
 	HOLLOW.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
-	HOLLOW.changed(hollowCube.bind(null, 0));
+	HOLLOW.changed(hollowCube);
 
-	hollowCube();
+	hollowCube(false);
 	
 	let temp = ["#c9ffda", "#e6e6e6", "#0a1970"]
-	if (localStorage.background && localStorage.background.length == 23) {
+	if (localStorage.background && localStorage.background.length >= 23) {
 		temp = localStorage.background.split(' ');
 	}
-	setColors(temp[0], temp[1], temp[2]);
+	setColors(temp[0], temp[1], temp[2], temp[3]);
 
 	TOPWHITE = p.createSelect(); 
 	TOPWHITE.parent("topwhite");
@@ -934,7 +934,7 @@ p.setup = () => {
 	setButton(IDCOPY, "idcopy", 'btn btn-primary', 'margin-left: 10px', () => {
 		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
 			function(){
-
+				successSQL("Position ID Copied");
 			})
 		  .catch(
 			 function() {
@@ -1076,8 +1076,9 @@ setInterval(() => {
 	localStorage.topwhite = TOPWHITE.value();
 	localStorage.toppll = TOPPLL.value();
 	localStorage.keyboard = KEYBOARD.value();
-	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color);
+	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color ) + " " + special[4];
 	localStorage.hollow = HOLLOW.checked();
+	localStorage.border_width = BORDER_SLIDER.value();
 	localStorage.audioon = audioon;
 	if (localStorage.c_today == 0) localStorage.c_today = "DNF";
 	if (localStorage.c_today2 == 0) localStorage.c_today2 = "DNF";
@@ -1333,6 +1334,7 @@ setInterval(() => {
 	else
 		realtop = TOPWHITE.value()[0].toLowerCase();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+	special[4] = getEl("colorPicker4").value;
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	if (document.getElementById("settings1").style.display == "none") {
 		SETTINGS.style("background-color: transparent; color: " + document.body.style.color);
@@ -3203,11 +3205,15 @@ function setSettings(obj) {
 	localStorage.background = d;
 	console.log("d is " + d)
 	let temp = d.split(' ');
-	setColors(temp[0], temp[1], temp[2]);
+	setColors(temp[0], temp[1], temp[2], temp.length > 3 ? temp[3] : "#000000");
 	topWhite();
 	changeKeys();
 	refreshButtons();
 	hollowCube();
+	if (obj.border_width != -1) {
+		special[1] = obj.border_width;
+		BORDER_SLIDER.value(obj.border_width);
+	}
 	if (obj.m_34 != "none") localStorage.m_34 = obj.m_34;
 	else localStorage.removeItem("m_34")
 	if (obj.m_4 != "none") localStorage.m_4 = obj.m_4;
@@ -3835,6 +3841,7 @@ async function saveData(username, password, method, al) {
 		m_4: localStorage.m_4 ?? "none",
 		c_day_bweek: localStorage.c_day_bweek ?? "null",
 		c_day2_bweek: localStorage.c_day2_bweek ?? "null",
+		border_width:localStorage.border_width ?? -1,
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -5233,10 +5240,9 @@ function startAction() {
 		return;
 	}
 	let hoveredColor;
-	if(p.touches.length == 0)
+	if(p.touches.length == 0) {
 		hoveredColor = p.get(p.mouseX, p.mouseY);
-	else
-	{
+	} else {
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
 		hoveredColor = p.get(xx, yy);
@@ -5458,7 +5464,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// changeFive();
 		isSolved();
-		console.log(m_offset);
+		console.log(special);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8151,13 +8157,15 @@ function stringrgbToHex(rgb) {
     return null;  // In case backgroundColor is not set
 }
 
-function setColors(a, b, c) {
+function setColors(a, b, c, d) {
 	document.body.style.backgroundColor = a;
 	BACKGROUND_COLOR = b;
 	document.body.style.color = c;
+	special[4] = d;
 	document.getElementById("colorPicker").value=a;
 	document.getElementById("colorPicker2").value=b;
 	document.getElementById("colorPicker3").value=c;
+	document.getElementById("colorPicker4").value=d;
 	p.background(BACKGROUND_COLOR);
 }
 function darkMode(){
@@ -8640,6 +8648,9 @@ function getColor(color)
 	return "y";
 	return "g";
 	*/
+	if (!color) {
+		return false;
+	}
 	let cl = [];
 	cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
 	cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);
@@ -8710,27 +8721,19 @@ function removeTime()
 		}
 	}
 }
-function hollowCube(){
+function hollowCube(adjust = false){
 	if(HOLLOW.checked()){
 		special[0] = true;
-		special[1] = 0.1;
+		// adjust && (special[1] = 0.1);
 		special[3] = 3;
-		BORDER_SLIDER.remove();
-		BORDER_SLIDER = p.createSlider(0, 4, special[1], 0.1);
-		BORDER_SLIDER.input(sliderUpdate);
-		BORDER_SLIDER.parent("border");
-		BORDER_SLIDER.style('width', '100px');
+		BORDER_SLIDER.value(special[1]);
 		GAP_SLIDER.value(3);
 	}
 	else{
 		special[0] = false;
-		special[1] = 0.3;
-		BORDER_SLIDER.remove();
+		// adjust && (special[1] = 0.3);
 		special[3] = 0;
-		BORDER_SLIDER = p.createSlider(0, 4, special[1], 0.1);
-		BORDER_SLIDER.input(sliderUpdate);
-		BORDER_SLIDER.parent("border");
-		BORDER_SLIDER.style('width', '100px');
+		BORDER_SLIDER.value(special[1]);
 		GAP_SLIDER.value(0);
 	}
 	reSetup();
@@ -8742,10 +8745,15 @@ function topWhite(){
 }
 function testAlg(){
 	if(document.getElementById("test_alg_span").innerHTML == "Paste ID here:"){
-		allcubies = IDtoReal(IDtoLayout(decode(inp.value())));
-		reSetup();
-		setLayout();
-		TOPWHITE.selected(expandc[layout[2][1][1][0]]);
+		try {
+			allcubies = IDtoReal(IDtoLayout(decode(inp.value())));
+			reSetup();
+			setLayout();
+			TOPWHITE.selected(expandc[layout[2][1][1][0]]);
+			successSQL("Position ID Loaded");
+		} catch(e){
+
+		}
 	}
 	else if(canMan && customb == 0)
 	{
@@ -9405,6 +9413,7 @@ function settingsDefault(){
 	document.getElementById("colorPicker").value="#c9ffda";
 	document.getElementById("colorPicker2").value="#e6e6e6";
 	document.getElementById("colorPicker3").value="#0a1970";
+	document.getElementById("colorPicker4").value="#000000";
 	changeKeys();
 	CAMZOOM = -170;
 	SIZE_SLIDER2.value(-CAMZOOM);

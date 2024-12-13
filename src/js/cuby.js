@@ -469,7 +469,7 @@ export default class Cuby {
   }
   else{
     this.p.strokeWeight(this.special[1]);
-	  this.p.stroke('black');
+	  this.p.stroke(this.special[4]);
     this.stroke = 0.5;
   }
 	// p1, p2, p3, p4 coordinates
