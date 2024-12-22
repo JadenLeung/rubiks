@@ -377,6 +377,23 @@ function playAudio() {
 	let selectedBuffer;
 	let volume = 1.0;
 
+	if (false) {
+		if ('speechSynthesis' in window) {
+			// Stop any currently speaking utterances
+			window.speechSynthesis.cancel();
+	
+			// Create a new utterance with the text to be spoken
+			const utterance = new SpeechSynthesisUtterance("Lisa");
+			utterance.rate = 1;
+			utterance.pitch = 1;
+			// utterance.voice = window.speechSynthesis.getVoices().find((obj) => {return obj.name == "Aaron"});
+			// Speak the new utterance
+			// window.speechSynthesis.speak(utterance);
+		  } else {
+			alert("Sorry, your browser doesn't support text-to-speech.");
+		  }
+		return;
+	}
 	if (SOUND.value() === "Windows XP") {
 		if (m < 0.1) {
 			selectedBuffer = audioBuffers.audio6;
@@ -2879,6 +2896,7 @@ function dailychallenge(cube) {
 	shuffleCube();
 	timer.stop();
 	timer.reset();
+	MODE = "daily";
 	// special[2] = savesetup;
 	quickSolve();
 	cstep = 1;
@@ -2921,6 +2939,7 @@ function startchallenge() {
 	reSetup();
 	timer.stop();
 	timer.reset();
+	MODE = "weekly";
 	timer.setTime(-15000);
 	timer.start(true);
 	savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
@@ -5424,14 +5443,6 @@ p.keyPressed = (event) => {
 		regular();
 		if(MODE == "moves")
 		movesmode();
-		if(MODE == "challenge"){
-			if (cstep == 0) {
-				regular();
-			} else {
-				cstep = 0;
-				challengemode();
-			}
-		}
 		if(MODE == "speed") {
 			if (getEl("s_prac").style.display != "none") {
 				regular();
@@ -5440,8 +5451,10 @@ p.keyPressed = (event) => {
 			}
 			return;
 		} 
-		if(MODE == "timed" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
+		if(MODE == "timed" || MODE == "challenge" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
 		regular();
+		if(MODE == "daily" || MODE == "weekly")
+		challengemode();
 		if(document.getElementById("settings1").style.display == "block")
 		regular();
 		if(document.getElementById("hotkey1").style.display == "block")
@@ -5463,8 +5476,8 @@ p.keyPressed = (event) => {
 		// special[2] = savesetup;
 		// quickSolve();
 		// changeFive();
-		isSolved();
-		console.log(special);
+		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
+		console.log(cstep);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -5495,12 +5508,11 @@ p.keyPressed = (event) => {
 				movesmode();
 				func();
 			}
-		} else if (MODE == "challenge") {
+		} else if (MODE == "weekly") {
 			let func = null;
-			if (cstep > 0) func = startchallenge;
-			if (func) {
+			if (cstep > 0) {
 				challengemode();
-				func();
+				startchallenge();
 			}
 		}
 	} else if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) {
@@ -5935,7 +5947,7 @@ p.keyPressed = (event) => {
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
-			if(MODE == "moves" || (MODE == "challenge" && cstep > 0))
+			if(MODE == "moves" || cstep > 0)
 			moveSetup();
 			if(MODE == "speed" && getEl("s_high").style.display == "none" && getEl("s_prac2").style.display == "none")
 			speedSetup();
@@ -9530,8 +9542,8 @@ window.addEventListener('keydown', (e) => {
 //3x3 Medium: 15.4s, 13.58s
 //3x3 Easy: 1.4s
 //FMC: 193
-//Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s 
-//Shape Mod All WR times: (8.43, 16.39, 34.63, 20.54, 9.21, 29.57, 4.45)
+//Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27
+//Shape Mod All WR times: (20.07 3x3x2, 12.02 3x3x1, 18.67 Jank, 3 Plus, 5.58 2x2, 25.40 3x3, 6.53 sandwich)
 //Bandage Mod ALL: 672.28
 
 //BELOW 51 MOVES
