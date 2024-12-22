@@ -2856,7 +2856,7 @@ function challengemode() {
 	MODE = "challenge";
 
 	refreshButtons();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect"]);
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
@@ -2901,8 +2901,9 @@ function dailychallenge(cube) {
 	quickSolve();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
+	setDisplay("table", ["keymap"]);
 	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
-	setDisplay("block", []);
+	setDisplay("block", ["input"]);
 	waitStopTurning();
 	dstep = true;
 	if (cube == 3) {
@@ -2927,8 +2928,10 @@ function waitStopTurning() {
   }
   
 function startchallenge() {
-	DIM = weeklyscrambles[week].cube == 3 ? 50 : 100;
-	DIM2 = DIM;
+	if (weeklyscrambles[week].cube == 3)
+		changeThree();
+	else
+		changeTwo();
 	changeCam(weeklyscrambles[week].cube);
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
 		changeBan(DIM, weeklyscrambles[week].bandaged);
@@ -5477,7 +5480,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// changeFive();
 		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		console.log(cstep);
+		console.log(DIM, DIM2, DIM3);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
