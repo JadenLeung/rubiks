@@ -1287,7 +1287,7 @@ setInterval(() => {
 		{
 			document.getElementById("s_instruct").innerHTML = "Even though the cube might be solved, you used too many moves! Tip: You can press the 'reset' button to reset the scramble.";
 		}
-	} else if (MODE == "challenge") {
+	} else if (MODE == "daily" || MODE == "weekly") {
 		if (isSolved() && cstep >= 2) {
 			timer.stop();
 			cstep++;
@@ -3333,11 +3333,11 @@ function setScore(mode, total) {
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)
-	|| (MODE == "challenge" && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
+	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
 			localStorage[mode] = total;
-		if (MODE == "challenge") {
+		if (["weekly", "daily"].includes(MODE)) {
 			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceNov3('d'));
 		}
 		updateScores();
@@ -4853,7 +4853,7 @@ function shuffleCube(nb) {
 	arr = [];
 	let bad = "";
 	let total = "";
-	if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "challenge" || MODE == "speed" && race > 0)
+	if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "daily" || MODE == "weekly" || MODE == "speed" && race > 0)
 	{
 		if(SCRAM.value() == "Middle Slices")
 			possible = ["E", "M", "S"];
