@@ -445,7 +445,7 @@ p.setup = () => {
 	p.createCanvas(cnv_div.offsetWidth, window.innerHeight * WINDOW, p.WEBGL);
 	PICKER.buffer.resizeCanvas(cnv_div.offsetWidth, window.innerHeight * WINDOW);
 	
-	p.pixelDensity(1);
+	p.pixelDensity(p.displayDensity());
 	p.frameRate(60);
 	p.smooth();
 	
