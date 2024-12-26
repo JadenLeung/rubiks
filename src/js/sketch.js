@@ -514,7 +514,7 @@ p.setup = () => {
 	MOVESMODE2 = p.createButton('FMC');
 	
 	ONEBYTHREE = p.createButton('1x3x3');
-	SANDWICH = p.createButton('Sandwich Cube');
+	SANDWICH = p.createButton('3x3x2');
 	CUBE3 = p.createButton('Plus Cube');
 	CUBE4 = p.createButton('Christmas 3x3');
 	CUBE5 = p.createButton('Christmas 2x2');
@@ -2144,6 +2144,7 @@ function change16(dim, b){
 }
 function change17(){
 	DIM = 13;
+	DIM2 = 50;
 	changeCam(3);
 	refreshButtons();
 	CUBE13.style('background-color', "#8ef5ee");
@@ -9537,7 +9538,7 @@ window.addEventListener('keydown', (e) => {
 //65.56
 //64.48
 //Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
-//Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73
+//Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3
 //Jaden WR 2x2: 3.88
 //3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01
 //3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06
@@ -9556,7 +9557,8 @@ window.addEventListener('keydown', (e) => {
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
 // F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
 // F2 U' L2 D2 R2 F2 R' F U' B' D' R U B2 R D' B2 R (47)
-// L2 F2 R2 B' U L' U' B U' R B2 U2 F2 L2 B U2 R2 D'
+// R2 U2 B2 U' R' F' D2 L2 F' D2 R2 B' R2 D2 F2 L2 F' L2 (46)
+// L2 F2 R2 B' U L' U' B U' R B2 U2 F2 L2 B U2 R2 D' (46)
 //?  L B2 U R' F2 D' L U L2 D2 B2 R B2 U R (43) LL Skip with no AUF!!! 
 // B2 L2 D F' U2 R2 B2 D2 F' L' F D' F L2 F R2 U L2 (43)
 // B2 R' F' D R2 U' R2 F2 L2 B2 U2 B2 L D R2 F' L' D2 (43)
