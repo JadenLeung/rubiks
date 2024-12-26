@@ -2694,8 +2694,7 @@ function regular(nocustom){
 	DELAY = 0;
 	canMan = true;
 	DIM = DIM2;
-	if(MODE == "cube")
-	{
+	if(["cube","daily", "weekly"].includes(MODE)) {
 		if(localStorage.startcube && localStorage.startcube == 2)
 			changeTwo();
 		else
@@ -2888,11 +2887,8 @@ function challengemode() {
 function dailychallenge(cube) {
 	if (localStorage.cdate3 == sinceNov3('d') && cube == 2) return;
 	if (localStorage.cdate2 == sinceNov3('d') && cube == 3) return;
-	if (DIM != 50 && cube == 3) {
-		changeThree();
-	} else if (DIM != 100 && cube == 2) {
-		changeTwo();
-	}
+	DIM2 = cube == 3 ? 50 : 100;
+	DIM = DIM2;
 	reSetup();
 	shuffleCube();
 	timer.stop();
@@ -2929,10 +2925,8 @@ function waitStopTurning() {
   }
   
 function startchallenge() {
-	if (weeklyscrambles[week].cube == 3)
-		changeThree();
-	else
-		changeTwo();
+	DIM2 = weeklyscrambles[week].cube == 3 ? 50 : 100;
+	DIM = DIM2;
 	changeCam(weeklyscrambles[week].cube);
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
 		changeBan(DIM, weeklyscrambles[week].bandaged);
