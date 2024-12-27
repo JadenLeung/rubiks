@@ -100,7 +100,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
@@ -841,6 +841,11 @@ p.setup = () => {
 	HOLLOW.parent("hollow")
 	HOLLOW.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	HOLLOW.changed(hollowCube);
+
+	DARKMODE = p.createCheckbox("", false);
+	DARKMODE.parent("dankmode")
+	DARKMODE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
+	DARKMODE.changed(darkMode);
 
 	hollowCube(false);
 	
