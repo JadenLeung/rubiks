@@ -100,11 +100,12 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
 	let bandaged = [];
+	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
 	let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
 	let allplls = {1: ["Ua", "Ub", "Z", "H"], 2: ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd"], 3: ["E", "Na", "Nb", "V", "Y"], 4: ["AD", "DD", "AU", "AA", "DU"],
@@ -964,6 +965,10 @@ p.setup = () => {
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 
+	ALIGN = p.createButton('');
+	setButton(ALIGN, "align", 'bi bi-camera', 'font-size: 40px; height: 60px; width: 60px;  border: none;', alignIt);
+	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
+
 	GENERATE = p.createButton('Generate');
 	setButton(GENERATE, 'generate', 'btn btn-success', '', generateID.bind(null, 0));
 	
@@ -1369,6 +1374,7 @@ setInterval(() => {
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
+	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 }, 10)
@@ -5541,13 +5547,7 @@ p.keyPressed = (event) => {
 		if (p.keyIsDown(p.SHIFT) && (getEl("mode7").style.display != "none" || getEl("mode8").style.display != "none"))
 			movesmode();
 		else {
-			CAM = p.createEasyCam(p._renderer);
-			CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-			if(DIM2 == 100)
-				CAM.zoom(CAMZOOM+140);
-			else
-				CAM.zoom(CAMZOOM);
-			rotateIt();
+			alignIt();
 		}
 		return;
 	}
@@ -6199,6 +6199,15 @@ function changeArr2(str, len)
 {
 	if(arr.length == 0 || len < arr.length)
 		changeArr(str);
+}
+function alignIt() {
+	CAM = p.createEasyCam(p._renderer);
+	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+	if(DIM2 == 100)
+		CAM.zoom(CAMZOOM+140);
+	else
+		CAM.zoom(CAMZOOM);
+	rotateIt();
 }
 function undoTillRotate(arr) {
 	if (!arr || arr.length == 0) return 0;
@@ -8179,7 +8188,7 @@ function setColors(a, b, c, d) {
 	p.background(BACKGROUND_COLOR);
 }
 function darkMode(){
-	if(BACKGROUND_COLOR != "#050505"){
+	if(!darkmode){
 		savedark[0] = document.body.style.backgroundColor == '' ? "#c9ffda" : stringrgbToHex(document.body.style.backgroundColor);
 		savedark[1] = BACKGROUND_COLOR;
 		savedark[2] = document.body.style.color  == '' ? "#0a1970" : stringrgbToHex(document.body.style.color);
@@ -8189,6 +8198,7 @@ function darkMode(){
 		document.getElementById("colorPicker").value="#050505";
 		document.getElementById("colorPicker2").value="#050505";
 		document.getElementById("colorPicker3").value="#add8e6";
+		darkmode = true;
 	}
 	else{
 		document.body.style.backgroundColor = savedark[0];
@@ -8197,6 +8207,7 @@ function darkMode(){
 		document.getElementById("colorPicker").value=savedark[0];
 		document.getElementById("colorPicker2").value=savedark[1];
 		document.getElementById("colorPicker3").value=savedark[2];
+		darkmode = false;
 		// reSetup();
 	}
 }

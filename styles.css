@@ -126,6 +126,12 @@ button:hover {
 .skinnyscore {
     margin:0px;
 }
+#align {
+    display: block;
+    position: absolute;
+    top: 92%;
+    left: 4%;
+}
 @media screen and (max-width: 1199px) {
     .buttoncontainer {
         display: flex;
@@ -149,6 +155,9 @@ button:hover {
         font-family: 'Orbitron';
         font-size: 30px;
         text-align: right;
+    }
+    #align {
+        display: none;
     }
 }
 @media screen and (max-width: 767px) {
