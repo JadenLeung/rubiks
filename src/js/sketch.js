@@ -20,6 +20,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let touchrotate = [];
 	const NOMOUSE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
@@ -8839,11 +8840,25 @@ p.mousePressed = () => {
 }
 
 p.touchStarted = () => {
-	//if(layout[2][1][1][0] != "w") return;
-	let xx = p.touches[0].x;
-	let yy = p.touches[0].y;
+	// if(layout[2][1][1][0] != "w") return;
+	let hoveredColor;
+	if(p.touches.length == 0) {
+		hoveredColor = p.get(p.mouseX, p.mouseY);
+	} else {
+		let xx = p.touches[0].x;
+		let yy = p.touches[0].y;
+		hoveredColor = p.get(xx, yy);
+	}
+	if (hoveredColor && arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) {
+		touchrotate[2] = true;
+		touchrotate[0] = p.touches[0].x;
+		touchrotate[1] = p.touches[0].y;
+		// alert(touchrotate[0] + " " + touchrotate[1]);
+	} else {
+		touchrotate[2] = false;
+	}
 	//alert(xx + " " + yy + " length is " + p.touches.length);
-	let deez = p.get(xx, p.windowHeight * WINDOW - yy);
+	// let deez = p.get(xx, p.windowHeight * WINDOW - yy);
 	
 	//alert(deez);
 	//alert(getColor(deez));
@@ -8852,6 +8867,26 @@ p.touchStarted = () => {
 }
 
 p.touchEnded = () => {
+	if (touchrotate[2]) {
+		let xx = touchrotate[3];
+		let yy = touchrotate[4];
+		let difx = touchrotate[0] - xx;
+		let dify = touchrotate[1] - yy;
+		const sensitivity = 30;
+		if (Math.abs(difx) > sensitivity || Math.abs(dify) > sensitivity) {
+			if (difx > sensitivity) {
+				changeArr("y");
+			} else if (difx < -1 * sensitivity) {
+				changeArr("y'");
+			} else if (dify > sensitivity) {
+				changeArr("x");
+			} else {
+				changeArr("x'");
+			}
+			multiple(0, true);
+		}
+		touchrotate[2] = false;
+	}
 	if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
 		canMan = true;
 		solveCube();
@@ -8872,6 +8907,12 @@ p.mouseDragged = () => {
 	dragAction();
 }
 p.touchMoved = () => {
+	if (touchrotate[2]) {
+		let xx = p.touches[0].x;
+		let yy = p.touches[0].y;
+		touchrotate[3] = xx;
+		touchrotate[4] = yy;
+	}
 	dragAction();
 }
 function dragAction()
