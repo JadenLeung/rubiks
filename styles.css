@@ -88,6 +88,17 @@ button:hover {
 #colorPicker:hover {
     transform: scale(1.1);
 }
+#overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 1.5%;
+    width: 100.5%;
+    height: 99.5%;
+    background-color: white;
+    z-index: 1; /* Ensure it's on top of the container's content */
+    opacity: 1; /* Adjust transparency if needed */
+  }
 #dnf {
     position: absolute;
     top: 15%;
