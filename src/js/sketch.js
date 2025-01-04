@@ -506,7 +506,7 @@ p.setup = () => {
 	REGULAR = p.createButton('Normal Mode');
 	SPEEDMODE = p.createButton('Speed Mode');
 	TIMEDMODE = p.createButton('Stats Mode');
-	MOVESMODE = p.createButton('Fewest Moves');
+	MOVESMODE = p.createButton('Misc Challenges');
 	IDMODE = p.createButton('Save/Load ID');
 	SETTINGS = p.createButton('');
 	VOLUME = p.createButton('');
@@ -748,7 +748,7 @@ p.setup = () => {
 		["3", "On/Off Dark Mode"],
 		["⇧ 3", "Speed Mode"],
 		["4", "Align Camera"],
-		["⇧ 4", "Fewest Moves"],
+		["⇧ 4", "Challenges"],
 		["7", "Alert Position ID"],
 		["⇧ 7", "Copy Position ID"],
 		["8", "Delete previous time"],
@@ -3194,8 +3194,8 @@ function movesmode()
 	setDisplay("block", ["m_high"]);
 
 
-	document.getElementById("s_INSTRUCT").innerHTML = "Instructions for the Fewest Moves Challenge";
-	document.getElementById("s_instruct").innerHTML = "In one game of the FMC, there will be infinite stages, each requiring you to solve the cube in the <b>most optimal way</b>.<br> Completing a stage will increase your total points, depending on its difficulty. If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
+	document.getElementById("s_INSTRUCT").innerHTML = "Fewest Moves Challenge";
+	document.getElementById("s_instruct").innerHTML = "Solve the cube in the <b>most optimal way</b>.<br> If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
 	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -5951,10 +5951,12 @@ p.keyPressed = (event) => {
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
-			if(MODE == "moves" || cstep > 0)
+			if((MODE == "moves" && (m_34step != 0 || m_4step != 0)) || cstep > 0)
 			moveSetup();
 			if(MODE == "speed" && getEl("s_high").style.display == "none" && getEl("s_prac2").style.display == "none")
 			speedSetup();
+			if (MODE == "moves" && !(m_34step != 0 || m_4step != 0))
+			quickSolve();
 			break;
 			case 192: //`
 			if (p.keyIsDown(p.SHIFT)) {
@@ -6379,7 +6381,7 @@ function refreshButtons()
 	TIMEDMODE = p.createButton(`Stats${m}`);
 	setButton(TIMEDMODE, "mode3", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d2}px; border: none;`, timedmode.bind(null, 0));
 	
-	MOVESMODE = p.createButton(`Fewest Moves`);
+	MOVESMODE = p.createButton(`Challenges`);
 	setButton(MOVESMODE, "mode7", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d}px; border: none;`, movesmode.bind(null, 0));
 
 	SPEEDMODE = p.createButton(`Speed${m}`);
@@ -6447,7 +6449,7 @@ function refreshButtons()
 	TIMEDMODE2 = p.createButton('Stat');
 	setButton(TIMEDMODE2, "mode6", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', timedmode.bind(null, 0));
 
-	MOVESMODE2 = p.createButton('FMC');
+	MOVESMODE2 = p.createButton('Chal');
 	setButton(MOVESMODE2, "mode8", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', movesmode.bind(null, 0));
 
 	if(modnum == 0)
