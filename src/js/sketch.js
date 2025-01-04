@@ -2769,6 +2769,7 @@ function regular(nocustom){
 	pllpracstep = 0;
 	m_34step = 0;
 	m_4step = 0;
+	bstep = 0;
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 }
