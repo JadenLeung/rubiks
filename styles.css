@@ -92,9 +92,9 @@ button:hover {
     display: none;
     position: absolute;
     top: 0;
-    left: 1.5%;
-    width: 100.5%;
-    height: 99.5%;
+    left: 1%;
+    width: 100.25%;
+    height: 98.5%;
     background-color: white;
     z-index: 1; /* Ensure it's on top of the container's content */
     opacity: 1; /* Adjust transparency if needed */

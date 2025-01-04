@@ -1388,7 +1388,8 @@ setInterval(() => {
 	if (MODE == "timed") { TIMEDMODE2.style('background-color', '#8ef5ee');  TIMEDMODE.style('background-color', '#8ef5ee');}
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
-	getEl("wannapeek").style.display = getEl("overlay").style.display
+	getEl("wannapeek").style.display = getEl("overlay").style.display;
+	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
@@ -2936,6 +2937,7 @@ function dailychallenge(cube) {
 }
 function blindmode() {
 	if (bstep == 0) {
+		peeks = 0;
 		bstep = 1;
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start"]);
@@ -5560,6 +5562,7 @@ p.keyPressed = (event) => {
 			let func = null;
 			if (m_34step > 0) func = m_34;
 			if (m_4step > 0) func = m_4; 
+			if (bstep > 0) func = blindmode; 
 			if (func) {
 				movesmode();
 				func();
