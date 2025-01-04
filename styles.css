@@ -93,7 +93,7 @@ button:hover {
     position: absolute;
     top: 0;
     left: 1%;
-    width: 100.25%;
+    width: 99%;
     height: 98.5%;
     background-color: white;
     z-index: 1; /* Ensure it's on top of the container's content */
