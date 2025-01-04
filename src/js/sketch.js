@@ -2951,8 +2951,9 @@ function blindmode() {
 		waitStopTurning(false);
 	} else if (bstep == 3) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed"]);
-		setDisplay("block", ["b_win", "b_start"]);
+		setDisplay("block", ["b_win", "b_start","m_high"]);
 		getEl("b_win").innerHTML = "You did it! You solved the cube in " + peeks + " peek" + (peeks == 1 ? "." : "s. <br> Play again?");
+		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks);
 	}
 }
 function waitStopTurning(timed = true) {
@@ -3362,9 +3363,9 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek"];
-	display = {m_easy: "Easy", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
-		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week"};
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3"];
+	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
+		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -3380,7 +3381,8 @@ function setScore(mode, total) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
-	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || (MODE == "moves" && total > highscores)
+	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
+	(MODE == "moves" && ((total > highscores && bstep == 0) || (total < highscores && bstep > 0)))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
