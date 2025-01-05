@@ -321,7 +321,10 @@ function setWidth() {
 		ZOOM3 = -250;
 		ZOOM2 = -100;
 		CAMZOOM = ZOOM3;
-		document.getElementById("audio").style.display = 'none';
+		setDisplay("none", ["audio", "bannercube", "bannerlogin"])
+		getEl("challenge").innerHTML = "&nbsp;Weekly"
+		getEl("banner").style.paddingBottom = "10px";
+		getEl("or_instruct4").style.paddingTop = "10px";
 	} else {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
@@ -2879,10 +2882,10 @@ function challengemode() {
 	}
 	regular(true);
 	MODE = "challenge";
-
 	refreshButtons();
 	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
+	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -3168,7 +3171,7 @@ function speedmode()
 	mo5 = [];
 	scrambles = [];
 	movesarr = [];
-
+	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "end" });
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
 
@@ -3230,7 +3233,7 @@ function movesmode()
 	setDisplay("inline", ["m_34", "m_4"]);
 	setDisplay("block", ["m_high", "blind","b_start"]);
 
-
+	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "center" });
 	document.getElementById("s_INSTRUCT").innerHTML = "Fewest Moves Challenge";
 	document.getElementById("s_instruct").innerHTML = "Solve the cube in the <b>most optimal way</b>.<br> If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
 	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
