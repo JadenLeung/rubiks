@@ -2745,7 +2745,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3316,6 +3316,7 @@ function showSpeed()
 	if(MODE == "moves")
 	{
 		setDisplay("inline", ["points_par", "outermoves", "reset2_div", "giveup", "giveup2", "hint"]);
+		setDisplay("block", ["divider"]);
 	}
 }
 function reCam()
@@ -4099,19 +4100,19 @@ function raceTimes(){
 function displayMoveTitle(){
 	if(m_type == -1){
 		scramblemoves = 2;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 2 moves (1 point)";
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 2 moves <br>(1 point)";
 		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 2-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
 	}else if(m_type == 0){
 		scramblemoves = 3;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves (2 points)";
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves <br>(2 points)";
 		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 3-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
 	}else if(m_type == 1){
 		scramblemoves = 4;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 4 moves (3 points)";
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 4 moves <br>(3 points)";
 		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 4-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
 	}else if(m_type == 2){
 		scramblemoves = 5;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 5 moves (5 points)";
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 5 moves <br>(5 points)";
 		document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This 5-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
 	}
 }
@@ -4231,7 +4232,7 @@ function m_4()
 		arr = [];
 		showSpeed();
 		m_4step = Math.floor(obj.m_4step / 2) * 2;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves (" + parseInt(Math.pow(1.5, m_type)) + " points)";
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves <br>(" + parseInt(Math.pow(1.5, m_type)) + " points)";
 		m_4step++;
 		if(m_type < 20)
 			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This " + m_type + "-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
@@ -4256,7 +4257,7 @@ function m_4()
 		if(rand % 5 == 0 && m_4step > 6) m_offset++;
 		quickSolve();
 		showSpeed();
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves (" + parseInt(Math.pow(1.5, m_type)) + " points)";
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves <br>(" + parseInt(Math.pow(1.5, m_type)) + " points)";
 		if(m_type < 20)
 			document.getElementById("s_instruct").innerHTML = "<i>Prerequisite: This " + m_type + "-move scramble is guaranteed to not have any one-move slice moves.</i><br><br>Tip: Undoing a move will also subtract 1 from the move counter. Press 'reset' to revamp to the orginial scramble and set the move counter to 0.";
 		else
