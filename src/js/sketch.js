@@ -972,6 +972,9 @@ p.setup = () => {
 		  });
 	});
 
+	const PEEK = p.createButton('Peek');
+	setButton(PEEK, "peekbutton", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', () => {setDisplay("none", ["overlay"]);peeks++;});
+
 	FULLSCREEN = p.createButton('');
 	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
@@ -1394,6 +1397,7 @@ setInterval(() => {
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	getEl("wannapeek").style.display = getEl("overlay").style.display;
+	getEl("peekbutton").style.display = getEl("overlay").style.display;
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
