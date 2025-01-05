@@ -21,7 +21,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let touchrotate = [];
-	const NOMOUSE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100];
+	const NOMOUSE = [13];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -1369,7 +1369,7 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && !NOMOUSE.includes(DIM) && !MODDIM.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && NOMOUSE.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -1399,6 +1399,7 @@ setInterval(() => {
 	getEl("wannapeek").style.display = getEl("overlay").style.display;
 	getEl("peekbutton").style.display = getEl("overlay").style.display;
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
+	getEl("custommouse").innerHTML = canMouse() ? "(Mouse inputs are turned on.)" : "(Mouse inputs are turned off.)";
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
@@ -5326,9 +5327,19 @@ function getIndex(cuby)
 function arraysEqual(arr1, arr2) {
     return arr1.length === arr2.length && arr1.every((value, index) => value == arr2[index]);
 }
-
+function canMouse() {
+	let set = new Set();
+	for (let i = 0; i < 6; ++i) {
+		const color = layout[i][1][1][0];
+		if (color == "k") return false;
+		if (set.has(color)) return false;
+		set.add(color);
+	}
+	return true;
+}
 function startAction() {	
-	if(MODE == "cube" && !NOMOUSE.includes(DIM) && !MODDIM.includes(DIM) && custom != 2) return; 
+	if(MODE == "cube" && NOMOUSE.includes(DIM) && custom == 0) return; 
+	if(custom == 1 && !canMouse()) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
 		raceDetect();
 		return;
@@ -5558,9 +5569,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// changeFive();
 		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		CAM.setActive(false);
-		CAM.state_reset = false; 
-		console.log(DIM, DIM2, DIM3);
+		console.log(canMouse())
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9517,6 +9526,7 @@ function isSolved()
 				if(!DIM[6].includes(i))
 					cubies.push(i);
 			}
+			if (cubies.length <= 1) return true;
 			top = getColor(CUBE[cubies[0]].right.levels);
 			bottom = getColor(CUBE[cubies[0]].left.levels);
 			back = getColor(CUBE[cubies[0]].bottom.levels);
