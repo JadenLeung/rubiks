@@ -9077,6 +9077,16 @@ function dragCube(cuby1, color1, cuby2, color2)
 				arr.unshift(toGearCube(arr[0]));
 			}
 		}
+		if(INPUT.value() == "Gearcube II") {
+			if (['M', 'S', 'E'].includes(arr[0][0])) {
+				arr = []
+			} else {
+				arr.push(arr[0]);
+				console.log(arr[0][0])
+				console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
+				arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
+			}
+		}
 		alldown = false;
 		multiple(0, true);
 		selectedCuby = -1;
