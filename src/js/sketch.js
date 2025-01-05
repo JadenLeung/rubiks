@@ -592,8 +592,9 @@ p.setup = () => {
 	SCRAM.option("Last Layer");
 	SCRAM.option("Double Turns");
 	SCRAM.option("Middle Slices");
-	SCRAM.option("Like a 3x3x2")
-	SCRAM.option("Gearcube")
+	SCRAM.option("Like a 3x3x2");
+	SCRAM.option("Gearcube");
+	SCRAM.option("Gearcube II");
 	SCRAM.option("Pattern");
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -728,6 +729,7 @@ p.setup = () => {
 	INPUT.option("Double");
 	INPUT.option("3x3x2");
 	INPUT.option("Gearcube");
+	INPUT.option("Gearcube II")
 	setInput();
 	
 	INPUT.changed(changeInput.bind(null, 0));
@@ -2926,7 +2928,7 @@ function dailychallenge(cube) {
 	quickSolve();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
-	setDisplay("table", ["keymap"]);
+	if (!phone) setDisplay("table", ["keymap"]);
 	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
 	setDisplay("block", ["input"]);
 	waitStopTurning();
@@ -4995,8 +4997,19 @@ function shuffleCube(nb) {
 					arr.push((rnd+"'"));
 					total += rnd + "w' " + rnd + "' ";
 				}
-			}
-			else if(doubly || (SCRAM.value() == "Like a 3x3x2" && 
+			} else if (SCRAM.value() == "Gearcube II") {
+				if (rnd2 < 0.5) {
+					arr.push(rnd);
+					arr.push(rnd);
+					arr.push(opposite2[rnd] + "'")
+					total += rnd + "2 " + opposite2[rnd] + "' ";
+				} else {
+					arr.push(rnd + "'");
+					arr.push(rnd + "'");
+					arr.push(opposite2[rnd])
+					total += rnd + "2' " + opposite2[rnd] + " ";
+				}
+			} else if(doubly || (SCRAM.value() == "Like a 3x3x2" && 
 			([col, op].includes(layout[2][1][1][0]) && rnd != "U" && rnd != "D" ||
 			[col, op].includes(layout[5][1][1][0]) && rnd != "F" && rnd != "B" ||
 			[col,op].includes(layout[0][1][1][0]) && rnd != "L" && rnd != "R")))
@@ -5753,7 +5766,7 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 1000) changeArr("z2'");
 			multiple(0, true);	
 			return;
-		} else if((INPUT.value() != "Gearcube" && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || (INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))){
+		} else if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || (INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))){
 			redo = [];
 			if(p.keyCode == 83) changeArr("D2")
 			if(p.keyCode == 76) changeArr("D2'")
@@ -5801,6 +5814,24 @@ p.keyPressed = (event) => {
 			if(p.keyCode == 71) changeArr("f' F'")
 			if(p.keyCode == 87) changeArr("b B")
 			if(p.keyCode == 79) changeArr("b' B'")
+			multiple(0, true);	
+			return;
+		} else if(INPUT.value() == "Gearcube II" && bad4.includes(p.keyCode)){
+			if(bad6.includes(p.keyCode))
+				return;
+			redo = [];
+			if(p.keyCode == 83) changeArr("D2 U'")
+			if(p.keyCode == 76) changeArr("D2' U")
+			if(p.keyCode == 74) changeArr("U2 D'")
+			if(p.keyCode == 70) changeArr("U2' D'")
+			if(p.keyCode == 69) changeArr("L2 R'")
+			if(p.keyCode == 68) changeArr("L2' R")
+			if(p.keyCode == 73) changeArr("R2 L'")
+			if(p.keyCode == 75) changeArr("R2' L")
+			if(p.keyCode == 72) changeArr("F2 B'")
+			if(p.keyCode == 71) changeArr("F2' B")
+			if(p.keyCode == 87) changeArr("B2 F'")
+			if(p.keyCode == 79) changeArr("B2' F")
 			multiple(0, true);	
 			return;
 		}
@@ -6292,6 +6323,8 @@ function flexDo(foo, arr, shift = false) {
 		funcMult(foo, 1);
 	} else if (INPUT.value() == "Double" || INPUT.value() == "Gearcube") {
 		funcMult(foo, 2);
+	} else if (INPUT.value() == "Gearcube II") {
+		funcMult(foo, 3);
 	} else if (INPUT.value() == "3x3x2") {
 		let bad5 = [];
 		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
@@ -9099,6 +9132,16 @@ function dragCube(cuby1, color1, cuby2, color2)
 				arr = []
 			} else {
 				arr.unshift(toGearCube(arr[0]));
+			}
+		}
+		if(INPUT.value() == "Gearcube II") {
+			if (['M', 'S', 'E'].includes(arr[0][0])) {
+				arr = []
+			} else {
+				arr.push(arr[0]);
+				console.log(arr[0][0])
+				console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
+				arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
 			}
 		}
 		if (!good) return;
