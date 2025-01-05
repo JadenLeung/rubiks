@@ -1025,10 +1025,10 @@ p.setup = () => {
 	setButton(GO_BTN, 'test_alg_button', 'btn btn-success', 'height: 30px; width: 40px; display: flex; padding: 0;', testAlg.bind(null, 0));
 	GO_BTN.style("display", "inline-block");
 
-	TIMEGONE = p.createButton('Remove previous time');
+	TIMEGONE = p.createButton('Clear previous');
 	setButton(TIMEGONE, "timegone2", 'btn btn-light', 'border-color: black;', removeTime.bind(null, 0));
 
-	let TIMEGONE2 = p.createButton('Remove all times');
+	let TIMEGONE2 = p.createButton('Clear all');
 	setButton(TIMEGONE2, "timegone3", 'btn btn-light', 'border-color: black;', removeAllTimes.bind(null, 0));
 	regular();
 
@@ -2745,7 +2745,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start", "divider"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -5045,7 +5045,6 @@ function displayTimes()
 		scrambles.pop();
 	if(canMan == false) return;
 	if(MODE != "timed") return;
-	const whichtime = "alltimes";
 	if (MODE == "timed") {
 		setDisplay("block", ["alltimes", "timegone", "link1"]);
 		if (!ismid) {
@@ -5057,9 +5056,9 @@ function displayTimes()
 			setDisplay("none", ["mode4", "mode5", "mode6", "mode8"]);
 			setDisplay("block", ["or_instruct4"]);
 		}
+		setDisplay(mo5.length == 0 && MODE == "timed" ? "block" : "none", ["beforetime"]);
 		if(mo5.length == 0)
 		{
-			document.getElementById(whichtime).innerHTML = "Your times/moves will be displayed here";
 			document.getElementById("timegone").style.display = "none";
 			document.getElementById("link1").style.display = "none";
 			return;
@@ -5184,7 +5183,7 @@ function displayTimes()
 		alltimes += "<br>"
 	}
 
-	document.getElementById(whichtime).innerHTML = alltimes;
+	document.getElementById("alltimes").innerHTML = alltimes;
 }
 function displayAverage()
 {
@@ -6496,16 +6495,16 @@ function refreshButtons()
 	
 
 	REGULAR2 = p.createButton('Normal');
-	setButton(REGULAR2, "mode4", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', regular.bind(null, 0));
+	setButton(REGULAR2, "mode4", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px;', regular.bind(null, 0));
 	
 	SPEEDMODE2 = p.createButton('Speed');
-	setButton(SPEEDMODE2, "mode5", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', speedmode.bind(null, 0));
+	setButton(SPEEDMODE2, "mode5", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px;', speedmode.bind(null, 0));
 
 	TIMEDMODE2 = p.createButton('Stat');
-	setButton(TIMEDMODE2, "mode6", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', timedmode.bind(null, 0));
+	setButton(TIMEDMODE2, "mode6", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px; border: none;', timedmode.bind(null, 0));
 
 	MOVESMODE2 = p.createButton('Chal');
-	setButton(MOVESMODE2, "mode8", 'btn btn-light btn-sm mode1', 'text-align:center; font-size:10px; border-color: black;', movesmode.bind(null, 0));
+	setButton(MOVESMODE2, "mode8", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px;', movesmode.bind(null, 0));
 
 	if(modnum == 0)
 	{
