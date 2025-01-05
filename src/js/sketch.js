@@ -8949,6 +8949,9 @@ p.touchStarted = () => {
 		touchrotate[2] = true;
 		touchrotate[0] = p.touches[0].x;
 		touchrotate[1] = p.touches[0].y;
+		touchrotate[3] = touchrotate[0];
+		touchrotate[4] = touchrotate[1];
+		// alert("settings " + touchrotate[0] + " " + touchrotate[1])
 		// alert(touchrotate[0] + " " + touchrotate[1]);
 	} else {
 		touchrotate[2] = false;
@@ -8968,11 +8971,12 @@ p.touchEnded = () => {
 		let yy = touchrotate[4];
 		let difx = touchrotate[0] - xx;
 		let dify = touchrotate[1] - yy;
-		const sensitivity = 30;
+		// alert(touchrotate[0] + " " + touchrotate[1] + " " + touchrotate[3] + " " + touchrotate[4] + " " + difx + " " + dify);
+		const sensitivity = 25;
 		if (Math.abs(difx) > sensitivity || Math.abs(dify) > sensitivity) {
-			if (difx > sensitivity) {
+			if (difx > sensitivity && Math.abs(difx) >= Math.abs(dify)) {
 				changeArr("y");
-			} else if (difx < -1 * sensitivity) {
+			} else if (difx < -1 * sensitivity && Math.abs(difx) >= Math.abs(dify)) {
 				changeArr("y'");
 			} else if (dify > sensitivity) {
 				changeArr("x");
@@ -8981,8 +8985,8 @@ p.touchEnded = () => {
 			}
 			multiple(0, true);
 		}
-		touchrotate[2] = false;
 	}
+	touchrotate[2] = false;
 	if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
 		canMan = true;
 		solveCube();
