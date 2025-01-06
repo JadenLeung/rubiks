@@ -2579,33 +2579,29 @@ function inputPressed(move)
 	console.log("momve is " + move);
 	if(canMan)
 	{
-		notation(move, true);
-		let bad = -1;
-		if(undo.length > 0)
-		{
-			let rnd = undo[undo.length-1];
-			if(rnd.slice(-1) == "'")
-				bad = rnd.substring(0, rnd.length-1);
-			else
-				bad = rnd + "'";
-		}
-		if(timer.isRunning && MODE != "moves")
-		{
-			moves++
-		}
-		else if(MODE == "moves")
-		{
-			if(undo[undo.length-2] == bad)
-			{
-				undo.pop();
-				undo.pop();
-				if(move != "y" && move != "y'" && move != "x" && move != "x'")
-					moves--;
+		arr = [move];
+		if(INPUT.value() == "Double")
+			arr.push(arr[0]);
+		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
+			arr.push(arr[0]);
+		if(INPUT.value() == "Gearcube") {
+			if (['M', 'S', 'E'].includes(arr[0][0])) {
+				arr = []
+			} else {
+				arr.unshift(toGearCube(arr[0]));
 			}
-			else
-				if(move != "y" && move != "y'" && move != "x" && move != "x'")
-					moves++;
 		}
+		if(INPUT.value() == "Gearcube II") {
+			if (['M', 'S', 'E'].includes(arr[0][0])) {
+				arr = []
+			} else {
+				arr.push(arr[0]);
+				console.log(arr[0][0])
+				console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
+				arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
+			}
+		}
+		multiple(0, true);
 	}
 }
 function Custom2(){
