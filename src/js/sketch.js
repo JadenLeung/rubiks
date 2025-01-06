@@ -2929,7 +2929,7 @@ function dailychallenge(cube) {
 	quickSolve();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
-	if (!phone) setDisplay("table", ["keymap"]);
+	if (!isMobile()) setDisplay("table", ["keymap"]);
 	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
 	setDisplay("block", ["input"]);
 	waitStopTurning();
