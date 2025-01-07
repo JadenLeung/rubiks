@@ -105,7 +105,7 @@ export default function (p) {
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -533,6 +533,7 @@ p.setup = () => {
 	CUBE12 = p.createButton('T Perm');
 	CUBE13 = p.createButton('Sandwich Cube');
 	CUBE14 = p.createButton('Cube Bandage');
+	CUBE15 = p.createButton('2x2x3');
 	refreshButtons();
 
 
@@ -2185,6 +2186,15 @@ function change17(){
 function change18(dim, b){
 	changeBan(dim, b)
 	CUBE14.style('background-color', "#8ef5ee");
+}
+function change19(){
+	DIM = 15;
+	DIM2 = 50;
+	changeCam(3);
+	INPUT.value("3x3x2");
+	SCRAM.value("Like a 3x3x2");
+	refreshButtons();
+	CUBE15.style('background-color', "#8ef5ee");
 }
 function changeMod(){
 	modnum = 1 - modnum;
@@ -6469,6 +6479,7 @@ function refreshButtons()
 	CUBE12.remove();
 	CUBE13.remove();
 	CUBE14.remove();
+	CUBE15.remove();
 
 	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches? 1.5 : 1;
 	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? 2.5 : 1;
@@ -6573,6 +6584,9 @@ function refreshButtons()
 
 		CUBE13 = p.createButton('Sandwhich Cube');
 		setButton(CUBE13, "cube13", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change17.bind(null, 0));
+
+		CUBE15 = p.createButton('2x2x3');
+		setButton(CUBE15, "cube15", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change19.bind(null, 0));
 	}
 	else{
 		CUBE7 = p.createButton('Slice Bandage');
@@ -9515,7 +9529,7 @@ function isSolved()
 			if (front == 'k') front = opposite3[back];
 			if (right == 'k') right = opposite3[left];
 			if (left == 'k') left = opposite3[right];
-		} else if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
+		} else if(DIM == 15 || (Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
 			cubies = [];
 			for(let i = 0; i < 27; i++)
 			{
