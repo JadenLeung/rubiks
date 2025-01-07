@@ -2539,6 +2539,7 @@ function inputPressed(move)
 	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
 	if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
 	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+	if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
 	if(Array.isArray(DIM)  && DIM[0] != "adding")
 	{
 		cubies = [];
@@ -2550,7 +2551,7 @@ function inputPressed(move)
 	}
 	let onedown = false;
 	let alldown = false;
-	if(((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM))) && move[0] !="x" && move[0] != "y"){
+	if(((DIM == 1 || DIM == 6 || DIM == 2 || DIM == 15 || Array.isArray(DIM))) && move[0] !="x" && move[0] != "y"){
 		alldown = true;
 		if(move == "D" || move == "D'"){ //D
 			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
@@ -5676,6 +5677,7 @@ p.keyPressed = (event) => {
 		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
 		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
 		if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+		if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
 		if(DIM == 50){
 			cubies = [];
 			for(let i = 0; i < 27; i++){
@@ -5695,7 +5697,8 @@ p.keyPressed = (event) => {
 		let onedown = false;
 		alldown = false;
 		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
-		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50)){
+		// alert("new" + (bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)) )
+		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
 			alldown = true;
 			if(p.keyCode == 83 || p.keyCode == 76){ //D
 				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
@@ -6164,6 +6167,7 @@ function multiple(nb, timed) {
 		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
 		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
 		if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+		if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
 		if(DIM == 50){
 			cubies = [];
 			for(let i = 0; i < 27; i++){
@@ -6180,7 +6184,7 @@ function multiple(nb, timed) {
 			}
 		}
 		alldown = false;
-		if((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50)){
+		if((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
 			alldown = true;
 			if(arr[0][0] == "D") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
 			if(arr[0][0] == "U") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
@@ -9512,7 +9516,7 @@ function isSolved()
 		}
 		return false;
 	}
-	if(DIM == 6 || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
+	if(DIM == 6 || DIM == 15 || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
 	{
 		let top = getColor(CUBE[13].right.levels);
 		let bottom = getColor(CUBE[13].left.levels);
@@ -9520,8 +9524,8 @@ function isSolved()
 		let front = getColor(CUBE[13].top.levels);
 		let right = getColor(CUBE[13].front.levels);
 		let left = getColor(CUBE[13].back.levels);
-		let cubies = [4,5,7,8,13,14,16,17];
-		if (DIM == 6) {
+		let cubies = DIM == 6 ? [4,5,7,8,13,14,16,17] :  [0,2,6,8,9,11,15,17,18,20,24,26];
+		if (DIM == 6 || DIM == 15 ) {
 			const opposite3 = {r:"o", o:"r", g:"b", b:"g", y:"w", w:"y"};
 			if (top == 'k') top = opposite3[bottom];
 			if (bottom == 'k') bottom = opposite3[top];
@@ -9529,7 +9533,7 @@ function isSolved()
 			if (front == 'k') front = opposite3[back];
 			if (right == 'k') right = opposite3[left];
 			if (left == 'k') left = opposite3[right];
-		} else if(DIM == 15 || (Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
+		} else if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
 			cubies = [];
 			for(let i = 0; i < 27; i++)
 			{
