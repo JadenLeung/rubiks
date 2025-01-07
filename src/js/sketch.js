@@ -2641,6 +2641,8 @@ function Custom()
 	document.getElementById("modarrow").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	document.getElementById("custom4").style.display = "none";
+	INPUT.value("Standard");
+	SCRAM.value("Normal");
 	modeData("customshape");
 	change9();
 }
@@ -9518,14 +9520,16 @@ function isSolved()
 	}
 	if(DIM == 6 || DIM == 15 || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
 	{
-		let top = getColor(CUBE[13].right.levels);
-		let bottom = getColor(CUBE[13].left.levels);
-		let back = getColor(CUBE[13].bottom.levels);
-		let front = getColor(CUBE[13].top.levels);
-		let right = getColor(CUBE[13].front.levels);
-		let left = getColor(CUBE[13].back.levels);
 		let cubies = DIM == 6 ? [4,5,7,8,13,14,16,17] :  [0,2,6,8,9,11,15,17,18,20,24,26];
-		if (DIM == 6 || DIM == 15 ) {
+		let cuby = 13;
+		if (DIM == 15) cuby = cubies[0]
+		let top = getColor(CUBE[cuby].right.levels);
+		let bottom = getColor(CUBE[cuby].left.levels);
+		let back = getColor(CUBE[cuby].bottom.levels);
+		let front = getColor(CUBE[cuby].top.levels);
+		let right = getColor(CUBE[cuby].front.levels);
+		let left = getColor(CUBE[cuby].back.levels);
+		if (DIM == 6){
 			const opposite3 = {r:"o", o:"r", g:"b", b:"g", y:"w", w:"y"};
 			if (top == 'k') top = opposite3[bottom];
 			if (bottom == 'k') bottom = opposite3[top];
@@ -9559,7 +9563,8 @@ function isSolved()
 			let front2 = getColor(CUBE[curindex].top.levels);
 			let right2 = getColor(CUBE[curindex].front.levels);
 			let left2 = getColor(CUBE[curindex].back.levels);
-			if(DIM == 6){
+			// console.log(top, top2, bottom, bottom2, back, back2, front, front2, right, right2, left, left2, curindex)
+			if(DIM == 6 || DIM == 15){
 				if((top != top2 && top != "k" && top2 != "k") || (bottom != bottom2 && bottom != "k" && bottom2 != "k") ||
 				(left != left2 && left != "k" && left2 != "k") || (right != right2 && right != "k" && right2 != "k") ||
 				(back != back2 && back != "k" && back2 != "k") || (front != front2 && front != "k" && front2 != "k"))

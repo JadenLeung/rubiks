@@ -143,7 +143,7 @@ export default class Cuby {
         }
       }
     }
-    if(special[0] == true && size != 2){
+    if(special[0] == true && size != 2 && size != 15){
       let badarr = ["tlf", "tfbl", "blt", "tlfd", "tdfbl", "bltd", "dfl", "fbld", "bdl",
                     "rtfl", "tfbrl", "rbtl", "tdfrl", "tdfbrl", "tdbrl", "rdfl", "dfbrl", "rbdl",
                     "rtf", "rbtf", "rbt", "rtdf", "tdfbr", "rtdb", "rfd", "rbfd", "rbd"];
@@ -510,12 +510,8 @@ export default class Cuby {
     }
     this.p.pop();
   } else if (this.cubysize == 15) {
-    let c1 = "g";
-    let c2 = "b";
-    let c3 = "r";
-    let c4 = "o";
-    let c5 = "w";
-    let c6 = "y";
+    let c1 = this.custom[0][5];
+    let c2 = this.custom[26][4];
     let xshift = this.x == -50 ? 25 : -25;
     let yshift = this.y == -50 ? 25 : -25;
     let zshift = this.z == -50 ? 25 : -25;
