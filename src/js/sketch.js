@@ -1037,11 +1037,11 @@ p.setup = () => {
 	setButton(GO_BTN, 'test_alg_button', 'btn btn-success', 'height: 30px; width: 40px; display: flex; padding: 0;', testAlg.bind(null, 0));
 	GO_BTN.style("display", "inline-block");
 
-	TIMEGONE = p.createButton('Clear previous');
-	setButton(TIMEGONE, "timegone2", 'btn btn-light', 'border-color: black;', removeTime.bind(null, 0));
+	TIMEGONE = p.createButton('Remove previous');
+	setButton(TIMEGONE, "timegone2", 'btn btn-light btn-sm', 'border-color: black;', removeTime.bind(null, 0));
 
 	let TIMEGONE2 = p.createButton('Clear all');
-	setButton(TIMEGONE2, "timegone3", 'btn btn-light', 'border-color: black;', removeAllTimes.bind(null, 0));
+	setButton(TIMEGONE2, "timegone3", 'btn btn-light btn-sm', 'border-color: black;', removeAllTimes.bind(null, 0));
 	regular();
 
 	let TIMEGONE3 = p.createButton('🗑️');
