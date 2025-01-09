@@ -2751,12 +2751,14 @@ function regular(nocustom){
 	canMan = true;
 	DIM = DIM2;
 	if(["cube","daily", "weekly"].includes(MODE)) {
-		if(localStorage.startcube && localStorage.startcube == 2)
-			changeTwo();
-		else
-			changeThree();
+		if(localStorage.startcube && localStorage.startcube == 2) changeTwo();
+		else changeThree();
 	}
 	MODE = "normal";
+	if (mastep > 0) {
+		if(localStorage.startcube && localStorage.startcube == 2) changeTwo();
+		else changeThree();
+	}
 	fullScreen(false);
 	reSetup();
 	race = 0;
@@ -2797,6 +2799,7 @@ function regular(nocustom){
 	SCRAM.value("Normal");
 	easystep = 0;
 	medstep = 0;
+	mastep = 0;
 	ollstep = 0;
 	pllstep = 0;
 	pllpracstep = 0;
@@ -3001,6 +3004,7 @@ function shapemarathon() {
 	const dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
 	const cubes = ["3x3x2", "2x2x3", "1x3x3", "The Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"]
 	if (mastep == 0) {
+		// changeThree();
 		showMarathon();
 		ao5 = [];
 	}
@@ -5592,8 +5596,13 @@ p.keyPressed = (event) => {
 		}
 		if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
 		regular();
-		if(MODE == "moves")
-		movesmode();
+		if(MODE == "moves") {
+			if (getEl("blind").style.display == "block") {
+				regular();
+			} else {
+				movesmode();
+			}
+		}
 		if(MODE == "speed") {
 			if (getEl("s_prac").style.display != "none") {
 				regular();
@@ -5628,7 +5637,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// changeFive();
 		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		console.log(quickSolve());
+		console.log(mastep);
 		// console.log(undo, redo);
 	}
 	if(p.keyCode == 9){ //tab
