@@ -3016,9 +3016,12 @@ function shapemarathon() {
 		waitStopTurning(false, "shape");
 	}
 	if (mastep / 2 == dims.length) {
-		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed"]);
+		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2)
+		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score;
 		getEl("ma_small").innerHTML = "Play again?";
 		setDisplay("block", ["ma_buttons"]);
+		setScore("marathon", score);
 	}
 }
 function waitStopTurning(timed = true, mode = "wtev") {
@@ -3434,9 +3437,10 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3"];
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon"];
 	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
-		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3"};
+		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
+			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -3453,7 +3457,7 @@ function setScore(mode, total) {
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
-	(MODE == "moves" && ((total > highscores && bstep == 0) || (total < highscores && bstep > 0)))
+	(MODE == "moves" && ((total > highscores && (m_34step > 0 || m_4step > 0)) || (total < highscores && (bstep > 0 || mastep > 0))))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
@@ -5634,10 +5638,10 @@ p.keyPressed = (event) => {
 		// ban9();
 		// savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
 		// special[2] = savesetup;
-		// quickSolve();
+		quickSolve();
 		// changeFive();
 		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		console.log(mastep);
+		// console.log(mastep);
 		// console.log(undo, redo);
 	}
 	if(p.keyCode == 9){ //tab
