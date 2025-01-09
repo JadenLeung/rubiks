@@ -5321,7 +5321,7 @@ function displayAverage()
 	if(ao5.length == 5 && mastep == 0)
 	display += "&nbsp;Ao5: " + (Math.round((actualao5/3.0)*100)/100);
 	if(mastep > 0) 
-		display += "&nbsp;Total: " + ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);;
+		display += "<br>&nbsp;Total: " + ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);;
 	if(mo5.length > 2)
 	display += " &nbsp;&nbsp;Mo" + mo5.length + ": " + (Math.round((meano5/(mo5.length * 1.0))*100)/100);
 	if(ao5.length == 0)
@@ -5628,8 +5628,8 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// changeFive();
 		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		// console.log(quickSolve());
-		console.log(undo, redo);
+		console.log(quickSolve());
+		// console.log(undo, redo);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
