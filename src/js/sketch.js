@@ -66,7 +66,7 @@ export default function (p) {
 	let m_34step = 0;
 	let m_type = 0;
 	let m_4step = 0;
-	let bstep = 0, cstep = 0, dstep = false;
+	let bstep = 0, cstep = 0, dstep = false, mastep = 0;
 	let PLL, PLLPRAC, OLLPRAC;
 	let REGULAR;
 	let SPEEDMODE;
@@ -1027,6 +1027,9 @@ p.setup = () => {
 	const STARTBLIND = p.createButton('Start Blind');
 	setButton(STARTBLIND, "b_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {bstep = 0; blindmode()});
 
+	const STARTMARATHON = p.createButton('Shape Marathon');
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {mastep = 0; shapemarathon()});
+	
 	inp = p.createInput('');
 	inp.parent("test_alg_input");
 	
@@ -1272,7 +1275,15 @@ setInterval(() => {
 	}
 	else if(MODE == "moves")
 	{
-		if (bstep == 2 && isSolved()) {
+		if (mastep % 2 == 1 && isSolved()) {
+			timer.stop();
+			if(ao5 == 0)
+			ao5 = [Math.round(timer.getTime() / 10)/100.0];
+			else
+			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mastep++;
+			shapemarathon();
+		} else if (bstep == 2 && isSolved()) {
 			bstep = 3;
 			blindmode();
 		}
@@ -1881,6 +1892,9 @@ function speedSetup()
 
 	}
 	//reSetup();
+}
+function undoSetup() {
+	funcMult(Undo, undo.length);
 }
 function moveSetup()
 {
@@ -2764,7 +2778,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -2960,7 +2974,7 @@ function blindmode() {
 		peeks = 0;
 		bstep = 1;
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start"]);
+			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 		setDisplay("table", ["keymap"]);
 		setDisplay("block", ["input", "peeks"]);
@@ -2975,7 +2989,35 @@ function blindmode() {
 		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks);
 	}
 }
-function waitStopTurning(timed = true) {
+function showMarathon() {
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
+		"highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
+	setDisplay("inline", ["speed", "slider_div", "undo", "redo"]);
+	setDisplay("table", ["keymap"]);
+	setDisplay("block", ["times_par", "outertime", "marathon2"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
+}
+function shapemarathon() { 
+	const dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
+	const cubes = ["3x3x2", "2x2x3", "1x3x3", "The Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"]
+	if (mastep == 0) {
+		showMarathon();
+		ao5 = [];
+	}
+	if (mastep % 2 == 0 && mastep / 2 < dims.length) {
+		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + dims.length;
+		getEl("ma_small").innerHTML = "Solve the " + cubes[mastep / 2] + ".";
+		dims[mastep / 2]();
+		shuffleCube();
+		waitStopTurning(false, "shape");
+	}
+	if (mastep / 2 == dims.length) {
+		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+		getEl("ma_small").innerHTML = "Play again?";
+		setDisplay("block", ["ma_buttons"]);
+	}
+}
+function waitStopTurning(timed = true, mode = "wtev") {
 	const interval = setInterval(() => {
 	console.log("canMan?" + canMan)
 	  if (canMan) {
@@ -2984,9 +3026,12 @@ function waitStopTurning(timed = true) {
 			timer.setTime(-15000); // Set the timer to -15000
 			timer.start(true);      // Start the timer
 		}
-		savesetup = IDtoReal(IDtoLayout(decode(getID())));
-		special[2] = savesetup;
+		if (mode != "shape") {
+			savesetup = IDtoReal(IDtoLayout(decode(getID())));
+			special[2] = savesetup;
+		}
 		if (bstep == 1) bstep = 2;
+		if (mode == "shape") mastep++;
 	  }
 	}, 10);
   }
@@ -3245,14 +3290,15 @@ function movesmode()
 	MOVESMODE.style('background-color', '#8ef5ee');
 
 
-	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", "solve", "input", "input2", "scram", "timeselect"]);
+	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
+		"solve", "input", "input2", "scram", "timeselect"]);
 	setDisplay("inline", ["m_34", "m_4"]);
-	setDisplay("block", ["m_high", "blind","b_start"]);
+	setDisplay("block", ["m_high", "blind","b_start","marathon","ma_buttons"]);
 
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "center" });
 	document.getElementById("s_INSTRUCT").innerHTML = "Fewest Moves Challenge";
 	document.getElementById("s_instruct").innerHTML = "Solve the cube in the <b>most optimal way</b>.<br> If stuck, you can press the 'hint' button or the 'give up' button, which will cause you to lose 0.5 and 1 lives respectively.";
-	document.getElementById("s_difficulty").innerHTML = "Select Scramble Difficulty";
+	document.getElementById("s_difficulty").innerHTML = "";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -3260,6 +3306,7 @@ function movesmode()
 	m_34step = 0;
 	m_4step = 0;
 	bstep = 0;
+	mastep = 0;
 	INPUT.selected("Standard");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	modeData("moves");
@@ -3320,7 +3367,7 @@ function showSpeed()
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", 
-		"highscore", "s_prac", "s_prac2","blind", "b_start"]);
+		"highscore", "s_prac", "s_prac2","blind", "b_start", "marathon","ma_buttons"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 	
 
@@ -5271,8 +5318,10 @@ function displayAverage()
 		mo5.splice(i, 1);
 		meano5 += mo5[i];
 	}
-	if(ao5.length  == 5)
+	if(ao5.length == 5 && mastep == 0)
 	display += "&nbsp;Ao5: " + (Math.round((actualao5/3.0)*100)/100);
+	if(mastep > 0) 
+		display += "&nbsp;Total: " + ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);;
 	if(mo5.length > 2)
 	display += " &nbsp;&nbsp;Mo" + mo5.length + ": " + (Math.round((meano5/(mo5.length * 1.0))*100)/100);
 	if(ao5.length == 0)
@@ -5523,6 +5572,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 32){ //space
+		console.log(mo5, ao5);
 		if (bstep > 1 && getEl("overlay").style.display == "block") {
 			setDisplay("none", ["overlay"]);
 			peeks++;
@@ -5578,7 +5628,8 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// changeFive();
 		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		console.log(canMouse())
+		// console.log(quickSolve());
+		console.log(undo, redo);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -5606,6 +5657,7 @@ p.keyPressed = (event) => {
 			if (m_34step > 0) func = m_34;
 			if (m_4step > 0) func = m_4; 
 			if (bstep > 0) func = blindmode; 
+			if (mastep > 0) func = shapemarathon;
 			if (func) {
 				movesmode();
 				func();
@@ -6063,6 +6115,10 @@ p.keyPressed = (event) => {
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
+		    if(mastep > 0) {
+				undoSetup();
+				break;
+			}
 			if((MODE == "moves" && (m_34step != 0 || m_4step != 0)) || cstep > 0 || bstep > 0) 
 			moveSetup();
 			if(MODE == "speed" && getEl("s_high").style.display == "none" && getEl("s_prac2").style.display == "none")
