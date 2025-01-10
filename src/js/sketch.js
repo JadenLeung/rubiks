@@ -66,6 +66,7 @@ export default function (p) {
 	let m_34step = 0;
 	let m_type = 0;
 	let m_4step = 0;
+	let ma_data = {};
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0;
 	let PLL, PLLPRAC, OLLPRAC;
 	let REGULAR;
@@ -1028,8 +1029,11 @@ p.setup = () => {
 	setButton(STARTBLIND, "b_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {bstep = 0; blindmode()});
 
 	const STARTMARATHON = p.createButton('Shape Marathon');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {mastep = 0; shapemarathon()});
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {startMarathon("shape")});
 	
+	const STARTMARATHON2 = p.createButton('Bandage Marathon');
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:60px; width:200px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {startMarathon("bandage")});
+
 	inp = p.createInput('');
 	inp.parent("test_alg_input");
 	
@@ -3011,28 +3015,44 @@ function showMarathon() {
 	setDisplay("block", ["times_par", "outertime", "marathon2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 }
+function startMarathon(type) {
+	ma_data.type = type;
+	if (type == "shape") {
+		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
+		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "The Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"];
+	} else if (type == "bandage") {
+		ma_data.dims = [change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]), 
+		change11.bind(null, 7, [[3,4,5,6,7,8]]), 
+		change14.bind(null, 10, [[6,8]]), 
+		change20.bind(null, 16, [[0,1], [24,25]]), 
+		change12.bind(null, 8, [[0,3,6], [2,5,8]]), 
+		change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]), 
+		change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]), 
+		change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]])];
+		ma_data.cubes = ["Cube Bandage", "Slice Bandage", "Bandaged 2x2", "Bandaged 3x3x2", "Pillars", "Triple Quad", "Z Perm", "T perm"];
+	}
+	mastep = 0;
+	shapemarathon();
+}
 function shapemarathon() { 
-	const dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
-	const cubes = ["3x3x2", "2x2x3", "1x3x3", "The Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"]
 	if (mastep == 0) {
-		// changeThree();
 		showMarathon();
 		ao5 = [];
 	}
-	if (mastep % 2 == 0 && mastep / 2 < dims.length) {
-		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + dims.length;
-		getEl("ma_small").innerHTML = "Solve the " + cubes[mastep / 2] + ".";
-		dims[mastep / 2]();
+	if (mastep % 2 == 0 && mastep / 2 < ma_data.dims.length) {
+		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.dims.length;
+		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + ".";
+		ma_data.dims[mastep / 2]();
 		shuffleCube();
 		waitStopTurning(false, "shape");
 	}
-	if (mastep / 2 == dims.length) {
+	if (mastep / 2 == ma_data.dims.length) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed"]);
 		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2)
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score;
 		getEl("ma_small").innerHTML = "Play again?";
 		setDisplay("block", ["ma_buttons"]);
-		setScore("marathon", score);
+		setScore(ma_data.type == "shape" ? "marathon" : "marathon2", score);
 	}
 }
 function waitStopTurning(timed = true, mode = "wtev") {
@@ -3448,10 +3468,10 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon"];
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon","marathon2"];
 	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
-			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon"};
+			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -5638,8 +5658,9 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(DIM, DIM2, bandaged, special);
+		// console.log(DIM, DIM2, bandaged, special);
 		// changeFive();
+		quickSolve();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
