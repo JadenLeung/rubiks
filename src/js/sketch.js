@@ -105,7 +105,7 @@ export default function (p) {
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -119,7 +119,6 @@ export default function (p) {
 	let LEFTBAN, RIGHTBAN;
 	let modnum = 0;
 	let CUSTOM, CUSTOM2;
-	let MODDIM = [7,8,9,10,11,12,14];
 	let ADDBANDAGE, VIEWBANDAGE;
 	let customb = 0;
 	let bandaged2 = [];
@@ -534,6 +533,7 @@ p.setup = () => {
 	CUBE13 = p.createButton('Sandwich Cube');
 	CUBE14 = p.createButton('Cube Bandage');
 	CUBE15 = p.createButton('2x2x3');
+	CUBE16 = p.createButton('Bandaged 3x3x2');
 	refreshButtons();
 
 
@@ -1173,7 +1173,6 @@ setInterval(() => {
 				raceTimes();
 			}
 		}
-		console.log(isSolved(), MODE);
 	}
 	else if(MODE == "speed")
 	{
@@ -1416,6 +1415,7 @@ setInterval(() => {
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+	special[5] = bandaged;
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2210,6 +2210,17 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
+function change20(dim, b){
+	changeFive();
+	bandaged = b;
+	changeCam(3);
+	DIM2 = 50;
+	INPUT.value("3x3x2");
+	SCRAM.value("Like a 3x3x2");
+	reCam();
+	refreshButtons();
+	CUBE16.style('background-color', "#8ef5ee");
+}
 function changeMod(){
 	modnum = 1 - modnum;
 	if(modnum == 0){ 
@@ -2640,7 +2651,7 @@ function Custom2(){
 	document.getElementById("okban").style.display = "none";
 	document.getElementById("leftban").style.display = "none";
 	document.getElementById("rightban").style.display = "none";
-
+	DIM2 = 50;
 	changeCam(3);
 	doneBandage()
 	bandaged = bandaged3;
@@ -4957,7 +4968,7 @@ function shufflePossible(len, total2, prev){
 }
 function shuffleCube(nb) { 
 	if(canMan == false || customb == 1)return;
-	if(MODDIM.includes(DIM) || custom == 2){
+	if(bandaged.length > 0){
 		if(DIM4 == 3)
 			shufflePossible(35, "", "  ");
 		else
@@ -5627,19 +5638,8 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		// DIM = 3;
-		// DIM2 = 50;
-		// changeCam(3);
-		// console.log(getEl("s_start").style.display == "block");
-		// changeBan(50, [[3,4,5,6,7,8]]);
-		// ban9();
-		// savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
-		// special[2] = savesetup;
-		// quickSolve();
+		console.log(DIM, DIM2, bandaged, special);
 		// changeFive();
-		// console.log(window.speechSynthesis.getVoices().find((obj) => { return obj.name == "Aaron";}));
-		// console.log(mastep);
-		// console.log(undo, redo);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -6109,7 +6109,7 @@ p.keyPressed = (event) => {
 			redo = [];
 			animateWide('x', 50, -1, true);
 			break;
-			case 8: //backspace
+			case 8: 
 			if (p.keyIsDown(p.SHIFT))
 				flexDo(Undo, undo, true);
 			else
@@ -6251,8 +6251,9 @@ function multiple(nb, timed) {
 					cubies.push(i);
 			}
 		}
+		console.log(cubies);
 		alldown = false;
-		if((DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
+		if((DIM == 1 || DIM == 6 || DIM == 2 || (Array.isArray(DIM) && custom == 1) || DIM == 50 || DIM == 15)){
 			alldown = true;
 			if(arr[0][0] == "D") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
 			if(arr[0][0] == "U") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
@@ -6264,6 +6265,7 @@ function multiple(nb, timed) {
 			if(arr[0][0] == "M") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
 			if(arr[0][0] == "S") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 0);
 		}
+		console.log("alldown is " + alldown);
 		notation(arr[nb], timed);
 		let bad = -1;
 		if(undo.length > 0)
@@ -6408,9 +6410,11 @@ function undoTillRotate(arr) {
 	return cnt;
 }
 function flexDo(foo, arr, shift = false) {
+	if (arr.length == 0) return;
+	console.log(INPUT.value());
 	if (shift) {
 		funcMult(foo, undoTillRotate(arr));
-	} else if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c)) || bandaged.length > 0) {
+	} else if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c))) {
 		funcMult(foo, 1);
 	} else if (INPUT.value() == "Double" || INPUT.value() == "Gearcube") {
 		funcMult(foo, 2);
@@ -6452,7 +6456,6 @@ function Undo()
 {
 	
 	console.log(undo);
-	console.log(1596)
 	if(undo.length == 0 || !canMan)
 	return;
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -6552,6 +6555,7 @@ function refreshButtons()
 	CUBE13.remove();
 	CUBE14.remove();
 	CUBE15.remove();
+	CUBE16.remove();
 
 	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches? 1.5 : 1;
 	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? 2.5 : 1;
@@ -6681,6 +6685,9 @@ function refreshButtons()
 
 		CUBE14 = p.createButton('Cube Bandage');
 		setButton(CUBE14, "cube14", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
+
+		CUBE16 = p.createButton('Bandaged 3x3x2');
+		setButton(CUBE16, "cube16", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change20.bind(null, 16, [[0,1], [24,25]]));
 	}
 
 }
