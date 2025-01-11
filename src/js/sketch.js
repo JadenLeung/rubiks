@@ -1502,7 +1502,7 @@ function reSetup(rot) {
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
-	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "reset2_div", "reset3_div", "giveup", "giveup2", "hint"]);
+	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "giveup", "giveup2", "hint"]);
 	special[6] = DIM2;
 	let cnt = 0;
 	//allcubies = false;
@@ -1932,7 +1932,11 @@ function undoSetup() {
 }
 function moveSetup()
 {
-	if(document.getElementById("s_instruct").innerHTML.includes("In one game of") ||
+	if (mastep > 0 && ma_data.type == "shape" || !hasColor("k")) {
+		undoSetup();
+		return;
+	}
+ 	if(document.getElementById("s_instruct").innerHTML.includes("In one game of") ||
 	document.getElementById("s_instruct").innerHTML.includes("Your final"))
 	{
 		CAM = p.createEasyCam(p._renderer);
@@ -2193,8 +2197,9 @@ function changeBan(dim, b)
 {
 	bandaged = b;
 	DIM = dim;
-	changeCam(3);
 	DIM2 = 50;
+	special[6] = 50;
+	changeCam(3);
 	reCam();
 	refreshButtons();
 }
@@ -2250,7 +2255,7 @@ function change20(dim, b){
 	changeFive();
 	bandaged = b;
 	changeCam(3);
-	DIM2 = 50;
+	DIM2 = 2;
 	INPUT.value("3x3x2");
 	SCRAM.value("Like a 3x3x2");
 	reCam();
@@ -3057,7 +3062,7 @@ function blindmode() {
 function showMarathon() {
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 		"highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
-	setDisplay("inline", ["speed", "slider_div", "undo", "redo"]);
+	setDisplay("inline", ["speed", "slider_div", "undo", "redo", "reset2_div"]);
 	setDisplay("table", ["keymap"]);
 	setDisplay("block", ["times_par", "outertime", "marathon2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
@@ -3091,7 +3096,7 @@ function shapemarathon() {
 		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + ".";
 		ma_data.dims[mastep / 2]();
 		shuffleCube();
-		waitStopTurning(false, "shape");
+		waitStopTurning(false, ma_data.type);
 	}
 	if (mastep / 2 == ma_data.dims.length) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed"]);
@@ -3114,9 +3119,9 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		if (mode != "shape") {
 			savesetup = IDtoReal(IDtoLayout(decode(getID())));
 			special[2] = savesetup;
-		}
+		} 
 		if (bstep == 1) bstep = 2;
-		if (mode == "shape") mastep++;
+		if (mode == "shape" || mode == "bandage") mastep++;
 	  }
 	}, 10);
   }
@@ -5480,6 +5485,19 @@ function canMouse() {
 	}
 	return true;
 }
+function hasColor(c) {
+	const sides = ["front", "back", "left", "right", "top", "bottom"];
+	let hasit = false;
+	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
+		sides.forEach((side) => {
+			console.log(getColor(CUBE[i][side].levels), c);
+			if (getColor(CUBE[i][side].levels) == c) {
+				hasit = true;
+			}
+		});
+	}
+	return hasit;
+}
 function startAction() {	
 	if(MODE == "cube" && NOMOUSE.includes(DIM) && custom == 0) return; 
 	if(custom == 1 && !canMouse()) return; 
@@ -5657,7 +5675,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 32){ //space
-		console.log(mo5, ao5);
+		console.log(DIM, DIM2, special, hasColor("k"), undo, redo);
 		if (bstep > 1 && getEl("overlay").style.display == "block") {
 			setDisplay("none", ["overlay"]);
 			peeks++;
@@ -5707,9 +5725,10 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		// change19();
+		// moveSetup();
 		// quickSolve();
-		console.log(nextcuby);
+		// console.log(hasColor("k"));
+		// console.log(nextcuby);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -6195,16 +6214,15 @@ p.keyPressed = (event) => {
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
-		    if(mastep > 0) {
-				undoSetup();
-				break;
+			if((MODE == "moves")) {
+				if(m_34step > 0 || m_4step > 0 || cstep > 0 || bstep > 0 || mastep > 0) 
+					moveSetup();
+				else
+					quickSolve();
 			}
-			if((MODE == "moves" && (m_34step != 0 || m_4step != 0)) || cstep > 0 || bstep > 0) 
-			moveSetup();
 			if(MODE == "speed" && getEl("s_high").style.display == "none" && getEl("s_prac2").style.display == "none")
 			speedSetup();
-			if (MODE == "moves" && !(m_34step != 0 || m_4step != 0))
-			quickSolve();
+			
 			break;
 			case 192: //`
 			if (p.keyIsDown(p.SHIFT)) {
@@ -6213,7 +6231,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			// console.log(DIM, DIM2, bandaged, special);
+			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();

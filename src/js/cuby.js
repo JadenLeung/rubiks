@@ -88,7 +88,7 @@ export default class Cuby {
       if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
 
     }
-    if([1,2,15].includes(special[6])){
+    if([2,15].includes(special[6]) || size == 1){ //rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -143,7 +143,7 @@ export default class Cuby {
         }
       }
     }
-    if(special[0] == true && this.special[6] != 2 && this.special[6] != 15){
+    if(special[0] == true && this.special[6] != 2 && this.special[6] != 15 && this.size != 1){ //rainbow
       let badarr = ["tlf", "tfbl", "blt", "tlfd", "tdfbl", "bltd", "dfl", "fbld", "bdl",
                     "rtfl", "tfbrl", "rbtl", "tdfrl", "tdfbrl", "tdbrl", "rdfl", "dfbrl", "rbdl",
                     "rtf", "rbtf", "rbt", "rtdf", "tdfbr", "rtdb", "rfd", "rbfd", "rbd"];
