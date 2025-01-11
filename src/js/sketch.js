@@ -103,7 +103,8 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE;
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, 
+		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16;
@@ -726,6 +727,19 @@ p.setup = () => {
 	SEL7.parent("select8")
 	SEL7.selected('3x3');
 	SEL7.changed(change9.bind(null, 0));
+
+	BANDAGE_SELECT = p.createSelect();
+	BANDAGE_SELECT.option("3x3");
+	BANDAGE_SELECT.option("3x3x2");
+	BANDAGE_SELECT.option("2x2x3");
+	BANDAGE_SELECT.parent("bandage_select")
+	BANDAGE_SELECT.selected('3x3');
+	BANDAGE_SELECT.changed(() => {
+		bandaged = [];
+		if (BANDAGE_SELECT.value() == "3x3") changeThree();
+		if (BANDAGE_SELECT.value() == "3x3x2") changeFive();
+		if (BANDAGE_SELECT.value() == "2x2x3") change19();
+	});
 
 	INPUT.option("Standard");
 	INPUT.option("Double");
@@ -1420,6 +1434,7 @@ setInterval(() => {
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	special[5] = bandaged;
+	special[6] = DIM2;
 }, 10)
 //forever
 function reSetup(rot) {
@@ -1488,7 +1503,7 @@ function reSetup(rot) {
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "reset2_div", "reset3_div", "giveup", "giveup2", "hint"]);
-	
+	special[6] = DIM2;
 	let cnt = 0;
 	//allcubies = false;
 	for (let i = 0; i < SIZE; i++) {
@@ -1852,6 +1867,7 @@ function getID(){
 }
 function quickSolve()
 {
+	special[6] = DIM2;
 	CUBE = {};
 	let cnt = 0;
 	for (let i = 0; i < SIZE; i++) {
@@ -2081,6 +2097,7 @@ function changeCam(dim)
 	INPUT.selected("Standard");
 	SCRAM.value("Normal");
 	changeInput();
+	special[6] = DIM2;
 	reSetup();
 }
 function bandageZero(){
@@ -2121,7 +2138,7 @@ function changeFour(){
 }
 function changeFive(){
 	DIM = 2;
-	DIM2 = 50;
+	DIM2 = 2;
 	changeCam(3);
 	INPUT.value("3x3x2");
 	SCRAM.value("Like a 3x3x2");
@@ -2207,7 +2224,7 @@ function change18(dim, b){
 }
 function change19(){
 	DIM = 15;
-	DIM2 = 50;
+	DIM2 = 15;
 	changeCam(3);
 	INPUT.value("3x3x2");
 	SCRAM.value("Like a 3x3x2");
@@ -2440,7 +2457,7 @@ function viewBandage(def){
 	if(!def)
 		bannum = 1;
 	setDisplay("block", ["okban"]); 
-	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban"]); 
+	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer"]); 
 	setDisplay("inline", ["leftban", "rightban"]);
 
 	if(bandaged.length >= bannum)
@@ -2461,7 +2478,7 @@ function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
-	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban"]);
+	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban","bandage_outer"]);
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
@@ -2471,7 +2488,7 @@ function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
 	document.getElementById("addbandage3").innerHTML= "";
 	setDisplay("none", ["okban", "leftban", "rightban", "deleteban", "cancelban"]); 
-	setDisplay("block", ["addbandage", "addbandage4", "input", "scram"]); 
+	setDisplay("block", ["addbandage", "addbandage4", "input", "scram","bandage_outer"]); 
 	setDisplay("inline", ["custom5", "select9", "rng2"]); 
 
 	if(bandaged2.length > 1 && customb == 1)
@@ -2479,6 +2496,12 @@ function doneBandage(){
 	bandaged2 = [];
 	customb = 0;
 	ban9();
+	if (special[6] == 2) {
+		changeFive();
+	}
+	if (special[6] == 15) {
+		change19();
+	}
 }
 function cancelBandage(){
 	customb = 0;
@@ -2501,6 +2524,8 @@ function allBandaged(){
 	return possible;
 }
 function randomBandage(){
+	BANDAGE_SELECT.value("3x3");
+	changeThree();
 	let numB = parseInt(Math.random()*3)+2;
 	let possible = [];
 	let possible2 = [];
@@ -2655,12 +2680,14 @@ function Custom2(){
 	document.getElementById("okban").style.display = "none";
 	document.getElementById("leftban").style.display = "none";
 	document.getElementById("rightban").style.display = "none";
-	DIM2 = 50;
 	changeCam(3);
-	doneBandage()
+	doneBandage();
 	bandaged = bandaged3;
 	modeData("custombandage");
 	ban9();
+	if (BANDAGE_SELECT.value() == "3x3") changeThree();
+	if (BANDAGE_SELECT.value() == "3x3x2") changeFive();
+	if (BANDAGE_SELECT.value() == "2x2x3") change19();
 }
 function Custom()
 {
@@ -4557,7 +4584,7 @@ function rotateMatrix(x, y, dir) {
 function moveX(row, dir) { // switch `i` cubes and rotate theme..
 	let stack = [];
 	let primes, found, tmp; // x' y'
-	
+	special[6] = DIM2;
 	tmp = {};
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].x === row) {
@@ -4578,7 +4605,7 @@ function moveX(row, dir) { // switch `i` cubes and rotate theme..
 function moveY(row, dir) { // switch `j` cubes and rotate them..
 	let stack = [];
 	let primes, found, tmp;
-	
+	special[6] = DIM2;
 	tmp = {};
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].y === row) { // if cubbie in the 'Y' face
@@ -4599,7 +4626,7 @@ function moveY(row, dir) { // switch `j` cubes and rotate them..
 function moveZ(row, dir) { // switch `z` cubes and rotate them..
 	let stack = [];
 	let primes, found, tmp;
-	
+	special[6] = DIM2;
 	tmp = {};
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].z === row) { // if cubbie in the 'z' face
@@ -5660,9 +5687,8 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(DIM, DIM2, bandaged, special);
-		// changeFive();
-		quickSolve();
+		// change19();
+		// quickSolve();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -6166,7 +6192,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			console.log(layout, cubyColors, CUBE)
+			// console.log(DIM, DIM2, bandaged, special);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
