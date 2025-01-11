@@ -1561,6 +1561,20 @@ function reSetup(rot) {
 			}
 		}
 	}
+	if (DIM == 2) {
+		for (let i = 0; i < nextcuby.length; i++) {
+			for (let j = 0; j < nextcuby[i].length; ++j) {
+				if (nextcuby[i][j] >= 9 && nextcuby[i][j] <= 17) {
+					nextcuby[i][j] += (i >= 0 && i <= 8) ? 9 : -9;
+				}
+			}
+		}
+	}
+	if (DIM == 15) {
+		nextcuby[0] = [2,6,9]; nextcuby[2] = [0,8,11]; nextcuby[6] = [0,8,15]; nextcuby[8] = [2,6,17];
+		nextcuby[9] = [0,11,15,18]; nextcuby[11] = [2,9,17,20]; nextcuby[15] = [6,9,17,24]; nextcuby[17] = [8,11,15,26];
+		nextcuby[18] = [9,20,24]; nextcuby[20] = [11,18,26]; nextcuby[24] = [15,18,26]; nextcuby[26] = [17,20,24];
+	}
 	reCam();
 }
 function to132(num) {
@@ -2076,6 +2090,7 @@ function changeThree()
 {
 	DIM2 = 50;
 	DIM = 50;
+	changeCam(3);
 	localStorage.startcube = 3;
 	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
 	TWOBYTWO.remove();
@@ -2510,29 +2525,28 @@ function cancelBandage(){
 }
 function allBandaged(){
 	let possible = [];
-	let allbandaged = [];
-	for(let j = 0; j < bandaged.length; j++){
-		for(let k = 0; k < bandaged[j].length; k++){
-			console.log(bandaged[j][k]);
-			allbandaged[allbandaged.length] = bandaged[j][k];
-		}
-	}
+	let allbandaged = bandaged.flat();
 	console.log("allbandaged is", allbandaged);
+	let cubies = Array.from({ length: 27 }, (_, i) => i);
+	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+	if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
 	for(let j = 0; j < 27; j++){
-		if(!allbandaged.includes(j) && j != 13) possible.push(j);
+		if(!allbandaged.includes(j) && j != 13 && cubies.includes(j)) possible.push(j);
 	}
 	return possible;
 }
 function randomBandage(){
-	BANDAGE_SELECT.value("3x3");
-	changeThree();
+	// BANDAGE_SELECT.value("3x3");
+	// changeThree();
 	let numB = parseInt(Math.random()*3)+2;
+	if (special[6] != 50) numB= parseInt(Math.random()*2)+1;
 	let possible = [];
 	let possible2 = [];
 	bandaged = [];
-	let size = 3;
-	if(numB == 3) size = 4
-	if(numB == 2) size == 5
+	let size = 2;
+	if(numB == 3) size = 3;
+	if(numB == 2) size = 4;
+	if (special[6] != 50) size = 2;
 	for(let i = 0; i < numB; i++){
 		possible = allBandaged();
 		possible2 = [];
@@ -2555,6 +2569,12 @@ function randomBandage(){
 	}
 	bandaged2 = [];
 	ban9();
+	if (special[6] == 2) {
+		changeFive();
+	}
+	if (special[6] == 15) {
+		change19();
+	}
 	
 }
 function deleteBan(){
@@ -5689,6 +5709,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// change19();
 		// quickSolve();
+		console.log(nextcuby);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
