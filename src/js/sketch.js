@@ -164,6 +164,8 @@ export default function (p) {
 		"r": "Red"
 	 };
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
+	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
+
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
@@ -525,7 +527,7 @@ p.setup = () => {
 	CUBE3 = p.createButton('Plus Cube');
 	CUBE4 = p.createButton('Christmas 3x3');
 	CUBE5 = p.createButton('Christmas 2x2');
-	CUBE6 = p.createButton('The Jank 2x2');
+	CUBE6 = p.createButton('Jank 2x2');
 	CUBE7 = p.createButton('Slice Bandage');
 	CUBE8 = p.createButton('The Pillars');
 	CUBE9 = p.createButton('Triple Quad');
@@ -932,10 +934,10 @@ p.setup = () => {
 
 
 	CUSTOM = p.createButton('Custom Shape');
-	setButton(CUSTOM, "custom", 'btn btn-primary', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', Custom.bind(null, 0));
+	setButton(CUSTOM, "custom", 'btn btn-primary', allcubestyle, Custom.bind(null, 0));
 
 	CUSTOM2 = p.createButton('Custom Bandage');
-	setButton(CUSTOM2, "customb", 'btn btn-primary', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', Custom2.bind(null, 0));
+	setButton(CUSTOM2, "customb", 'btn btn-primary', allcubestyle, Custom2.bind(null, 0));
 	
 	const RESET = p.createButton('Reset');
 	setButton(RESET, "reset_div", bstyle, '', reSetup.bind(null, 0));
@@ -1435,6 +1437,7 @@ setInterval(() => {
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	special[5] = bandaged;
 	special[6] = DIM2;
+	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3071,7 +3074,7 @@ function startMarathon(type) {
 	ma_data.type = type;
 	if (type == "shape") {
 		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
-		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "The Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"];
+		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"];
 	} else if (type == "bandage") {
 		ma_data.dims = [change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]), 
 		change11.bind(null, 7, [[3,4,5,6,7,8]]), 
@@ -6725,57 +6728,56 @@ function refreshButtons()
 
 	MOVESMODE2 = p.createButton('Chal');
 	setButton(MOVESMODE2, "mode8", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px;', movesmode.bind(null, 0));
-
 	if(modnum == 0)
 	{
 		ONEBYTHREE = p.createButton('1x3x3');
-		setButton(ONEBYTHREE, "cube1", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeFour.bind(null, 0));
+		setButton(ONEBYTHREE, "cube1", 'btn btn-info', allcubestyle, changeFour.bind(null, 0));
 
 		SANDWICH = p.createButton('3x3x2');
-		setButton(SANDWICH, "cube2", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeFive.bind(null, 0));
+		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, changeFive.bind(null, 0));
 
 		CUBE3 = p.createButton('Plus Cube');
-		setButton(CUBE3, "cube3", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeSix.bind(null, 0));
+		setButton(CUBE3, "cube3", 'btn btn-info', allcubestyle, changeSix.bind(null, 0));
 
-		CUBE4 = p.createButton('Christmas 3x3');
-		setButton(CUBE4, "cube4", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', changeSeven.bind(null, 0));
+		CUBE4 = p.createButton(isthin ? 'Xmas 3x3' : 'Christmas 3x3');
+		setButton(CUBE4, "cube4", 'btn btn-info', allcubestyle, changeSeven.bind(null, 0));
 
-		CUBE5 = p.createButton('Christmas 2x2');
-		setButton(CUBE5, "cube5", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change8.bind(null, 0));
+		CUBE5 = p.createButton(isthin ? 'Xmas 2x2' : 'Christmas 2x2');
+		setButton(CUBE5, "cube5", 'btn btn-info', allcubestyle, change8.bind(null, 0));
 
-		CUBE6 = p.createButton('The Jank 2x2');
-		setButton(CUBE6, "cube6", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change10.bind(null, 0));
+		CUBE6 = p.createButton('Jank 2x2');
+		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, change10.bind(null, 0));
 
 		CUBE13 = p.createButton('Sandwhich Cube');
-		setButton(CUBE13, "cube13", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change17.bind(null, 0));
+		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, change17.bind(null, 0));
 
 		CUBE15 = p.createButton('2x2x3');
-		setButton(CUBE15, "cube15", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change19.bind(null, 0));
+		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, change19.bind(null, 0));
 	}
 	else{
 		CUBE7 = p.createButton('Slice Bandage');
-		setButton(CUBE7, "cube7", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change11.bind(null, 7, [[3,4,5,6,7,8]]));
+		setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, change11.bind(null, 7, [[3,4,5,6,7,8]]));
 
 		CUBE8 = p.createButton('The Pillars');
-		setButton(CUBE8, "cube8", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change12.bind(null, 8, [[0,3,6], [2,5,8]]));
+		setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, change12.bind(null, 8, [[0,3,6], [2,5,8]]));
 
 		CUBE9 = p.createButton('Triple Quad');
-		setButton(CUBE9, "cube9", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]));
+		setButton(CUBE9, "cube9", 'btn btn-info', allcubestyle, change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]));
 
 		CUBE10 = p.createButton('Bandaged 2x2');
-		setButton(CUBE10, "cube10", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change14.bind(null, 10, [[6,8]]));
+		setButton(CUBE10, "cube10", 'btn btn-info', allcubestyle, change14.bind(null, 10, [[6,8]]));
 
 		CUBE11 = p.createButton('Z Perm');
-		setButton(CUBE11, "cube11", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]));
+		setButton(CUBE11, "cube11", 'btn btn-info', allcubestyle, change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]));
 
 		CUBE12 = p.createButton('T Perm');
-		setButton(CUBE12, "cube12", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
+		setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
 
 		CUBE14 = p.createButton('Cube Bandage');
-		setButton(CUBE14, "cube14", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
+		setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
 
 		CUBE16 = p.createButton('Bandaged 3x3x2');
-		setButton(CUBE16, "cube16", 'btn btn-info', 'height:45px; width:180px; text-align:center; font-size:20px; border: none;', change20.bind(null, 16, [[0,1], [24,25]]));
+		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
 	}
 
 }

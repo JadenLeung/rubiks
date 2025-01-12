@@ -143,6 +143,9 @@ button:hover {
     top: 92%;
     left: 4%;
 }
+.allcubes {
+    display: block;
+}
 @media screen and (max-width: 1199px) {
     .buttoncontainer {
         display: flex;
@@ -169,6 +172,9 @@ button:hover {
     }
     #align {
         display: none;
+    }
+    .allcubes {
+        display: inline-block;
     }
 }
 @media screen and (max-width: 767px) {
