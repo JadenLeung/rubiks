@@ -3076,7 +3076,7 @@ function startMarathon(type) {
 		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
 		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"];
 	} else if (type == "bandage") {
-		ma_data.dims = [change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]), 
+		ma_data.dims = [change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]), 
 		change11.bind(null, 7, [[3,4,5,6,7,8]]), 
 		change14.bind(null, 10, [[6,8]]), 
 		change20.bind(null, 16, [[0,1], [24,25]]), 
@@ -5068,7 +5068,7 @@ function shuffleCube(nb) {
 	arr = [];
 	let bad = "";
 	let total = "";
-	if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "daily" || MODE == "weekly" || MODE == "speed" && race > 0)
+	if(true)
 	{
 		if(SCRAM.value() == "Middle Slices")
 			possible = ["E", "M", "S"];
@@ -5677,7 +5677,7 @@ p.keyPressed = (event) => {
 		raceDetect();
 		return;
 	}
-	if(p.keyCode == 32){ //space
+	if(p.keyCode == 32){ 
 		console.log(DIM, DIM2, special, hasColor("k"), undo, redo);
 		if (bstep > 1 && getEl("overlay").style.display == "block") {
 			setDisplay("none", ["overlay"]);
@@ -5729,7 +5729,6 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// moveSetup();
-		// quickSolve();
 		// console.log(hasColor("k"));
 		// console.log(nextcuby);
 	}
@@ -5759,7 +5758,7 @@ p.keyPressed = (event) => {
 			if (m_34step > 0) func = m_34;
 			if (m_4step > 0) func = m_4; 
 			if (bstep > 0) func = blindmode; 
-			if (mastep > 0) func = shapemarathon;
+			if (mastep > 0) func = startMarathon.bind(0, ma_data.type);
 			if (func) {
 				movesmode();
 				func();
@@ -6234,6 +6233,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
+			quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
@@ -6774,7 +6774,7 @@ function refreshButtons()
 		setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
 
 		CUBE14 = p.createButton('Cube Bandage');
-		setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, change18.bind(null, 14, [[13,14,16,17,22,23,25,26]]));
+		setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]));
 
 		CUBE16 = p.createButton('Bandaged 3x3x2');
 		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
@@ -9889,29 +9889,32 @@ window.addEventListener('keydown', (e) => {
 	passive: false   // this is optional, my code works without it
 });
 }
-//Mo50 virtual
-//71.80 moves
-//71.34
-//71.22
-//70.78
-//70.20
-//69.16
-//66.60
-//66.04
-//65.56
-//64.48
-//Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
-//Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3
-//Jaden WR 2x2: 3.88
-//3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01
-//3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06
-//3x3 Easy: 0.8, 0.52s
-//3x3 Medium: 15.4s, 13.58s
-//3x3 Easy: 1.4s
-//FMC: 193
-//Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27
-//Shape Mod All WR times: (20.07 3x3x2, 12.02 3x3x1, 18.67 Jank, 3 Plus, 5.58 2x2, 25.40 3x3, 6.53 sandwich)
-//Bandage Mod ALL: 672.28
+/*
+Mo50 virtual
+71.80 moves
+71.34
+71.22
+70.78
+70.20
+69.16
+66.60
+66.04
+65.56
+64.48
+Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
+Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3
+Jaden WR 2x2: 3.88
+3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01
+3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06
+3x3 Easy: 0.8, 0.52s
+3x3 Medium: 15.4s, 13.58s
+3x3 Easy: 1.4s
+FMC: 193
+Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27, 85.90
+Shape Mod All WR times: (18.2 3x3x2, 2.5 2x2x3 11.51 3x3x1, 11.94 Jank, 13.78 Plus, 
+17.31 3x3, 4.37 2x2, 6.29 sandwich)
+Bandage Mod ALL: 672.28
+*/
 
 //BELOW 51 MOVES
 // D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
