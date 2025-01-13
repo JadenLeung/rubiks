@@ -5018,7 +5018,13 @@ function shufflePossible(len, total2, prev){
 		return;
 	}
 	let rnd2 = Math.random();
-	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "Like a 3x3x2" && actualmove != "U" && actualmove != "D" && actualmove != "E"))
+	let col = TOPWHITE.value()[0];
+	col = col.toLowerCase();
+	let op = opposite[col];
+	const badmoves = [col, op].includes(layout[2][1][1][0]) ? ["U", "D", "E"] : 
+	[col, op].includes(layout[5][1][1][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
+	// if (layout[5][1][1][0] == ) 
+	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "Like a 3x3x2" && !badmoves.includes(actualmove)))
 	{
 		arr.push(actualmove);
 		arr.push(actualmove);
