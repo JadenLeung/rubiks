@@ -5734,6 +5734,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
+		// quickSolve();
 		// moveSetup();
 		// console.log(hasColor("k"));
 		// console.log(nextcuby);
@@ -6239,7 +6240,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			quickSolve();
+			// quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
