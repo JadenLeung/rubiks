@@ -3131,7 +3131,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
 				special[2] = savesetup;
 				savebandage = mapBandaged();
-				if (timer.getTime() > 0 || MODE == "normla") {
+				if (timer.getTime() > 0 || isAnimating() || (bstep == 0 && cstep == 0 && mastep == 0)) {
 					clearInterval(interval2); 
 				}
 			}, 10);
@@ -6274,7 +6274,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			// quickSolve();
+			quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
