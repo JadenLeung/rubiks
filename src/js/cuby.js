@@ -52,6 +52,14 @@ export default class Cuby {
     this.back = this.colors.orange;
     this.left = this.colors.green;
     
+    const opposite = [];
+    opposite["g"] = "b";
+    opposite["b"] = "g";
+    opposite["y"] = "w";
+    opposite["w"] = "y";
+    opposite["o"] = "r";
+    opposite["r"] = "o";
+
     if(size == 4 || size == 5)
     {
       this.bottom = this.colors.white;
@@ -59,14 +67,6 @@ export default class Cuby {
       this.back = this.colors.red;
     }
     if(custom){
-      let opposite = [];
-      opposite["g"] = "b";
-      opposite["b"] = "g";
-      opposite["y"] = "w";
-      opposite["w"] = "y";
-      opposite["o"] = "r";
-      opposite["r"] = "o";
-        
       if((size == 4 || size == 5) && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
       else this.top = this.c[custom[this.index][0]];
       if((size == 4 || size == 5) && (custom[this.index][1] == "y" || custom[this.index][1] == "b" || custom[this.index][1] == "o")) this.bottom = this.c[opposite[custom[this.index][1]]];
@@ -96,22 +96,11 @@ export default class Cuby {
       directions.forEach((dir) => {
         s += getColor(this[dir].levels);
       });
-      console.log(s);
-      if (true || [0, 2, 6, 8, 18, 20, 24, 26].includes(index)) {
-        directions.forEach((dir) => {
-          if (getColor(this[dir].levels) == "k" && getColor(this[op[dir]].levels) != "k") {
-            this[dir] = this.c[opposite[getColor(this[op[dir]].levels)]];
-          }
-        });
-      } else {
-        this.back = this.c[this.custom[0][3]];
-        this.front = this.c[this.custom[5][2]];
-        this.bottom = this.c[this.custom[0][1]];
-        this.top = this.c[this.custom[16][0]];
-        this.right = this.c[this.custom[0][5]];
-        this.left = this.c[this.custom[26][4]];
-      }
-      console.log("AFTER");
+      directions.forEach((dir) => {
+        if (getColor(this[dir].levels) == "k" && getColor(this[op[dir]].levels) != "k") {
+          this[dir] = this.c[opposite[getColor(this[op[dir]].levels)]];
+        }
+      });
       s = index + " ";
         directions.forEach((dir) => {
           s += getColor(this[dir].levels);
@@ -120,9 +109,17 @@ export default class Cuby {
     }
     if(size == 13){
       let a = "";
-      if(this.x == -50) a = this.colors.green;
-      if(this.x == 0) a = this.colors.orange;
-      if(this.x == 50) a = this.colors.blue;
+      let c1 = this.custom[4][5];
+      let c2 = opposite[c1];
+      const directions = ["back", "front", "bottom", "top", "right", "left"];
+      let colors = [];
+      directions.forEach((dir) => {
+        colors.push(getColor(this[dir].levels))
+      });
+      console.log(colors);
+      if(colors.includes(c1)) a = this.colors.green;
+      else if(colors.includes(c2)) a = this.colors.blue;
+      else a = this.colors.orange;
       this.top = a;
       this.bottom = a;
       this.front = a;

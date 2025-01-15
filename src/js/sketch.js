@@ -146,7 +146,7 @@ export default function (p) {
 	let savedark = [];
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
-	const nosavesetupdim = [2, 6]
+	const nosavesetupdim = [1, 2, 3, 6]
 	let session = 0;
 	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
@@ -3124,7 +3124,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		}
 		if (!nosavesetupdim.includes(DIM)) {
 			savesetup = IDtoReal(IDtoLayout(decode(getID())));
-			// savebandage = bandaged;
+			savebandage = bandaged;
 			special[2] = savesetup;
 			savebandage = mapBandaged();
 		} 
@@ -6251,7 +6251,7 @@ p.keyPressed = (event) => {
 			case 27: //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
-			if((MODE == "moves")) {
+			if((MODE == "moves" || cstep > 0)) {
 				if(m_34step > 0 || m_4step > 0 || cstep > 0 || bstep > 0 || mastep > 0) 
 					moveSetup();
 				else
@@ -6268,7 +6268,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			// quickSolve();
+			quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
