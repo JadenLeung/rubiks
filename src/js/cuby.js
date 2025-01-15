@@ -105,7 +105,6 @@ export default class Cuby {
         directions.forEach((dir) => {
           s += getColor(this[dir].levels);
         });
-      console.log(s)
     }
     if(size == 13){
       let a = "";
