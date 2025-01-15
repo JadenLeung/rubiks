@@ -146,7 +146,8 @@ export default function (p) {
 	let savedark = [];
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
-	const nosavesetupdim = [1, 2, 15, 6]
+	// const nosavesetupdim = [1, 2, 15, 6];
+	const nosavesetupdim = [1,2,6];
 	let session = 0;
 	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
@@ -1937,6 +1938,7 @@ function undoSetup() {
 }
 function moveSetup()
 {
+	if ((mastep > 0 || cstep > 0) && timer.getTime() <= 0) return;
 	if (mastep > 0 && nosavesetupdim.includes(DIM)) {
 		undoSetup();
 		return;
@@ -3122,14 +3124,18 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			timer.setTime(-15000); // Set the timer to -15000
 			timer.start(true);      // Start the timer
 		}
-		if (!nosavesetupdim.includes(DIM)) {
-			savesetup = IDtoReal(IDtoLayout(decode(getID())));
-			savebandage = bandaged;
-			special[2] = savesetup;
-			savebandage = mapBandaged();
-		} 
 		if (bstep == 1) bstep = 2;
 		if (mode == "shape" || mode == "bandage") mastep++;
+		if (!nosavesetupdim.includes(DIM)) {
+			const interval2 = setInterval(() => {
+				savesetup = IDtoReal(IDtoLayout(decode(getID())));
+				special[2] = savesetup;
+				savebandage = mapBandaged();
+				if (timer.getTime() > 0 || MODE == "normla") {
+					clearInterval(interval2); 
+				}
+			}, 10);
+		} 
 	  }
 	}, 10);
   }
