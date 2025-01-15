@@ -89,12 +89,34 @@ export default class Cuby {
 
     }
     if([2,15].includes(special[6]) || size == 1){ //rainbow
-      this.back = this.c[this.custom[0][3]];
-      this.front = this.c[this.custom[5][2]];
-      this.bottom = this.c[this.custom[0][1]];
-      this.top = this.c[this.custom[16][0]];
-      this.right = this.c[this.custom[0][5]];
-      this.left = this.c[this.custom[26][4]];
+      const directions = ["back", "front", "bottom", "top", "right", "left"];
+      const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
+      const opposite = {o:"r", r:"o", g:"b", b:"g", g:"b", y:"w", w:"y", k:"k"};
+      let s = index + " ";
+      directions.forEach((dir) => {
+        s += getColor(this[dir].levels);
+      });
+      console.log(s);
+      if (true || [0, 2, 6, 8, 18, 20, 24, 26].includes(index)) {
+        directions.forEach((dir) => {
+          if (getColor(this[dir].levels) == "k" && getColor(this[op[dir]].levels) != "k") {
+            this[dir] = this.c[opposite[getColor(this[op[dir]].levels)]];
+          }
+        });
+      } else {
+        this.back = this.c[this.custom[0][3]];
+        this.front = this.c[this.custom[5][2]];
+        this.bottom = this.c[this.custom[0][1]];
+        this.top = this.c[this.custom[16][0]];
+        this.right = this.c[this.custom[0][5]];
+        this.left = this.c[this.custom[26][4]];
+      }
+      console.log("AFTER");
+      s = index + " ";
+        directions.forEach((dir) => {
+          s += getColor(this[dir].levels);
+        });
+      console.log(s)
     }
     if(size == 13){
       let a = "";
@@ -481,14 +503,15 @@ export default class Cuby {
   if (this.cubysize == 15 || (this.special[6] == 15 && !this.cubysize[0] == "adding")) {
     let c1 = this.custom[0][5];
     let c2 = this.custom[26][4];
+    const opparr = [c1, c2, "k"];
     let xshift = this.x == -50 ? 25 : -25;
     let yshift = this.y == -50 ? 25 : -25;
     let zshift = this.z == -50 ? 25 : -25;
     if(this.back != ""){ // yellow
       this.p.fill(this.back);
-      if ([c1,c2].includes(getColor(this.left.levels))) {
+      if (opparr.includes(getColor(this.left.levels))) {
         this.p.quad(-r, -r+yshift, -r+zshift, r, -r+yshift, -r+zshift, r, r+yshift, -r+zshift, -r, r+yshift, -r+zshift, 2, 2);
-      } else if ([c1,c2].includes(getColor(this.top.levels))) {
+      } else if (opparr.includes(getColor(this.top.levels))) {
         this.p.quad(-r+xshift, -r, -r+zshift, r+xshift, -r, -r+zshift, r+xshift, r, -r+zshift, -r+xshift, r, -r+zshift, 2, 2);
       } else {
         this.p.quad(-r+xshift, -r+yshift, -r, r+xshift, -r+yshift, -r, r+xshift, r+yshift, -r, -r+xshift, r+yshift, -r, 2, 2);
@@ -496,9 +519,9 @@ export default class Cuby {
     }
     if(this.front != ""){ // white
       this.p.fill(this.front);
-      if ([c1,c2].includes(getColor(this.left.levels))) {
+      if (opparr.includes(getColor(this.left.levels))) {
         this.p.quad(-r, -r+yshift, r+zshift, r, -r+yshift, r+zshift, r, r+yshift, r+zshift, -r, r+yshift, r+zshift, 2, 2);	 
-      } else if ([c1,c2].includes(getColor(this.top.levels))) {
+      } else if (opparr.includes(getColor(this.top.levels))) {
         this.p.quad(-r+xshift, -r, r+zshift, r+xshift, -r, r+zshift, r+xshift, r, r+zshift, -r+xshift, r, r+zshift, 2, 2);	 
       } else {
         this.p.quad(-r+xshift, -r+yshift, r, r+xshift, -r+yshift, r, r+xshift, r+yshift, r, -r+xshift, r+yshift, r, 2, 2);	 
@@ -506,9 +529,9 @@ export default class Cuby {
     } 
     if(this.bottom != ""){ // orange
       this.p.fill(this.bottom);
-      if ([c1,c2].includes(getColor(this.left.levels))) {
+      if (opparr.includes(getColor(this.left.levels))) {
         this.p.quad(-r, -r+yshift, -r+zshift, r, -r+yshift, -r+zshift, r, -r+yshift, r+zshift, -r, -r+yshift, r+zshift, 2, 2);	  
-      } else if ([c1,c2].includes(getColor(this.bottom.levels))) {
+      } else if (opparr.includes(getColor(this.bottom.levels))) {
         this.p.quad(-r+xshift, -r, -r+zshift, r+xshift, -r, -r+zshift, r+xshift, -r, r+zshift, -r+xshift, -r, r+zshift, 2, 2);	  
       }	else {
         this.p.quad(-r+xshift, -r+yshift, -r, r+xshift, -r+yshift, -r, r+xshift, -r+yshift, r, -r+xshift, -r+yshift, r, 2, 2);	
@@ -516,9 +539,9 @@ export default class Cuby {
     } 
     if(this.top != ""){ // red
       this.p.fill(this.top);
-      if ([c1,c2].includes(getColor(this.left.levels))) {
+      if (opparr.includes(getColor(this.left.levels))) {
         this.p.quad(-r, r+yshift, -r+zshift, r, r+yshift, -r+zshift, r, r+yshift, r+zshift, -r, r+yshift, r+zshift, 2, 2);
-      } else if ([c1,c2].includes(getColor(this.top.levels))) {
+      } else if (opparr.includes(getColor(this.top.levels))) {
         this.p.quad(-r+xshift, r, -r+zshift, r+xshift, r, -r+zshift, r+xshift, r, r+zshift, -r+xshift, r, r+zshift, 2, 2);
       } else {
         this.p.quad(-r+xshift, r+yshift, -r, r+xshift, r+yshift, -r, r+xshift, r+yshift, r, -r+xshift, r+yshift, r, 2, 2);
@@ -526,9 +549,9 @@ export default class Cuby {
     }
     if(this.right != ""){ // green 
       this.p.fill(this.right);
-      if ([c1,c2].includes(getColor(this.left.levels))) {
+      if (opparr.includes(getColor(this.left.levels))) {
         this.p.quad(-r, -r+yshift, -r+zshift, -r, r+yshift, -r+zshift, -r, r+yshift, r+zshift, -r, -r+yshift, r+zshift, 2, 2); 
-      } else if ([c1,c2].includes(getColor(this.top.levels)))  {
+      } else if (opparr.includes(getColor(this.top.levels)))  {
         this.p.quad(-r+xshift, -r, -r+zshift, -r+xshift, r, -r+zshift, -r+xshift, r, r+zshift, -r+xshift, -r, r+zshift, 2, 2); 
       } else {
         this.p.quad(-r+xshift, -r+yshift, -r, -r+xshift, r+yshift, -r, -r+xshift, r+yshift, r, -r+xshift, -r+yshift, r, 2, 2); 
@@ -536,9 +559,9 @@ export default class Cuby {
     } 	  
     if(this.left != ""){ // blue
         this.p.fill(this.left);
-        if ([c1,c2].includes(getColor(this.left.levels))) {
+        if (opparr.includes(getColor(this.left.levels))) {
           this.p.quad(r, -r+yshift, -r+zshift, r, r+yshift, -r+zshift, r, r+yshift, r+zshift, r, -r+yshift, r+zshift, 2, 2);
-        } else if ([c1,c2].includes(getColor(this.top.levels))) {
+        } else if (opparr.includes(getColor(this.top.levels))) {
           this.p.quad(r+xshift, -r, -r+zshift, r+xshift, r, -r+zshift, r+xshift, r, r+zshift, r+xshift, -r, r+zshift, 2, 2);
         } else {
           this.p.quad(r+xshift, -r+yshift, -r, r+xshift, r+yshift, -r, r+xshift, r+yshift, r, r+xshift, -r+yshift, r, 2, 2);

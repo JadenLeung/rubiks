@@ -141,10 +141,12 @@ export default function (p) {
 	let movesarr = [];
 	let scrambles = [];
 	let savesetup = [];
+	let savebandage = [];
 	let song = "CcDdEFfGgAaB";
 	let savedark = [];
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
+	const nosavesetupdim = [2, 6]
 	let session = 0;
 	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
@@ -1935,7 +1937,7 @@ function undoSetup() {
 }
 function moveSetup()
 {
-	if (mastep > 0 && ma_data.type == "shape" || !hasColor("k")) {
+	if (mastep > 0 && nosavesetupdim.includes(DIM)) {
 		undoSetup();
 		return;
 	}
@@ -1954,6 +1956,7 @@ function moveSetup()
 	}
 	moves = 0;
 	special[2] = savesetup;
+	bandaged = savebandage;
 	quickSolve();
 	undo = [];
 	redo = [];
@@ -3119,16 +3122,40 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			timer.setTime(-15000); // Set the timer to -15000
 			timer.start(true);      // Start the timer
 		}
-		if (mode != "shape") {
+		if (!nosavesetupdim.includes(DIM)) {
 			savesetup = IDtoReal(IDtoLayout(decode(getID())));
+			// savebandage = bandaged;
 			special[2] = savesetup;
+			savebandage = mapBandaged();
 		} 
 		if (bstep == 1) bstep = 2;
 		if (mode == "shape" || mode == "bandage") mastep++;
 	  }
 	}, 10);
   }
-  
+
+function mapCuby() {
+	let map = {};
+	for (let i = 0; i < 27; ++i) {
+		map[i] = (CUBE[i].z / 50) + 1;
+		map[i] += 3 * ((CUBE[i].y / 50) + 1);
+		map[i] += 9 * ((CUBE[i].x / 50) + 1);
+	}
+	return map;
+}
+function mapBandaged() {
+	console.log("BEFORE ", bandaged);
+	let copyban = bandaged.map(innerArray => [...innerArray]);
+	console.log("BEFORE3 ", copyban);
+	for (let i = 0; i < bandaged.length; ++i) {
+		for (let j = 0; j < bandaged[i].length; ++j) {
+			console.log("BEFORE2 ", bandaged[i][j]);
+			console.log("AFTER2 ", mapCuby()[bandaged[i][j]]);
+			copyban[i][j] = mapCuby()[bandaged[i][j]];
+		}
+	}
+	return copyban;
+}
 function startchallenge() {
 	DIM2 = weeklyscrambles[week].cube == 3 ? 50 : 100;
 	DIM = DIM2;
@@ -5736,7 +5763,8 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		// console.log(hasColor("k"));
+		console.log(mapCuby());
+		console.log(mapBandaged());
 		// console.log(nextcuby);
 	}
 	if(p.keyCode == 9){ //tab
@@ -6240,7 +6268,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			// quickSolve();
+			quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
