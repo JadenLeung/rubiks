@@ -68,7 +68,7 @@ export default function (p) {
 	let m_4step = 0;
 	let ma_data = {};
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0;
-	let PLL, PLLPRAC, OLLPRAC;
+	let OLL, PLL, PLLPRAC, OLLPRAC;
 	let REGULAR;
 	let SPEEDMODE;
 	let TIMEDMODE;
@@ -994,7 +994,7 @@ p.setup = () => {
 	});
 
 	const PEEK = p.createButton('Peek');
-	setButton(PEEK, "peekbutton", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', () => {setDisplay("none", ["overlay"]);peeks++;});
+	setButton(PEEK, "peekbutton", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', () => {toggleOverlay(false);});
 
 	FULLSCREEN = p.createButton('');
 	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
@@ -1011,7 +1011,7 @@ p.setup = () => {
 	const MED = p.createButton('Medium');
 	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
 
-	const OLL = p.createButton('OLL Attack');
+	OLL = p.createButton('OLL Attack');
 	setButton(OLL, "s_OLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedOLL.bind(null, 0));
 	
 	PLL = p.createButton('PLL/PBL Attack');
@@ -1045,7 +1045,10 @@ p.setup = () => {
 	setButton(STARTDCHAL2, "cd2_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', () => {dailychallenge(2)});
 
 	const STARTBLIND = p.createButton('Start Blind');
-	setButton(STARTBLIND, "b_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {bstep = 0; blindmode()});
+	setButton(STARTBLIND, "b_regular", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {bstep = 0; blindmode()});
+
+	const STARTBLIND2 = p.createButton('Blind Marathon');
+	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {startMarathon("blind")});
 
 	const STARTMARATHON = p.createButton('Shape Marathon');
 	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
@@ -2881,6 +2884,7 @@ function regular(nocustom){
 	m_34step = 0;
 	m_4step = 0;
 	bstep = 0;
+	ma_data.type = "";
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 }
@@ -3074,10 +3078,14 @@ function showMarathon() {
 	setDisplay("table", ["keymap"]);
 	setDisplay("block", ["times_par", "outertime", "marathon2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
+	if (ma_data.type == "blind") {
+		setDisplay("block", ["peeks"]);
+		setDisplay("none", ["times_par", "outertime"]);
+	}
 }
 function startMarathon(type) {
 	ma_data.type = type;
-	if (type == "shape") {
+	if (type == "shape" || type == "blind") {
 		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
 		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"];
 	} else if (type == "bandage") {
@@ -3101,18 +3109,22 @@ function shapemarathon() {
 	}
 	if (mastep % 2 == 0 && mastep / 2 < ma_data.dims.length) {
 		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.dims.length;
-		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + ".";
+		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + (ma_data.type == "blind" ? " with the fewest peeks.": ".");
 		ma_data.dims[mastep / 2]();
 		shuffleCube();
 		waitStopTurning(false, ma_data.type);
+		toggleOverlay(false, false);
+
 	}
 	if (mastep / 2 == ma_data.dims.length) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed"]);
-		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2)
-		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score;
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks"]);
+		setDisplay("block", ["m_high"]);
+		let score = (ma_data.type == "blind") ? peeks : ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
 		getEl("ma_small").innerHTML = "Play again?";
 		setDisplay("block", ["ma_buttons"]);
-		setScore(ma_data.type == "shape" ? "marathon" : "marathon2", score);
+		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3"};
+		setScore(map[ma_data.type], score, true);
 	}
 }
 function waitStopTurning(timed = true, mode = "wtev") {
@@ -3125,7 +3137,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			timer.start(true);      // Start the timer
 		}
 		if (bstep == 1) bstep = 2;
-		if (mode == "shape" || mode == "bandage") mastep++;
+		if (mode == "shape" || mode == "bandage" || mode == "blind") mastep++;
 		if (!nosavesetupdim.includes(DIM)) {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -3223,6 +3235,17 @@ function endchallenge(passed = true) {
 	}
 	dstep = false;
 }
+function toggleOverlay(show, p = true) {
+	if (show) {
+		setDisplay("block", ["overlay"]);
+	} else {
+		setDisplay("none", ["overlay"]);
+		if (p) peeks++;
+	}
+	getEl("wannapeek").style.display = getEl("overlay").style.display;
+	getEl("peekbutton").style.display = getEl("overlay").style.display;
+	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
+}
 function fullScreen(isfull) {
 	if (document.getElementById("cnv_div").style.display == "none") return;
 	if (isfull) {
@@ -3260,6 +3283,7 @@ async function fadeInText(o, text) {
 	dnfElement.innerHTML = text;
 	dnfElement.style.opacity = o;
 }
+
 document.getElementById("account").onclick = accountmode;
 function accountmode() {
 	modeData("accountmode");
@@ -3369,8 +3393,8 @@ function speedmode()
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("s_INSTRUCT").innerHTML = "Time Attack";
-	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!";
-	document.getElementById("s_difficulty").innerHTML = "Select Difficulty/Mode";
+	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!<br>Select Difficulty/Mode";
+	document.getElementById("s_difficulty").innerHTML = "";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
 		elements[i].style.display='none';
@@ -3556,10 +3580,10 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon","marathon2"];
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon","marathon2","marathon3"];
 	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
-			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon"};
+			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -3571,12 +3595,12 @@ function updateScores() {
 		}
 	})
 }
-function setScore(mode, total) {
+function setScore(mode, total, getlow = true) {
 	const highscores = localStorage[mode];
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
-	(MODE == "moves" && ((total > highscores && (m_34step > 0 || m_4step > 0)) || (total < highscores && (bstep > 0 || mastep > 0))))
+	(MODE == "moves" && (total > highscores && !getlow) || (total < highscores && getlow))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
@@ -4492,9 +4516,9 @@ function m_4()
 		let scores = [100, 70, 50, 25, 15, 6, 2];
 		if (m_34step > 0) {
 			scores = [40, 15, 10, 6, 3, 2, 1];
-			setScore("m_easy", m_points)
+			setScore("m_easy", m_points, false);
 		} else {
-			setScore("m_medium", m_points)
+			setScore("m_medium", m_points, false);
 		}
 		for(let i = 0; i < grades.length; i++)
 		{
@@ -4815,12 +4839,15 @@ function isAnimating() {
 	}
 	return false;
 }
+function blinded() {
+	return bstep == 2 || (mastep > 0 && ma_data.type == "blind" && mastep % 2 == 1);
+}
 function animate(axis, row, dir, time) {
 	if (isAnimating()) {
 		return;
 	}
-	if (bstep == 2) {
-		setDisplay("block", ["overlay"])
+	if (blinded()) {
+		toggleOverlay(true);
 	}
 	let total = 0;
 	let cuthrough = false;
@@ -5628,8 +5655,8 @@ function animateWide(axis, row, dir, timed) {
 	let rows = [row, 0];
 	
 	if(isAnimating()) return;
-	if (bstep == 2) {
-		setDisplay("block", ["overlay"])
+	if (blinded()) {
+		toggleOverlay(true);
 	}
 	let total = 0;
 	let cuthrough = false;
@@ -5716,11 +5743,10 @@ p.keyPressed = (event) => {
 		raceDetect();
 		return;
 	}
-	if(p.keyCode == 32){ 
+	if(p.keyCode == 32){  //space
 		console.log(DIM, DIM2, special, hasColor("k"), undo, redo);
-		if (bstep > 1 && getEl("overlay").style.display == "block") {
-			setDisplay("none", ["overlay"]);
-			peeks++;
+		if (blinded() && getEl("overlay").style.display == "block") {
+			toggleOverlay(false);
 		}
 		if (canMan == false && (MODE == "normal" || MODE == "timed")) {
 			stopMoving();
