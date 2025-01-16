@@ -1045,13 +1045,13 @@ p.setup = () => {
 	setButton(STARTDCHAL2, "cd2_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', () => {dailychallenge(2)});
 
 	const STARTBLIND = p.createButton('Start Blind');
-	setButton(STARTBLIND, "b_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {bstep = 0; blindmode()});
+	setButton(STARTBLIND, "b_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {bstep = 0; blindmode()});
 
 	const STARTMARATHON = p.createButton('Shape Marathon');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {startMarathon("shape")});
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
 	
 	const STARTMARATHON2 = p.createButton('Bandage Marathon');
-	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:60px; width:200px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {startMarathon("bandage")});
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:60px; width:200px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
 
 	inp = p.createInput('');
 	inp.parent("test_alg_input");
