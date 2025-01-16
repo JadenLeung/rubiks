@@ -5802,7 +5802,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		quickSolve();
+		// quickSolve();
 		// moveSetup();
 		console.log(mapCuby());
 		console.log(mapBandaged());
