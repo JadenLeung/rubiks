@@ -1045,10 +1045,10 @@ p.setup = () => {
 	setButton(STARTDCHAL2, "cd2_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', () => {dailychallenge(2)});
 
 	const STARTBLIND = p.createButton('Start Blind');
-	setButton(STARTBLIND, "b_regular", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {bstep = 0; blindmode()});
+	setButton(STARTBLIND, "b_regular", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); blindmode()});
 
 	const STARTBLIND2 = p.createButton('Blind Marathon');
-	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {startMarathon("blind")});
+	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); startMarathon("blind")});
 
 	const STARTMARATHON = p.createButton('Shape Marathon');
 	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
@@ -1302,11 +1302,10 @@ setInterval(() => {
 	{
 		if (mastep % 2 == 1 && isSolved()) {
 			timer.stop();
-			if(ao5 == 0)
-			ao5 = [Math.round(timer.getTime() / 10)/100.0];
-			else
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			let value = ma_data.type == "blind" ? peeks : Math.round(timer.getTime() / 10)/100.0;
+			ao5.push(value);
 			mastep++;
+			peeks = 0;
 			shapemarathon();
 		} else if (bstep == 2 && isSolved()) {
 			bstep = 3;
@@ -1443,7 +1442,7 @@ setInterval(() => {
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	special[5] = bandaged;
-	special[6] = DIM2;
+	setSpecial();
 	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 }, 10)
 //forever
@@ -1513,7 +1512,7 @@ function reSetup(rot) {
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "giveup", "giveup2", "hint"]);
-	special[6] = DIM2;
+	setSpecial();
 	let cnt = 0;
 	//allcubies = false;
 	for (let i = 0; i < SIZE; i++) {
@@ -1891,7 +1890,7 @@ function getID(){
 }
 function quickSolve()
 {
-	special[6] = DIM2;
+	setSpecial();
 	CUBE = {};
 	let cnt = 0;
 	for (let i = 0; i < SIZE; i++) {
@@ -2128,7 +2127,7 @@ function changeCam(dim)
 	INPUT.selected("Standard");
 	SCRAM.value("Normal");
 	changeInput();
-	special[6] = DIM2;
+	setSpecial();
 	reSetup();
 }
 function bandageZero(){
@@ -3125,10 +3124,14 @@ function shapemarathon() {
 	if (mastep / 2 == ma_data.dims.length) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks"]);
 		setDisplay("block", ["m_high"]);
-		let score = (ma_data.type == "blind") ? peeks : ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
 		getEl("ma_small").innerHTML = "Play again?";
-		setDisplay("block", ["ma_buttons"]);
+		if (ma_data.type == "blind") {
+			setDisplay("block", ["b_start"]);
+		} else {
+			setDisplay("block", ["ma_buttons"]);
+		}
 		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3"};
 		setScore(map[ma_data.type], score, true);
 	}
@@ -3143,7 +3146,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			timer.start(true);      // Start the timer
 		}
 		if (bstep == 1) bstep = 2;
-		if (mastep > 0 && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
+		if (getEl("marathon2").style.display == "block" && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
 		if (!nosavesetupdim.includes(DIM)) {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -3168,13 +3171,9 @@ function mapCuby() {
 	return map;
 }
 function mapBandaged() {
-	console.log("BEFORE ", bandaged);
 	let copyban = bandaged.map(innerArray => [...innerArray]);
-	console.log("BEFORE3 ", copyban);
 	for (let i = 0; i < bandaged.length; ++i) {
 		for (let j = 0; j < bandaged[i].length; ++j) {
-			console.log("BEFORE2 ", bandaged[i][j]);
-			console.log("AFTER2 ", mapCuby()[bandaged[i][j]]);
 			copyban[i][j] = mapCuby()[bandaged[i][j]];
 		}
 	}
@@ -4671,11 +4670,15 @@ function rotateMatrix(x, y, dir) {
 		y: yP
 	};
 }
+function setSpecial() {
+	special[6] = DIM2;
+	special[7] = MODE;
+}
 
 function moveX(row, dir) { // switch `i` cubes and rotate theme..
 	let stack = [];
 	let primes, found, tmp; // x' y'
-	special[6] = DIM2;
+	setSpecial();
 	tmp = {};
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].x === row) {
@@ -4696,7 +4699,7 @@ function moveX(row, dir) { // switch `i` cubes and rotate theme..
 function moveY(row, dir) { // switch `j` cubes and rotate them..
 	let stack = [];
 	let primes, found, tmp;
-	special[6] = DIM2;
+	setSpecial();
 	tmp = {};
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].y === row) { // if cubbie in the 'Y' face
@@ -4717,7 +4720,7 @@ function moveY(row, dir) { // switch `j` cubes and rotate them..
 function moveZ(row, dir) { // switch `z` cubes and rotate them..
 	let stack = [];
 	let primes, found, tmp;
-	special[6] = DIM2;
+	setSpecial();
 	tmp = {};
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].z === row) { // if cubbie in the 'z' face
@@ -5439,7 +5442,7 @@ function displayAverage()
 	let actualao5 = 0;
 	let meano5 = 0; //not actually limited to 5
 	let meanmoves = 0;
-	if(ao5[ao5.length-1] == 0)
+	if(ao5[ao5.length-1] == 0 && MODE != "moves")
 	ao5.pop();
 	if(movesarr.length > mo5.length)
 	movesarr.pop();
@@ -5565,7 +5568,6 @@ function hasColor(c) {
 	let hasit = false;
 	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 		sides.forEach((side) => {
-			console.log(getColor(CUBE[i][side].levels), c);
 			if (getColor(CUBE[i][side].levels) == c) {
 				hasit = true;
 			}
@@ -5750,6 +5752,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 32){  //space
+		console.log("mastep", mastep);
 		console.log(DIM, DIM2, special, hasColor("k"), undo, redo);
 		if (blinded() && getEl("overlay").style.display == "block") {
 			toggleOverlay(false);
@@ -5799,7 +5802,7 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
+		quickSolve();
 		// moveSetup();
 		console.log(mapCuby());
 		console.log(mapBandaged());

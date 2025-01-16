@@ -89,22 +89,31 @@ export default class Cuby {
 
     }
     if([2,15].includes(special[6]) || size == 1){ //rainbow
-      const directions = ["back", "front", "bottom", "top", "right", "left"];
-      const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
-      const opposite = {o:"r", r:"o", g:"b", b:"g", g:"b", y:"w", w:"y", k:"k"};
-      let s = index + " ";
-      directions.forEach((dir) => {
-        s += getColor(this[dir].levels);
-      });
-      directions.forEach((dir) => {
-        if (getColor(this[dir].levels) == "k" && getColor(this[op[dir]].levels) != "k") {
-          this[dir] = this.c[opposite[getColor(this[op[dir]].levels)]];
-        }
-      });
-      s = index + " ";
+      if (this.special[7] == "cube") {
+        this.back = this.c[this.custom[0][3]];
+        this.front = this.c[this.custom[5][2]];
+        this.bottom = this.c[this.custom[0][1]];
+        this.top = this.c[this.custom[16][0]];
+        this.right = this.c[this.custom[0][5]];
+        this.left = this.c[this.custom[26][4]];
+      } else {
+        const directions = ["back", "front", "bottom", "top", "right", "left"];
+        const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
+        const opposite = {o:"r", r:"o", g:"b", b:"g", g:"b", y:"w", w:"y", k:"k"};
+        let s = index + " ";
         directions.forEach((dir) => {
           s += getColor(this[dir].levels);
         });
+        directions.forEach((dir) => {
+          if (getColor(this[dir].levels) == "k" && getColor(this[op[dir]].levels) != "k") {
+            this[dir] = this.c[opposite[getColor(this[op[dir]].levels)]];
+          }
+        });
+        s = index + " ";
+          directions.forEach((dir) => {
+            s += getColor(this[dir].levels);
+          });
+      }
     }
     if(size == 13){
       let a = "";
@@ -472,7 +481,8 @@ export default class Cuby {
       }
     }
   } else {
-    bandaged = this.special[5].flat();
+    if (this.special && this.special[5] && this.special[5].length > 0)
+      bandaged = this.special[5].flat();
   }
   // if(this.cubysize == 7) bandaged = [3,4,5,6,7,8];
   // if(this.cubysize == 8) bandaged = [0,2,3,5,6,8];
