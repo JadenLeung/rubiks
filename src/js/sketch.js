@@ -147,7 +147,7 @@ export default function (p) {
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
 	// const nosavesetupdim = [1, 2, 15, 6];
-	const nosavesetupdim = [1,2,6];
+	const nosavesetupdim = [1,6];
 	let session = 0;
 	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
