@@ -1332,7 +1332,7 @@ setInterval(() => {
 			if(m_type == 0) m_points += 2;
 			if(m_type == 1) m_points += 3;
 			if(m_type == 2) m_points += 5;
-			setScore("m_easy", m_points)
+			setScore("m_easy", m_points, false);
 			m_34();
 		}
 		else if(m_4step > 0 && m_4step % 2 == 1 && isSolved() && moves <= m_type && moves > 0)
@@ -1345,6 +1345,7 @@ setInterval(() => {
 			movesarr.push(moves);
 			m_4step++;
 			m_points += parseInt(Math.pow(1.5, m_type));
+			setScore("m_medium", m_points, false);
 			m_4();
 		}
 		else if((m_34step > 0 || m_4step > 0) && isSolved() && moves > 0)
