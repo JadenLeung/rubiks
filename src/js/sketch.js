@@ -2864,6 +2864,7 @@ function regular(nocustom){
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
 	}
+	getEl("times_desc").innerHTML = "Times:";
 	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
 		document.getElementById("cnv_div").style.display = "block";
 		fullScreen(false);
@@ -3062,6 +3063,7 @@ function blindmode() {
 		setDisplay("table", ["keymap"]);
 		setDisplay("block", ["input", "peeks"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
+		getEl("times_desc").innerHTML = "Times:";
 		reSetup();
 		shuffleCube();
 		waitStopTurning(false);
@@ -3080,8 +3082,11 @@ function showMarathon() {
 	setDisplay("block", ["times_par", "outertime", "marathon2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 	if (ma_data.type == "blind") {
-		setDisplay("block", ["peeks"]);
-		setDisplay("none", ["times_par", "outertime"]);
+		setDisplay("block", ["peeks","times_par"]);
+		setDisplay("none", ["outertime"]);
+		getEl("times_desc").innerHTML = "Peeks:";
+	} else {
+		getEl("times_desc").innerHTML = "Times:";
 	}
 }
 function startMarathon(type) {
@@ -3138,7 +3143,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			timer.start(true);      // Start the timer
 		}
 		if (bstep == 1) bstep = 2;
-		if (mode == "shape" || mode == "bandage" || mode == "blind") mastep++;
+		if (mastep > 0 && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
 		if (!nosavesetupdim.includes(DIM)) {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -3520,7 +3525,7 @@ function showSpeed()
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", 
 		"highscore", "s_prac", "s_prac2","blind", "b_start", "marathon","ma_buttons"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
-	
+	getEl("times_desc").innerHTML = "Times:";
 
 	changeInput();
 	if(MODE == "speed")
