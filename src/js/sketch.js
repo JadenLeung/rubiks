@@ -4138,6 +4138,7 @@ async function saveData(username, password, method, al) {
 		blind3x3:localStorage.blind3x3 ?? -1,
 		marathon:localStorage.marathon ?? -1,
 		marathon2:localStorage.marathon2 ?? -1,
+		marathon3:localStorage.marathon3 ?? -1,
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -4182,7 +4183,7 @@ async function loadData(times) {
 	});
 	console.log("Userdata is ", userdata[index]);
 	if (times) {
-		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", "marathon", "marathon2"];
+		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", "marathon", "marathon2","marathon3"];
 		params.forEach((param) => {
 			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[index][param]))
 				localStorage[param] = userdata[index][param];
