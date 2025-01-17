@@ -3089,6 +3089,7 @@ function showMarathon() {
 	}
 }
 function startMarathon(type) {
+	reSetup();
 	ma_data.type = type;
 	if (type == "shape" || type == "blind") {
 		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
@@ -5828,6 +5829,7 @@ p.keyPressed = (event) => {
 			if (pllpracstep > 0) {movesarr = []; mo5 = []; ao5 = [];}
 			if (func) {
 				speedmode();
+				setTimeout(func, 1000);
 				func();
 			}
 		} else if (MODE == "moves") {
@@ -5837,8 +5839,14 @@ p.keyPressed = (event) => {
 			if (bstep > 0) func = blindmode; 
 			if (mastep > 0) func = startMarathon.bind(0, ma_data.type);
 			if (func) {
-				movesmode();
-				func();
+				if (mastep > 0 && layout[2][1][1][0] != topColor()) {
+					movesmode();
+					setTimeout(func, 0);
+				}
+				else {
+					movesmode();
+					func();
+				}
 			}
 		} else if (MODE == "weekly") {
 			let func = null;
@@ -6310,7 +6318,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			break;
 			case 32: //space
-			// quickSolve();
+			quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep);
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
@@ -9126,8 +9134,10 @@ function hollowCube(adjust = false){
 	}
 	reSetup();
 }
+function topColor() {
+	return TOPWHITE.value()[0].toLowerCase();
+}
 function topWhite(){
-
 	allcubies = IDtoReal(IDtoLayout(decode(colorvalues[TOPWHITE.value()[0].toLowerCase()])));
 	reSetup();
 }
