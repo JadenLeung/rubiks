@@ -506,180 +506,45 @@ export default class Cuby {
 
   let g = !this.special[0] ? 0 : this.special[3] * (r/25);
 
-  if (this.cubysize == 15 || (this.special[6] == 15 && !this.cubysize[0] == "adding")) {
+  const shift = (dir, x, y, z) => {
+    if (dir == "back") this.p.quad(-r+x, -r+y, -r+z, r+x, -r+y, -r+z, r+x, r+y, -r+z, -r+x, r+y, -r+z, 2, 2);
+    if (dir == "front") this.p.quad(-r+x, -r+y, r+z, r+x, -r+y, r+z, r+x, r+y, r+z, -r+x, r+y, r+z, 2, 2);	 
+    if (dir == "bottom") this.p.quad(-r+x, -r+y, -r+z, r+x, -r+y, -r+z, r+x, -r+y, r+z, -r+x, -r+y, r+z, 2, 2);	 
+    if (dir == "top") this.p.quad(-r+x, r+y, -r+z, r+x, r+y, -r+z, r+x, r+y, r+z, -r+x, r+y, r+z, 2, 2);
+    if (dir == "right") this.p.quad(-r+x, -r+y, -r+z, -r+x, r+y, -r+z, -r+x, r+y, r+z, -r+x, -r+y, r+z, 2, 2); 
+    if (dir == "left") this.p.quad(r+x, -r+y, -r+z, r+x, r+y, -r+z, r+x, r+y, r+z, r+x, -r+y, r+z, 2, 2);
+  }
+
+  if ([2, 15].includes(this.special[6]) && this.cubysize[0] != "adding") {
     let c1 = this.custom[0][5];
     let c2 = this.custom[26][4];
     const opparr = [c1, c2, "k"];
     let xshift = this.x == -50 ? 25 : -25;
     let yshift = this.y == -50 ? 25 : -25;
     let zshift = this.z == -50 ? 25 : -25;
-    if(this.back != ""){ // yellow
-      this.p.fill(this.back);
-      if (opparr.includes(getColor(this.left.levels))) {
-        this.p.quad(-r, -r+yshift, -r+zshift, r, -r+yshift, -r+zshift, r, r+yshift, -r+zshift, -r, r+yshift, -r+zshift, 2, 2);
-      } else if (opparr.includes(getColor(this.top.levels))) {
-        this.p.quad(-r+xshift, -r, -r+zshift, r+xshift, -r, -r+zshift, r+xshift, r, -r+zshift, -r+xshift, r, -r+zshift, 2, 2);
-      } else {
-        this.p.quad(-r+xshift, -r+yshift, -r, r+xshift, -r+yshift, -r, r+xshift, r+yshift, -r, -r+xshift, r+yshift, -r, 2, 2);
-      }
-    }
-    if(this.front != ""){ // white
-      this.p.fill(this.front);
-      if (opparr.includes(getColor(this.left.levels))) {
-        this.p.quad(-r, -r+yshift, r+zshift, r, -r+yshift, r+zshift, r, r+yshift, r+zshift, -r, r+yshift, r+zshift, 2, 2);	 
-      } else if (opparr.includes(getColor(this.top.levels))) {
-        this.p.quad(-r+xshift, -r, r+zshift, r+xshift, -r, r+zshift, r+xshift, r, r+zshift, -r+xshift, r, r+zshift, 2, 2);	 
-      } else {
-        this.p.quad(-r+xshift, -r+yshift, r, r+xshift, -r+yshift, r, r+xshift, r+yshift, r, -r+xshift, r+yshift, r, 2, 2);	 
-      }
-    } 
-    if(this.bottom != ""){ // orange
-      this.p.fill(this.bottom);
-      if (opparr.includes(getColor(this.left.levels))) {
-        this.p.quad(-r, -r+yshift, -r+zshift, r, -r+yshift, -r+zshift, r, -r+yshift, r+zshift, -r, -r+yshift, r+zshift, 2, 2);	  
-      } else if (opparr.includes(getColor(this.bottom.levels))) {
-        this.p.quad(-r+xshift, -r, -r+zshift, r+xshift, -r, -r+zshift, r+xshift, -r, r+zshift, -r+xshift, -r, r+zshift, 2, 2);	  
-      }	else {
-        this.p.quad(-r+xshift, -r+yshift, -r, r+xshift, -r+yshift, -r, r+xshift, -r+yshift, r, -r+xshift, -r+yshift, r, 2, 2);	
-      }
-    } 
-    if(this.top != ""){ // red
-      this.p.fill(this.top);
-      if (opparr.includes(getColor(this.left.levels))) {
-        this.p.quad(-r, r+yshift, -r+zshift, r, r+yshift, -r+zshift, r, r+yshift, r+zshift, -r, r+yshift, r+zshift, 2, 2);
-      } else if (opparr.includes(getColor(this.top.levels))) {
-        this.p.quad(-r+xshift, r, -r+zshift, r+xshift, r, -r+zshift, r+xshift, r, r+zshift, -r+xshift, r, r+zshift, 2, 2);
-      } else {
-        this.p.quad(-r+xshift, r+yshift, -r, r+xshift, r+yshift, -r, r+xshift, r+yshift, r, -r+xshift, r+yshift, r, 2, 2);
-      }
-    }
-    if(this.right != ""){ // green 
-      this.p.fill(this.right);
-      if (opparr.includes(getColor(this.left.levels))) {
-        this.p.quad(-r, -r+yshift, -r+zshift, -r, r+yshift, -r+zshift, -r, r+yshift, r+zshift, -r, -r+yshift, r+zshift, 2, 2); 
-      } else if (opparr.includes(getColor(this.top.levels)))  {
-        this.p.quad(-r+xshift, -r, -r+zshift, -r+xshift, r, -r+zshift, -r+xshift, r, r+zshift, -r+xshift, -r, r+zshift, 2, 2); 
-      } else {
-        this.p.quad(-r+xshift, -r+yshift, -r, -r+xshift, r+yshift, -r, -r+xshift, r+yshift, r, -r+xshift, -r+yshift, r, 2, 2); 
-      }
-    } 	  
-    if(this.left != ""){ // blue
-        this.p.fill(this.left);
-        if (opparr.includes(getColor(this.left.levels))) {
-          this.p.quad(r, -r+yshift, -r+zshift, r, r+yshift, -r+zshift, r, r+yshift, r+zshift, r, -r+yshift, r+zshift, 2, 2);
-        } else if (opparr.includes(getColor(this.top.levels))) {
-          this.p.quad(r+xshift, -r, -r+zshift, r+xshift, r, -r+zshift, r+xshift, r, r+zshift, r+xshift, -r, r+zshift, 2, 2);
-        } else {
-          this.p.quad(r+xshift, -r+yshift, -r, r+xshift, r+yshift, -r, r+xshift, r+yshift, r, r+xshift, -r+yshift, r, 2, 2);
+    const dirs = ["back", "front", "bottom", "top", "right", "left"];
+    dirs.forEach((dir) => {
+      if(this[dir] != ""){ // yellow
+        this.p.fill(this[dir]);
+        if (this.special[6] == 15) { //2x2x3
+          if (opparr.includes(getColor(this.left.levels))) {
+            shift(dir, 0, yshift, zshift);
+          } else if (opparr.includes(getColor(this.top.levels))) {
+            shift(dir, xshift, 0, zshift);
+          } else {
+            shift(dir, xshift, yshift, 0);
+          }
+        } else { //3x3x2
+          if ([c1,c2].includes(getColor(this.left.levels))) {
+            shift(dir, xshift, 0, 0);
+          } else if ([c1,c2].includes(getColor(this.top.levels))) {
+            shift(dir, 0, yshift, 0);
+          } else {
+            shift(dir, 0, 0, zshift);
+          }
         }
-    }
-    this.p.pop();
-  } else if (this.cubysize == 2 || (this.special[6] == 2 && !this.cubysize[0] == "adding")) {
-    let c1 = this.custom[0][5];
-    let c2 = this.custom[26][4];
-    if(this.back != ""){ // orange
-      this.p.fill(this.back);
-      if (![c1,c2].includes(getColor(this.back.levels)) && 
-      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
-        if (this.y == 50)
-          this.p.quad(-r, -2*r, -r, r, -2*r, -r, r, 0, -r, -r, 0, -r, 2, 2);
-        if (this.y == -50)
-          this.p.quad(-r, 0, -r, r, 0, -r, r, 2*r, -r, -r, 2*r, -r, 2, 2);
-      }else if ([c1,c2].includes(getColor(this.back.levels))) {
-        this.p.quad(-r, -r, 0, r, -r, 0,  r, r, 0,   -r, r, 0, 2, 2);
-      } else if (this.x == -50) {
-        this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, r, -r, 0, r, -r, 2, 2);
-      } else if (this.x == 50) {
-        this.p.quad(0, -r, -r, -2*r, -r, -r, -2*r, r, -r, 0, r, -r, 2, 2);
       }
-    }
-    
-    if(this.front != ""){ // red
-      this.p.fill(this.front);
-      if (![c1,c2].includes(getColor(this.front.levels)) && 
-      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
-        if (this.y == 50)
-          this.p.quad(-r, -2*r, r, r, -2*r, r, r, 0, r, -r, 0, r, 2, 2);	
-        if (this.y == -50)
-          this.p.quad(-r, 2*r, r, r, 2*r, r, r, 0, r, -r, 0, r, 2, 2);	
-      }else if ([c1,c2].includes(getColor(this.front.levels))) {
-        if (this.z == 50)
-          this.p.quad(-r, -r, 0, r, -r, 0, r, r, 0, -r, r, 0, 2, 2);	 
-      } else if (this.x == -50) {
-        this.p.quad(0, -r, r, 2*r, -r, r, 2*r, r, r, 0, r, r, 2, 2);
-      } else if (this.x == 50) {
-        this.p.quad(0, -r, r, -2*r, -r, r, -2*r, r, r, 0, r, r, 2, 2);
-      } 
-    } 
-  
-    if(this.bottom != ""){ // yellow
-      this.p.fill(this.bottom);
-      if (![c1,c2].includes(getColor(this.bottom.levels)) && 
-      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
-        if (this.z == 50)
-          this.p.quad(-r, -r, -2*r, r, -r, -2*r, r, -r, 0, -r, -r, 0, 2, 2);
-        if (this.z == -50)
-          this.p.quad(-r, -r, 2*r, r, -r, 2*r, r, -r, 0, -r, -r, 0, 2, 2);
-      } else 
-      if ([c1,c2].includes(getColor(this.bottom.levels))) {
-        this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2);
-      } else if (this.x == -50) {
-        this.p.quad(0, -r, -r, 2*r, -r, -r, 2*r, -r, r, 0, -r, r, 2, 2);	 
-      } else if (this.x == 50) {
-        this.p.quad(0, -r, -r, -2*r, -r, -r, -2*r, -r, r, 0, -r, r, 2, 2);	 
-      }	 
-    } 
-  
-    if(this.top != ""){ // white
-      this.p.fill(this.top);
-      if (![c1,c2].includes(getColor(this.top.levels)) && 
-      ![c1,c2].includes(getColor(this.left.levels)) && ![c1,c2].includes(getColor(this.right.levels))) {
-        if (this.z == 50)
-          this.p.quad(-r, r, -2*r, r, r, -2*r, r, r, 0, -r, r, 0, 2, 2);	 
-        if (this.z == -50)
-          this.p.quad(-r, r, 2*r, r, r, 2*r, r, r, 0, -r, r, 0, 2, 2);	
-      } else 
-      if ([c1,c2].includes(getColor(this.top.levels))) {
-        if (this.y == 50)
-          this.p.quad(-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, r, 2, 2)
-      } else if (this.x == -50)
-        this.p.quad(0, r, -r, 4*r/2, r, -r, 4*r/2, r, r, 0, r, r, 2, 2);	 
-      else if (this.x == 50)
-        this.p.quad(-2*r, r, -r, 0, r, -r, 0, r, r, -2 * r, r, r, 2, 2);	 
-    }
-    
-    if(this.right != ""){ // blue
-      this.p.fill(this.right);
-      if ([c1,c2].includes(getColor(this.top.levels))) {
-        if (this.y == -50)
-          this.p.quad(-r, 0, -r, -r, 2*r, -r, -r, 2*r, r, -r, 0, r, 2, 2);   
-        if (this.y == 50)
-          this.p.quad(-r, 0, -r, -r, -2*r, -r, -r, -2*r, r, -r, 0, r, 2, 2);  
-      } else if ([c1,c2].includes(getColor(this.front.levels))) {
-        if (this.z == -50)
-          this.p.quad(-r, -r, 0, -r, r, 0, -r, r, 2*r, -r, -r, 2*r, 2, 2);  
-        if (this.z == 50)
-          this.p.quad(-r, -r, 0, -r, r, 0, -r, r, -2*r, -r, -r, -2*r, 2, 2);  
-      } else if (this.x == -50)
-        this.p.quad(0, -r, -r, 0, r, -r, 0, r, r, 0, -r, r, 2, 2);     	 
-    } 	  
-  
-    if(this.left != ""){ // green
-      this.p.fill(this.left);
-      if ([c1,c2].includes(getColor(this.top.levels))) {
-        if (this.y == -50)
-          this.p.quad(r, 0, -r, r, 2*r, -r, r, 2*r, r, r, 0, r, 2, 2);
-        if (this.y == 50)
-          this.p.quad(r, 0, -r, r, -2*r, -r, r, -2*r, r, r, 0, r, 2, 2);
-      } else if ([c1,c2].includes(getColor(this.front.levels))) {
-        if (this.z == -50)
-          this.p.quad(r, -r, 0, r, r, 0, r, r, 2*r, r, -r, 2*r, 2, 2); 
-        if (this.z == 50)
-          this.p.quad(r, -r, 0, r, r, 0, r, r, -2*r, r, -r, -2*r, 2, 2); 
-      } 
-      else if (this.x == 50)
-        this.p.quad(0, -r+g, -r+g, 0, r-g, -r+g, 0, r-g, r-g, 0, -r+g, r-g, 2, 2);
-    }
+    });
     this.p.pop();
   } else {
     if(this.back != ""){
