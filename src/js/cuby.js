@@ -89,7 +89,7 @@ export default class Cuby {
 
     }
     if([2,15].includes(special[6]) || size == 1){ //rainbow
-      if (this.special[7] == "cube") {
+      if (this.special[7] == "cube" || size == 1) {
         this.back = this.c[this.custom[0][3]];
         this.front = this.c[this.custom[5][2]];
         this.bottom = this.c[this.custom[0][1]];
