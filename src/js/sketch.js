@@ -3093,7 +3093,7 @@ function startMarathon(type) {
 	ma_data.type = type;
 	if (type == "shape" || type == "blind") {
 		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
-		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Christmas 2x2", "Christmas 3x3", "Sandwich Cube"];
+		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Christmas 3x3", "Christmas 2x2", "Sandwich Cube"];
 	} else if (type == "bandage") {
 		ma_data.dims = [change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]), 
 		change11.bind(null, 7, [[3,4,5,6,7,8]]), 
@@ -10001,16 +10001,17 @@ Jaden WR 2x2: 3.88
 FMC: 193
 Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27, 85.90
 Bandage Mod ALL: 672.28
+Blind Marathon All: 13
 ALL MARATHONS
 Cube 	Speed 	Blind
-3x3x2	18.2	5
+3x3x2	18.2	4
 2x2x3	2.5	 	2		
-3x3x1	11.51	3
-Jank	11.94	2
-Plus	13.78	5
-Xmas2	17.31	5
-Xmas3	4.37	1
-Sand	6.29	2
+3x3x1	11.51	1
+Jank	11.94	1
+Plus	13.78	0
+Xmas3	17.31	4
+Xmas2	4.37	0
+Sand	6.29	1
 
 */
 
