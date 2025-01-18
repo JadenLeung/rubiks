@@ -5057,7 +5057,7 @@ function shufflePossible(len, total2, prev){
 , ['z', -50, 'L'], ['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
 	if(SCRAM.value() == "Middle Slices")
 		possible = [['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
-	if(DIM4 == 2)
+	if(DIM4 == 2 || DIM2 == 15 || DIM2 == 2)
 		possible = [['x', 50, 'D'], ['x', -50, 'U'], ['y', 50, 'F'], ['y', -50, 'B'], ['z', 50, 'R']
 		, ['z', -50, 'L']];
 	let possible2 = [];
@@ -5123,6 +5123,8 @@ function shufflePossible(len, total2, prev){
 function shuffleCube(nb) { 
 	if(canMan == false || customb == 1)return;
 	if(bandaged.length > 0){
+		if (DIM == 8)
+			shufflePossible(60, "", "  ");
 		if(DIM4 == 3)
 			shufflePossible(35, "", "  ");
 		else
