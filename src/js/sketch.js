@@ -36,6 +36,7 @@ export default function (p) {
 	let BORDER_SLIDER;
 	let SIZE_SLIDER2;
 	let GAP_SLIDER;
+	let saveao5data = {length: -1, session: -1};
 	let SPEED_SLIDER;
 	let DELAY_SLIDER;
 	let TWOBYTWO;
@@ -5278,6 +5279,7 @@ function downloadAll()
 
 function displayTimes()
 {
+	console.log(saveao5data);
 	if(scrambles.length > 1 & scrambles[scrambles.length-2] == scrambles[scrambles.length-1] && scrambles[scrambles.length-1] != "N/A")
 		scrambles.pop();
 	if(scrambles.length > mo5.length)
@@ -5421,7 +5423,12 @@ function displayTimes()
 		} 
 		alltimes += "<br>"
 	}
-
+	if (saveao5data.hasOwnProperty("length") && mo5.length == saveao5data.length && 
+	saveao5data.hasOwnProperty("session") && session == saveao5data.session) {
+		return;
+	} else {
+		saveao5data = {length: mo5.length, session: session};
+	}
 	document.getElementById("alltimes").innerHTML = alltimes;
 }
 function displayAverage()
@@ -5503,7 +5510,8 @@ function displayAverage()
 		if(ao5.length > 1)
 		display += " &nbsp;Total: " + total; 
 	}
-	document.getElementById('ao5').innerHTML = display;
+	if (document.getElementById('ao5').innerHTML != display)
+		document.getElementById('ao5').innerHTML = display;
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -5519,10 +5527,11 @@ function displayAverage()
 		displaymoves += " &nbsp;";
 	}
 	if(movesarr.length > 2)
-	displaymoves += " &nbsp;Mo" + movesarr.length + ": " + (Math.round((meanmoves/(movesarr.length * 1.0))*100)/100);
+		displaymoves += " &nbsp;Mo" + movesarr.length + ": " + (Math.round((meanmoves/(movesarr.length * 1.0))*100)/100);
 	if(movesarr.length == 0)
-	displaymoves = "N/A";
-	document.getElementById('moves2').innerHTML = displaymoves;
+		displaymoves = "N/A";
+    if (document.getElementById('moves2').innerHTML != displaymoves)
+		document.getElementById('moves2').innerHTML = displaymoves;
 }
 function randomMove() {
 	const axes = ['x', 'y', 'z'];
