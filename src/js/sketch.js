@@ -103,7 +103,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, 
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
@@ -503,6 +503,7 @@ p.setup = () => {
 	MOVESMODE = p.createButton('Misc Challenges');
 	IDMODE = p.createButton('Save/Load ID');
 	SETTINGS = p.createButton('');
+	SWITCHER = p.createButton('');
 	VOLUME = p.createButton('');
 	REGULAR2 = p.createButton('Normal');
 	SPEEDMODE2 = p.createButton('Speed');
@@ -1421,6 +1422,7 @@ setInterval(() => {
 	getEl("peekbutton").style.display = getEl("overlay").style.display;
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 	getEl("custommouse").innerHTML = canMouse() ? "(Mouse inputs are turned on.)" : "(Mouse inputs are turned off.)";
+	getEl("switcher").style.display = (getEl("blind").style.display == "block" || (getEl("s_prac").style.display != "none")) ? "block" : "none";
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
@@ -3397,7 +3399,9 @@ function speedmode()
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("s_INSTRUCT").innerHTML = "Time Attack";
+	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Time Attack" : "2x2 Time Attack";
+	document.getElementById("s_speedtitle").innerHTML = DIM == 50 ? "3x3 Speed Practice" : "2x2 Speed Practice";
+	document.getElementById("s_bottitle").innerHTML = DIM == 50 ? "3x3 Bot Race" : "2x2 Bot Race";
 	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!<br>Select Difficulty/Mode";
 	document.getElementById("s_difficulty").innerHTML = "";
 	var elements = document.getElementsByClassName('normal');
@@ -3451,7 +3455,8 @@ function movesmode()
 	setDisplay("block", ["m_high", "blind","b_start","marathon","ma_buttons"]);
 
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "center" });
-	document.getElementById("s_INSTRUCT").innerHTML = "Fewest Moves Challenge";
+	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Fewest Moves Challenge" : "2x2 Fewest Moves Challenge";
+	document.getElementById("b_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Blind Challenge" : "2x2 Blind Challenge";
 	document.getElementById("s_instruct").innerHTML = "Solve the cube in the <b>most optimal way</b>.";
 	document.getElementById("s_difficulty").innerHTML = "";
 	var elements = document.getElementsByClassName('normal');
@@ -6719,6 +6724,7 @@ function refreshButtons()
 	CUBE14.remove();
 	CUBE15.remove();
 	CUBE16.remove();
+	SWITCHER.remove();
 
 	let d = isthin? 1.5 : 1;
 	let d2 = isthin? 2.5 : 1;
@@ -6755,6 +6761,9 @@ function refreshButtons()
 			document.getElementById("fullscreen").style.display = "none";
 		}
 	}
+
+	SWITCHER = p.createButton(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
+	setButton(SWITCHER, "switcher", 'btn btn-primary', 'text-align:center; font-size:20px;', DIM == 50 ? changeTwo : changeThree);
 
 	if (localStorage.audioon === "false") {
 		audioon = false;

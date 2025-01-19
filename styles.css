@@ -125,6 +125,11 @@ button:hover {
         font-size: 30px;
         text-align: right;
     }
+#switcher {
+    position: absolute;
+    top: 3%;
+    left: 5%;
+}
 #cnvbuttons {
     position: absolute;
     top: 1%;
