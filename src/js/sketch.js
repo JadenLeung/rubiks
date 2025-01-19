@@ -105,6 +105,7 @@ export default function (p) {
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, 
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT;
+	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16;
@@ -925,16 +926,16 @@ p.setup = () => {
 	CUSTOM2 = p.createButton('Custom Bandage');
 	setButton(CUSTOM2, "customb", 'btn btn-primary', allcubestyle, Custom2.bind(null, 0));
 	
-	const RESET = p.createButton('Reset');
+	RESET = p.createButton('Reset');
 	setButton(RESET, "reset_div", bstyle, '', reSetup.bind(null, 0));
 
-	const RESET2 = p.createButton('Reset');
+	RESET2 = p.createButton('Reset');
 	setButton(RESET2, "reset2_div", bstyle, '', moveSetup.bind(null, 0));
 
-	const RESET3 = p.createButton('Reset');
+	RESET3 = p.createButton('Reset');
 	setButton(RESET3, "reset3_div", bstyle, '', speedSetup.bind(null, 0));
 
-	const SHUFFLE_BTN = p.createButton('Scramble');
+	SHUFFLE_BTN = p.createButton('Scramble');
 	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-primary', '', shuffleCube.bind(null, 0));
 
 	const STOP = p.createButton('Stop Time');
@@ -946,10 +947,10 @@ p.setup = () => {
 	const GIVEUP = p.createButton('Give Up');
 	setButton(GIVEUP, "giveup", 'btn btn-danger', '', giveUp.bind(null, 0));
 
-	const UNDO = p.createButton('Undo');
+	UNDO = p.createButton('Undo');
 	setButton(UNDO, "undo", bstyle, '', () => {flexDo(Undo, undo)});
 	
-	const REDO = p.createButton('Redo');
+	REDO = p.createButton('Redo');
 	setButton(REDO, "redo", bstyle, '', () => {flexDo(Redo, redo)});
 	
 	SOLVE = p.createButton(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
@@ -1426,6 +1427,7 @@ setInterval(() => {
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	special[5] = bandaged;
 	setSpecial();
+	if (isthin) getEl("delaywhole").style.display = "none";
 	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 }, 10)
 //forever
@@ -2427,9 +2429,16 @@ function setInput() {
 	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches || isIpad()) { //button
 		document.getElementById("keymap").style.display = "none";
 		document.getElementById("test_alg_div").style.display = "none";
-		document.getElementById("undo").style.display = "none";
-		document.getElementById("redo").style.display = "none";
-		document.getElementById("input2").style.display = "block";
+		document.getElementById("undo").style.display = "inline";
+		document.getElementById("redo").style.display = "inline";
+		document.getElementById("input2").style.display = "none";
+		if ((MODE == "cube" && NOMOUSE.includes(DIM) && custom == 0) || custom == 1 && !canMouse()) {
+			document.getElementById("input2").style.display = "block";
+		}
+		if (SHUFFLE_BTN) SHUFFLE_BTN.html('<i class="bi bi-shuffle"></i>');
+		if (UNDO) UNDO.html('<i class="bi bi-arrow-90deg-left"></i>');
+		if (REDO) REDO.html('<i class="bi bi-arrow-90deg-right"></i>');
+
 	}
 	else{
 		document.getElementById("keymap").style.display = "table";

@@ -147,6 +147,12 @@ button:hover {
 .allcubes {
     display: block;
 }
+.hidethin {
+    display: block;
+}
+.hidethinline {
+    display: inline;
+}
 @media screen and (max-width: 1199px) {
     .buttoncontainer {
         display: flex;
@@ -196,5 +202,11 @@ button:hover {
     }
     #cnvbuttons {
         padding-top: 10px;
+    }
+    .hidethin {
+        display: none;
+    }
+    .hidethinline {
+        display: none;
     }
 }	
