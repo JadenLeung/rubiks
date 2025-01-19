@@ -130,6 +130,7 @@ button:hover {
     top: 1%;
     left: 5%;
     font-size: 30px;
+    z-index: 2; /* Ensure it's on top of the container's content */
 }
 #scramble_par {
     padding-top: 10px;

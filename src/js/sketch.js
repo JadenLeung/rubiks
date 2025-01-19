@@ -327,10 +327,11 @@ function setWidth() {
 		ZOOM3 = -250;
 		ZOOM2 = -100;
 		CAMZOOM = ZOOM3;
-		setDisplay("none", ["audio", "bannercube", "bannerlogin"])
-		getEl("challenge").innerHTML = "&nbsp;Weekly"
+		setDisplay("none", ["audio", "bannercube", "bannerlogin"]);
+		getEl("challenge").innerHTML = "&nbsp;Weekly";
 		getEl("banner").style.paddingBottom = "10px";
 		getEl("or_instruct4").style.paddingTop = "10px";
+
 	} else {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
@@ -388,24 +389,6 @@ function playAudio() {
 	const m = Math.random();
 	let selectedBuffer;
 	let volume = 1.0;
-
-	if (false) {
-		if ('speechSynthesis' in window) {
-			// Stop any currently speaking utterances
-			window.speechSynthesis.cancel();
-	
-			// Create a new utterance with the text to be spoken
-			const utterance = new SpeechSynthesisUtterance("Lisa");
-			utterance.rate = 1;
-			utterance.pitch = 1;
-			// utterance.voice = window.speechSynthesis.getVoices().find((obj) => {return obj.name == "Aaron"});
-			// Speak the new utterance
-			// window.speechSynthesis.speak(utterance);
-		  } else {
-			alert("Sorry, your browser doesn't support text-to-speech.");
-		  }
-		return;
-	}
 	if (SOUND.value() === "Windows XP") {
 		if (m < 0.1) {
 			selectedBuffer = audioBuffers.audio6;
@@ -2872,6 +2855,7 @@ function regular(nocustom){
 		resized();
 	} 
 	document.getElementById("right").className = "col-xl-4 noselect";
+	INPUT.removeAttribute('disabled');
 	changeInput();
 	changeCam();
 	setInput();
@@ -3056,10 +3040,10 @@ function blindmode() {
 	if (bstep == 0) {
 		peeks = 0;
 		bstep = 1;
+		setInput();
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
-		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
-		setDisplay("table", ["keymap"]);
+		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
 		setDisplay("block", ["input", "peeks"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 		getEl("times_desc").innerHTML = "Times:";
@@ -3181,13 +3165,14 @@ function mapBandaged() {
 	return copyban;
 }
 function startchallenge() {
-	DIM2 = weeklyscrambles[week].cube == 3 ? 50 : 100;
+	const cubemap = {3 : 50, 2: 100, 4 : 2, 5 : 15};
+	DIM2 = cubemap[weeklyscrambles[week].cube];
 	DIM = DIM2;
 	changeCam(weeklyscrambles[week].cube);
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
-		changeBan(DIM, weeklyscrambles[week].bandaged);
-		ban9();
+		bandaged = weeklyscrambles[week].bandaged;
 	}
+	savebandage = bandaged;
 	refreshButtons();
 	CUBE4.style('background-color', "#8ef5ee");
 	reSetup();
@@ -3204,6 +3189,11 @@ function startchallenge() {
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
 	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
 	setDisplay("block", ["input"]);
+	if ([2,15].includes(DIM2)) {
+		INPUT.value("3x3x2");
+		SCRAM.value("Like a 3x3x2");
+		INPUT.attribute('disabled', true);
+	}
 }
 function endchallenge(passed = true) {
 	cstep = 0;
@@ -3468,20 +3458,6 @@ function movesmode()
 	modeData("moves");
 }
 function setSettings(obj) {
-	// localStorage.speed = SPEED;
-	// localStorage.topwhite = TOPWHITE.value();
-	// localStorage.toppll = TOPPLL.value();
-	// localStorage.keyboard = KEYBOARD.value();
-	// localStorage.background = BACKGROUND_COLOR;
-	// localStorage.hollow = HOLLOW.checked();
-	// localStorage.audioon = audioon;
-	// TOPWHITE.selected("Blue");
-	// TOPPLL.selected("Same as above");
-	// SPEED_SLIDER.value(2);
-	// SPEED = 2;
-	// topWhite();
-	// KEYBOARD.value("Alt Keyboard");
-	// changeKeys();
 	SPEED_SLIDER.value(obj.speed);
 	SPEED = obj.speed;
 	audioon = (obj.audioon == 1);
@@ -5808,9 +5784,9 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		console.log(mapCuby());
-		console.log(mapBandaged());
-		// console.log(nextcuby);
+		console.log(week)
+		// console.log(mapCuby());
+		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

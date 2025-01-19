@@ -527,17 +527,19 @@ export default class Cuby {
       if(this[dir] != ""){ // yellow
         this.p.fill(this[dir]);
         if (this.special[6] == 15) { //2x2x3
-          if (opparr.includes(getColor(this.left.levels))) {
+          if (!opparr.includes(getColor(this.top.levels)) && !opparr.includes(getColor(this.front.levels))) {
             shift(dir, 0, yshift, zshift);
-          } else if (opparr.includes(getColor(this.top.levels))) {
+          } else if (!opparr.includes(getColor(this.front.levels)) && !opparr.includes(getColor(this.left.levels))){
             shift(dir, xshift, 0, zshift);
           } else {
             shift(dir, xshift, yshift, 0);
           }
-        } else { //3x3x2
-          if ([c1,c2].includes(getColor(this.left.levels))) {
+        } else {
+          if (![c1,c2].includes(getColor(this.top.levels)) && 
+          ![c1,c2].includes(getColor(this.front.levels))) {
             shift(dir, xshift, 0, 0);
-          } else if ([c1,c2].includes(getColor(this.top.levels))) {
+          } else if (![c1,c2].includes(getColor(this.front.levels)) && 
+          ![c1,c2].includes(getColor(this.left.levels))) {
             shift(dir, 0, yshift, 0);
           } else {
             shift(dir, 0, 0, zshift);
