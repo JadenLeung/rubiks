@@ -6321,7 +6321,7 @@ p.keyPressed = (event) => {
 			break;
 			case 32: //space
 			// quickSolve();
-			console.log(DIM, DIM2, isSolved(), mastep);
+			console.log(DIM, DIM2, isSolved(), mastep, mapBandaged());
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
@@ -6735,9 +6735,9 @@ function refreshButtons()
 	CUBE15.remove();
 	CUBE16.remove();
 
-	let d = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches? 1.5 : 1;
-	let d2 = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? 2.5 : 1;
-	let m = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches || ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches ? "" : " Mode";
+	let d = isthin? 1.5 : 1;
+	let d2 = isthin? 2.5 : 1;
+	let m = isthin? "" : " Mode";
 	
 	REGULAR = p.createButton(`Normal${m}`);
 	setButton(REGULAR, "mode", 'btn btn-info', `text-align:center; font-size: ${20/d}px; width:${180/d2}px; border: none;`, regular.bind(null, 0));
@@ -9943,6 +9943,16 @@ document.onkeyup = function(e) { //space
 		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
 			canMan = true;
 			solveCube();
+		}
+	}
+	if (e.keyCode == 13) {
+		if (getEl("okban").style.display == "block") {
+			doneBandage();
+		}
+	}
+	if (e.keyCode == 27) {
+		if (getEl("okban").style.display == "block") {
+			cancelBandage();
 		}
 	}
 	activeKeys.delete(e.code);
