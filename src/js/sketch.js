@@ -770,6 +770,8 @@ p.setup = () => {
 		["⇧ 9", "Load Default ID"],
 		["0", "Save Data"],
 		["⇧ 0", "Save Position ID"],
+		["-", "Switch to 2x2/3x3"],
+		["⇧ -", "Other Cubes"],
 	];
 
     const table = document.getElementById('hotkeytable');
@@ -2083,14 +2085,11 @@ function changeTwo()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
-	if(getEl("ID3").style.display == "block")
-		getEl("keymap").style.display = "none";
 }
 function changeThree()
 {
 	DIM2 = 50;
 	DIM = 50;
-	changeCam(3);
 	localStorage.startcube = 3;
 	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
 	TWOBYTWO.remove();
@@ -2106,14 +2105,12 @@ function changeThree()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
-	if(getEl("ID3").style.display == "block")
-		setDisplay("none", ["keymap", "undo", "redo"]);
 }
-function changeCam(dim)
+function changeCam(changeinp = true)
 {
 	INPUT.selected("Standard");
 	SCRAM.value("Normal");
-	changeInput();
+	changeinp && changeInput();
 	setSpecial();
 	reSetup();
 }
