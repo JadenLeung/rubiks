@@ -2088,6 +2088,8 @@ function changeTwo()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
+	if(getEl("ID3").style.display == "block")
+		getEl("keymap").style.display = "none";
 }
 function changeThree()
 {
@@ -2109,6 +2111,8 @@ function changeThree()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
+	if(getEl("ID3").style.display == "block")
+		setDisplay("none", ["keymap", "undo", "redo"]);
 }
 function changeCam(dim)
 {
@@ -5279,7 +5283,6 @@ function downloadAll()
 
 function displayTimes()
 {
-	console.log(saveao5data);
 	if(scrambles.length > 1 & scrambles[scrambles.length-2] == scrambles[scrambles.length-1] && scrambles[scrambles.length-1] != "N/A")
 		scrambles.pop();
 	if(scrambles.length > mo5.length)

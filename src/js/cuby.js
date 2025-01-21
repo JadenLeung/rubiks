@@ -88,31 +88,53 @@ export default class Cuby {
       if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
 
     }
+
     if([2,15].includes(special[6]) || size == 1){ //rainbow
-      if (this.special[7] == "cube" || size == 1) {
+      if (size == 1) {
         this.back = this.c[this.custom[0][3]];
         this.front = this.c[this.custom[5][2]];
         this.bottom = this.c[this.custom[0][1]];
         this.top = this.c[this.custom[16][0]];
         this.right = this.c[this.custom[0][5]];
         this.left = this.c[this.custom[26][4]];
+
       } else {
         const directions = ["back", "front", "bottom", "top", "right", "left"];
         const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
         const opposite = {o:"r", r:"o", g:"b", b:"g", g:"b", y:"w", w:"y", k:"k"};
-        let s = index + " ";
+        let s = "";
         directions.forEach((dir) => {
           s += getColor(this[dir].levels);
         });
-        directions.forEach((dir) => {
-          if (getColor(this[dir].levels) == "k" && getColor(this[op[dir]].levels) != "k") {
-            this[dir] = this.c[opposite[getColor(this[op[dir]].levels)]];
+        console.log(this.index + " " + s);
+        const possible = [
+          "orbgwy", "ywbgor", "robgyw", "wybgro",
+          "rogbwy", "ywgbro", "orgbyw", "wygbor",
+          "roywgb", "bgywro", "orywbg", "gbywor",
+          "orwygb", "bgwyor", "rowybg", "gbwyro",
+          "wyrogb", "bgrowy", "ywrobg", "gbroyw",
+          "yworgb", "bgoryw", "wyorbg", "gborwy"
+        ];
+        let newstr = "";
+        possible.forEach((p) => {
+          let matches = true;
+          for (let i = 0; i < p.length; ++i) {
+            if (s[i] != "k" && s[i] != p[i]) {
+              matches = false;
+              break;
+            }
+          }
+          if (matches) {
+            newstr = p;
+            return;
           }
         });
-        s = index + " ";
-          directions.forEach((dir) => {
-            s += getColor(this[dir].levels);
-          });
+        console.log("matching " + newstr);
+        if (newstr != "") {
+          directions.forEach((d, index) => {
+            this[d] = this.c[newstr[index]];
+          })
+        }
       }
     }
     if(size == 13){
@@ -192,6 +214,7 @@ export default class Cuby {
     this.buff_back = buff[1];
     this.buff_left = buff[4];
     this.buff_right = buff[5];
+
   }
   
   get(foo) {
@@ -514,11 +537,12 @@ export default class Cuby {
     if (dir == "right") this.p.quad(-r+x, -r+y, -r+z, -r+x, r+y, -r+z, -r+x, r+y, r+z, -r+x, -r+y, r+z, 2, 2); 
     if (dir == "left") this.p.quad(r+x, -r+y, -r+z, r+x, r+y, -r+z, r+x, r+y, r+z, r+x, -r+y, r+z, 2, 2);
   }
+  
 
   if ([2, 15].includes(this.special[6]) && this.cubysize[0] != "adding") {
-    let c1 = this.custom[0][5];
-    let c2 = this.custom[26][4];
-    const opparr = [c1, c2, "k"];
+    let c1 = this.custom[4][5];
+    let c2 = this.custom[22][4];
+    const opparr = [c1, c2];
     let xshift = this.x == -50 ? 25 : -25;
     let yshift = this.y == -50 ? 25 : -25;
     let zshift = this.z == -50 ? 25 : -25;
@@ -527,19 +551,17 @@ export default class Cuby {
       if(this[dir] != ""){ // yellow
         this.p.fill(this[dir]);
         if (this.special[6] == 15) { //2x2x3
-          if (!opparr.includes(getColor(this.top.levels)) && !opparr.includes(getColor(this.front.levels))) {
+          if (opparr.includes(getColor(this.left.levels))) {
             shift(dir, 0, yshift, zshift);
-          } else if (!opparr.includes(getColor(this.front.levels)) && !opparr.includes(getColor(this.left.levels))){
+          } else if (opparr.includes(getColor(this.top.levels))) {
             shift(dir, xshift, 0, zshift);
           } else {
             shift(dir, xshift, yshift, 0);
           }
         } else {
-          if (![c1,c2].includes(getColor(this.top.levels)) && 
-          ![c1,c2].includes(getColor(this.front.levels))) {
+          if (opparr.includes(getColor(this.left.levels))) {
             shift(dir, xshift, 0, 0);
-          } else if (![c1,c2].includes(getColor(this.front.levels)) && 
-          ![c1,c2].includes(getColor(this.left.levels))) {
+          } else if (opparr.includes(getColor(this.top.levels))) {
             shift(dir, 0, yshift, 0);
           } else {
             shift(dir, 0, 0, zshift);
@@ -631,4 +653,8 @@ function getColor(color)
 	return "k";
 	if(minpos == 7)
 	return "m"
+}
+
+function decodeCubies() {
+
 }
