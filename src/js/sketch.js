@@ -767,9 +767,9 @@ p.setup = () => {
 		["8", "Delete previous time"],
 		["⇧ 8", "Remove all times"],
 		["9", "Load Data"],
-		["", ""],
+		["⇧ 9", "Load Default ID"],
 		["0", "Save Data"],
-		["", ""],
+		["⇧ 0", "Save Position ID"],
 	];
 
     const table = document.getElementById('hotkeytable');
@@ -826,12 +826,7 @@ p.setup = () => {
 	setButton(CHALLENGEBACK, "challengeback", 'btn btn-light', 'font-size:20px; border-color: black;', challengemode.bind(null, 0));
 
 	const IDDEFAULT = p.createButton('Restore defaults');
-	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', () => {
-		allcubies = false;
-		reSetup();
-		TOPWHITE.value(localStorage.topwhite);
-		topWhite();
-	});
+	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', iddefault);
 
 	const SETTINGSDEFAULT = p.createButton('Restore defaults');
 	setButton(SETTINGSDEFAULT, "settingsdefault", 'btn btn-light', 'font-size:20px; border-color: black;', settingsDefault.bind(null, 0));
@@ -1650,7 +1645,7 @@ function generateID(){
 	allcubies = IDtoReal(IDtoLayout(decode(str)));
 	reSetup();
 	setLayout();
-	TOPWHITE.selected(expandc[layout[2][1][1][0]]);
+	// TOPWHITE.selected(expandc[layout[2][1][1][0]]);
 }
 function IDtoReal(id){
 	let a = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
@@ -6348,14 +6343,44 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 57: //9
-			if(localStorage.username == "signedout")
-				break;
-			loadData();
+			if (p.keyIsDown(p.SHIFT)) {
+				["normal", "timed", "cube"].includes(MODE) && iddefault();
+			} else {
+				if(localStorage.username == "signedout")
+					break;
+				loadData();
+			}
 			break;
 			case 48: //0
-			if(localStorage.username == "signedout")
-				break;
-			saveData();
+			if (p.keyIsDown(p.SHIFT)) {
+				if (!["normal", "timed", "cube"].includes(MODE)) {
+					regular();
+				}
+				try {
+					allcubies = IDtoReal(IDtoLayout(decode(getID())));
+					setLayout();
+					successSQL("Position ID Saved");
+				} catch(e){
+		
+				}
+			} else {
+				if(localStorage.username == "signedout")
+					break;
+				saveData();
+			}
+			break;
+			case 189: //-
+			if (p.keyIsDown(p.SHIFT)) {
+				cubemode();
+			} else {
+				if (getEl("type3").style.display == "block") {
+					if (DIM2 == 50) {
+						changeTwo();
+					} else {
+						changeThree();
+					}
+				}
+			}
 			break;
 			case 51: //3
 			if (p.keyIsDown(p.SHIFT) && (getEl("mode2").style.display != "none" || getEl("mode5").style.display != "none"))
@@ -6873,6 +6898,12 @@ function refreshButtons()
 		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
 	}
 
+}
+function iddefault() {
+	allcubies = false;
+	reSetup();
+	TOPWHITE.value(localStorage.topwhite);
+	topWhite();
 }
 function solveCube()
 {
@@ -9155,7 +9186,6 @@ function testAlg(){
 			allcubies = IDtoReal(IDtoLayout(decode(inp.value())));
 			reSetup();
 			setLayout();
-			TOPWHITE.selected(expandc[layout[2][1][1][0]]);
 			successSQL("Position ID Loaded");
 		} catch(e){
 
