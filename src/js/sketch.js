@@ -1429,6 +1429,7 @@ setInterval(() => {
 	setSpecial();
 	if (isthin) getEl("delaywhole").style.display = "none";
 	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
+	console.log(m_34step)
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2813,6 +2814,10 @@ function regular(nocustom){
 		scrambles = saveao5[2];
 		movesarr = saveao5[3];
 	}
+	if (DIM2 != 50 && DIM2 != 100) {
+		if (localStorage.startcube == 3) changeThree();
+		else changeTwo();
+	}
 	document.getElementById("scramble").innerHTML = "N/A";
 	document.getElementById('password').value = '';
 	DELAY_SLIDER.value(0);
@@ -3389,7 +3394,6 @@ function speedmode()
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "end" });
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
-
 	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect","s_start"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
@@ -3445,7 +3449,10 @@ function movesmode()
 	refreshButtons();
 	MOVESMODE.style('background-color', '#8ef5ee');
 
-
+	if (DIM2 != 50 && DIM2 != 100) {
+		if (localStorage.startcube == 3) changeThree();
+		else changeTwo();
+	}
 	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
 		"solve", "input", "input2", "scram", "timeselect"]);
 	setDisplay("inline", ["m_34", "m_4"]);
@@ -4310,19 +4317,14 @@ function raceTimes(){
 	console.log("str is " + str);
 	document.getElementById("s_RACE3").innerHTML = "Winning times: " + str;
 }
-function displayMoveTitle(){
-	if(m_type == -1){
-		scramblemoves = 2;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 2 moves <br>(1 point)";
-	}else if(m_type == 0){
-		scramblemoves = 3;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 3 moves <br>(2 points)";
-	}else if(m_type == 1){
-		scramblemoves = 4;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 4 moves <br>(3 points)";
-	}else if(m_type == 2){
-		scramblemoves = 5;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_34step/2+1) + ": Solve the cube in at most 5 moves <br>(5 points)";
+function displayMoveTitle(mode){
+	if (mode == "m_34") {
+		scramblemoves = m_type + 3;
+		const points = {"-1": 1, 0: 2, 1: 3, 2: 5};
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (Math.floor(m_34step/2)+1) + ": Solve the cube in at most " + 
+			scramblemoves + " moves <br>(" + points[m_type] + (points[m_type] == 1 ? " point)" : " points)");
+	} else {
+		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (Math.floor(m_4step/2)+1) + ": Solve the cube in at most " + m_type + " moves <br>(" + parseInt(Math.pow(1.5, m_type)) + " points)";
 	}
 	document.getElementById("s_instruct").innerHTML = "<i>This scramble won't have any one-move slice moves.</i><br><br>Take advantage of the undo and reset buttons. <br> Hints cost 0.5 lives.<br>Giving up costs 1 life.";
 }
@@ -4337,7 +4339,7 @@ function m_34()
 		giveups = 3;
 		m_pass = 0;
 		m_points = 0;
-	} if (localStorage.m_34 && m_34step == 0) {
+	} if (localStorage.m_34 && m_34step == 0 && JSON.parse(localStorage.m_34)) {
 		let obj = JSON.parse(localStorage.m_34)
 		savesetup = obj.savesetup;
 		giveups = obj.giveups;
@@ -4349,10 +4351,13 @@ function m_34()
 		arr = [];
 		showSpeed();
 		m_34step = Math.floor(obj.m_34step / 2) * 2;
-		displayMoveTitle();
 		m_34step++;
+		displayMoveTitle("m_34");
 		canMan = true;
-	} else if(m_34step % 2 == 0)
+		setLayout();
+	}  
+	
+	if(m_34step % 2 == 0)
 	{
 		let rand = parseInt(Math.random()*100);
 		m_scramble = [];
@@ -4385,7 +4390,7 @@ function m_34()
 		}
 		quickSolve();
 		showSpeed();
-		displayMoveTitle();
+		displayMoveTitle("m_34");
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
 		let bad = "";
@@ -4429,7 +4434,7 @@ function m_4()
 		m_points = 0;
 		m_offset = 1;
 	}
-	if (localStorage.m_4 && m_4step == 0 && m_34step == 0) {
+	if (localStorage.m_4 && m_4step == 0 && m_34step == 0 && JSON.parse(localStorage.m_4).savesetup) {
 		let obj = JSON.parse(localStorage.m_4)
 		console.log(obj)
 		giveups = obj.giveups;
@@ -4442,11 +4447,9 @@ function m_4()
 		arr = [];
 		showSpeed();
 		m_4step = Math.floor(obj.m_4step / 2) * 2;
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves <br>(" + parseInt(Math.pow(1.5, m_type)) + " points)";
 		m_4step++;
-		if(m_type < 20)
-			displayMoveTitle();
-		else
+		displayMoveTitle("m_4");
+		if(m_type >= 20)
 			document.getElementById("s_instruct").innerHTML = "<i>This scramble won't have any one-move slice moves.</i><br><br>Tip: Any scramble can be solved in at most 20 moves...HOW ARE YOU STILL PLAYING?";
 		canMan = true;
 	} else if(m_4step % 2 == 0 && m_34step == 0)
@@ -4467,9 +4470,8 @@ function m_4()
 		if(rand % 5 == 0 && m_4step > 6) m_offset++;
 		quickSolve();
 		showSpeed();
-		document.getElementById("s_INSTRUCT").innerHTML = "Stage " + (m_4step/2+1) + ": Solve the cube in at most " + m_type + " moves <br>(" + parseInt(Math.pow(1.5, m_type)) + " points)";
 		if(m_type < 20)
-			displayMoveTitle();
+			displayMoveTitle("m_4");
 		else
 			document.getElementById("s_instruct").innerHTML = "<i>This scramble won't have any one-move slice moves.</i><br><br>Tip: Any scramble can be solved in at most 20 moves...HOW ARE YOU STILL PLAYING?";
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
@@ -4532,6 +4534,7 @@ function m_4()
 		timer.reset();
 	}
 }
+
 function multipleEasy(nb, dificil, mode = "") {
 	if (nb < arr.length) {
 		canMan = false;
@@ -4545,6 +4548,18 @@ function multipleEasy(nb, dificil, mode = "") {
 		shufflespeed = 5;
 		setLayout();
 		savesetup = IDtoReal(IDtoLayout(decode(getID())));
+		if ((MODE != "speed" && MODE != "moves")) return;
+		if (mode == "m_4" || mode == "m_34") {
+			if (MODE != "moves"  || getEl("m_high").style.display == "block") {
+				localStorage.m_34 = m_34step;
+				localStorage.m_4 = m_4step;
+				return;
+			}
+		} else {
+			if (MODE != "speed" || getEl("s_high").style.display == "block") {
+				return;
+			}
+		}
 		if (mode == "m_4" || mode == "m_34") {
 			localSetup(mode);
 		}
@@ -5799,10 +5814,26 @@ p.keyPressed = (event) => {
 			custom = 0
 		}
 	}
+	if (p.keyCode == 51) { //3
+		if (p.keyIsDown(p.SHIFT))
+			speedmode();
+		else
+			darkMode();
+		return;
+	}
+	if(p.keyCode == 52) //4
+	{
+		if (p.keyIsDown(p.SHIFT))
+			movesmode();
+		else {
+			alignIt();
+		}
+		return;
+	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		console.log(week)
+		console.log(Math.pow(1.5, m_type))
 		// console.log(mapCuby());
 		// console.log(mapBandaged());
 	}
@@ -5871,15 +5902,6 @@ p.keyPressed = (event) => {
 		} else {
 			SPEED_SLIDER.value(0.01);
 			SPEED = 0.01;
-		}
-		return;
-	}
-	if(p.keyCode == 52) //4
-	{
-		if (p.keyIsDown(p.SHIFT) && (getEl("mode7").style.display != "none" || getEl("mode8").style.display != "none"))
-			movesmode();
-		else {
-			alignIt();
 		}
 		return;
 	}
@@ -6378,12 +6400,6 @@ p.keyPressed = (event) => {
 					}
 				}
 			}
-			break;
-			case 51: //3
-			if (p.keyIsDown(p.SHIFT) && (getEl("mode2").style.display != "none" || getEl("mode5").style.display != "none"))
-				speedmode();
-			else
-				darkMode();
 			break;
 		}
 		let bad = -1;
