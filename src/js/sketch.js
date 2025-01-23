@@ -9652,7 +9652,7 @@ function renderCube() {
 			}
 		}
 	}
-$(document).on("keypress", "input", function(e){
+$(document).on("keypress", "#test_alg_div", function(e){ //enter
 	if(e.which == 13){
 		testAlg();
 	}
