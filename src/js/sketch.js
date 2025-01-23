@@ -5871,7 +5871,6 @@ p.keyPressed = (event) => {
 			if (pllpracstep > 0) {movesarr = []; mo5 = []; ao5 = [];}
 			if (func) {
 				speedmode();
-				setTimeout(func, 1000);
 				func();
 			}
 		} else if (MODE == "moves") {
