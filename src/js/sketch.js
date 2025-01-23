@@ -55,6 +55,7 @@ export default function (p) {
 	let peeks = 0;
 	let inp;
 	let MODE = "normal";
+	let MINIMODE = "normal";
 	let INPUT, SESSION;
 	let SPEED = 0.01;
 	let DELAY = 0;
@@ -2800,7 +2801,7 @@ function sliderUpdate2(){
 //Henry
 function regular(nocustom){
 	modeData("normal");
-
+	MINIMODE = "normal";
 	if(MODE != "timed" && MODE != "cube" && MODE != "normal")
 	{
 		ao5 = [];
@@ -3383,7 +3384,7 @@ function speedmode()
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = false;
-	MODE = "speed"
+	MODE = MINIMODE = "speed";
 	DIM = DIM2;
 	reSetup();
 	saveao5 = [ao5, mo5, scrambles, movesarr];
@@ -3958,6 +3959,7 @@ function selectPLL(mode) {
 function practicePLL() {
 	undo = [];
 	redo = [];
+	MINIMODE = "pracPLL";
 	if(pllpracstep % 2 == 0)
 	{
 		timer.reset();
@@ -3996,6 +3998,7 @@ function practicePLL() {
 }
 function speedPLL()
 {
+	MINIMODE = "PLL";
 	undo = [];
 	redo = [];
 	if(pllstep == 0) reCam();
@@ -4045,6 +4048,7 @@ function speedPLL()
 }
 function speedOLL()
 {
+	MINIMODE = "OLL";
 	undo = [];
 	redo = [];
 	if(ollstep == 0) reCam();
