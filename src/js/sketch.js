@@ -1394,7 +1394,7 @@ setInterval(() => {
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
-	if(TOPPLL.value() == "Opposite of above" && MODE == "speed")
+	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
 		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
 	else
 		realtop = TOPWHITE.value()[0].toLowerCase();
@@ -3938,6 +3938,7 @@ function togglePLL(action, arr) {
 	}
 }
 function selectPLL(mode) {
+	MINIMODE = mode;
 	pracmode = mode;
 	moves = 0;
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac"]);
@@ -3999,6 +4000,11 @@ function practicePLL() {
 function speedPLL()
 {
 	MINIMODE = "PLL";
+	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
+		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
+	else
+		realtop = TOPWHITE.value()[0].toLowerCase();
+	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
 	undo = [];
 	redo = [];
 	if(pllstep == 0) reCam();
@@ -4049,6 +4055,11 @@ function speedPLL()
 function speedOLL()
 {
 	MINIMODE = "OLL";
+	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
+		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
+	else
+		realtop = TOPWHITE.value()[0].toLowerCase();
+	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
 	undo = [];
 	redo = [];
 	if(ollstep == 0) reCam();
