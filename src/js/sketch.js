@@ -22,6 +22,7 @@ export default function (p) {
 	let DIM4 = 3;
 	let touchrotate = [];
 	const NOMOUSE = [13];
+	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19, "Xmas 3x3": changeSeven};
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -724,13 +725,12 @@ p.setup = () => {
 	BANDAGE_SELECT.option("3x3");
 	BANDAGE_SELECT.option("3x3x2");
 	BANDAGE_SELECT.option("2x2x3");
+	BANDAGE_SELECT.option("Xmas 3x3");
 	BANDAGE_SELECT.parent("bandage_select")
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(() => {
 		bandaged = [];
-		if (BANDAGE_SELECT.value() == "3x3") changeThree();
-		if (BANDAGE_SELECT.value() == "3x3x2") changeFive();
-		if (BANDAGE_SELECT.value() == "2x2x3") change19();
+		b_selectdim[BANDAGE_SELECT.value()]();
 	});
 
 	INPUT.option("Standard");
@@ -1430,7 +1430,6 @@ setInterval(() => {
 	setSpecial();
 	if (isthin) getEl("delaywhole").style.display = "none";
 	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
-	console.log(m_34step)
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2469,10 +2468,15 @@ function changeInput()
 	setInput();
 }
 function ban9(){
+	let temp = DIM;
 	DIM = [];
 	DIM[0] = "adding";
 	DIM[1] = bandaged2;
 	DIM[2] = bandaged;
+	if (!Array.isArray(temp))
+		DIM[3] = temp;
+	else
+		DIM[3] = temp[3];
 	rotation = CAM.getRotation();
 	reSetup(rotation);
 }
@@ -2520,12 +2524,7 @@ function doneBandage(){
 	bandaged2 = [];
 	customb = 0;
 	ban9();
-	if (special[6] == 2) {
-		changeFive();
-	}
-	if (special[6] == 15) {
-		change19();
-	}
+	b_selectdim[BANDAGE_SELECT.value()]();
 }
 function cancelBandage(){
 	customb = 0;
@@ -2548,7 +2547,8 @@ function randomBandage(){
 	// BANDAGE_SELECT.value("3x3");
 	// changeThree();
 	let numB = parseInt(Math.random()*3)+2;
-	if (special[6] != 50) numB= parseInt(Math.random()*2)+1;
+	if (special[6] == 2) numB = parseInt(Math.random()*2)+1;
+	if (special[6] == 15) numB = 1;
 	let possible = [];
 	let possible2 = [];
 	bandaged = [];
@@ -2578,13 +2578,7 @@ function randomBandage(){
 	}
 	bandaged2 = [];
 	ban9();
-	if (special[6] == 2) {
-		changeFive();
-	}
-	if (special[6] == 15) {
-		change19();
-	}
-	
+	b_selectdim[BANDAGE_SELECT.value()]();
 }
 function deleteBan(){
 	if(bandaged.length >= bannum) 
@@ -2714,9 +2708,7 @@ function Custom2(){
 	bandaged = bandaged3;
 	modeData("custombandage");
 	ban9();
-	if (BANDAGE_SELECT.value() == "3x3") changeThree();
-	if (BANDAGE_SELECT.value() == "3x3x2") changeFive();
-	if (BANDAGE_SELECT.value() == "2x2x3") change19();
+	b_selectdim[BANDAGE_SELECT.value()]();
 }
 function Custom()
 {
@@ -5829,6 +5821,19 @@ p.keyPressed = (event) => {
 			custom = 0
 		}
 	}
+	if(p.keyCode == 50 && race < 1) //2 //two
+	{
+		if (p.keyIsDown(p.SHIFT) && (getEl("mode3").style.display != "none" || getEl("mode6").style.display != "none")) {
+			timedmode();
+		} else if(SPEED != 2) {
+			SPEED_SLIDER.value(2);
+			SPEED = 2;
+		} else {
+			SPEED_SLIDER.value(0.01);
+			SPEED = 0.01;
+		}
+		return;
+	}
 	if (p.keyCode == 51) { //3
 		if (p.keyIsDown(p.SHIFT))
 			speedmode();
@@ -5904,19 +5909,6 @@ p.keyPressed = (event) => {
 		return;
 	} else if(race > 1 && p.keyCode == 27 && document.getElementById("s_RACE2").style.display == "block"){
 		quickSolve();
-		return;
-	}
-	if(p.keyCode == 50 && race < 1) //2 //two
-	{
-		if (p.keyIsDown(p.SHIFT) && (getEl("mode3").style.display != "none" || getEl("mode6").style.display != "none")) {
-			timedmode();
-		} else if(SPEED != 2) {
-			SPEED_SLIDER.value(2);
-			SPEED = 2;
-		} else {
-			SPEED_SLIDER.value(0.01);
-			SPEED = 0.01;
-		}
 		return;
 	}
 	if(p.keyCode == 55){ //7

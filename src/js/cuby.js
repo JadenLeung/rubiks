@@ -60,24 +60,25 @@ export default class Cuby {
     opposite["o"] = "r";
     opposite["r"] = "o";
 
-    if(size == 4 || size == 5)
+    if([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
     {
       this.bottom = this.colors.white;
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
     if(custom){
-      if((size == 4 || size == 5) && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
+      const cond = ([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
+      if(cond && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
       else this.top = this.c[custom[this.index][0]];
-      if((size == 4 || size == 5) && (custom[this.index][1] == "y" || custom[this.index][1] == "b" || custom[this.index][1] == "o")) this.bottom = this.c[opposite[custom[this.index][1]]];
+      if(cond && (custom[this.index][1] == "y" || custom[this.index][1] == "b" || custom[this.index][1] == "o")) this.bottom = this.c[opposite[custom[this.index][1]]];
       else this.bottom = this.c[custom[this.index][1]];
-      if((size == 4 || size == 5) && (custom[this.index][2] == "y" || custom[this.index][2] == "b" || custom[this.index][2] == "o")) this.front = this.c[opposite[custom[this.index][2]]];
+      if(cond && (custom[this.index][2] == "y" || custom[this.index][2] == "b" || custom[this.index][2] == "o")) this.front = this.c[opposite[custom[this.index][2]]];
       else this.front = this.c[custom[this.index][2]];
-      if((size == 4 || size == 5) && (custom[this.index][3] == "y" || custom[this.index][3] == "b" || custom[this.index][3] == "o")) this.back = this.c[opposite[custom[this.index][3]]];
+      if(cond && (custom[this.index][3] == "y" || custom[this.index][3] == "b" || custom[this.index][3] == "o")) this.back = this.c[opposite[custom[this.index][3]]];
       else this.back = this.c[custom[this.index][3]];
-      if((size == 4 || size == 5) && (custom[this.index][4] == "y" || custom[this.index][4] == "b" || custom[this.index][4] == "o")) this.left = this.c[opposite[custom[this.index][4]]];
+      if(cond && (custom[this.index][4] == "y" || custom[this.index][4] == "b" || custom[this.index][4] == "o")) this.left = this.c[opposite[custom[this.index][4]]];
       else this.left = this.c[custom[this.index][4]];
-      if((size == 4 || size == 5) && (custom[this.index][5] == "y" || custom[this.index][5] == "b" || custom[this.index][5] == "o")) this.right = this.c[opposite[custom[this.index][5]]];
+      if(cond && (custom[this.index][5] == "y" || custom[this.index][5] == "b" || custom[this.index][5] == "o")) this.right = this.c[opposite[custom[this.index][5]]];
       else this.right = this.c[custom[this.index][5]];
 
       if(size == 1 && this.index > 8) this.right = this.c[custom[this.index-9][5]];
@@ -88,7 +89,6 @@ export default class Cuby {
       if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
 
     }
-
     if([2,15].includes(special[6]) || size == 1){ //rainbow
         const directions = ["back", "front", "bottom", "top", "right", "left"];
         const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
@@ -204,6 +204,7 @@ export default class Cuby {
     this.buff_back = buff[1];
     this.buff_left = buff[4];
     this.buff_right = buff[5];
+
 
   }
   
