@@ -1430,6 +1430,18 @@ setInterval(() => {
 	setSpecial();
 	if (isthin) getEl("delaywhole").style.display = "none";
 	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
+	if(Array.isArray(DIM) && DIM[0] == "adding") {
+		for (let i = 0; i < 27; ++i) {
+			const key = +Object.entries(mapCuby()).find(([key, value]) => value == i)?.[0];
+			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
+				CUBE[i].setColor(CUBE[key].colors.magenta);
+			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
+					CUBE[i].setColor(CUBE[key].colors.black);
+			} else if (!DIM[1].includes(i) && getColor(CUBE[i].right.levels) == "m") {
+				CUBE[i].originalColor();
+			}
+		}
+	}
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2477,8 +2489,8 @@ function ban9(){
 		DIM[3] = temp;
 	else
 		DIM[3] = temp[3];
-	rotation = CAM.getRotation();
-	reSetup(rotation);
+	// rotation = CAM.getRotation();
+	// reSetup(rotation);
 }
 function viewBandage(def){
 	customb = 2;
@@ -2510,7 +2522,7 @@ function addBandage(){
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
-	reSetup();
+	// reSetup();
 }
 function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
@@ -5619,6 +5631,7 @@ function startAction() {
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log("Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
+		console.log(CUBE[cuby]);
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -6124,7 +6137,6 @@ p.keyPressed = (event) => {
 		}
 		switch (p.keyCode) {	
 			case 37:
-			if(customb > 0 && rotationz != 0) break;
 			redo = [];
 			console.log("Left Arrow/y");
 			undo.push("y");
@@ -6133,7 +6145,6 @@ p.keyPressed = (event) => {
 			if(rotationx == -1) rotationx = 3;
 			break;
 			case 39:
-			if(customb > 0 && rotationz != 0) break;
 			redo = [];
 			console.log("Right Arrow/y'");
 			undo.push("y'");
@@ -6143,7 +6154,6 @@ p.keyPressed = (event) => {
 			break;	
 			case 40:
 			console.log("Down Arrow/x'");
-			if(customb > 0 && rotationx != 0) break;
 			redo = [];
 			undo.push("x'");
 			animateRotate("z", -1);
@@ -6152,7 +6162,6 @@ p.keyPressed = (event) => {
 			break;
 			case 38:
 			console.log("Up Arrow/x");
-			if(customb > 0 && rotationx != 0) break;
 			redo = [];
 			undo.push("x");
 			animateRotate("z", 1);
@@ -9375,6 +9384,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 	return;
 	if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
 	return;
+	if(Array.isArray(DIM) && DIM[0] == "adding") return; 
 	
 	let bad5 = [];
 	let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];

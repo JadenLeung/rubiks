@@ -11,6 +11,8 @@ export default class Cuby {
     this.stroke = 0.5;
     this.custom = custom;
     this.special = special;
+    this.adjustedcolor = false;
+    this.savecolors = {};
 
 	/*
     this.colors = {
@@ -218,6 +220,23 @@ export default class Cuby {
     if (foo === 'z') {
       return this.z;
     }
+  }
+
+  setColor(c) {
+    if (!this.adjustedcolor)
+      this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
+    this.top = c;
+    this.bottom = c;
+    this.front = c;
+    this.right = c;
+    this.back = c;
+    this.left = c;
+    this.adjustedcolor = true;
+  }
+  originalColor() {
+    ({ top: this.top, bottom: this.bottom, front: this.front, 
+      right: this.right, back: this.back, left: this.left } = this.savecolors);
+    this.adjustedcolor = false;
   }
   
   animating() {
