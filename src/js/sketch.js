@@ -10064,19 +10064,19 @@ Jaden WR 2x2: 3.88
 3x3 Medium: 15.4s, 13.58s
 3x3 Easy: 1.4s
 FMC: 193
-Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27, 85.90
+Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27, 85.90, 60.69
 Bandage Mod ALL: 672.28
 Blind Marathon All: 13
 ALL MARATHONS
 Cube 	Speed 	Blind
-3x3x2	18.2	4
-2x2x3	2.5	 	2		
-3x3x1	11.51	1
-Jank	11.94	1
-Plus	13.78	0
-Xmas3	17.31	4
-Xmas2	4.37	0
-Sand	6.29	1
+3x3x2	12.65	4
+2x2x3	1.64 	2		
+3x3x1	6.16	1
+Jank	12.04	1
+Plus	1.17	0
+Xmas3	13.89	4
+Xmas2	4.86	0
+Sand	8.28	1
 
 */
 
