@@ -2871,6 +2871,7 @@ function regular(nocustom){
 	mastep = 0;
 	ollstep = 0;
 	pllstep = 0;
+	customb = 0;
 	pllpracstep = 0;
 	m_34step = 0;
 	m_4step = 0;
