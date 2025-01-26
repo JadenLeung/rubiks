@@ -3053,6 +3053,7 @@ function getColoredCuby(index) {
 	return obj;
 }
 function paintmode() {
+	activeKeys.clear();
 	MODE = "paint";
 	reSetup();
 	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition"]);
