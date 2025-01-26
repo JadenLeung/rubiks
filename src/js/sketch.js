@@ -23,6 +23,7 @@ export default function (p) {
 	let touchrotate = [];
 	const NOMOUSE = [13];
 	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19, "Xmas 3x3": changeSeven};
+	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -686,16 +687,16 @@ p.setup = () => {
 	}
 
 	const colors = [
-		{ name: 'Red', className: 'red' },
-		{ name: 'Orange', className: 'orange' },
-		{ name: 'Yellow', className: 'yellow' },
-		{ name: 'Green', className: 'green' },
-		{ name: 'Blue', className: 'blue' },
-		{ name: 'White', className: 'white' }
+		{ name: 'Red', className: 'red', c: "#da1a18"},
+		{ name: 'Orange', className: 'orange', c: "#db7c19"},
+		{ name: 'Yellow', className: 'yellow', c: "yellow"},
+		{ name: 'Green', className: 'green', c: "#19dc1f"},
+		{ name: 'Blue', className: 'blue', c: "#1b69db"},
+		{ name: 'White', className: 'white', c: "white"}
 	];
 	colors.forEach(color => {
 		const button = p.createButton('');
-		setButton(button, "colorContainer", 'btn btn-info', `background-color:${color.className};height:60px;width:60px;border-width:0px;padding:2px;margin:2px;`, 
+		setButton(button, "colorContainer", 'btn btn-info', `background-color:${color.c};height:60px;width:60px;border-width:0px;padding:2px;margin:2px;`, 
 			() => {paintit(color.className)}
 		);
 	});
@@ -1011,7 +1012,7 @@ p.setup = () => {
 	setButton(PAINT, 'startpaint', 'btn btn-info', '', paintmode);
 
 	const FINISHPAINT = p.createButton('Finish Paint');
-	setButton(FINISHPAINT, 'finishpaint', 'btn btn-success', '', finishpaint);
+	setButton(FINISHPAINT, 'finishpaint', 'btn btn-success', 'font-size: 20px;', finishpaint);
 	
 	const MED = p.createButton('Medium');
 	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
@@ -1061,6 +1062,17 @@ p.setup = () => {
 	const STARTMARATHON2 = p.createButton('Bandage Marathon');
 	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:60px; width:200px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
 
+	const SAVEPOSITION = p.createButton('Save Current Position');
+	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
+		try {
+			allcubies = IDtoReal(IDtoLayout(decode(getID())));
+			setLayout();
+			successSQL("Position ID Saved");
+		} catch(e){
+
+		}
+	});
+
 	inp = p.createInput('');
 	inp.parent("test_alg_input");
 	
@@ -1087,15 +1099,23 @@ p.setup = () => {
 
 	const LEFTPAINT = p.createButton('←');
 	setButton(LEFTPAINT, "leftpaint", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', () => {
-		document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", keyCode: 37, code: "ArrowLeft", bubbles: true }));
-	} );
+		if (MODE == "paint" && (!activeKeys || (activeKeys.size < 1 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 2)))) {
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", keyCode: 37, code: "ArrowLeft", bubbles: true }));
+			activeKeys.add("button");
+		}
+	});
 
 	const RIGHTPAINT = p.createButton('→');
 	setButton(RIGHTPAINT, "rightpaint", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', () => {
-		const event = new KeyboardEvent("keydown", { key: "ArrowRight", keyCode: 39, code: "ArrowRight", bubbles: true});
-		document.dispatchEvent(event); // Dispatch the event
+		if (MODE == "paint" && (!activeKeys || (activeKeys.size < 1 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 2)))) {
+			const event = new KeyboardEvent("keydown", { key: "ArrowRight", keyCode: 39, code: "ArrowRight", bubbles: true});
+			document.dispatchEvent(event); // Dispatch the event
+			activeKeys.add("button");
+		}
 	});
-
+	  RIGHTPAINT.mouseReleased(() => {activeKeys.delete("button"); activeKeys.delete("ArrowRight")});
+	  LEFTPAINT.mouseReleased(() => {activeKeys.delete("button"); activeKeys.delete("ArrowLeft")});
+	
 	LEFTBAN = p.createButton('←');
 	setButton(LEFTBAN, "leftban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', leftBan.bind(null, 0));
 
@@ -1474,6 +1494,8 @@ setInterval(() => {
 			}
 		}
 	}
+	getEl("leftpaint").style.opacity = colorindex == 0 ? 0.3 : 1;
+	getEl("rightpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2894,7 +2916,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3019,20 +3041,21 @@ function sinceNov3(what) {
   }
 
 let colorindex = 0;
-function getColoredCuby() {
+function getColoredCuby(index) {
 	let obj = {}
 	// const faces = ["right","top","front","bottom","back","left"];
 	const faces = ["right", "top", "front", "top", "front", "top"];
 	let cuby = [0,1,2,3,4,5,6,7,8,6,7,8,15,16,17,24,25,26,8,5,2,17,14,11,26,23,20,
 		2,1,0,11,10,9,20,19,18,0,3,6,9,12,15,18,21,24,20,19,18,23,22,21,26,25,24
 	];
-	obj.face = faces[Math.floor(colorindex / 9)]
-	obj.cuby = cuby[colorindex];
+	obj.face = faces[Math.floor(index / 9)]
+	obj.cuby = cuby[index];
 	return obj;
 }
 function paintmode() {
 	MODE = "paint";
-	setDisplay("none", ["ID4","test_alg_div","ID5"]);
+	reSetup();
+	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition"]);
 	setDisplay("block", ["paint","finishpaint"]);
 	setDisplay("inline", ["iddefault"]);
 	canMan = false;
@@ -3042,9 +3065,21 @@ function paintmode() {
 }
 function paintit(color, dx = 1) {
 	if (MODE != "paint") return;
+	if (isAnimating()) {
+		return;
+	}
+	if (DIM == 100) {
+		console.log(getColoredCuby(colorindex + dx), removedcubies[100], colorindex, dx)
+		if (removedcubies[100].includes(getColoredCuby(colorindex + dx).cuby)) {
+			dx += dx;
+			paintit(color, dx);
+			return;
+		}
+	}
 	let obj;
 	let colormap;
 	if (colorindex != 54) {
+		setDisplay("block", ["paint"]);
 		obj = getColoredCuby(colorindex);
 	 	colormap = +Object.entries(mapCuby()).find(([key, value]) => value == obj.cuby)?.[0];
 		if (color != "original") {
@@ -3055,6 +3090,7 @@ function paintit(color, dx = 1) {
 	}
 	if (!(dx > 0 && colorindex == 54))
 		colorindex+= dx;
+	setDisplay(colorindex == 54 ? "none" : "block", ["colorbuttons"]);
 	if (colorindex == 54) {
 		return;
 	}
@@ -3082,10 +3118,14 @@ function paintit(color, dx = 1) {
 		}
 	}
 	// CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
-	setTimeout(() => {
+	if (arr.length > 0) {
+		setTimeout(() => {
+			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
+			canMan = false;
+		}, 40);
+	} else {
 		CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
-		canMan = false;
-	}, 40);
+	}
 }
 function finishpaint() {
 	if (colorindex != 54) {
@@ -3097,7 +3137,7 @@ function finishpaint() {
 	MODE = "finishpaint";
 	canMan = true;
 	setDisplay("none", ["paint","iddefault"]);
-	setDisplay("block", ["ID5"]);
+	setDisplay("block", ["ID5","saveposition"]);
 	setLayout();
 	savesetup = IDtoReal(IDtoLayout(decode(getID())));
 	special[2] = savesetup;
@@ -5945,6 +5985,7 @@ p.keyPressed = (event) => {
 			return;
 		} 
 		if(MODE == "paint") {idmode(); return;}
+		if(MODE == "finishpaint") {paintmode(); return;}
 		if(MODE == "timed" || MODE == "challenge" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
 		regular();
 		if(MODE == "daily" || MODE == "weekly")
@@ -5991,7 +6032,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		console.log(savesetup)
+		console.log(activeKeys)
 		// console.log(mapCuby());
 		// console.log(mapBandaged());
 	}
@@ -10133,24 +10174,55 @@ document.onkeydown = function (e) {
 	//console.log("here67")
 	INPUT.elt.blur();
   };
+function arrowPaint(dir) {
+	if (dir == "left") {
+		if (colorindex > 0) {
+			if (p.keyIsDown(p.SHIFT)) {
+				if (colorindex < 9) paintit("original", -colorindex);
+				else paintit("original", -(colorindex % 9 + 1));
+			} else {
+				paintit("original", -1);
+			}
+		}
+	}
+	if (dir == "right") {
+		if (colorindex < 54) {
+			if (p.keyIsDown(p.SHIFT)) paintit("original", 9 - colorindex % 9);
+			else paintit("original");
+		}
+	}
+	if (dir == "down") {
+		if (colorindex < 54) {
+			if (p.keyIsDown(p.SHIFT)) paintit("original", 9 - colorindex % 9)
+			else if (colorindex % 9 < 6) paintit("original", 3);
+			else paintit("original", 9 - colorindex % 9);
+		} 
+	}
+	if (dir == "up") {
+		if (colorindex > 0) {
+			if (p.keyIsDown(p.SHIFT)) {
+				if (colorindex < 9) paintit("original", -colorindex);
+				else paintit("original",-(colorindex % 9 + 1));
+			}
+			else if (colorindex < 3) paintit("original", -colorindex);
+			else if (colorindex % 9 > 2) paintit("original", -3);
+			else paintit("original", -(colorindex % 9 + 1));
+		} 
+	}
+}
 document.addEventListener("keydown", (event) => { //paint hotkey
-	if (MODE == "paint") {
+	console.log("here", activeKeys);
+	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
 		if (event.key === "r" || event.key === "R") paintit("red");
 		if (event.key === "o" || event.key === "O") paintit("orange");
 		if (event.key === "y" || event.key === "Y") paintit("yellow");
 		if (event.key === "g" || event.key === "G") paintit("green");
 		if (event.key === "b" || event.key === "B") paintit("blue");
 		if (event.key === "w" || event.key === "W") paintit("white");
-		if (event.key == "ArrowLeft" && colorindex > 0) paintit("original", -1);
-		if (event.key == "ArrowRight" && colorindex < 54) paintit("original");
-		if (event.key == "ArrowDown" && colorindex < 54) {
-			if (colorindex % 9 < 6) paintit("original", 3);
-			else paintit("original", 9 - colorindex % 9);
-		} 
-		if (event.key == "ArrowUp" && colorindex > 0) {
-			if (colorindex % 9 > 2) paintit("original", -3);
-			else paintit("original", - ((colorindex + 1) % 9));
-		} 
+		if (event.key == "ArrowLeft") arrowPaint("left");
+		else if (event.key == "ArrowRight") arrowPaint("right");
+		else if (event.key == "ArrowDown" && colorindex < 54) arrowPaint("down");
+		else if (event.key == "ArrowUp") arrowPaint("up");
 	}
 });
 let activeKeys = new Set();

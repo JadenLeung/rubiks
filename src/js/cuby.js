@@ -236,9 +236,7 @@ export default class Cuby {
     this.adjustedcolor = true;
   }
   setFaceColor(c, face) {
-    if (getColor(c.levels) == "m") {
-      this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
-    }
+    this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
     this[face] = c;
   }
   originalFaceColor(face) {
