@@ -207,22 +207,41 @@
 					<p id="idback" class = "button" style = "text-align:left; display: inline;"></p>
 					<p id="iddefault" class = "button" style = "text-align:left; display: inline;"></p>
 				</div>
-				<p style = "font-size:15px; text-align:left; padding-top:15px;">Your current position ID is: </p>
-				<div>
-					<p id = "idcurrent" style = "font-size:15px; text-align:left; display:inline;"></p>
-					<p id = "idcopy" style = "display: inline;" class = "button"></p>
+				<div id = "ID5">
+					<p style = "font-size:15px; text-align:left; padding-top:15px;">Your current position ID is: </p>
+					<div>
+						<p id = "idcurrent" style = "font-size:15px; text-align:left; display:inline;"></p>
+						<p id = "idcopy" style = "display: inline;" class = "button"></p>
+						<p style = "font-size:10px; text-align:left; padding-top:8px;">Tip: Press '7' to alert the current ID, press 'Shift+7' to copy the ID</p>
+					</div>
 				</div>
-				<p style = "font-size:10px; text-align:left;">Tip: Pressing '7' will alert your position ID</p>
-				<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Position ID using webcam:</b></p>
-				<p>Go to our <a href = "camera.html" target = "_blank">ID generator</a> and follow the instructions.</p>
-				<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Premade Cube Positions:</b></p>
-				<div>
-					<div class = "noselect" id = "idinput" style = "font-size:15px; padding-top: 5px; display: inline;">
-						<p style = "text-align:center; display: inline; padding-top: 5px;" id = "type9">Select position:</p>
-					</div>	
-					<p id = "generate" style = "display: inline;"></p>
+				<div id = "ID4">
+					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Position ID using webcam 📷</b></p>
+					<p>Go to our <a href = "camera.html" target = "_blank">ID generator</a> and follow the instructions.</p>
+					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Position ID using paint tool 🎨</b></p>
+					<p id = "startpaint"></p>
+					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Premade Cube Positions:</b></p>
+					<div>
+						<div class = "noselect" id = "idinput" style = "font-size:15px; padding-top: 5px; display: inline;">
+							<p style = "text-align:center; display: inline; padding-top: 5px;" id = "type9">Select position:</p>
+						</div>	
+						<p id = "generate" style = "display: inline;"></p>
+					</div>
+					<p style = "font-size:20px; text-align:left; padding-top:20px;"><b>Load Cube Position from ID:</b></p>
 				</div>
-				<p style = "font-size:20px; text-align:left; padding-top:20px;"><b>Load Cube Position from ID:</b></p>
+			</div>
+			<div id = "paint">
+				<h6 style = "font-size:18px; text-align:left; padding-top:15px;">Select the color for the square highlighted by pink</h6>
+				<div class="container" id="colorContainer" style = "text-align: center"></div>
+				<div style = "text-align: center; padding-top:10px;">
+					<p id = "leftpaint" style = "display:inline; padding-left:5px;"></p>
+					<p id = "rightpaint" style = "display:inline; padding-left:5px;"></p>
+				</div>
+				<h6 style = "font-size:18px; text-align:left; padding-top:15px;">Hotkeys</h6>
+				<p style = "font-size:15px; text-align:left; padding-top:5px;">Type r for "red", o for "orange", etc.</p>
+				<p style = "display:inline"></p>
+				<p style = "font-size:15px; text-align:left;">Use the arrow keys to skip back/forward</p>
+				<p id = "finishpaint"></p>
 			</div>
 			<div id="loginform">
 				<div id = "l_form">

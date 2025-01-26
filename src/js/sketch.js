@@ -685,6 +685,21 @@ p.setup = () => {
 		CHECK[i].changed(change9.bind(null, 0));
 	}
 
+	const colors = [
+		{ name: 'Red', className: 'red' },
+		{ name: 'Orange', className: 'orange' },
+		{ name: 'Yellow', className: 'yellow' },
+		{ name: 'Green', className: 'green' },
+		{ name: 'Blue', className: 'blue' },
+		{ name: 'White', className: 'white' }
+	];
+	colors.forEach(color => {
+		const button = p.createButton('');
+		setButton(button, "colorContainer", 'btn btn-info', `background-color:${color.className};height:60px;width:60px;border-width:0px;padding:2px;margin:2px;`, 
+			() => {paintit(color.className)}
+		);
+	});
+
 	for (const plltype in allplls) {
 		let a = 0;
 		allplls[plltype].forEach((pll, n) => {
@@ -817,7 +832,7 @@ p.setup = () => {
 	setButton(S_DESELECTALL, "s_deselectall", 'btn btn-light', 'border-color: black;', setTogglePLL.bind(null, "uncheck"));
 
 	const IDBACK = p.createButton('Back');
-	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
+	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', () => {MODE == "finishpaint" ? paintmode() : MODE.includes("paint") ? idmode() : regular()});
 
 	const SETTINGSBACK = p.createButton('Back');
 	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
@@ -991,6 +1006,12 @@ p.setup = () => {
 
 	GENERATE = p.createButton('Generate');
 	setButton(GENERATE, 'generate', 'btn btn-success', '', generateID.bind(null, 0));
+
+	const PAINT = p.createButton('Start Paint');
+	setButton(PAINT, 'startpaint', 'btn btn-info', '', paintmode);
+
+	const FINISHPAINT = p.createButton('Finish Paint');
+	setButton(FINISHPAINT, 'finishpaint', 'btn btn-success', '', finishpaint);
 	
 	const MED = p.createButton('Medium');
 	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
@@ -1063,6 +1084,17 @@ p.setup = () => {
 
 	RIGHTMOD = p.createButton('→');
 	setButton(RIGHTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 0));
+
+	const LEFTPAINT = p.createButton('←');
+	setButton(LEFTPAINT, "leftpaint", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', () => {
+		document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", keyCode: 37, code: "ArrowLeft", bubbles: true }));
+	} );
+
+	const RIGHTPAINT = p.createButton('→');
+	setButton(RIGHTPAINT, "rightpaint", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', () => {
+		const event = new KeyboardEvent("keydown", { key: "ArrowRight", keyCode: 39, code: "ArrowRight", bubbles: true});
+		document.dispatchEvent(event); // Dispatch the event
+	});
 
 	LEFTBAN = p.createButton('←');
 	setButton(LEFTBAN, "leftban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', leftBan.bind(null, 0));
@@ -1886,8 +1918,11 @@ function getID(){
 	realID += a + " "+ to132(parseInt(ID2, 7)); 
 	return realID;
 }
-function quickSolve()
+function quickSolve(savesetup = false)
 {
+	if (!savesetup) {
+		savesetup = special[2];
+	}
 	setSpecial();
 	CUBE = {};
 	let cnt = 0;
@@ -1900,10 +1935,10 @@ function quickSolve()
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, special[2], special);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special);
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, special[2], special);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special);
 				cnt++;
 			}
 		}
@@ -2859,7 +2894,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -2943,12 +2978,12 @@ function cubemode()
 }
 function idmode()
 {
-	//regular(true);
+	regular(true);
 	//MODE = "speed"
-	if(document.getElementById("ID3").style.display == "block"){
-		regular();
-		return;
-	}
+	// if(document.getElementById("ID3").style.display == "block"){
+	// 	regular();
+	// 	return;
+	// }
 	DIM = DIM2;
 	//reSetup();
 	stopMoving();
@@ -2961,7 +2996,8 @@ function idmode()
 	document.getElementById("s_RACE3").innerHTML = "";
 
 	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram", "timeselect"]);
-	setDisplay("block", ["ID3", "test_alg_div"]);
+	setDisplay("block", ["ID3", "test_alg_div","ID4","ID5"]);
+	setDisplay("inline", ["iddefault"])
 	
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -2981,6 +3017,93 @@ function sinceNov3(what) {
 	
 	return Math.floor(weeksDifference); // Return whole weeks
   }
+
+let colorindex = 0;
+function getColoredCuby() {
+	let obj = {}
+	// const faces = ["right","top","front","bottom","back","left"];
+	const faces = ["right", "top", "front", "top", "front", "top"];
+	let cuby = [0,1,2,3,4,5,6,7,8,6,7,8,15,16,17,24,25,26,8,5,2,17,14,11,26,23,20,
+		2,1,0,11,10,9,20,19,18,0,3,6,9,12,15,18,21,24,20,19,18,23,22,21,26,25,24
+	];
+	obj.face = faces[Math.floor(colorindex / 9)]
+	obj.cuby = cuby[colorindex];
+	return obj;
+}
+function paintmode() {
+	MODE = "paint";
+	setDisplay("none", ["ID4","test_alg_div","ID5"]);
+	setDisplay("block", ["paint","finishpaint"]);
+	setDisplay("inline", ["iddefault"]);
+	canMan = false;
+	colorindex = 0;
+	let obj = getColoredCuby(0);
+	CUBE[obj.cuby].setFaceColor(CUBE[obj.cuby].colors["magenta"], obj.face);
+}
+function paintit(color, dx = 1) {
+	if (MODE != "paint") return;
+	let obj;
+	let colormap;
+	if (colorindex != 54) {
+		obj = getColoredCuby(colorindex);
+	 	colormap = +Object.entries(mapCuby()).find(([key, value]) => value == obj.cuby)?.[0];
+		if (color != "original") {
+			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors[color], obj.face);
+		} else {
+			CUBE[obj.cuby].originalFaceColor(obj.face);
+		}
+	}
+	if (!(dx > 0 && colorindex == 54))
+		colorindex+= dx;
+	if (colorindex == 54) {
+		return;
+	}
+	console.log("colorindex is " + colorindex)
+	obj = getColoredCuby(colorindex);
+	colormap = +Object.entries(mapCuby()).find(([key, value]) => value == obj.cuby)?.[0];
+	if (dx > 0) {
+		if (colorindex == 27) {
+			arr = ["y", "y"];
+			multiple2(0);
+		}
+		if (colorindex == 45) {
+			arr = ["x"];
+			multiple2(0);
+		}
+	}
+	if (dx < 0) {
+		if (colorindex == 44) {
+			arr = ["x'"];
+			multiple2(0);
+		}
+		if (colorindex == 26) {
+			arr = ["y", "y"];
+			multiple2(0);
+		}
+	}
+	// CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
+	setTimeout(() => {
+		CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
+		canMan = false;
+	}, 40);
+}
+function finishpaint() {
+	if (colorindex != 54) {
+		let obj = getColoredCuby(colorindex);
+		console.log(obj)
+		CUBE[obj.cuby].originalFaceColor(obj.face);
+		colorindex = 54;
+	}
+	MODE = "finishpaint";
+	canMan = true;
+	setDisplay("none", ["paint","iddefault"]);
+	setDisplay("block", ["ID5"]);
+	setLayout();
+	savesetup = IDtoReal(IDtoLayout(decode(getID())));
+	special[2] = savesetup;
+	setLayout();
+	console.log(savesetup);
+}
 document.getElementById("challenge").onclick = challengemode;
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', (e) => {
@@ -5787,7 +5910,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 32){  //space
 		console.log("mastep", mastep);
-		console.log(DIM, DIM2, special, hasColor("k"), undo, redo);
+		console.log(DIM, DIM2, special, MODE);
 		if (blinded() && getEl("overlay").style.display == "block") {
 			toggleOverlay(false);
 		}
@@ -5821,6 +5944,7 @@ p.keyPressed = (event) => {
 			}
 			return;
 		} 
+		if(MODE == "paint") {idmode(); return;}
 		if(MODE == "timed" || MODE == "challenge" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
 		regular();
 		if(MODE == "daily" || MODE == "weekly")
@@ -5867,7 +5991,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		console.log(Math.pow(1.5, m_type))
+		console.log(savesetup)
 		// console.log(mapCuby());
 		// console.log(mapBandaged());
 	}
@@ -5915,6 +6039,9 @@ p.keyPressed = (event) => {
 				startchallenge();
 			}
 		}
+	} else if (p.keyCode == 27 && MODE == "finishpaint") {
+		quickSolve(savesetup);
+		return;
 	} else if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) {
 		reSetup();
 		return;
@@ -6933,6 +7060,9 @@ function iddefault() {
 	reSetup();
 	TOPWHITE.value(localStorage.topwhite);
 	topWhite();
+	if (MODE == "paint") {
+		paintmode();
+	}
 }
 function solveCube()
 {
@@ -10003,6 +10133,26 @@ document.onkeydown = function (e) {
 	//console.log("here67")
 	INPUT.elt.blur();
   };
+document.addEventListener("keydown", (event) => { //paint hotkey
+	if (MODE == "paint") {
+		if (event.key === "r" || event.key === "R") paintit("red");
+		if (event.key === "o" || event.key === "O") paintit("orange");
+		if (event.key === "y" || event.key === "Y") paintit("yellow");
+		if (event.key === "g" || event.key === "G") paintit("green");
+		if (event.key === "b" || event.key === "B") paintit("blue");
+		if (event.key === "w" || event.key === "W") paintit("white");
+		if (event.key == "ArrowLeft" && colorindex > 0) paintit("original", -1);
+		if (event.key == "ArrowRight" && colorindex < 54) paintit("original");
+		if (event.key == "ArrowDown" && colorindex < 54) {
+			if (colorindex % 9 < 6) paintit("original", 3);
+			else paintit("original", 9 - colorindex % 9);
+		} 
+		if (event.key == "ArrowUp" && colorindex > 0) {
+			if (colorindex % 9 > 2) paintit("original", -3);
+			else paintit("original", - ((colorindex + 1) % 9));
+		} 
+	}
+});
 let activeKeys = new Set();
 document.onkeyup = function(e) { //space
 	if (e.keyCode == 32) {

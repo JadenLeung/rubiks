@@ -53,6 +53,8 @@ export default class Cuby {
     this.right = this.colors.blue;
     this.back = this.colors.orange;
     this.left = this.colors.green;
+
+    // const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
     
     const opposite = [];
     opposite["g"] = "b";
@@ -232,6 +234,16 @@ export default class Cuby {
     this.back = c;
     this.left = c;
     this.adjustedcolor = true;
+  }
+  setFaceColor(c, face) {
+    if (getColor(c.levels) == "m") {
+      this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
+    }
+    this[face] = c;
+  }
+  originalFaceColor(face) {
+    this[face] = this.savecolors[face];
+    this.adjustedcolor = false;
   }
   originalColor() {
     ({ top: this.top, bottom: this.bottom, front: this.front, 
