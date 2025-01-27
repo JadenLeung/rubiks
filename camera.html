@@ -104,6 +104,9 @@
         let snapSoundElement = document.getElementById('snapSound');
         let numfaces = 0;
         let twobytwo = false;
+        if (localStorage.background) {
+          document.body.style.backgroundColor = localStorage.background.split(' ')[0];
+        }
         setDisplay("none", ["draw", "copy", "testcubies", "allcals", "redcuby", "orangecuby", 
         "yellowcuby", "greencuby", "bluecuby", "whitecuby", "takepic", "finishside", "progress", "donerecal", "skipall"]);
 

@@ -94,7 +94,7 @@ export default function (p) {
 	let s_savedim = 0;
 	let WINDOW = 0.9
 	let special = [false, 0.3, false, 0];
-	let BACKGROUND_COLOR = "#e6e6e6"; //p.color(230,230,230);
+	let BACKGROUND_COLOR = "#e7e5ff"; //p.color(230,230,230);
 	let arr = [];
 	let obj2 = [];
 	let pbls = [];
@@ -877,7 +877,7 @@ p.setup = () => {
 
 	hollowCube(false);
 	
-	let temp = ["#c9ffda", "#e6e6e6", "#0a1970"]
+	let temp = ["#d6f1ff", "#e7e5ff", "#0a1970"]
 	if (localStorage.background && localStorage.background.length >= 23) {
 		temp = localStorage.background.split(' ');
 	}
@@ -8804,7 +8804,7 @@ function setColors(a, b, c, d) {
 }
 function darkMode(){
 	if(!darkmode){
-		savedark[0] = document.body.style.backgroundColor == '' ? "#c9ffda" : stringrgbToHex(document.body.style.backgroundColor);
+		savedark[0] = document.body.style.backgroundColor == '' ? "#d6f1ff" : stringrgbToHex(document.body.style.backgroundColor);
 		savedark[1] = BACKGROUND_COLOR;
 		savedark[2] = document.body.style.color  == '' ? "#0a1970" : stringrgbToHex(document.body.style.color);
 		BACKGROUND_COLOR = "#050505"
@@ -10113,11 +10113,11 @@ function settingsDefault(){
 	SOUND.value("Speedcube")
 	TOPPLL.value("Opposite of above");
 	KEYBOARD.value("Default");
-	BACKGROUND_COLOR = "#e6e6e6";
-	document.body.style.backgroundColor = "#c9ffda";
+	BACKGROUND_COLOR = "#e7e5ff";
+	document.body.style.backgroundColor = "#d6f1ff";
 	document.body.style.color = "#0a1970";
-	document.getElementById("colorPicker").value="#c9ffda";
-	document.getElementById("colorPicker2").value="#e6e6e6";
+	document.getElementById("colorPicker").value="#d6f1ff";
+	document.getElementById("colorPicker2").value="#e7e5ff";
 	document.getElementById("colorPicker3").value="#0a1970";
 	document.getElementById("colorPicker4").value="#000000";
 	changeKeys();
