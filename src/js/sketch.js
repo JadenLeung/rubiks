@@ -1097,24 +1097,27 @@ p.setup = () => {
 	RIGHTMOD = p.createButton('→');
 	setButton(RIGHTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 0));
 
-	const LEFTPAINT = p.createButton('←');
-	setButton(LEFTPAINT, "leftpaint", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', () => {
-		if (MODE == "paint" && (!activeKeys || (activeKeys.size < 1 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 2)))) {
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", keyCode: 37, code: "ArrowLeft", bubbles: true }));
-			activeKeys.add("button");
-		}
-	});
+	let LEFTPAINT, RIGHTPAINT, DOWNPAINT, UPPAINT;
 
-	const RIGHTPAINT = p.createButton('→');
-	setButton(RIGHTPAINT, "rightpaint", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', () => {
-		if (MODE == "paint" && (!activeKeys || (activeKeys.size < 1 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 2)))) {
-			const event = new KeyboardEvent("keydown", { key: "ArrowRight", keyCode: 39, code: "ArrowRight", bubbles: true});
-			document.dispatchEvent(event); // Dispatch the event
-			activeKeys.add("button");
-		}
-	});
-	  RIGHTPAINT.mouseReleased(() => {activeKeys.delete("button"); activeKeys.delete("ArrowRight")});
-	  LEFTPAINT.mouseReleased(() => {activeKeys.delete("button"); activeKeys.delete("ArrowLeft")});
+	function createArrowButton(direction, key, keyCode, id, button) {
+		button = p.createButton(direction);
+		setButton(button, id, 'btn btn-light', 'font-size:15px; width:70px; border-color: black;', () => {
+			if (MODE == "paint" && (!activeKeys || (activeKeys.size < 1 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 2)))) {
+				const event = new KeyboardEvent("keydown", { key, keyCode, code: key, bubbles: true });
+				document.dispatchEvent(event);
+				activeKeys.add("button");
+			}
+		});
+		button.mouseReleased(() => { activeKeys.delete("button"); activeKeys.delete(key) });
+		return button;
+	}
+
+	LEFTPAINT = createArrowButton('←', 'ArrowLeft', 37, "leftpaint", LEFTPAINT);
+	RIGHTPAINT = createArrowButton('→', 'ArrowRight', 39, "rightpaint", RIGHTPAINT);
+	DOWNPAINT = createArrowButton('↓', 'ArrowDown', 40, "downpaint", DOWNPAINT);
+	UPPAINT = createArrowButton('↑', 'ArrowUp', 38, "uppaint", UPPAINT);  // Added Up arrow button
+
+		
 	
 	LEFTBAN = p.createButton('←');
 	setButton(LEFTBAN, "leftban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', leftBan.bind(null, 0));
@@ -1496,6 +1499,9 @@ setInterval(() => {
 	}
 	getEl("leftpaint").style.opacity = colorindex == 0 ? 0.3 : 1;
 	getEl("rightpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
+	getEl("uppaint").style.opacity = colorindex == 0 ? 0.3 : 1;
+	getEl("downpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
+	if (colorindex > 52) 		activeKeys.clear();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -6557,7 +6563,7 @@ p.keyPressed = (event) => {
 			break;
 			case 48: //0
 			if (p.keyIsDown(p.SHIFT)) {
-				if (!["normal", "timed", "cube"].includes(MODE)) {
+				if (!["normal", "timed", "cube","finishpaint"].includes(MODE)) {
 					regular();
 				}
 				try {
