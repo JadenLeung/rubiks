@@ -697,7 +697,14 @@ p.setup = () => {
 	colors.forEach(color => {
 		const button = p.createButton('');
 		setButton(button, "colorContainer", 'btn btn-info', `background-color:${color.c};height:60px;width:60px;border-width:0px;padding:2px;margin:2px;`, 
-			() => {paintit(color.className)}
+			() => {
+				if (MODE == "paint" && (!activeKeys || (activeKeys.size < 1 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 2)))) {
+					paintit(color.className)
+					activeKeys.add("button");
+				}
+				button.mouseReleased(() => { activeKeys.delete("button"); activeKeys.delete(key) });
+				return button;
+			}
 		);
 	});
 
