@@ -460,7 +460,6 @@ p.setup = () => {
 	CAM.rotateZ(-p.PI / ROTZ);
 	
 	reSetup();
-	
 
 	
 	// hardcoded to do size 50 (3x3x3) 
@@ -1007,9 +1006,12 @@ p.setup = () => {
 	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
+	FULLSCREEN.attribute('title', 'Fullscreen');
 
 	ALIGN = p.createButton('');
 	setButton(ALIGN, "align", 'bi bi-camera', 'font-size: 40px; height: 60px; width: 60px;  border: none;', alignIt);
+	ALIGN.position(30,window.innerHeight-145);
+	ALIGN.attribute("title", "Align Camera");
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 
 	GENERATE = p.createButton('Generate');
@@ -1487,7 +1489,8 @@ setInterval(() => {
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
-	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
+	ALIGN.position(30,window.innerHeight-145);
+	FULLSCREEN.position(cnv_div.offsetWidth-55,window.innerHeight-145);
 	special[5] = bandaged;
 	setSpecial();
 	if (isthin) getEl("delaywhole").style.display = "none";
@@ -2168,6 +2171,8 @@ function changeTwo()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
+	if(MODE == "paint")
+		idmode();
 }
 function changeThree()
 {
@@ -2188,6 +2193,8 @@ function changeThree()
 		speedmode();
 	if(MODE == "moves")
 		movesmode();
+	if(MODE == "paint")
+		idmode();
 }
 function changeCam(changeinp = true)
 {
@@ -3457,13 +3464,14 @@ function fullScreen(isfull) {
 function halfScreen(isfull) {
 	if (isfull) {
 		document.getElementById("cnv_div").className = "col-xl-8 noselect";
-		document.getElementById("right").style.display = "col-xl-4 noselect";
+		document.getElementById("right").className = "col-xl-4 noselect";
 		document.getElementById("left").style.display = "none";
 		FULLSCREEN.class("bi bi-fullscreen-exit");
 	} else {
 		document.getElementById("cnv_div").className = "col-xl-6 noselect";
-		document.getElementById("left").style.display = "block";
-		document.getElementById("right").style.display = "block";
+		document.getElementById("left").className = "col-xl-2 noselect";
+		document.getElementById("right").className = "col-xl-4 noselect";
+		setDisplay("block", ["right", "left"])
 		FULLSCREEN.class("bi bi-arrows-fullscreen");
 	}
 	fullscreen = isfull;
@@ -10247,10 +10255,10 @@ document.onkeyup = function(e) { //space
 			solveCube();
 		}
 	}
-	if (e.keyCode == 13) { // enter
+	if (e.keyCode == 13) { //enter
 		if (getEl("okban").style.display == "block") {
 			doneBandage();
-		} else if (getEl("finishpaint").style.display == "block") {
+		} else if (getEl("finishpaint").style.display == "block" && MODE == "paint") {
 			finishpaint();
 		}
 	}
