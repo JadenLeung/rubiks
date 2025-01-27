@@ -62,6 +62,7 @@
       </div>
     <button id = "startcal" style = "position: absolute; top: 350; left: 20; font-size: 25px;" onclick = "startCal()">3x3</button>
     <button id = "2x2cal" style = "position: absolute; top: 400; left: 20; font-size: 25px;" onclick = "startCal2()">2x2</button>
+    <button id = "skipall" style = "position: absolute; font-size: 25px; top: 20; left: 880px;" onclick = "skipAll()">Skip All</button>
     <canvas id = "redcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
     <canvas id = "orangecuby" style = "position: absolute; top: 420; left: 20;"></canvas>
     <canvas id = "yellowcuby" style = "position: absolute; top: 420; left: 20;"></canvas>
@@ -97,20 +98,10 @@
         let snapSoundElement = document.getElementById('snapSound');
         let numfaces = 0;
         let twobytwo = false;
-        document.getElementById("draw").style.display = "none";
-        document.getElementById("copy").style.display = "none";
-        document.getElementById("testcubies").style.display = "none";
-        document.getElementById("allcals").style.display = "none";
-        document.getElementById("redcuby").style.display = "none";
-        document.getElementById("orangecuby").style.display = "none";
-        document.getElementById("yellowcuby").style.display = "none";
-        document.getElementById("greencuby").style.display = "none";
-        document.getElementById("bluecuby").style.display = "none";
-        document.getElementById("whitecuby").style.display = "none";
-        document.getElementById("takepic").style.display = "none";
-        document.getElementById("finishside").style.display = "none";
-        document.getElementById("progress").style.display = "none";
-        document.getElementById("donerecal").style.display = "none";
+        setDisplay("none", ["draw", "copy", "testcubies", "allcals", "redcuby", "orangecuby", 
+        "yellowcuby", "greencuby", "bluecuby", "whitecuby", "takepic", "finishside", "progress", "donerecal", "skipall"]);
+
+
         let action = "intro";
         let action2 = "white";
 
@@ -284,9 +275,19 @@
           twobytwo = true;
           startCal();
         }
+        function skipAll() {
+          while (getEl("progress").style.display == "none") {
+            if (!twobytwo) {
+              startCal();
+            } else {
+              startCal2();
+            }
+          }
+        }
         function startCal(){
           document.getElementById("2x2cal").style.display = "none";
           document.getElementById("current3").style.display = "block";
+          setDisplay("block", ["skipall"]);
           if(action != "intro")
             document.getElementById(action + "cuby").style.display = "none";
           if(action == "intro") 
@@ -335,6 +336,7 @@
             document.getElementById("startcal").style.left = 800;
         }
         function doneCal(){
+          setDisplay("none", ["skipall"]);
           if(action == "white"){
             let a = document.getElementById("canvas");
             let b = a.getContext('2d');
@@ -436,8 +438,7 @@
         }
         function nextFace(){
           document.getElementById("takepic").innerHTML = "Take Picture";
-          document.getElementById("finishside").style.display = "none";
-          document.getElementById("allcubies").style.display = "none";
+          setDisplay("none", ["skipall", "allcubies", "finishside"]);
           let a = document.getElementById("canvas");
           let b = a.getContext('2d');
           b.clearRect(0, 0, a.width, a.height);
@@ -717,6 +718,9 @@
             console.log(getEl("finishside").style.display);
           }
         });
+        function setDisplay (display, ids) {
+          ids.forEach(id => document.getElementById(id).style.display = display)
+        };
         function getEl(id) {
           return document.getElementById(id);
         }
