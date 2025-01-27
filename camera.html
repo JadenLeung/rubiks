@@ -705,12 +705,16 @@
         //console.log(IDtoLayout(decode("1ÏdL12T 4@nåCSN 3pllxäß")));
         document.addEventListener('keydown', (event) => {  //enter
           if (event.key === 'Enter') {
-            if ((getEl("startcal").innerText == "Skip" || getEl("startcal").innerText.includes("Finished"))
-              && getEl("finishside").style.display != "block") {
+            if (event.shiftKey) {
+              if (getEl("skipall").style.display == "block") skipAll();
+            } else {
+              if ((getEl("startcal").innerText == "Skip" || getEl("startcal").innerText.includes("Finished"))
+              && getEl("finishside").style.display != "block" && getEl("progress").style.display == "none") {
                 if (!twobytwo) startCal();
                 else startCal2();
               }
-            if (getEl("finishside").style.display == "block") nextFace();
+              if (getEl("finishside").style.display == "block") nextFace();
+            }
           }
         });
         document.addEventListener('keydown', (event) => {  //shift

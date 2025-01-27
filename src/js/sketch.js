@@ -10234,9 +10234,11 @@ document.onkeyup = function(e) { //space
 			solveCube();
 		}
 	}
-	if (e.keyCode == 13) {
+	if (e.keyCode == 13) { // enter
 		if (getEl("okban").style.display == "block") {
 			doneBandage();
+		} else if (getEl("finishpaint").style.display == "block") {
+			finishpaint();
 		}
 	}
 	if (e.keyCode == 27) {
