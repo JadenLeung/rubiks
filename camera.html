@@ -113,7 +113,17 @@
         document.getElementById("donerecal").style.display = "none";
         let action = "intro";
         let action2 = "white";
+
         let allcolors = ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#FFFFFF']; 
+        if (localStorage.allcolors) {
+          allcolors = JSON.parse(localStorage.allcolors);
+        }
+        setInterval(() => {
+          if (allcolors) {
+            localStorage.allcolors = JSON.stringify(allcolors);
+          }
+        }, 10);
+
         let colororder = ["red", "orange", "yellow", "green", "blue", "white"];
         let colororder2 = ["", "red", "orange", "yellow", "green", "blue", "white"];
         let ctx;
@@ -230,8 +240,11 @@
                     mostcolor = k;
                   }
                 }
-                console.log("colordata is "+ colordata)
+                console.log("colordata is ", colordata, cnt, numfaces)
                 color = mostcolor;
+                if (cnt == 4 && !twobytwo) {
+                  color = ["white", "red", "yellow", "orange", "green", "blue"][numfaces];
+                }
                 let canvas3 = document.getElementById("cuby" + (cnt+10));
                 ctx = canvas3.getContext("2d");
                 ctx.beginPath();
@@ -611,7 +624,7 @@
           let accolor = "";
           for(var key in colorMap){
             let dist = 0;
-            console.log("Testing " + hexToRGB(color) + " aka " + color + " and " + hexToRGB(colorMap[key]) +  " aka " + key)
+            // console.log("Testing " + hexToRGB(color) + " aka " + color + " and " + hexToRGB(colorMap[key]) +  " aka " + key)
               let a = hexToRGB(color);
               let b = hexToRGB(colorMap[key]);
               dist = Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
@@ -621,7 +634,7 @@
                 accolor = key;
             }
           }
-          console.log(accolor);
+          // console.log(accolor);
           return accolor;
         }
         function getColor(cubynum){
@@ -689,7 +702,24 @@
         });
         // console.log(decode("2*~góZÞ 4@nåCSN 3pllxäß"));
         //console.log(IDtoLayout(decode("1ÏdL12T 4@nåCSN 3pllxäß")));
-        
+        document.addEventListener('keydown', (event) => {  //enter
+          if (event.key === 'Enter') {
+            if ((getEl("startcal").innerText == "Skip" || getEl("startcal").innerText.includes("Finished"))
+              && getEl("finishside").style.display != "block") {
+                if (!twobytwo) startCal();
+                else startCal2();
+              }
+            if (getEl("finishside").style.display == "block") nextFace();
+          }
+        });
+        document.addEventListener('keydown', (event) => {  //shift
+          if (event.key === 'Shift') {
+            console.log(getEl("finishside").style.display);
+          }
+        });
+        function getEl(id) {
+          return document.getElementById(id);
+        }
     </script>
   </body>
 </html>

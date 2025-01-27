@@ -9480,7 +9480,7 @@ p.touchStarted = () => {
 }
 
 p.touchEnded = () => {
-	if (touchrotate[2]) {
+	if (touchrotate[2] && !["paint"].includes(MODE)) {
 		let xx = touchrotate[3];
 		let yy = touchrotate[4];
 		let difx = touchrotate[0] - xx;
