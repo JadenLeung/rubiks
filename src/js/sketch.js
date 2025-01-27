@@ -1074,7 +1074,7 @@ p.setup = () => {
 		try {
 			allcubies = IDtoReal(IDtoLayout(decode(getID())));
 			setLayout();
-			successSQL("Position ID Saved");
+			successSQL("Current ID Saved");
 		} catch(e){
 
 		}
@@ -6561,7 +6561,7 @@ p.keyPressed = (event) => {
 			break;
 			case 57: //9
 			if (p.keyIsDown(p.SHIFT)) {
-				["normal", "timed", "cube"].includes(MODE) && iddefault();
+				if(["normal", "timed", "cube"].includes(MODE)) {iddefault(); successSQL("Default ID Saved");}
 			} else {
 				if(localStorage.username == "signedout")
 					break;
@@ -6576,7 +6576,7 @@ p.keyPressed = (event) => {
 				try {
 					allcubies = IDtoReal(IDtoLayout(decode(getID())));
 					setLayout();
-					successSQL("Position ID Saved");
+					successSQL("Current ID Saved");
 				} catch(e){
 		
 				}
@@ -6990,7 +6990,7 @@ function refreshButtons()
 	SPEEDMODE = p.createButton(`Speed${m}`);
 	setButton(SPEEDMODE, "mode2", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d2}px; border: none;`, speedmode.bind(null, 0));
 
-	IDMODE = p.createButton('Save/Load ID');
+	IDMODE = p.createButton('View/Save ID');
 	setButton(IDMODE, "ID2", 'btn btn-info', 'text-align:center; border: none;', idmode.bind(null, 0));
 
 	SETTINGS = p.createButton('');
@@ -9400,7 +9400,7 @@ function testAlg(){
 			allcubies = IDtoReal(IDtoLayout(decode(inp.value())));
 			reSetup();
 			setLayout();
-			successSQL("Position ID Loaded");
+			successSQL("Position ID Saved");
 		} catch(e){
 
 		}
