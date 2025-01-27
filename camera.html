@@ -76,6 +76,12 @@
       <p id = "current2" style = "display:inline;">Which cube are you scanning?</p>
       <button id = "copy" style = "display:inline;">Copy</button>
     </div>
+    <div id = "hotkeys">
+      <h3 style = "padding-top: 200px;">Hotkeys</h3>
+      <p>Enter: Skip/Finish Picture</p>
+      <p>Shift + Enter: Skip all calibration</p>
+      <p>Space: Take Picture</p>
+    </div>
     <p id = "current3"></p>
     <progress id="progress" value="1" max="7" style = "position: absolute; top: 750; left: 200; font-size: 25px;"></progress>
     <button id = "takepic" style = "position: absolute; top: 220; left: 90; font-size: 25px;" onclick = "takePic()">Read Color</button>
@@ -288,6 +294,7 @@
           document.getElementById("2x2cal").style.display = "none";
           document.getElementById("current3").style.display = "block";
           setDisplay("block", ["skipall"]);
+          setDisplay("none", ["hotkeys"]);
           if(action != "intro")
             document.getElementById(action + "cuby").style.display = "none";
           if(action == "intro") 
@@ -414,18 +421,8 @@
             document.getElementById("startcal").style.top = "350";
             document.getElementById("startcal").style.left = "20";
             document.getElementById("startcal").innerHTML = "3x3";
-            document.getElementById("finishside").style.display = "none";
-            document.getElementById("redcuby").style.display = "none";
-            document.getElementById("orangecuby").style.display = "none";
-            document.getElementById("yellowcuby").style.display = "none";
-            document.getElementById("greencuby").style.display = "none";
-            document.getElementById("bluecuby").style.display = "none";
-            document.getElementById("whitecuby").style.display = "none";
-            document.getElementById("cuby13").style.display = "block";
-            document.getElementById("cuby11").style.display = "block";
-            document.getElementById("cuby14").style.display = "block";
-            document.getElementById("cuby17").style.display = "block";
-            document.getElementById("cuby15").style.display = "block";
+            setDisplay("none", ["finishside", "redcuby", "orangecuby", "yellowcuby", "greencuby", "bluecuby", "whitecuby"]);
+            setDisplay("block", ["cuby13", "cuby11", "cuby14", "cuby17", "cuby15","hotkeys"]);
           }
         }
         function setID(){
