@@ -10255,24 +10255,26 @@ document.onkeyup = function(e) { //space
 			solveCube();
 		}
 	}
-	if (e.keyCode == 13) { //enter
-		if (getEl("okban").style.display == "block") {
-			doneBandage();
-		} else if (getEl("finishpaint").style.display == "block" && MODE == "paint") {
-			finishpaint();
-		}
-	}
-	if (e.keyCode == 27) {
-		if (getEl("okban").style.display == "block") {
-			cancelBandage();
-		}
-	}
 	activeKeys.delete(e.code);
 }
 document.onkeydown = function(event) {
 	activeKeys.add(event.code);
 	if(activeKeys.size === 1 && activeKeys.has('Space') && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
 		speedRace2();
+	} else if (event.keyCode == 13) { //enter
+		if (getEl("s_start").style.display == "block") {
+			practicePLL();
+		} else if (getEl("okban").style.display == "block") {
+			doneBandage();
+		} else if (getEl("finishpaint").style.display == "block" && MODE == "paint") {
+			finishpaint();
+		} else if (getEl("s_start").style.display == "block") {
+			practicePLL();
+		}
+	} else if (event.keyCode == 27) { //escape
+		if (getEl("okban").style.display == "block") {
+			cancelBandage();
+		}
 	}
 }
 document.getElementById('account').addEventListener('click', function() {
