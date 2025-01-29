@@ -6056,11 +6056,10 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(canMan)
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		// console.log(mapCuby());
+		console.log(canMan);
 		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
@@ -6378,8 +6377,9 @@ function multiple(nb, timed) {
 				Dw: { axis: "x", values:[MAXX, MAXX - CUBYESIZE] },
 				Fw: { axis: "y", values: [MAXX, MAXX - CUBYESIZE], }
 			}
+			console.log("here")
 			for (const move in keyMappings) {
-				const { keys, axis, values } = keyMappings[move];
+				const { axis, values } = keyMappings[move];
 				if ([move, move + "'"].includes(arr[nb])) {
 					for(let i = 0; i < cubies.length; i++) {
 						console.log(CUBE[cubies[i]][axis], values)
@@ -6390,7 +6390,7 @@ function multiple(nb, timed) {
 			}
 
 			for (const move in wideMappings) {
-				const { keys, axis, values } = wideMappings[move];
+				const { axis, values } = wideMappings[move];
 				if ([move, move + "'"].includes(arr[nb])) {
 					for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]][axis]== values[0]);
 					for(let i = 0; i < cubies.length; i++) {
@@ -6402,9 +6402,12 @@ function multiple(nb, timed) {
 			console.log(alldown, onedown)
 		}
 		if(alldown == true) timed = false;
+		if (!onedown) {
+			canMan = true;
+			return;
+		}
 		console.log("alldown is " + alldown);
-		if (onedown)
-			notation(arr[nb], timed);
+		notation(arr[nb], timed);
 		let bad = -1;
 		if(undo.length > 0)
 		{
