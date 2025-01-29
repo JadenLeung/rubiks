@@ -5166,7 +5166,6 @@ function getCubyIndexByColor2(arr1) //original
 		distcolor[1] = arr1[1] - allcolors[realcolor][1];
 		distcolor[2] = arr1[2] - allcolors[realcolor][2];
 		let res = distcolor[0] * SIZE * SIZE + distcolor[1] * SIZE + distcolor[2];
-		console.log(distcolor, res);
 		if(res >= 0 && res < SIZE * SIZE * SIZE) return res;
 		return false;
 	}
@@ -6053,7 +6052,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		console.log(modnum)
+		switchFour();
 		// console.log(mapCuby());
 		// console.log(mapBandaged());
 	}
@@ -6757,7 +6756,7 @@ function multiple2(nb, timed) {
 function changeArr(str)
 {
 	arr = [];
-	const arr2 = ['r', 'u', 'd', 'b', 'l', 'f'];
+	const arr2 = SIZE == 3 ? ['r', 'u', 'd', 'b', 'l', 'f'] : [];
 	//console.log("here");
 	let temp = "";
 	let end  = 1;
@@ -7196,6 +7195,30 @@ function notation(move, timed){
 	animate('z', -MAXX, -1, timed);
 	if(move == "L'")
 	animate('z', -MAXX, 1, timed);
+	if(move == "d'")
+	animate('x', MAXX-CUBYESIZE, -1, timed);
+	if(move == "d")
+	animate('x', MAXX-CUBYESIZE, 1, timed);
+	if(move == "u")
+	animate('x', CUBYESIZE-MAXX, -1, timed);
+	if(move == "u'")
+	animate('x', CUBYESIZE-MAXX, 1, timed);
+	if(move == "f")
+	animate('y', MAXX-CUBYESIZE, -1, timed);
+	if(move == "f'")
+	animate('y', MAXX-CUBYESIZE, 1, timed);
+	if(move == "b'")
+	animate('y', CUBYESIZE-MAXX, -1, timed);
+	if(move == "b")
+	animate('y', CUBYESIZE-MAXX, 1, timed);
+	if(move == "r'")
+	animate('z', MAXX-CUBYESIZE, -1, timed);
+	if(move == "r")
+	animate('z', MAXX-CUBYESIZE, 1, timed);
+	if(move == "l")
+	animate('z', CUBYESIZE-MAXX, -1, timed);
+	if(move == "l'")
+	animate('z', CUBYESIZE-MAXX, 1, timed);
 	if(move == "M'")
 	animate('z', 0, 1, timed);
 	if(move == "M")
@@ -9018,7 +9041,7 @@ function cornerOLL(){
 }
 function cornerOLL2()
 {
-	let cnt = 0;
+	let cnt = 0; 
 	if(layout[2][0][0][0] == color)cnt++;
 	if(layout[2][0][2][0] == color)cnt++;
 	if(layout[2][2][0][0] == color)cnt++;
@@ -9592,14 +9615,30 @@ function dragCube(cuby1, color1, cuby2, color2)
 	if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
 	return;
 	if(Array.isArray(DIM) && DIM[0] == "adding") return; 
-	
+	if (cuby1 == -1 || cuby2 == -1) return;
+	console.log("Drag that idiot", cuby1, color1, cuby2, color2);
 	let bad5 = [];
-	let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
-	if(setup[0] == -50 || setup[0] == 50) //top
+	let mid = Math.floor(SIZE * SIZE / 2)
+	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+	if(setup[0] == -MAXX || setup[0] == MAXX) //top
 		bad5 = ['L','R','F','B','S','M'];
-	else if(setup[2] == -50 || setup[2] == 50) //left
+	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
 		bad5 = ['U','D','F','B','E','S'];
 	else bad5 = ['L','R','U','D','E','M']; // front
+
+	const xaxis = SIZE > 4 ? ["L'", "l'", "M'", "r", "R"] :
+	SIZE == 4 ? ["L'", "l'", "r", "R"] : ["L'", "M'", "R"];
+const yaxis = SIZE > 4 ? ["U'", "u'", "d", "D"] :
+	SIZE == 4 ? ["U'", "u'", "d", "D"] : ["U'", "E", "D"];
+const zaxis = SIZE > 4 ? ["B'", "b'", "S", "f", "F"] :
+	SIZE == 4 ? ["B'", "b'", "f", "F"] : ["B'", "S", "F"];
+
+	let turnorder = [];
+	for (let i = -MAXX; i <= MAXX; i+=CUBYESIZE) {
+		turnorder.push(i); // [-75,-25,25,75]
+	}
+	let revturnorder = turnorder.slice().reverse();
+	
 
 	if (cuby1 == cuby2) { // turning over
 		arr = [];
@@ -9608,17 +9647,17 @@ function dragCube(cuby1, color1, cuby2, color2)
 		const vec1 = [CUBE[cuby1].x, CUBE[cuby1].y, CUBE[cuby1].z];
 		const vec2 = [CUBE[cuby2].x, CUBE[cuby2].y, CUBE[cuby2].z];
 		const TURNARRS = [
-		{dirs: [5, 2, 4, 3, 5], vec: 2, turn:["L'", "M'", "R"]},
-		{dirs: [5, 1, 4, 0, 5], vec: 0, turn:["U'", "E", "D"]},
-		{dirs: [2, 1, 3, 0, 2], vec: 1, turn:["B'", "S", "F"]},
+		{dirs: [5, 2, 4, 3, 5], vec: 2, turn: xaxis, axis: 'z'},
+		{dirs: [5, 1, 4, 0, 5], vec: 0, turn: yaxis, axis: 'x'},
+		{dirs: [2, 1, 3, 0, 2], vec: 1, turn: zaxis, axis: 'y'},
 		];
+		let actions = [];
 		TURNARRS.forEach((TURN) => {
 			let index = TURN.dirs.indexOf(face1);
 			let index2 = TURN.dirs.indexOf(face2);
 			if (index != -1 && index2 != -1 && (TURN.dirs[index+1] == face2 || TURN.dirs[index2+1] == face1)) {
-				if (vec1[TURN.vec] == -50) arr = [TURN.turn[0]];
-				if (vec1[TURN.vec] == 0) arr = [TURN.turn[1]];
-				if (vec1[TURN.vec] == 50) arr = [TURN.turn[2]];
+				arr = [TURN.turn[(vec1[TURN.vec] + MAXX) / 50]];
+				console.log("arr ", arr)
 				if (TURN.dirs[index2+1] == face1) {
 					arr[0] = Inverse(arr[0]);
 				}
@@ -9653,23 +9692,23 @@ function dragCube(cuby1, color1, cuby2, color2)
 	} else if (getFace(cuby1, color1) == getFace(cuby2, color2)) {
 		let face1 = getFace(cuby1, color1);
 		const TURNARR = [
-			{axis: "z", turn:["L'", "M'", "R"], faces:
-			[{face: 5, order: [50,0,-50], upaxis: "x", lastaxis: "y"},
-			{face: 2, order: [50,0,-50], upaxis: "y", lastaxis: "x"},
-			{face: 4, order: [-50,0,50], upaxis: "x", lastaxis: "y"},
-			{face: 3, order: [-50,0,50], upaxis: "y", lastaxis: "x"}]},
+			{axis: "z", turn: xaxis, faces:
+			[{face: 5, order: revturnorder, upaxis: "x", lastaxis: "y"},
+			{face: 2, order: revturnorder, upaxis: "y", lastaxis: "x"},
+			{face: 4, order: turnorder, upaxis: "x", lastaxis: "y"},
+			{face: 3, order: turnorder, upaxis: "y", lastaxis: "x"}]},
 
-			{axis: "x", turn:["U'", "E", "D"], faces:
-			[{face: 5, order: [-50,0, 50], upaxis: "z", lastaxis: "y"},
-			{face: 1, order: [50,0,-50], upaxis: "y", lastaxis: "z"},
-			{face: 4, order: [50,0,-50], upaxis: "z", lastaxis: "y"},
-			{face: 0, order: [-50,0,50], upaxis: "y", lastaxis: "z"}]},
+			{axis: "x", turn:yaxis, faces:
+			[{face: 5, order: turnorder, upaxis: "z", lastaxis: "y"},
+			{face: 1, order: revturnorder, upaxis: "y", lastaxis: "z"},
+			{face: 4, order: revturnorder, upaxis: "z", lastaxis: "y"},
+			{face: 0, order: turnorder, upaxis: "y", lastaxis: "z"}]},
 
-			{axis: "y", turn:["B'", "S", "F"], faces:
-			[{face: 2, order: [-50,0, 50], upaxis: "z", lastaxis: "x"},
-			{face: 1, order: [-50,0,50], upaxis: "x", lastaxis: "z"},
-			{face: 3, order: [50,0,-50], upaxis: "z", lastaxis: "x"},
-			{face: 0, order: [50,0,-50], upaxis: "x", lastaxis: "z"}]},
+			{axis: "y", turn:zaxis, faces:
+			[{face: 2, order: turnorder, upaxis: "z", lastaxis: "x"},
+			{face: 1, order: turnorder, upaxis: "x", lastaxis: "z"},
+			{face: 3, order: revturnorder, upaxis: "z", lastaxis: "x"},
+			{face: 0, order: revturnorder, upaxis: "x", lastaxis: "z"}]},
 	
 		];
 		let good = false;
@@ -9677,9 +9716,10 @@ function dragCube(cuby1, color1, cuby2, color2)
 			if (CUBE[cuby1][FACE.axis] == CUBE[cuby2][FACE.axis]) {
 				FACE.faces.forEach((f) => {
 					if (face1 == f.face && !good && CUBE[cuby1][f.lastaxis] == CUBE[cuby2][f.lastaxis]) {
-						if (CUBE[cuby1][FACE.axis] == -50) arr = [FACE.turn[0]];
-						if (CUBE[cuby1][FACE.axis] == 0) arr = [FACE.turn[1]];
-						if (CUBE[cuby1][FACE.axis] == 50) arr = [FACE.turn[2]];
+						arr = [FACE.turn[(CUBE[cuby1][FACE.axis] + MAXX) / 50]]
+						// if (CUBE[cuby1][FACE.axis] == -50) arr = [FACE.turn[0]];
+						// if (CUBE[cuby1][FACE.axis] == 0) arr = [FACE.turn[1]];
+						// if (CUBE[cuby1][FACE.axis] == 50) arr = [FACE.turn[2]];
 						let index = f.order.indexOf(CUBE[cuby1][f.upaxis]);
 						let index2 = f.order.indexOf(CUBE[cuby2][f.upaxis]);
 						if (index > index2) {
@@ -10328,6 +10368,7 @@ Mo50 virtual
 65.56
 64.48
 Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
+Jaden WR 4x4: 139.71
 Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3
 Jaden WR 2x2: 3.88
 3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01
