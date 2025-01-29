@@ -2709,20 +2709,7 @@ function inputPressed(move)
 		rotationz--;
         if(rotationz == -1) rotationz = 3;
 	}
-	let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
-	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
-	if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
-	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-	if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
-	if(Array.isArray(DIM)  && DIM[0] != "adding")
-	{
-		cubies = [];
-		for(let i = 0; i < 27; i++)
-		{
-			if(!DIM[6].includes(i))
-				cubies.push(i);
-		}
-	}
+	let cubies = shownCubies();
 	let onedown = false;
 	let alldown = false;
 	if(((DIM == 1 || DIM == 6 || DIM == 2 || DIM == 15 || Array.isArray(DIM))) && move[0] !="x" && move[0] != "y"){
@@ -3733,7 +3720,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = SIZE >= 5 ? 150 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
+	ZOOMADD = SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM + ZOOMADD);
@@ -5292,8 +5279,9 @@ function shufflePossible(len, total2, prev){
 	let col = TOPWHITE.value()[0];
 	col = col.toLowerCase();
 	let op = opposite[col];
-	const badmoves = [col, op].includes(layout[2][1][1][0]) ? ["U", "D", "E"] : 
-	[col, op].includes(layout[5][1][1][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
+	let mid = Math.floor(SIZE / 2)
+	const badmoves = [col, op].includes(layout[2][mid][mid][0]) ? ["U", "D", "E"] : 
+	[col, op].includes(layout[5][mid][mid][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
 	// if (layout[5][1][1][0] == ) 
 	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "Like a 3x3x2" && !badmoves.includes(actualmove)))
 	{
@@ -5405,6 +5393,7 @@ function shuffleCube(nb) {
 	if (SIZE >= 4) s = 30;
 	for(let i = 0; i < s; i++)
 	{
+		let mid = Math.floor(SIZE / 2);
 		if(dontdo) break;
 		while(true)
 		{
@@ -5443,9 +5432,9 @@ function shuffleCube(nb) {
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
 			} else if(doubly || (SCRAM.value() == "Like a 3x3x2" && 
-			([col, op].includes(layout[2][1][1][0]) && rnd != "U" && rnd != "D" ||
-			[col, op].includes(layout[5][1][1][0]) && rnd != "F" && rnd != "B" ||
-			[col,op].includes(layout[0][1][1][0]) && rnd != "L" && rnd != "R")))
+			([col, op].includes(layout[2][mid][mid][0]) && rnd != "U" && rnd != "D" ||
+			[col, op].includes(layout[5][mid][mid][0]) && rnd != "F" && rnd != "B" ||
+			[col,op].includes(layout[0][mid][mid][0]) && rnd != "L" && rnd != "R")))
 			{
 				console.log("HEREEEE")
 				arr.push(rnd);
@@ -6052,7 +6041,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		switchFour();
+		// switchFour();
 		// console.log(mapCuby());
 		// console.log(mapBandaged());
 	}
@@ -6139,27 +6128,7 @@ p.keyPressed = (event) => {
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81 1000 1001";
 		if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
 		if(bad3.includes(p.keyCode) && p.keyCode > 9 || p.keyCode == 18) return;
-		let cubies = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27];
-		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
-		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
-		if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-		if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
-		if(DIM == 50){
-			cubies = [];
-			for(let i = 0; i < 27; i++){
-				if(CUBE[i].stroke != 0) cubies.push(i);
-			}
-		}
-		//console.log("cubies is " + cubies);
-		if(Array.isArray(DIM) && DIM[0] != "adding")
-		{
-			cubies = [];
-			for(let i = 0; i < 27; i++)
-			{
-				if(!DIM[6].includes(i))
-					cubies.push(i);
-			}
-		}
+		let cubies = shownCubies();
 		let onedown = false;
 		alldown = false;
 		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
@@ -6237,10 +6206,11 @@ p.keyPressed = (event) => {
 			}
 		}
 		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80] //for 3x3x2
-		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
-		if(setup[0] == -50 || setup[0] == 50) //top
+		let mid = Math.floor(SIZE * SIZE / 2);
+		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+		if(setup[0] == -MAXX || setup[0] == MAXX) //top
 			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
-		else if(setup[2] == -50 || setup[2] == 50) //left
+		else if(setup[2] == -MAXX || setup[2] == MAXX) //left
 			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65,90,191,59];
 		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
 			
@@ -6290,18 +6260,18 @@ p.keyPressed = (event) => {
 			if(bad6.includes(p.keyCode))
 				return;
 			redo = [];
-			if(p.keyCode == 83) changeArr("d D")
-			if(p.keyCode == 76) changeArr("d' D'")
-			if(p.keyCode == 74) changeArr("u U")
-			if(p.keyCode == 70) changeArr("u' U'")
-			if(p.keyCode == 69) changeArr("l' L'")
-			if(p.keyCode == 68) changeArr("l L")
-			if(p.keyCode == 73) changeArr("r R")
-			if(p.keyCode == 75) changeArr("r' R'")
-			if(p.keyCode == 72) changeArr("f F")
-			if(p.keyCode == 71) changeArr("f' F'")
-			if(p.keyCode == 87) changeArr("b B")
-			if(p.keyCode == 79) changeArr("b' B'")
+			if(p.keyCode == 83) changeArr("Dw D")
+			if(p.keyCode == 76) changeArr("Dw' D'")
+			if(p.keyCode == 74) changeArr("Uw U")
+			if(p.keyCode == 70) changeArr("Uw' U'")
+			if(p.keyCode == 69) changeArr("Lw' L'")
+			if(p.keyCode == 68) changeArr("Lw L")
+			if(p.keyCode == 73) changeArr("Rw R")
+			if(p.keyCode == 75) changeArr("Rw' R'")
+			if(p.keyCode == 72) changeArr("Fw F")
+			if(p.keyCode == 71) changeArr("Fw' F'")
+			if(p.keyCode == 87) changeArr("Bw B")
+			if(p.keyCode == 79) changeArr("Bw' B'")
 			multiple(0, true);	
 			return;
 		} else if(INPUT.value() == "Gearcube II" && bad4.includes(p.keyCode)){
@@ -6648,34 +6618,37 @@ function setOLL(obj)
 {
 	olls = obj;
 }
+function shownCubies() {
+	let cubies = [];
+	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
+	if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
+	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+	if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
+	if(DIM == 50){
+		cubies = [];
+		for(let i = 0; i < 27; i++){
+			if(CUBE[i].stroke != 0) cubies.push(i);
+		}
+	}
+	if(Array.isArray(DIM) && DIM[0] != "adding")
+	{
+		cubies = [];
+		for(let i = 0; i < 27; i++)
+		{
+			if(!DIM[6].includes(i))
+				cubies.push(i);
+		}
+	}
+	return cubies;
+}
 function multiple(nb, timed) {
 	if((MODE == "speed" || MODE == "moves") && arr.length > 2)
 	return;
 	if (nb < arr.length) {
 		canMan = false;
-		let cubies = [];
-		if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
-		if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
-		if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-		if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
-		if(DIM == 50){
-			cubies = [];
-			for(let i = 0; i < 27; i++){
-				if(CUBE[i].stroke != 0) cubies.push(i);
-			}
-		}
-		if(Array.isArray(DIM) && DIM[0] != "adding")
-		{
-			cubies = [];
-			for(let i = 0; i < 27; i++)
-			{
-				if(!DIM[6].includes(i))
-					cubies.push(i);
-			}
-		}
-		console.log(cubies);
+		let cubies = shownCubies();
 		alldown = false;
-		if((DIM == 1 || DIM == 6 || DIM == 2 || (Array.isArray(DIM) && custom == 1) || DIM == 50 || DIM == 15)){
+		if(SIZE < 4 && (DIM == 1 || DIM == 6 || DIM == 2 || (Array.isArray(DIM) && custom == 1) || DIM == 50 || DIM == 15)){
 			alldown = true;
 			if(arr[0][0] == "D") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
 			if(arr[0][0] == "U") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
@@ -6949,7 +6922,7 @@ function refreshButtons()
 	else if(modnum == 1)
 		document.getElementById("or_instruct5").innerHTML = "Bandaged Mods";
 	else 
-		document.getElementById("or_instruct5").innerHTML = "Impossible Mods";
+		document.getElementById("or_instruct5").innerHTML = "Big Cubes";
 	SPEEDMODE.remove();
 	REGULAR.remove();
 	TIMEDMODE.remove();
@@ -9620,17 +9593,18 @@ function dragCube(cuby1, color1, cuby2, color2)
 	let bad5 = [];
 	let mid = Math.floor(SIZE * SIZE / 2)
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+	console.log("setup is ", setup)
 	if(setup[0] == -MAXX || setup[0] == MAXX) //top
-		bad5 = ['L','R','F','B','S','M'];
+		bad5 = ['L','R','F','B','S','M','l','r','f','b'];
 	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
-		bad5 = ['U','D','F','B','E','S'];
-	else bad5 = ['L','R','U','D','E','M']; // front
+		bad5 = ['U','D','F','B','E','S','u','d','f','b'];
+	else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 
 	const xaxis = SIZE > 4 ? ["L'", "l'", "M'", "r", "R"] :
 	SIZE == 4 ? ["L'", "l'", "r", "R"] : ["L'", "M'", "R"];
-const yaxis = SIZE > 4 ? ["U'", "u'", "d", "D"] :
+	const yaxis = SIZE > 4 ? ["U'", "u'", "E", "d", "D"] :
 	SIZE == 4 ? ["U'", "u'", "d", "D"] : ["U'", "E", "D"];
-const zaxis = SIZE > 4 ? ["B'", "b'", "S", "f", "F"] :
+	const zaxis = SIZE > 4 ? ["B'", "b'", "S", "f", "F"] :
 	SIZE == 4 ? ["B'", "b'", "f", "F"] : ["B'", "S", "F"];
 
 	let turnorder = [];
@@ -9668,8 +9642,8 @@ const zaxis = SIZE > 4 ? ["B'", "b'", "S", "f", "F"] :
 		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 			arr.push(arr[0]);
 		if(INPUT.value() == "Gearcube") {
-			if (['M', 'S', 'E'].includes(arr[0][0])) {
-				arr = []
+			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
+				arr = [];
 			} else {
 				arr.unshift(toGearCube(arr[0]));
 			}
@@ -9717,9 +9691,6 @@ const zaxis = SIZE > 4 ? ["B'", "b'", "S", "f", "F"] :
 				FACE.faces.forEach((f) => {
 					if (face1 == f.face && !good && CUBE[cuby1][f.lastaxis] == CUBE[cuby2][f.lastaxis]) {
 						arr = [FACE.turn[(CUBE[cuby1][FACE.axis] + MAXX) / 50]]
-						// if (CUBE[cuby1][FACE.axis] == -50) arr = [FACE.turn[0]];
-						// if (CUBE[cuby1][FACE.axis] == 0) arr = [FACE.turn[1]];
-						// if (CUBE[cuby1][FACE.axis] == 50) arr = [FACE.turn[2]];
 						let index = f.order.indexOf(CUBE[cuby1][f.upaxis]);
 						let index2 = f.order.indexOf(CUBE[cuby2][f.upaxis]);
 						if (index > index2) {
@@ -9736,14 +9707,14 @@ const zaxis = SIZE > 4 ? ["B'", "b'", "S", "f", "F"] :
 			arr.push(arr[0]);
 		}
 		if(INPUT.value() == "Gearcube") {
-			if (['M', 'S', 'E'].includes(arr[0][0])) {
-				arr = []
+			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
+				arr = [];
 			} else {
 				arr.unshift(toGearCube(arr[0]));
 			}
 		}
 		if(INPUT.value() == "Gearcube II") {
-			if (['M', 'S', 'E'].includes(arr[0][0])) {
+			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
 				arr = []
 			} else {
 				arr.push(arr[0]);
@@ -10286,6 +10257,12 @@ function arrowPaint(dir) {
 		} 
 	}
 }
+document.getElementById("bannercube").addEventListener("click", function(event) { //news
+    event.preventDefault();
+    cubemode();
+	modnum = 2;
+	changeMod(0)
+});
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
 		if (event.key === "r" || event.key === "R") paintit("red");
