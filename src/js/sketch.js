@@ -6056,6 +6056,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
+		console.log(canMan)
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
@@ -6149,73 +6150,6 @@ p.keyPressed = (event) => {
 		let onedown = false;
 		alldown = false;
 		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
-		// alert("new" + (bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)) )
-		if(SIZE < 4 && bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
-			alldown = true;
-			if(p.keyCode == 83 || p.keyCode == 76){ //D
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == MAXX);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
-			}
-			if(p.keyCode == 70 || p.keyCode == 74){ //U
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
-			}
-			if(p.keyCode == 69 || p.keyCode == 68){ //L
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
-			}
-			if(p.keyCode == 73 || p.keyCode == 75){ //R
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
-			}
-			if(p.keyCode == 71 || p.keyCode == 72){ //F
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
-			}
-			if(p.keyCode == 87 || p.keyCode == 79){ //B
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == -50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
-			}
-			if(p.keyCode == 65 || p.keyCode == 186 || p.keyCode == 59){ //E
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
-			}
-			if(p.keyCode == 188 || p.keyCode == 190){ //M
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
-			}
-			if(p.keyCode == 81 || p.keyCode == 80){ //S
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 0);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 0);
-			}
-			if(p.keyCode == 85 || p.keyCode == 77){ //Rw
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50 || (CUBE[cubies[i]].z == 0));
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
-			}
-			if(p.keyCode == 82 || p.keyCode == 86){ //Lw
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50 || (CUBE[cubies[i]].z == 0));
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
-			}
-			if(p.keyCode == 89 || p.keyCode == 84){ //Uw
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50 || CUBE[cubies[i]].x == 0);
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
-			}
-			if(p.keyCode == 90 || p.keyCode == 191){ //Dw
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50 || CUBE[cubies[i]].x == 0);
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
-			}
-			if(p.keyCode == 78 || p.keyCode == 66){ //Fw
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
-				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50 || CUBE[cubies[i]].y == 0);
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 0);
-			}
-			if(onedown == false) return;
-		}
-		
 		
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 			if (CUBE[i].animating()) {
@@ -6232,268 +6166,49 @@ p.keyPressed = (event) => {
 		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
 			
 		let bad6 = [190,188,65,186,80,81,59];
-		if(p.keyIsDown(p.SHIFT) && ([37,38,39,40].includes(p.keyCode) || ([1000, 1001].includes(p.keyCode) && KEYBOARD.value() == "Default"))) {
-			if(p.keyCode == 37) changeArr("y2");
-			if(p.keyCode == 38) changeArr("x2");
-			if(p.keyCode == 39) changeArr("y2'");
-			if(p.keyCode == 40) changeArr("x2'");
-			if(p.keyCode == 1001) changeArr("z2");
-			if(p.keyCode == 1000) changeArr("z2'");
-			multiple(0, true);	
-			return;
-		} else if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || (INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))){
-			redo = [];
-			if(p.keyCode == 83) changeArr("D2")
-			if(p.keyCode == 76) changeArr("D2'")
-			if(p.keyCode == 74) changeArr("U2")
-			if(p.keyCode == 70) changeArr("U2'")
-			if(p.keyCode == 69) changeArr("L2'")
-			if(p.keyCode == 68) changeArr("L2")
-			if(p.keyCode == 73) changeArr("R2")
-			if(p.keyCode == 75) changeArr("R2'")
-			if(p.keyCode == 72) changeArr("F2")
-			if(p.keyCode == 71) changeArr("F2'")
-			if(p.keyCode == 87) changeArr("B2")
-			if(p.keyCode == 79) changeArr("B2'")
-			if(p.keyCode == 65) changeArr("E2")
-			if(p.keyCode == 186 || p.keyCode == 59) changeArr("E2'")
-			if(p.keyCode == 190) changeArr("M2")
-			if(p.keyCode == 188) changeArr("M2'")
-			if(p.keyCode == 80) changeArr("S2")
-			if(p.keyCode == 81) changeArr("S2'")
-			if(p.keyCode == 85) changeArr("Rw2")
-			if(p.keyCode == 77) changeArr("Rw2'")
-			if(p.keyCode == 86) changeArr("Lw2")
-			if(p.keyCode == 82) changeArr("Lw2'")
-			if(p.keyCode == 89) changeArr("Uw2")
-			if(p.keyCode == 84) changeArr("Uw2'")
-			if(p.keyCode == 78) changeArr("Fw2")
-			if(p.keyCode == 66) changeArr("Fw2'")
-			if(p.keyCode == 90) changeArr("Dw2")
-			if(p.keyCode == 191) changeArr("Dw2'")
-			multiple(0, true);	
-			return;
-		} else if(INPUT.value() == "Gearcube" && bad4.includes(p.keyCode)){
-			if(bad6.includes(p.keyCode))
-				return;
-			redo = [];
-			if(p.keyCode == 83) changeArr("Dw D")
-			if(p.keyCode == 76) changeArr("Dw' D'")
-			if(p.keyCode == 74) changeArr("Uw U")
-			if(p.keyCode == 70) changeArr("Uw' U'")
-			if(p.keyCode == 69) changeArr("Lw' L'")
-			if(p.keyCode == 68) changeArr("Lw L")
-			if(p.keyCode == 73) changeArr("Rw R")
-			if(p.keyCode == 75) changeArr("Rw' R'")
-			if(p.keyCode == 72) changeArr("Fw F")
-			if(p.keyCode == 71) changeArr("Fw' F'")
-			if(p.keyCode == 87) changeArr("Bw B")
-			if(p.keyCode == 79) changeArr("Bw' B'")
-			multiple(0, true);	
-			return;
-		} else if(INPUT.value() == "Gearcube II" && bad4.includes(p.keyCode)){
-			if(bad6.includes(p.keyCode))
-				return;
-			redo = [];
-			if(p.keyCode == 83) changeArr("D2 U'")
-			if(p.keyCode == 76) changeArr("D2' U")
-			if(p.keyCode == 74) changeArr("U2 D'")
-			if(p.keyCode == 70) changeArr("U2' D")
-			if(p.keyCode == 69) changeArr("L2' R")
-			if(p.keyCode == 68) changeArr("L2 R'")
-			if(p.keyCode == 73) changeArr("R2 L'")
-			if(p.keyCode == 75) changeArr("R2' L")
-			if(p.keyCode == 72) changeArr("F2 B'")
-			if(p.keyCode == 71) changeArr("F2' B")
-			if(p.keyCode == 87) changeArr("B2 F'")
-			if(p.keyCode == 79) changeArr("B2' F")
-			multiple(0, true);	
-			return;
-		}
-		switch (p.keyCode) {	
-			case 37:
-			redo = [];
-			console.log("Left Arrow/y");
-			undo.push("y");
-			animateRotate("x", -1);
-			rotationx--;
-			if(rotationx == -1) rotationx = 3;
-			break;
-			case 39:
-			redo = [];
-			console.log("Right Arrow/y'");
-			undo.push("y'");
-			animateRotate("x", 1);
-			rotationx++;
-			if(rotationx == 4) rotationx = 0;
-			break;	
-			case 40:
-			console.log("Down Arrow/x'");
-			redo = [];
-			undo.push("x'");
-			animateRotate("z", -1);
-			rotationz--;
-			if(rotationz == -1) rotationz = 3;
-			break;
-			case 38:
-			console.log("Up Arrow/x");
-			redo = [];
-			undo.push("x");
-			animateRotate("z", 1);
-			rotationz++;
-			if(rotationz == 4) rotationz = 0;
-			break;	
-			case 1000:
-			undo.push("z'");
-			redo = [];
-			animateRotate("y", 1);
-			break;
-			case 1001:
-			undo.push("z");
-			redo = [];
-			animateRotate("y", -1);
-			break;
-			case 76:
-			undo.push("D'");
-			redo = [];
-			animate('x', MAXX, -1, true);
-			break;
-			case 83:
-			undo.push("D");
-			redo = [];
-			animate('x', MAXX, 1, true);
-			break;
-			case 74:
-			undo.push("U");
-			redo = [];
-			animate('x', -MAXX, -1, true);
-			break;
-			case 70:
-			undo.push("U'");
-			redo = [];
-			animate('x', -MAXX, 1, true);
-			break;
-			case 72:
-			undo.push("F");
-			redo = [];
-			animate('y', MAXX, -1, true);
-			break;
-			case 71:
-			undo.push("F'");
-			redo = [];
-			animate('y', MAXX, 1, true);
-			break;
-			case 79:
-			undo.push("B'");
-			redo = [];
-			animate('y', -MAXX, -1, true);
-			break;
-			case 87:
-			undo.push("B");
-			redo = [];
-			animate('y', -MAXX, 1, true);
-			break;
-			case 75:
-			undo.push("R'");
-			redo = [];
-			animate('z', MAXX, -1, true);
-			break;
-			case 73:
-			undo.push("R");
-			redo = [];
-			animate('z', MAXX, 1, true);
-			break;
-			case 68:
-			undo.push("L");
-			redo = [];
-			animate('z', -MAXX, -1, true);
-			break;
-			case 69:
-			undo.push("L'");
-			redo = [];
-			animate('z', -MAXX, 1, true);
-			break;
-			case 188:
-			undo.push("M'");
-			redo = [];
-			animate('z', 0, 1, true);
-			break;
-			case 190:
-			undo.push("M");
-			redo = [];
-			animate('z', 0, -1, true);
-			break;
-			case 65:
-			undo.push("E");
-			redo = [];
-			animate('x', 0, 1, true);
-			break;
-			case 186:
-			case 59:
-			undo.push("E'");
-			redo = [];
-			animate('x', 0, -1, true);
-			break;
-			case 80:
-			undo.push("S");
-			redo = [];
-			animate('y', 0, -1, true);
-			break;
-			case 81:
-			undo.push("S'");
-			redo = [];
-			animate('y', 0, 1, true);
-			break;
-			case 77:
-			undo.push("Rw'");
-			redo = [];
-			animateWide('z', MAXX, -1, true);
-			break;
-			case 85:
-			undo.push("Rw");
-			redo = [];
-			animateWide('z', MAXX, 1, true);
-			break;
-			case 86:
-			undo.push("Lw");
-			redo = [];
-			animateWide('z', -MAXX, -1, true);
-			break;
-			case 82:
-			undo.push("Lw'");
-			redo = [];
-			animateWide('z', -MAXX, 1, true);
-			break;
-			case 78:
-			undo.push("Fw");
-			redo = [];
-			animateWide('y', MAXX, -1, true);
-			break;
-			case 66:
-			undo.push("Fw'");
-			redo = [];
-			animateWide('y', MAXX, 1, true);
-			break;
-			case 84:
-			undo.push("Uw'");
-			redo = [];
-			animateWide('x', -MAXX, 1, true);
-			break;
-			case 89:
-			undo.push("Uw");
-			redo = [];
-			animateWide('x', -MAXX, -1, true);
-			break;
-			case 90:
-			undo.push("Dw");
-			redo = [];
-			animateWide('x', MAXX, 1, true);
-			break;
-			case 191:
-			undo.push("Dw'");
-			redo = [];
-			animateWide('x', MAXX, -1, true);
-			break;
+		const keyMoveMap = {
+			37: "y", 39: "y'", 40: "x'", 38: "x",
+			1000: "z'", 1001: "z", 76: "D'", 83: "D",
+			74: "U", 70: "U'", 72: "F", 71: "F'",
+			79: "B'", 87: "B", 75: "R'", 73: "R",
+			68: "L", 69: "L'", 188: "M'", 190: "M",
+			65: "E", 186: "E'", 59: "E'", 80: "S",
+			81: "S'", 77: "Rw'", 85: "Rw", 86: "Lw",
+			82: "Lw'", 78: "Fw", 66: "Fw'", 84: "Uw'",
+			89: "Uw", 90: "Dw", 191: "Dw'"
+		};
+
+		if (keyMoveMap[p.keyCode]) {
+			arr = [keyMoveMap[p.keyCode]];
+			if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || 
+			(INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))
+			|| (p.keyIsDown(p.SHIFT) && ([37,38,39,40].includes(p.keyCode) || ([1000, 1001].includes(p.keyCode) && KEYBOARD.value() == "Default")))) {
+				arr.push(arr[0]);
+			} else if(INPUT.value() == "Gearcube") {
+				if (arr[0].includes("w")) {
+					arr[0] = arr[0].replace(/w/g, "");
+				}
+				if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
+					arr = [];
+				} else {
+					arr.unshift(toGearCube(arr[0]));
+				}
+			}
+			if(INPUT.value() == "Gearcube II") {
+				if (arr[0].includes("w")) {
+					arr[0] = arr[0].replace(/w/g, "");
+				}
+
+				if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
+					arr = []
+				} else {
+					arr.push(arr[0]);
+					console.log(arr[0][0])
+					console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
+					arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
+				}
+			}
+		} else switch (p.keyCode) {	
 			case 8: 
 			if (p.keyIsDown(p.SHIFT))
 				flexDo(Undo, undo, true);
@@ -6593,33 +6308,8 @@ p.keyPressed = (event) => {
 			}
 			break;
 		}
-		let bad = -1;
-		if(undo.length > 0)
-		{
-			let rnd = undo[undo.length-1];
-			if(rnd.slice(-1) == "'")
-				bad = rnd.substring(0, rnd.length-1);
-			else
-				bad = rnd + "'";
-		}
-		if(include.includes(p.keyCode) && p.keyCode != 8)
-		{
-			if(timer.isRunning && MODE != "moves")
-			{
-				moves++
-			}
-			else if(MODE == "moves")
-			{
-				if(undo[undo.length-2] == bad)
-				{
-					undo.pop();
-					undo.pop();
-					if(p.keyCode < 37 || p.keyCode > 40)
-						moves--;
-				}
-				else if(p.keyCode < 37 || p.keyCode > 40)
-					moves++;
-			}
+		if (keyMoveMap[p.keyCode] && arr.length > 0) {
+			multiple(0, true);
 		}
 	}
 }
@@ -6664,21 +6354,57 @@ function multiple(nb, timed) {
 	if (nb < arr.length) {
 		canMan = false;
 		let cubies = shownCubies();
+		let onedown = true;
 		alldown = false;
-		if(SIZE < 4 && (DIM == 1 || DIM == 6 || DIM == 2 || (Array.isArray(DIM) && custom == 1) || DIM == 50 || DIM == 15)){
+		if(SIZE < 4 && !["x", "y", "z"].includes(arr[nb]) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
 			alldown = true;
-			if(arr[0][0] == "D") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
-			if(arr[0][0] == "U") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
-			if(arr[0][0] == "L") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
-			if(arr[0][0] == "R") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
-			if(arr[0][0] == "F") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
-			if(arr[0][0] == "B") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
-			if(arr[0][0] == "E") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
-			if(arr[0][0] == "M") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
-			if(arr[0][0] == "S") for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 0);
+			onedown = false;
+			const keyMappings = {
+				D: {axis: "x", values: MAXX},
+				U: {axis: "x", values: -MAXX},
+				L: { axis: "z", values: -MAXX},
+				R: { axis: "z", values: MAXX },
+				F: { axis: "y", values: MAXX },
+				B: { axis: "y", values: -MAXX},
+				E: { axis: "x", values: 0 },
+				M: { axis: "z", values: 0},
+				S: { axis: "y", values: 0},
+			  };
+
+			const wideMappings = {
+				Rw: { axis: "z", values:[MAXX, MAXX - CUBYESIZE] },
+				Lw: { axis: "z", values: [-MAXX, CUBYESIZE - MAXX] },
+				Uw: { axis: "x", values: [-MAXX, CUBYESIZE - MAXX] },
+				Dw: { axis: "x", values:[MAXX, MAXX - CUBYESIZE] },
+				Fw: { axis: "y", values: [MAXX, MAXX - CUBYESIZE], }
+			}
+			for (const move in keyMappings) {
+				const { keys, axis, values } = keyMappings[move];
+				if ([move, move + "'"].includes(arr[nb])) {
+					for(let i = 0; i < cubies.length; i++) {
+						console.log(CUBE[cubies[i]][axis], values)
+						onedown = onedown || (CUBE[cubies[i]][axis] == values);
+					}
+					for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]][axis] == values);
+				}
+			}
+
+			for (const move in wideMappings) {
+				const { keys, axis, values } = wideMappings[move];
+				if ([move, move + "'"].includes(arr[nb])) {
+					for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]][axis]== values[0]);
+					for(let i = 0; i < cubies.length; i++) {
+						alldown = alldown && (CUBE[cubies[i]][axis] == values[0] || CUBE[cubies[i]][axis] == values[1]);
+					}
+					for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]][axis] == values[1]);
+				}
+			}
+			console.log(alldown, onedown)
 		}
+		if(alldown == true) timed = false;
 		console.log("alldown is " + alldown);
-		notation(arr[nb], timed);
+		if (onedown)
+			notation(arr[nb], timed);
 		let bad = -1;
 		if(undo.length > 0)
 		{
@@ -9666,7 +9392,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 			}
 		}
 		if(INPUT.value() == "Gearcube II") {
-			if (['M', 'S', 'E'].includes(arr[0][0])) {
+			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
 				arr = []
 			} else {
 				arr.push(arr[0]);

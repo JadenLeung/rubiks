@@ -124,7 +124,7 @@ export default class Cuby {
         directions.forEach((dir) => {
           s += getColor(this[dir].levels);
         });
-        console.log(this.index + " " + s);
+
         const possible = [
           "orbgwy", "ywbgor", "robgyw", "wybgro",
           "rogbwy", "ywgbro", "orgbyw", "wygbor",
@@ -147,7 +147,6 @@ export default class Cuby {
             return;
           }
         });
-        console.log("matching " + newstr);
         if (newstr != "") {
           directions.forEach((d, index) => {
             this[d] = this.c[newstr[index]];
