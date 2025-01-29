@@ -22,7 +22,8 @@ export default function (p) {
 	let DIM4 = 3;
 	let touchrotate = [];
 	const NOMOUSE = [13];
-	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19, "Xmas 3x3": changeSeven};
+	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
+		 "Xmas 3x3": changeSeven, "4x4" : switchFour, "5x5" : switchFive};
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	let pracalgs = [];
 	let trackthin = null; // false means thin
@@ -746,6 +747,8 @@ p.setup = () => {
 	BANDAGE_SELECT.option("3x3x2");
 	BANDAGE_SELECT.option("2x2x3");
 	BANDAGE_SELECT.option("Xmas 3x3");
+	BANDAGE_SELECT.option("4x4");
+	BANDAGE_SELECT.option("5x5");
 	BANDAGE_SELECT.parent("bandage_select")
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(() => {
@@ -1493,9 +1496,10 @@ setInterval(() => {
 	if (isthin) getEl("delaywhole").style.display = "none";
 	allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	if(Array.isArray(DIM) && DIM[0] == "adding") {
-		for (let i = 0; i < 27; ++i) {
+		for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 			const key = +Object.entries(mapCuby()).find(([key, value]) => value == i)?.[0];
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
+				console.log(mapCuby(), CUBE[key], key)
 				CUBE[i].setColor(CUBE[key].colors.magenta);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
 					CUBE[i].setColor(CUBE[key].colors.black);
@@ -2368,7 +2372,8 @@ function changeMod(dx){
 	refreshButtons();
 }
 function leftBan(){
-	if(bannum == 1) bannum = 13;
+	if (bandaged.length == 0) return;
+	if(bannum == 1) bannum = bandaged.length;
 	else bannum--;
 	if(bandaged.length >= bannum) document.getElementById("deleteban").style.display = "block";
 	else document.getElementById("deleteban").style.display = "none";
@@ -2376,7 +2381,8 @@ function leftBan(){
 	viewBandage(true);
 }
 function rightBan(){
-	if(bannum == 13) bannum = 1;
+	if (bandaged.length == 0) return;
+	if(bannum == bandaged.length) bannum = 1;
 	else bannum++;
 	if(bandaged.length >= bannum) document.getElementById("deleteban").style.display = "block";
 	else document.getElementById("deleteban").style.display = "none";
@@ -3344,10 +3350,10 @@ function waitStopTurning(timed = true, mode = "wtev") {
 
 function mapCuby() {
 	let map = {};
-	for (let i = 0; i < 27; ++i) {
-		map[i] = (CUBE[i].z / 50) + 1;
-		map[i] += 3 * ((CUBE[i].y / 50) + 1);
-		map[i] += 9 * ((CUBE[i].x / 50) + 1);
+	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
+		map[i] = (CUBE[i].z + MAXX) / 50;
+		map[i] += SIZE * (CUBE[i].y + MAXX) / 50;
+		map[i] += SIZE * SIZE * (CUBE[i].x + MAXX) / 50;
 	}
 	return map;
 }
@@ -5240,25 +5246,36 @@ function shufflePossible(len, total2, prev){
 	moves = 0;
 	timer.reset();
 	timer.stop();
-	let possible = [['x', 50, 'D'], ['x', -50, 'U'], ['y', 50, 'F'], ['y', -50, 'B'], ['z', 50, 'R']
-, ['z', -50, 'L'], ['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
+	let possible = [['x', [MAXX], 'D'], ['x', [-MAXX], 'U'], ['y', [MAXX], 'F'], ['y', [-MAXX], 'B'], ['z', [MAXX], 'R']
+, ['z', [-MAXX], 'L']];
+	if (SIZE >= 4) {
+		possible.push(['x', [MAXX-CUBYESIZE],'d'], ['x', [CUBYESIZE-MAXX], 'u'], ['y', [MAXX-CUBYESIZE], 'f'],
+			['y', [CUBYESIZE-MAXX], 'b'], ['z', [MAXX-CUBYESIZE], 'r'], ['z', [CUBYESIZE-MAXX], 'l'],
+			['x', [MAXX, MAXX-CUBYESIZE],'Dw'], ['x', [-MAXX, CUBYESIZE-MAXX], 'Uw'], ['y', [MAXX, MAXX-CUBYESIZE], 'Fw'],
+			['y', [CUBYESIZE, CUBYESIZE-MAXX], 'Bw'], ['z', [MAXX, MAXX-CUBYESIZE], 'Rw'], ['z', [CUBYESIZE, CUBYESIZE-MAXX], 'Lw']
+		)
+	} 
+	
+	if (SIZE % 2 == 1) {
+		possible.push(['z', [0], 'M'], ['x', [0], 'E'], ['y', [0], 'S'])
+	}
 	if(SCRAM.value() == "Middle Slices")
-		possible = [['z', 0, 'M'], ['x', 0, 'E'], ['y', 0, 'S']];
+		possible = [['z', [0], 'M'], ['x', [0], 'E'], ['y', [0], 'S']];
 	if(DIM4 == 2 || DIM2 == 15 || DIM2 == 2)
-		possible = [['x', 50, 'D'], ['x', -50, 'U'], ['y', 50, 'F'], ['y', -50, 'B'], ['z', 50, 'R']
-		, ['z', -50, 'L']];
+		possible = [['x', [MAXX], 'D'], ['x', [-MAXX], 'U'], ['y', [MAXX], 'F'], ['y', [-MAXX], 'B'], ['z', [MAXX], 'R']
+		, ['z', [-MAXX], 'L']];
 	let possible2 = [];
 	for(let h = 0; h < possible.length; h++){
 		let total = 0;
 		let cuthrough = false;
 		let axis = possible[h][0];
-		let row = possible[h][1];
+		let rows = possible[h][1];
 		let move = possible[h][2];
 
 		for(let i = 0; i < bandaged.length; i++){
 			total = 0;
 			for(let j = 0; j < bandaged[i].length; j++){
-				if(CUBE[bandaged[i][j]][axis] == row)
+				if(rows.includes(CUBE[bandaged[i][j]][axis]))
 					total++
 			}
 			if(total > 0 && total < bandaged[i].length)
@@ -10261,7 +10278,7 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
     event.preventDefault();
     cubemode();
 	modnum = 2;
-	changeMod(0)
+	changeMod(0);
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
