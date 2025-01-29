@@ -33,7 +33,9 @@ export default function (p) {
 	let goodsolved = false;
 	let RND_COLORS;
 	let GAP = 0;
-	let SIZE = 3;
+	let SIZE = 5;
+	let MAXX = (SIZE - 1) * 25;
+	let ZOOMADD;
 	let nextcuby = [];
 	let BORDER_SLIDER;
 	let SIZE_SLIDER2;
@@ -43,6 +45,8 @@ export default function (p) {
 	let DELAY_SLIDER;
 	let TWOBYTWO;
 	let THREEBYTHREE;
+	let FOURBYFOUR;
+	let FIVEBYFIVE;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -192,13 +196,8 @@ export default function (p) {
 	let shuffleNB;
 	let undo = [];
 	let redo = [];
-	let layout = [[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
-	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
-	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
-	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
-	[[0, 0, 0],[0, 0, 0],[0, 0, 0]],
-	[[0, 0, 0],[0, 0, 0],[0, 0, 0]]
-];
+	let layout;
+	
 
 if (localStorage.saveao5 && JSON.parse(localStorage.saveao5) && !JSON.parse(localStorage.saveao5)[0].hasOwnProperty("ao5")) {
 	localStorage.removeItem("saveao5")
@@ -451,10 +450,7 @@ p.setup = () => {
 	
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	if(DIM2 == 100)
-		CAM.zoom(CAMZOOM+140);
-	else
-		CAM.zoom(CAMZOOM);
+	CAM.zoom(CAMZOOM + ZOOMADD);
 	CAM.rotateX(-p.PI / ROTX);
 	CAM.rotateY(-p.PI / ROTY);
 	CAM.rotateZ(-p.PI / ROTZ);
@@ -529,6 +525,8 @@ p.setup = () => {
 	CUBE14 = p.createButton('Cube Bandage');
 	CUBE15 = p.createButton('2x2x3');
 	CUBE16 = p.createButton('Bandaged 3x3x2');
+	FOURBYFOUR = p.createButton('4x4');
+	FIVEBYFIVE = p.createButton('4x4');
 	refreshButtons();
 
 
@@ -1101,10 +1099,10 @@ p.setup = () => {
 	TIMEGONE3.mousePressed(removeSpecificTime.bind(null, 0));	
 
 	LEFTMOD = p.createButton('←');
-	setButton(LEFTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 0));
+	setButton(LEFTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, -1));
 
 	RIGHTMOD = p.createButton('→');
-	setButton(RIGHTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 0));
+	setButton(RIGHTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, 1));
 
 	let LEFTPAINT, RIGHTPAINT, DOWNPAINT, UPPAINT;
 
@@ -1150,8 +1148,7 @@ p.setup = () => {
 	const DELETEBAN = p.createButton('Delete');
 	setButton(DELETEBAN, "deleteban", 'btn btn-danger text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', deleteBan.bind(null, 0));
 	topWhite();
-	if (localStorage.startcube == 2)
-		changeTwo();
+	startCube();
 }
 
 
@@ -1454,7 +1451,7 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && NOMOUSE.includes(DIM)) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && !mouseAllowed()) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -1511,7 +1508,7 @@ setInterval(() => {
 	getEl("rightpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
 	getEl("uppaint").style.opacity = colorindex == 0 ? 0.3 : 1;
 	getEl("downpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
-	if (colorindex > 52) 		activeKeys.clear();
+	if (colorindex > 52) activeKeys.clear();;
 }, 10)
 //forever
 function reSetup(rot) {
@@ -1521,6 +1518,7 @@ function reSetup(rot) {
 	undo = [];
 	redo = [];
 	canMan = true;
+	MAXX = (SIZE - 1) * 25;
 	flipmode = 0;
 	flipmode2 = 0;
 	easystep = 0;
@@ -1548,10 +1546,7 @@ function reSetup(rot) {
 		else
 			DIM4 = 3;
 	}
-	if(DIM4 == 2)
-		CAM.zoom(CAMZOOM+140);
-	else
-		CAM.zoom(CAMZOOM);
+	CAM.zoom(CAMZOOM + ZOOMADD);
 
 	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)
 	{
@@ -1592,10 +1587,10 @@ function reSetup(rot) {
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE);
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE);
 				cnt++;
 			}
 		}
@@ -1973,14 +1968,17 @@ function quickSolve(savesetup = false)
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE);
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE);
 				cnt++;
 			}
 		}
 	}
+}
+function mouseAllowed() {
+	return !NOMOUSE.includes(DIM) // && SIZE <= 3;
 }
 function speedSetup()
 {
@@ -1989,10 +1987,7 @@ function speedSetup()
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		if(DIM2 == 100)
-			CAM.zoom(CAMZOOM+140);
-		else
-			CAM.zoom(CAMZOOM);
+		CAM.zoom(CAMZOOM + ZOOMADD);
 		rotateIt();
 		quickSolve();
 		return;
@@ -2022,10 +2017,7 @@ function moveSetup()
 	{
 		CAM = p.createEasyCam(p._renderer);
 		CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-		if(DIM2 == 100)
-			CAM.zoom(CAMZOOM+140);
-		else
-			CAM.zoom(CAMZOOM);
+		CAM.zoom(CAMZOOM + ZOOMADD);
 		rotateIt();
 		quickSolve();
 		return;
@@ -2150,17 +2142,17 @@ function giveUp()
 		}
 	}
 }
+
 function changeTwo()
 {
+	SIZE = 3;
+	MAXX = 50;
 	DIM2 = 100;
 	DIM = 100;
 	localStorage.startcube = 2;
 	modeData("twobytwo");
-	//if(CAMZOOM == ZOOM3) CAMZOOM = ZOOM2;
-	THREEBYTHREE.remove();
-	THREEBYTHREE = p.createButton('3x3');
-	setButton(THREEBYTHREE, "type2", 'btn btn-light btn-sm', 'border-color: black;', changeThree.bind(null, 0));
-	setButton(TWOBYTWO, "type", 'btn btn-warning btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
+	THREEBYTHREE.class('btn btn-light btn-sm');
+	TWOBYTWO.class('btn btn-warning btn-sm');
 	SIZE_SLIDER2.remove();
 	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
@@ -2178,11 +2170,11 @@ function changeThree()
 {
 	DIM2 = 50;
 	DIM = 50;
+	SIZE = 3;
+	MAXX = 50;
 	localStorage.startcube = 3;
-	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
-	TWOBYTWO.remove();
-	TWOBYTWO = p.createButton('2x2');
-	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
+	THREEBYTHREE.class('btn btn-warning btn-sm');
+	TWOBYTWO.class('btn btn-light btn-sm');
 	SIZE_SLIDER2.remove();
 	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
@@ -2202,6 +2194,8 @@ function changeCam(changeinp = true)
 	SCRAM.value("Normal");
 	changeinp && changeInput();
 	setSpecial();
+	SIZE = 3;
+	MAXX = 50;
 	reSetup();
 }
 function bandageZero(){
@@ -2336,6 +2330,26 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
+function switchFour() {
+	DIM2 = 50;
+	DIM = 50;
+	changeCam(3)
+	SIZE = 4;
+	MAXX = 75;
+	reSetup();
+	refreshButtons();
+	FOURBYFOUR.style('background-color', "#8ef5ee");
+}
+function switchFive() {
+	DIM2 = 50;
+	DIM = 50;
+	changeCam(3)
+	SIZE = 5;
+	MAXX = 100;
+	reSetup();
+	refreshButtons();
+	FIVEBYFIVE.style('background-color', "#8ef5ee");
+}
 function change20(dim, b){
 	changeFive();
 	bandaged = b;
@@ -2347,16 +2361,10 @@ function change20(dim, b){
 	refreshButtons();
 	CUBE16.style('background-color', "#8ef5ee");
 }
-function changeMod(){
-	modnum = 1 - modnum;
-	if(modnum == 0){ 
-		document.getElementById("custom").style.display = "block"; 
-		document.getElementById("customb").style.display = "none"; 
-	}
-	else {
-		document.getElementById("custom").style.display = "none"; 
-		document.getElementById("customb").style.display = "block"; 
-	}
+function changeMod(dx){
+	modnum = (modnum + dx + 3) % 3;
+	document.getElementById("custom").style.display = modnum == 0 ? "block" : "none"; 
+	document.getElementById("customb").style.display = modnum == 1 ? "block" : "none"; 
 	refreshButtons();
 }
 function leftBan(){
@@ -2521,7 +2529,7 @@ function setInput() {
 		document.getElementById("undo").style.display = "inline";
 		document.getElementById("redo").style.display = "inline";
 		document.getElementById("input2").style.display = "none";
-		if ((MODE == "cube" && NOMOUSE.includes(DIM) && custom == 0) || custom == 1 && !canMouse()) {
+		if ((MODE == "cube" && !mouseAllowed() && custom == 0) || custom == 1 && !canMouse()) {
 			document.getElementById("input2").style.display = "block";
 		}
 		if (SHUFFLE_BTN) SHUFFLE_BTN.html('<i class="bi bi-shuffle"></i>');
@@ -2874,12 +2882,13 @@ function sliderUpdate2(){
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	rotateIt();
-	if(DIM2 == 100)
-		CAM.zoom(CAMZOOM+140);
-	else
-		CAM.zoom(CAMZOOM);
+	CAM.zoom(CAMZOOM + ZOOMADD);
 }
 //Henry
+function startCube() {
+	if(localStorage.startcube && localStorage.startcube == 2) changeTwo();
+	else changeThree();
+}
 function regular(nocustom){
 	modeData("normal");
 	MINIMODE = "normal";
@@ -2897,8 +2906,7 @@ function regular(nocustom){
 		movesarr = saveao5[3];
 	}
 	if (DIM2 != 50 && DIM2 != 100) {
-		if (localStorage.startcube == 3) changeThree();
-		else changeTwo();
+		startCube()
 	}
 	document.getElementById("scramble").innerHTML = "N/A";
 	document.getElementById('password').value = '';
@@ -2907,13 +2915,11 @@ function regular(nocustom){
 	canMan = true;
 	DIM = DIM2;
 	if(["cube","daily", "weekly"].includes(MODE)) {
-		if(localStorage.startcube && localStorage.startcube == 2) changeTwo();
-		else changeThree();
+		startCube() 
 	}
 	MODE = "normal";
 	if (mastep > 0) {
-		if(localStorage.startcube && localStorage.startcube == 2) changeTwo();
-		else changeThree();
+		startCube() 
 	}
 	fullScreen(false);
 	reSetup();
@@ -3641,8 +3647,7 @@ function movesmode()
 	MOVESMODE.style('background-color', '#8ef5ee');
 
 	if (DIM2 != 50 && DIM2 != 100) {
-		if (localStorage.startcube == 3) changeThree();
-		else changeTwo();
+		startCube() 
 	}
 	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
 		"solve", "input", "input2", "scram", "timeselect"]);
@@ -3728,12 +3733,10 @@ function showSpeed()
 }
 function reCam()
 {
+	ZOOMADD = SIZE >= 5 ? 150 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	if(DIM2 == 100)
-		CAM.zoom(CAMZOOM+140);
-	else
-		CAM.zoom(CAMZOOM);
+	CAM.zoom(CAMZOOM + ZOOMADD);
 	rotateIt();
 }
 function updateScores() {
@@ -4892,7 +4895,7 @@ function moveX(row, dir) { // switch `i` cubes and rotate theme..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].x === row) {
 			primes = rotateMatrix(CUBE[i].y, CUBE[i].z, dir);
-			tmp[i] = new Cuby(DIM, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special);
+			tmp[i] = new Cuby(DIM, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE);
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateX(dir);
 			if (CUBE[i].debugging === true) {
@@ -4913,7 +4916,7 @@ function moveY(row, dir) { // switch `j` cubes and rotate them..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].y === row) { // if cubbie in the 'Y' face
 			primes = rotateMatrix(CUBE[i].x, CUBE[i].z, dir); // calculate new position for that cube
-			tmp[i] = new Cuby(DIM, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special); // buffer theme in a new cubye
+			tmp[i] = new Cuby(DIM, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE); // buffer theme in a new cubye
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateY(dir);
 			if (CUBE[i].debugging === true) {
@@ -4934,7 +4937,7 @@ function moveZ(row, dir) { // switch `z` cubes and rotate them..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].z === row) { // if cubbie in the 'z' face
 			primes = rotateMatrix(CUBE[i].x, CUBE[i].y, dir); // calculate new position for that cube
-			tmp[i] = new Cuby(DIM, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i, allcubies, special); // buffer theme in a new cubye
+			tmp[i] = new Cuby(DIM, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE); // buffer theme in a new cubye
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateZ(dir);
 			if (CUBE[i].debugging === true) {
@@ -5064,6 +5067,10 @@ function animate(axis, row, dir, time) {
 	if (isAnimating()) {
 		return;
 	}
+	if (row == 0 && SIZE % 2 == 0) {
+		animateWide(axis, 25, dir, time);
+		return;
+	}
 	if (blinded()) {
 		toggleOverlay(true);
 	}
@@ -5142,38 +5149,25 @@ function getCubyIndexByColor2(arr1) //original
 	if (realcolor == "k") return false;
 	//console.log(realcolor);
 	let allcolors = [];
-	allcolors["w"] = [250, 250, 250];
-	allcolors["r"] = [219, 25, 25];
-	allcolors["b"] = [25, 105, 219];
-	allcolors["o"] = [219, 125, 25];
-	allcolors["g"] = [25, 219, 31];
-	allcolors["y"] = [209, 219, 25];
-	allcolors["k"] = [25, 25, 25];
-	allcolors["m"] = [245, 25, 245];
+	let adder = SIZE % 2 == 0 ? MAXX + 25 : MAXX;
+	allcolors["w"] = [250-adder*0.02, 250-adder*0.02, 250-adder*0.02];
+	allcolors["r"] = [219-adder*0.02, 25-adder*0.02, 25-adder*0.02];
+	allcolors["b"] = [25-adder*0.02, 105-adder*0.02, 219-adder*0.02];
+	allcolors["o"] = [219-adder*0.02, 125-adder*0.02, 25-adder*0.02];
+	allcolors["g"] = [25-adder*0.02, 219-adder*0.02, 31-adder*0.02];
+	allcolors["y"] = [209-adder*0.02, 219-adder*0.02, 25-adder*0.02];
+	allcolors["k"] = [25-adder*0.02, 25-adder*0.02, 25-adder*0.02];
+	allcolors["m"] = [245-adder*0.02, 25-adder*0.02, 245-adder*0.02];
 
 	if(true || customb == 1 || allcubies)
 	{
 		let distcolor = [];
-		distcolor[0] = allcolors[realcolor][0] - arr1[0];
-		distcolor[1] = allcolors[realcolor][1] - arr1[1];
-		distcolor[2] = allcolors[realcolor][2] - arr1[2];
-
-		let addon = 0;
-		if(distcolor[0] == 0) addon += 9;
-		else if(distcolor[0] == -1) addon += 18;
-		else if(distcolor[0] == 1) addon += 0;
-		else return false;
-
-		if(distcolor[1] == 0) addon += 3;
-		else if(distcolor[1] == -1) addon += 6;
-		else if(distcolor[1] == 1) addon += 0;
-		else return false;
-
-		if(distcolor[2] == 0) addon += 1;
-		else if(distcolor[2] == -1) addon += 2;
-		else if(distcolor[2] == 1) addon += 0;
-		else return false;
-		if(addon >= 0 && addon <= 26) return addon;
+		distcolor[0] = arr1[0] - allcolors[realcolor][0];
+		distcolor[1] = arr1[1] - allcolors[realcolor][1];
+		distcolor[2] = arr1[2] - allcolors[realcolor][2];
+		let res = distcolor[0] * SIZE * SIZE + distcolor[1] * SIZE + distcolor[2];
+		console.log(distcolor, res);
+		if(res >= 0 && res < SIZE * SIZE * SIZE) return res;
 		return false;
 	}
 
@@ -5346,9 +5340,8 @@ function shuffleCube(nb) {
 	moves = 0;
 	timer.reset();
 	timer.stop();
-	let possible = ["R", "L", "U", "D", "B", "F"];
-	//const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'", "M", "M'", 
-	//"E", "E'", "Lw'", "Lw'", "Uw", "Uw'", "Rw", "Rw'", "Dw", "Dw'", "Bw", "Bw'", "Fw", "Fw'"];
+	let possible = SIZE < 4 ? ["R", "L", "U", "D", "B", "F"] :
+	["R", "L", "U", "D", "B", "F", "Rw", "Lw", "Uw", "Dw", "Bw", "Fw"];
 	let doubly = false;
 	let dontdo = false;
 	arr = [];
@@ -5410,6 +5403,7 @@ function shuffleCube(nb) {
 	}
 	if(DIM4 == 2)
 		s = 10;
+	if (SIZE >= 4) s = 30;
 	for(let i = 0; i < s; i++)
 	{
 		if(dontdo) break;
@@ -5794,7 +5788,7 @@ function hasColor(c) {
 	return hasit;
 }
 function startAction() {	
-	if(MODE == "cube" && NOMOUSE.includes(DIM) && custom == 0) return; 
+	if(MODE == "cube" && !mouseAllowed() && custom == 0) return; 
 	if(custom == 1 && !canMouse()) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
 		raceDetect();
@@ -5815,7 +5809,7 @@ function startAction() {
 	// console.log(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels));
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
-		console.log("Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
+		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
 		console.log(CUBE[cuby]);
 		if (cuby !== false) {
 
@@ -5847,7 +5841,10 @@ function startAction() {
 
 //   *************************************
 function animateRotate(axis, dir) {
-	let rows = [-50, 0, 50];
+	let rows = [];
+	for (let i = -MAXX; i <= MAXX; i+= CUBYESIZE) {
+		rows.push(i);
+	}
 	if (isAnimating()) return;
 	let sum = 0;
 	for(let i = 0; i < 27; i++)
@@ -5879,7 +5876,7 @@ function animateRotate(axis, dir) {
 }
 function animateWide(axis, row, dir, timed) {
 	console.log("first")
-	let rows = [row, 0];
+	let rows = [row, row > 0 ? row - 50 : row + 50];
 	
 	if(isAnimating()) return;
 	if (blinded()) {
@@ -5891,7 +5888,7 @@ function animateWide(axis, row, dir, timed) {
 		for(let i = 0; i < bandaged.length; i++){
 			total = 0;
 			for(let j = 0; j < bandaged[i].length; j++){
-				if(CUBE[bandaged[i][j]][axis] == row || CUBE[bandaged[i][j]][axis] == 0)
+				if(CUBE[bandaged[i][j]][axis] == row || CUBE[bandaged[i][j]][axis] == rows[1])
 					total++
 			}
 			if(total > 0 && total < bandaged[i].length)
@@ -5973,6 +5970,8 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 32){  //space
 		console.log("mastep", mastep);
 		console.log(DIM, DIM2, special, MODE);
+		setLayout();
+		console.log(layout)
 		if (blinded() && getEl("overlay").style.display == "block") {
 			toggleOverlay(false);
 		}
@@ -6054,7 +6053,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
 		// moveSetup();
-		console.log(activeKeys)
+		console.log(modnum)
 		// console.log(mapCuby());
 		// console.log(mapBandaged());
 	}
@@ -6166,10 +6165,10 @@ p.keyPressed = (event) => {
 		alldown = false;
 		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
 		// alert("new" + (bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)) )
-		if(bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
+		if(SIZE < 4 && bad4.includes(p.keyCode) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
 			alldown = true;
 			if(p.keyCode == 83 || p.keyCode == 76){ //D
-				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
+				for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == MAXX);
 				for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
 			}
 			if(p.keyCode == 70 || p.keyCode == 74){ //U
@@ -6371,62 +6370,62 @@ p.keyPressed = (event) => {
 			case 76:
 			undo.push("D'");
 			redo = [];
-			animate('x', 50, -1, true);
+			animate('x', MAXX, -1, true);
 			break;
 			case 83:
 			undo.push("D");
 			redo = [];
-			animate('x', 50, 1, true);
+			animate('x', MAXX, 1, true);
 			break;
 			case 74:
 			undo.push("U");
 			redo = [];
-			animate('x', -50, -1, true);
+			animate('x', -MAXX, -1, true);
 			break;
 			case 70:
 			undo.push("U'");
 			redo = [];
-			animate('x', -50, 1, true);
+			animate('x', -MAXX, 1, true);
 			break;
 			case 72:
 			undo.push("F");
 			redo = [];
-			animate('y', 50, -1, true);
+			animate('y', MAXX, -1, true);
 			break;
 			case 71:
 			undo.push("F'");
 			redo = [];
-			animate('y', 50, 1, true);
+			animate('y', MAXX, 1, true);
 			break;
 			case 79:
 			undo.push("B'");
 			redo = [];
-			animate('y', -50, -1, true);
+			animate('y', -MAXX, -1, true);
 			break;
 			case 87:
 			undo.push("B");
 			redo = [];
-			animate('y', -50, 1, true);
+			animate('y', -MAXX, 1, true);
 			break;
 			case 75:
 			undo.push("R'");
 			redo = [];
-			animate('z', 50, -1, true);
+			animate('z', MAXX, -1, true);
 			break;
 			case 73:
 			undo.push("R");
 			redo = [];
-			animate('z', 50, 1, true);
+			animate('z', MAXX, 1, true);
 			break;
 			case 68:
 			undo.push("L");
 			redo = [];
-			animate('z', -50, -1, true);
+			animate('z', -MAXX, -1, true);
 			break;
 			case 69:
 			undo.push("L'");
 			redo = [];
-			animate('z', -50, 1, true);
+			animate('z', -MAXX, 1, true);
 			break;
 			case 188:
 			undo.push("M'");
@@ -6462,52 +6461,52 @@ p.keyPressed = (event) => {
 			case 77:
 			undo.push("Rw'");
 			redo = [];
-			animateWide('z', 50, -1, true);
+			animateWide('z', MAXX, -1, true);
 			break;
 			case 85:
 			undo.push("Rw");
 			redo = [];
-			animateWide('z', 50, 1, true);
+			animateWide('z', MAXX, 1, true);
 			break;
 			case 86:
 			undo.push("Lw");
 			redo = [];
-			animateWide('z', -50, -1, true);
+			animateWide('z', -MAXX, -1, true);
 			break;
 			case 82:
 			undo.push("Lw'");
 			redo = [];
-			animateWide('z', -50, 1, true);
+			animateWide('z', -MAXX, 1, true);
 			break;
 			case 78:
 			undo.push("Fw");
 			redo = [];
-			animateWide('y', 50, -1, true);
+			animateWide('y', MAXX, -1, true);
 			break;
 			case 66:
 			undo.push("Fw'");
 			redo = [];
-			animateWide('y', 50, 1, true);
+			animateWide('y', MAXX, 1, true);
 			break;
 			case 84:
 			undo.push("Uw'");
 			redo = [];
-			animateWide('x', -50, 1, true);
+			animateWide('x', -MAXX, 1, true);
 			break;
 			case 89:
 			undo.push("Uw");
 			redo = [];
-			animateWide('x', -50, -1, true);
+			animateWide('x', -MAXX, -1, true);
 			break;
 			case 90:
 			undo.push("Dw");
 			redo = [];
-			animateWide('x', 50, 1, true);
+			animateWide('x', MAXX, 1, true);
 			break;
 			case 191:
 			undo.push("Dw'");
 			redo = [];
-			animateWide('x', 50, -1, true);
+			animateWide('x', MAXX, -1, true);
 			break;
 			case 8: 
 			if (p.keyIsDown(p.SHIFT))
@@ -6816,10 +6815,7 @@ function changeArr2(str, len)
 function alignIt() {
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
-	if(DIM2 == 100)
-		CAM.zoom(CAMZOOM+140);
-	else
-		CAM.zoom(CAMZOOM);
+	CAM.zoom(CAMZOOM + ZOOMADD);
 	rotateIt();
 }
 function undoTillRotate(arr) {
@@ -6951,8 +6947,10 @@ function refreshButtons()
 {
 	if(modnum == 0)
 		document.getElementById("or_instruct5").innerHTML = "Shape Mods";
-	else
+	else if(modnum == 1)
 		document.getElementById("or_instruct5").innerHTML = "Bandaged Mods";
+	else 
+		document.getElementById("or_instruct5").innerHTML = "Impossible Mods";
 	SPEEDMODE.remove();
 	REGULAR.remove();
 	TIMEDMODE.remove();
@@ -6966,6 +6964,8 @@ function refreshButtons()
 	MOVESMODE2.remove();
 	ONEBYTHREE.remove();
 	SANDWICH.remove();
+	FOURBYFOUR.remove();
+	FIVEBYFIVE.remove();
 	CUBE3.remove();
 	CUBE4.remove();
 	CUBE5.remove();
@@ -7091,7 +7091,7 @@ function refreshButtons()
 		CUBE15 = p.createButton('2x2x3');
 		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, change19.bind(null, 0));
 	}
-	else{
+	else if (modnum == 1) {
 		CUBE7 = p.createButton('Slice Bandage');
 		setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, change11.bind(null, 7, [[3,4,5,6,7,8]]));
 
@@ -7115,6 +7115,12 @@ function refreshButtons()
 
 		CUBE16 = p.createButton('Bandaged 3x3x2');
 		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
+	} else {
+		FOURBYFOUR = p.createButton('4x4');
+		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, switchFour);
+
+		FIVEBYFIVE = p.createButton('5x5');
+		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, switchFive);
 	}
 
 }
@@ -7167,29 +7173,29 @@ function notation(move, timed){
 	undo.push(move);
 	setLayout();
 	if(move == "D'")
-	animate('x', 50, -1, timed);
+	animate('x', MAXX, -1, timed);
 	if(move == "D")
-	animate('x', 50, 1, timed);
+	animate('x', MAXX, 1, timed);
 	if(move == "U")
-	animate('x', -50, -1, timed);
+	animate('x', -MAXX, -1, timed);
 	if(move == "U'")
-	animate('x', -50, 1, timed);
+	animate('x', -MAXX, 1, timed);
 	if(move == "F")
-	animate('y', 50, -1, timed);
+	animate('y', MAXX, -1, timed);
 	if(move == "F'")
-	animate('y', 50, 1, timed);
+	animate('y', MAXX, 1, timed);
 	if(move == "B'")
-	animate('y', -50, -1, timed);
+	animate('y', -MAXX, -1, timed);
 	if(move == "B")
-	animate('y', -50, 1, timed);
+	animate('y', -MAXX, 1, timed);
 	if(move == "R'")
-	animate('z', 50, -1, timed);
+	animate('z', MAXX, -1, timed);
 	if(move == "R")
-	animate('z', 50, 1, timed);
+	animate('z', MAXX, 1, timed);
 	if(move == "L")
-	animate('z', -50, -1, timed);
+	animate('z', -MAXX, -1, timed);
 	if(move == "L'")
-	animate('z', -50, 1, timed);
+	animate('z', -MAXX, 1, timed);
 	if(move == "M'")
 	animate('z', 0, 1, timed);
 	if(move == "M")
@@ -7215,29 +7221,29 @@ function notation(move, timed){
 	if(move == "S'")
 	animate('y', 0, 1, timed);
 	if(move == "Lw")
-	animateWide('z', -50, -1, timed);
+	animateWide('z', -MAXX, -1, timed);
 	if(move == "Lw'")
-	animateWide('z', -50, 1, timed);
+	animateWide('z', -MAXX, 1, timed);
 	if(move == "Rw'")
-	animateWide('z', 50, -1, timed);
+	animateWide('z', MAXX, -1, timed);
 	if(move == "Rw")
-	animateWide('z', 50, 1, timed);
+	animateWide('z', MAXX, 1, timed);
 	if(move == "Fw")
-	animateWide('y', 50, -1, timed);
+	animateWide('y', MAXX, -1, timed);
 	if(move == "Fw'")
-	animateWide('y', 50, 1, timed);
+	animateWide('y', MAXX, 1, timed);
 	if(move == "Bw'")
-	animateWide('y', -50, -1, timed);
+	animateWide('y', -MAXX, -1, timed);
 	if(move == "Bw")
-	animateWide('y', -50, 1, timed);
+	animateWide('y', -MAXX, 1, timed);
 	if(move == "Uw")
-	animateWide('x', -50, -1, timed);
+	animateWide('x', -MAXX, -1, timed);
 	if(move == "Uw'")
-	animateWide('x', -50, 1, timed);
+	animateWide('x', -MAXX, 1, timed);
 	if(move == "Dw'")
-	animateWide('x', 50, -1, timed);
+	animateWide('x', MAXX, -1, timed);
 	if(move == "Dw")
-	animateWide('x', 50, 1, timed);
+	animateWide('x', MAXX, 1, timed);
 }
 function stepFour()
 {
@@ -9091,11 +9097,12 @@ function goodF2L2(){
 function setLayout(){
 	let cnt = 0;
 	if(MODE == "cube" && !easytime)return;
+	layout = new Array(6).fill(null).map(() => new Array(SIZE).fill(null).map(() => new Array(SIZE).fill(0)))
 	let temp = [];
 	cubyColors = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
 	//left, right, top, bottom, back, front
 	let axis = ["z", "z", "x", "x", "y", "y"];
-	let row = [-50, 50, -50, 50, -50, 50];
+	let row = [-MAXX, MAXX, -MAXX, MAXX, -MAXX, MAXX];
 	let pos = ["back", "front", "right", "left", "bottom", "top"];
 	for(let h = 0; h < row.length; h++)
 	{
@@ -9104,20 +9111,25 @@ function setLayout(){
 			if(CUBE[i][axis[h]] == row[h])
 			temp.push(i);
 		}
-		let temp2 = [[0, 0, 0],[0, 0, 0],[0, 0, 0]];
+		let temp2 = Array(SIZE).fill().map(() => Array(SIZE).fill(0));
+		let mapAxisToCoords = {};
+		let cnt = 0;
+		for (let i = -MAXX; i <= MAXX; i += CUBYESIZE) {
+			mapAxisToCoords[i] = cnt;
+			++cnt;
+		}
 		for(let i = 0; i < SIZE * SIZE; i++)
 		{
 			let temp3 = CUBE[temp[i]];
 			//console.log((temp3.x*0.02+1) + " " + (temp3.y*0.02+1));
 			let array = [];
 			if(axis[h] == "z")
-			temp2[temp3.x*0.02+1][temp3.y*0.02+1] = temp[i];
+			temp2[mapAxisToCoords[temp3.x]][mapAxisToCoords[temp3.y]] = temp[i];
 			if(axis[h] == "x")
-			temp2[temp3.y*0.02+1][temp3.z*0.02+1] = temp[i];
+			temp2[mapAxisToCoords[temp3.y]][mapAxisToCoords[temp3.z]] = temp[i];
 			if(axis[h] == "y")
-			temp2[temp3.x*0.02+1][temp3.z*0.02+1] = temp[i];
+			temp2[mapAxisToCoords[temp3.x]][mapAxisToCoords[temp3.z]] = temp[i];
 		}
-		
 		for(let x = 0; x < SIZE; x++) 
 		{
 			for(let y = 0; y < SIZE; y++)
@@ -9132,12 +9144,14 @@ function setLayout(){
 	}
 	//if(DIM == 4 || DIM == 5)
 	//return;
+	if (SIZE > 3)
+		return;
 	if(Array.isArray(DIM) && DIM[0] != "adding") return;
 	for(let i = 0; i < 6; i++)
 	{
-		for(let x = 0; x < 3; x++)
+		for(let x = 0; x < SIZE; x++)
 		{
-			for(let y = 0; y < 3; y++)
+			for(let y = 0; y < SIZE; y++)
 			{
 				let cubynum = +(layout[i][x][y][2] + layout[i][x][y][3]);	
 				//console.log(cubynum + " " + layout[i][x][y][0]);
@@ -10092,9 +10106,9 @@ function isSolved()
 	for(let i = 0; i < 6; i++)
 	{
 		let curcolor = layout[i][0][0][0]; 
-		for(let x = 0; x < 3; x++)
+		for(let x = 0; x < SIZE; x++)
 		{
-			for(let y = 0; y < 3; y++)
+			for(let y = 0; y < SIZE; y++)
 			{
 				//console.log(layout[i][x][y][0]+ " " + curcolor);
 				if(layout[i][x][y][0] != curcolor) return false; 
@@ -10233,7 +10247,6 @@ function arrowPaint(dir) {
 	}
 }
 document.addEventListener("keydown", (event) => { //paint hotkey
-	console.log("here", activeKeys);
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
 		if (event.key === "r" || event.key === "R") paintit("red");
 		if (event.key === "o" || event.key === "O") paintit("orange");

@@ -1,5 +1,5 @@
 export default class Cuby {
-  constructor(size, x, y, z, buff, picker, p, index, custom, special) {
+  constructor(size, x, y, z, buff, picker, p, index, custom, special, SIZE) {
     //size = 50;
     this.cubysize = size;
     this.x = x;
@@ -24,27 +24,30 @@ export default class Cuby {
       green: p.color(18, 219, 31, 255),
       yellow: p.color(209, 219, 18, 255),
     }; */
+    let xmul = SIZE % 2 == 1 ? this.x*0.02 : (this.x - 25) * 0.02;
+    let ymul = SIZE % 2 == 1 ? this.y*0.02 : (this.y - 25) * 0.02;
+    let zmul = SIZE % 2 == 1 ? this.z*0.02 : (this.z - 25) * 0.02;
 	 this.colors = {
-      def:   p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02,),
-      white: p.color(250 + this.x*0.02, 250 + this.y*0.02, 250 + this.z*0.02),
-      red:   p.color(219 + this.x*0.02, 25 + this.y*0.02,  25 + this.z*0.02),
-      blue:  p.color(25 + this.x*0.02,  105 + this.y*0.02, 219 + this.z*0.02),
-      orange:p.color(219 + this.x*0.02, 125 + this.y*0.02, 25 + this.z*0.02),
-      green: p.color(25 + this.x*0.02,  219 + this.y*0.02, 31 + this.z*0.02),
-      yellow:p.color(209 + this.x*0.02, 219 + this.y*0.02, 25 + this.z*0.02),
-      black:p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
-      magenta:p.color(245 + this.x*0.02,  25 + this.y*0.02, 245 + this.z*0.02),
+      def:   p.color(25 + xmul,  25 + ymul, 25 + zmul),
+      white: p.color(250 + xmul, 250 + ymul, 250 + zmul),
+      red:   p.color(219 + xmul, 25 + ymul,  25 + zmul),
+      blue:  p.color(25 + xmul,  105 + ymul, 219 + zmul),
+      orange:p.color(219 + xmul, 125 + ymul, 25 + zmul),
+      green: p.color(25 + xmul,  219 + ymul, 31 + zmul),
+      yellow:p.color(209 + xmul, 219 + ymul, 25 + zmul),
+      black:p.color(25 + xmul,  25 + ymul, 25 + zmul),
+      magenta:p.color(245 + xmul,  25 + ymul, 245 + zmul),
     };
     this.c = {
-      def:   p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02,),
-      w: p.color(250 + this.x*0.02, 250 + this.y*0.02, 250 + this.z*0.02),
-      r:   p.color(219 + this.x*0.02, 25 + this.y*0.02,  25 + this.z*0.02),
-      b:  p.color(25 + this.x*0.02,  105 + this.y*0.02, 219 + this.z*0.02),
-      o: p.color(219 + this.x*0.02, 125 + this.y*0.02, 25 + this.z*0.02),
-      g: p.color(25 + this.x*0.02,  219 + this.y*0.02, 31 + this.z*0.02),
-      y: p.color(209 + this.x*0.02, 219 + this.y*0.02, 25 + this.z*0.02),
-      k: p.color(25 + this.x*0.02,  25 + this.y*0.02, 25 + this.z*0.02),
-      m: p.color(245 + this.x*0.02,  25 + this.y*0.02, 245 + this.z*0.02),
+      def:   p.color(25 + xmul,  25 + ymul, 25 + zmul,),
+      w: p.color(250 + xmul, 250 + ymul, 250 + zmul),
+      r:   p.color(219 + xmul, 25 + ymul,  25 + zmul),
+      b:  p.color(25 + xmul,  105 + ymul, 219 + zmul),
+      o: p.color(219 + xmul, 125 + ymul, 25 + zmul),
+      g: p.color(25 + xmul,  219 + ymul, 31 + zmul),
+      y: p.color(209 + xmul, 219 + ymul, 25 + zmul),
+      k: p.color(25 + xmul,  25 + ymul, 25 + zmul),
+      m: p.color(245 + xmul,  25 + ymul, 245 + zmul),
     };
 	
     this.top = this.colors.white;
@@ -70,7 +73,27 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if(custom){
+    if (SIZE >= 4 && custom) {
+      // const map = {0:0, 1:1, 2:1, 3:2}
+      let map = {};
+      for (let x = 0; x < SIZE; ++x) {
+        for (let y = 0; y < SIZE; ++y) {
+          for (let z = 0; z < SIZE; ++z) {
+            let mapx = x == 0 ? 0 : x == SIZE - 1 ? 2 : 1;
+            let mapy = y == 0 ? 0 : y == SIZE - 1 ? 2 : 1;
+            let mapz = z == 0 ? 0 : z == SIZE - 1 ? 2 : 1;
+            map[x * SIZE * SIZE + y * SIZE + z] = mapx * 9 + mapy * 3 + mapz;
+          }
+        }
+      }
+      let mapped = map[this.index];
+      this.top = this.c[custom[mapped][0]];
+      this.bottom = this.c[custom[mapped][1]];
+      this.front = this.c[custom[mapped][2]];
+      this.back = this.c[custom[mapped][3]];
+      this.left = this.c[custom[mapped][4]];
+      this.right = this.c[custom[mapped][5]];
+    } else if(SIZE == 3 && custom){
       const cond = ([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
       if(cond && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
       else this.top = this.c[custom[this.index][0]];
