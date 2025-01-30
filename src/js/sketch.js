@@ -2718,7 +2718,10 @@ function randomBandage(){
 			bandaged[i].push(rnd);
 		}
 	}
-	bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
+	bandaged3[BANDAGE_SELECT.value()] = {
+		[BANDAGE_SLOT.value()]: bandaged, 
+		slot: BANDAGE_SLOT.value()
+	  };
 	bandaged2 = [];
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
