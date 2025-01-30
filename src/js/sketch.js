@@ -2763,46 +2763,6 @@ function inputPressed(move)
 		rotationz--;
         if(rotationz == -1) rotationz = 3;
 	}
-	let cubies = shownCubies();
-	let onedown = false;
-	let alldown = false;
-	if(((DIM == 1 || DIM == 6 || DIM == 2 || DIM == 15 || Array.isArray(DIM))) && move[0] !="x" && move[0] != "y"){
-		alldown = true;
-		if(move == "D" || move == "D'"){ //D
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 50);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 50);
-			}
-		if(move == "U" || move == "U'"){ //U
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == -50);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == -50);
-			}
-		if(move == "L" || move == "L'"){ //L
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == -50);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == -50);
-			}
-		if(move == "R" || move == "R'"){ //R
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 50);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 50);
-			}
-		if(move == "F" || move == "F'"){ //F
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == 50);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == 50);
-			}
-		if(move == "B" || move == "B'"){ //B
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].y == -50);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].y == -50);
-			}
-		if(move == "E" || move == "E'"){ //E
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].x == 0);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].x == 0);
-		}
-		if(move == "M" || move == "M'"){ //M
-			for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]].z == 0);
-			for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]].z == 0);
-			}
-		if(onedown == false) return;
-	}
-	console.log("momve is " + move);
 	if(canMan)
 	{
 		arr = [move];
@@ -5117,63 +5077,6 @@ function isAnimating() {
 function blinded() {
 	return bstep == 2 || (mastep > 0 && ma_data.type == "blind" && mastep % 2 == 1);
 }
-function animate(axis, row, dir, time) {
-	if (isAnimating()) {
-		return;
-	}
-	if (row == 0 && SIZE % 2 == 0) {
-		animateWide(axis, 25, dir, time);
-		return;
-	}
-	if (blinded()) {
-		toggleOverlay(true);
-	}
-	let total = 0;
-	let cuthrough = false;
-	if(bandaged.length > 0){
-		for(let i = 0; i < bandaged.length; i++){
-			total = 0;
-			for(let j = 0; j < bandaged[i].length; j++){
-				if(CUBE[bandaged[i][j]][axis] == row)
-					total++
-			}
-			if(total > 0 && total < bandaged[i].length)
-				cuthrough = true;
-		}
-		if(cuthrough){
-			// if (row == MAXX || row == -MAXX) {
-			// 	animateWide(axis, row, dir, time);
-			// } else {
-				
-			// }
-			undo.pop();
-			if(timer.isRunning) moves--;
-			return;
-		}
-	}
-	if (Math.round(timer.getTime() / 10)/100.0 <= 0 && time) {
-		if(!alldown) {
-			timer.reset();
-			timer.start();
-			if (cstep == 1 || cstep == 1.5) cstep++;
-		}
-	}
-	
-	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		if (CUBE[i].get(axis) === row) {
-			CUBE[i].row = row;
-			CUBE[i].dir = dir;
-			CUBE[i].anim_axis = axis;
-			if(shufflespeed < 5)
-				CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
-			else
-				CUBE[i].anim_angle = CUBE[i].dir * SPEED;
-		}
-	}
-	initAudioContext(); // Ensure AudioContext is active
-    playAudio();
-	return;
-}
 
 function cleanAllSelectedCubies() {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -5943,9 +5846,7 @@ function animateRotate(axis, dir) {
 		}
 	}
 }
-function animateWide(axis, row, dir, timed) {
-	console.log("first")
-	let rows = [row, row > 0 ? row - 50 : row + 50];
+function animate(axis, rows, dir, timed) {
 	
 	if(isAnimating()) return;
 	if (blinded()) {
@@ -5957,7 +5858,7 @@ function animateWide(axis, row, dir, timed) {
 		for(let i = 0; i < bandaged.length; i++){
 			total = 0;
 			for(let j = 0; j < bandaged[i].length; j++){
-				if(CUBE[bandaged[i][j]][axis] == row || CUBE[bandaged[i][j]][axis] == rows[1])
+				if(rows.includes(CUBE[bandaged[i][j]][axis]))
 					total++
 			}
 			if(total > 0 && total < bandaged[i].length)
@@ -5996,6 +5897,7 @@ function animateWide(axis, row, dir, timed) {
 	initAudioContext(); // Ensure AudioContext is active
     playAudio();
 }
+
 function sleep(milliseconds) {
 	const date = Date.now();
 	let currentDate = null;
@@ -6953,60 +6855,61 @@ function notation(move, timed){
 	{
 		move = flipper[move];
 	}
+	const midarr = SIZE % 2 == 1 ? [0] : [-CUBYESIZE / 2, CUBYESIZE / 2]
 	undo.push(move);
 	setLayout();
 	if(move == "D'")
-	animate('x', MAXX, -1, timed);
+	animate('x', [MAXX], -1, timed);
 	if(move == "D")
-	animate('x', MAXX, 1, timed);
+	animate('x', [MAXX], 1, timed);
 	if(move == "U")
-	animate('x', -MAXX, -1, timed);
+	animate('x', [-MAXX], -1, timed);
 	if(move == "U'")
-	animate('x', -MAXX, 1, timed);
+	animate('x', [-MAXX], 1, timed);
 	if(move == "F")
-	animate('y', MAXX, -1, timed);
+	animate('y', [MAXX], -1, timed);
 	if(move == "F'")
-	animate('y', MAXX, 1, timed);
+	animate('y', [MAXX], 1, timed);
 	if(move == "B'")
-	animate('y', -MAXX, -1, timed);
+	animate('y', [-MAXX], -1, timed);
 	if(move == "B")
-	animate('y', -MAXX, 1, timed);
+	animate('y', [-MAXX], 1, timed);
 	if(move == "R'")
-	animate('z', MAXX, -1, timed);
+	animate('z', [MAXX], -1, timed);
 	if(move == "R")
-	animate('z', MAXX, 1, timed);
+	animate('z', [MAXX], 1, timed);
 	if(move == "L")
-	animate('z', -MAXX, -1, timed);
+	animate('z', [-MAXX], -1, timed);
 	if(move == "L'")
-	animate('z', -MAXX, 1, timed);
+	animate('z', [-MAXX], 1, timed);
 	if(move == "d'")
-	animate('x', MAXX-CUBYESIZE, -1, timed);
+	animate('x', [MAXX-CUBYESIZE], -1, timed);
 	if(move == "d")
-	animate('x', MAXX-CUBYESIZE, 1, timed);
+	animate('x', [MAXX-CUBYESIZE], 1, timed);
 	if(move == "u")
-	animate('x', CUBYESIZE-MAXX, -1, timed);
+	animate('x', [CUBYESIZE-MAXX], -1, timed);
 	if(move == "u'")
-	animate('x', CUBYESIZE-MAXX, 1, timed);
+	animate('x', [CUBYESIZE-MAXX], 1, timed);
 	if(move == "f")
-	animate('y', MAXX-CUBYESIZE, -1, timed);
+	animate('y', [MAXX-CUBYESIZE], -1, timed);
 	if(move == "f'")
-	animate('y', MAXX-CUBYESIZE, 1, timed);
+	animate('y', [MAXX-CUBYESIZE], 1, timed);
 	if(move == "b'")
-	animate('y', CUBYESIZE-MAXX, -1, timed);
+	animate('y', [CUBYESIZE-MAXX], -1, timed);
 	if(move == "b")
-	animate('y', CUBYESIZE-MAXX, 1, timed);
+	animate('y', [CUBYESIZE-MAXX], 1, timed);
 	if(move == "r'")
-	animate('z', MAXX-CUBYESIZE, -1, timed);
+	animate('z', [MAXX-CUBYESIZE], -1, timed);
 	if(move == "r")
-	animate('z', MAXX-CUBYESIZE, 1, timed);
+	animate('z', [MAXX-CUBYESIZE], 1, timed);
 	if(move == "l")
-	animate('z', CUBYESIZE-MAXX, -1, timed);
+	animate('z', [CUBYESIZE-MAXX], -1, timed);
 	if(move == "l'")
-	animate('z', CUBYESIZE-MAXX, 1, timed);
+	animate('z', [CUBYESIZE-MAXX], 1, timed);
 	if(move == "M'")
-	animate('z', 0, 1, timed);
+	animate('z', midarr, 1, timed);
 	if(move == "M")
-	animate('z', 0, -1, timed);
+	animate('z', midarr, -1, timed);
 	if(move == "x'")
 	animateRotate("z", -1);
 	if(move == "x")
@@ -7020,37 +6923,37 @@ function notation(move, timed){
 	if(move == "z'")
 	animateRotate("y", 1);
 	if(move == "E")
-	animate('x', 0, 1, timed);
+	animate('x', midarr, 1, timed);
 	if(move == "E'")
-	animate('x', 0, -1, timed);
+	animate('x', midarr, -1, timed);
 	if(move == "S")
-	animate('y', 0, -1, timed);
+	animate('y', midarr, -1, timed);
 	if(move == "S'")
-	animate('y', 0, 1, timed);
+	animate('y', midarr, 1, timed);
 	if(move == "Lw")
-	animateWide('z', -MAXX, -1, timed);
+	animate('z', [-MAXX, CUBYESIZE-MAXX], -1, timed);
 	if(move == "Lw'")
-	animateWide('z', -MAXX, 1, timed);
+	animate('z', [-MAXX, CUBYESIZE-MAXX], 1, timed);
 	if(move == "Rw'")
-	animateWide('z', MAXX, -1, timed);
+	animate('z', [MAXX, MAXX-CUBYESIZE], -1, timed);
 	if(move == "Rw")
-	animateWide('z', MAXX, 1, timed);
+	animate('z', [MAXX, MAXX-CUBYESIZE], 1, timed);
 	if(move == "Fw")
-	animateWide('y', MAXX, -1, timed);
+	animate('y', [MAXX, MAXX-CUBYESIZE], -1, timed);
 	if(move == "Fw'")
-	animateWide('y', MAXX, 1, timed);
+	animate('y', [MAXX, MAXX-CUBYESIZE], 1, timed);
 	if(move == "Bw'")
-	animateWide('y', -MAXX, -1, timed);
+	animate('y', [-MAXX, CUBYESIZE-MAXX], -1, timed);
 	if(move == "Bw")
-	animateWide('y', -MAXX, 1, timed);
+	animate('y', [-MAXX, CUBYESIZE-MAXX], 1, timed);
 	if(move == "Uw")
-	animateWide('x', -MAXX, -1, timed);
+	animate('x', [-MAXX, CUBYESIZE-MAXX], -1, timed);
 	if(move == "Uw'")
-	animateWide('x', -MAXX, 1, timed);
+	animate('x', [-MAXX, CUBYESIZE-MAXX], 1, timed);
 	if(move == "Dw'")
-	animateWide('x', MAXX, -1, timed);
+	animate('x', [MAXX, MAXX-CUBYESIZE], -1, timed);
 	if(move == "Dw")
-	animateWide('x', MAXX, 1, timed);
+	animate('x', [MAXX, MAXX-CUBYESIZE], 1, timed);
 }
 function stepFour()
 {
