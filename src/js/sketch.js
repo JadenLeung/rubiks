@@ -6123,7 +6123,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(bandaged3, bandaged, JSON.stringify(bandaged3));
+		console.log(undo, redo);
 		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
@@ -6624,11 +6624,12 @@ function flexDo(foo, arr, shift = false) {
 		funcMult(foo, 3);
 	} else if (INPUT.value() == "3x3x2") {
 		let bad5 = [];
-		let setup = [CUBE[4].x, CUBE[4].y, CUBE[4].z];
-		if(setup[0] == -50 || setup[0] == 50) bad5 = ['L','R','F','B','S','M'];
-		else if(setup[2] == -50 || setup[2] == 50) bad5 = ['U','D','F','B','E','S'];
+		let mid = Math.floor(SIZE * SIZE / 2);
+		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+		if(setup[0] == -MAXX || setup[0] == MAXX) bad5 = ['L','R','F','B','S','M'];
+		else if(setup[2] == -MAXX || setup[2] == MAXX) bad5 = ['U','D','F','B','E','S'];
 		else bad5 = ['L','R','U','D','E','M']; // front
-		if (bad5.includes(arr[arr.length - 1][0])) {
+		if (bad5.includes(arr[arr.length - 1][0].toUpperCase())) {
 			funcMult(foo, 2);
 		} else {
 			funcMult(foo, 1);
