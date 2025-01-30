@@ -2663,10 +2663,15 @@ function doneBandage(){
 	customb = 0;
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
-	bandaged3[BANDAGE_SELECT.value()] = {
-		[BANDAGE_SLOT.value()]: bandaged, 
-		slot: BANDAGE_SLOT.value()
-	  };
+	if (!bandaged3[BANDAGE_SELECT.value()]) {
+		bandaged3[BANDAGE_SELECT.value()] = {
+			[BANDAGE_SLOT.value()]: bandaged, 
+			slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
+		  };
+	} else {
+		bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
+		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
+	}
 }
 function cancelBandage(){
 	customb = 0;
@@ -2720,7 +2725,7 @@ function randomBandage(){
 	}
 	bandaged3[BANDAGE_SELECT.value()] = {
 		[BANDAGE_SLOT.value()]: bandaged, 
-		slot: BANDAGE_SLOT.value()
+		slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
 	  };
 	bandaged2 = [];
 	ban9();
@@ -2836,11 +2841,15 @@ function Custom2(){
 	document.getElementById("okban").style.display = "none";
 	document.getElementById("leftban").style.display = "none";
 	document.getElementById("rightban").style.display = "none";
-	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
+	if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
 		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
+	} else {
+		BANDAGE_SLOT.selected(1)
+	}
+	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
 		bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
 	} else {
-	    bandaged = [];
+		bandaged = [];
 	}
 	changeCam(3);
 	doneBandage();
@@ -3722,6 +3731,10 @@ function setSettings(obj) {
 	HOLLOW.checked(obj.hollow == 1);
 	let d = obj.background;
 	localStorage.background = d;
+	if (obj.bandaged3 && obj.bandaged3 != "null") {
+		localStorage.bandaged3 = obj.bandaged3;
+		bandaged3 = JSON.parse(localStorage.bandaged3);
+	}
 	console.log("d is " + d)
 	let temp = d.split(' ');
 	setColors(temp[0], temp[1], temp[2], temp.length > 3 ? temp[3] : "#000000");
@@ -4382,6 +4395,7 @@ async function saveData(username, password, method, al) {
 		marathon:localStorage.marathon ?? -1,
 		marathon2:localStorage.marathon2 ?? -1,
 		marathon3:localStorage.marathon3 ?? -1,
+		bandaged3: localStorage.bandaged3 ?? "null",
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
