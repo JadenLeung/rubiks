@@ -5846,14 +5846,17 @@ function animateRotate(axis, dir) {
 		}
 	}
 }
-function animate(axis, rows, dir, timed) {
+function animate(axis, rows, dir, timed, bcheck = true) {
 	
-	if(isAnimating()) return;
+	if(isAnimating()) return false;
 	if (blinded()) {
 		toggleOverlay(true);
 	}
 	let total = 0;
 	let cuthrough = false;
+	if(rows[0] < -MAXX || rows[rows.length - 1] > MAXX || rows.length == (MAXX * 2 / CUBYESIZE + 1)) {
+		return false;
+	}
 	if(bandaged.length > 0){
 		for(let i = 0; i < bandaged.length; i++){
 			total = 0;
@@ -5865,13 +5868,29 @@ function animate(axis, rows, dir, timed) {
 				cuthrough = true;
 		}
 		if(cuthrough){
-			undo.pop();
-			if(timer.isRunning)
-				moves--;
-			return;
+			console.log("fails", rows);
+			let tryleft = animate(axis, [rows[0] - CUBYESIZE, ...rows], dir, timed, false);
+			let tryright = animate(axis, [...rows, rows[rows.length - 1] + CUBYESIZE], dir, timed, false);
+			if (tryleft && tryright) {
+				rows = tryleft.length < tryright.length ? tryleft: tryright;
+			} else if (tryleft) {
+				rows = tryleft;
+			} else if (tryright) {
+				rows = tryright;
+			} else if (bcheck) {
+				undo.pop();
+				if(timer.isRunning)
+					moves--;
+				return false;
+			} else {
+				return false;
+			}
 		}
 	}
-
+	console.log("works", rows);
+	if (!bcheck) {
+		return rows;
+	}
 	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && timed)
 	{
 		if(!alldown) {
@@ -5896,6 +5915,7 @@ function animate(axis, rows, dir, timed) {
 	}
 	initAudioContext(); // Ensure AudioContext is active
     playAudio();
+	return true;
 }
 
 function sleep(milliseconds) {
