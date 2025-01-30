@@ -113,7 +113,8 @@ export default function (p) {
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
-		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT;
+		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT,
+		BANDAGE_SLOT;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
@@ -753,10 +754,33 @@ p.setup = () => {
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(() => {
 		bandaged = [];
-		if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()))
-			bandaged = bandaged3[BANDAGE_SELECT.value()];
+		if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
+			BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
+		} else {
+			BANDAGE_SLOT.selected(1)
+		}
+		if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
+			bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
+		}
 		b_selectdim[BANDAGE_SELECT.value()]();
 	});
+
+	BANDAGE_SLOT = p.createSelect();
+	for (let i = 1; i <= 5; i++) {
+		BANDAGE_SLOT.option(i);
+	}
+	BANDAGE_SLOT.parent("bandage_slot");
+	BANDAGE_SLOT.changed(() => {
+		console.log(bandaged,bandaged3);
+		bandaged = [];
+		if (bandaged3[BANDAGE_SELECT.value()])
+			bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
+		if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
+			bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
+		}
+		console.log(bandaged, bandaged3)
+		reSetup();
+	})
 
 	INPUT.option("Standard");
 	INPUT.option("Double");
@@ -1504,7 +1528,6 @@ setInterval(() => {
 		for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 			const key = +Object.entries(mapCuby()).find(([key, value]) => value == i)?.[0];
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
-				console.log(mapCuby(), CUBE[key], key)
 				CUBE[i].setColor(CUBE[key].colors.magenta);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
 					CUBE[i].setColor(CUBE[key].colors.black);
@@ -1518,7 +1541,12 @@ setInterval(() => {
 	getEl("uppaint").style.opacity = colorindex == 0 ? 0.3 : 1;
 	getEl("downpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
 	if (colorindex > 52) activeKeys.clear();
+	// bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
+	// bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
 	localStorage.bandaged3 = JSON.stringify(bandaged3);
+	if (typeof bandaged3[BANDAGE_SELECT.value()] !== "object") {
+		bandaged3[BANDAGE_SELECT.value()] = {}; // Ensure it's an object
+	  }
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2594,7 +2622,7 @@ function viewBandage(def){
 	if(!def)
 		bannum = 1;
 	setDisplay("block", ["okban"]); 
-	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer"]); 
+	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2"]); 
 	setDisplay("inline", ["leftban", "rightban"]);
 
 	if(bandaged.length >= bannum)
@@ -2615,7 +2643,7 @@ function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
-	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban","bandage_outer"]);
+	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban","bandage_outer","bandage_outer2"]);
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
@@ -2626,7 +2654,7 @@ function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
 	document.getElementById("addbandage3").innerHTML= "";
 	setDisplay("none", ["okban", "leftban", "rightban", "deleteban", "cancelban"]); 
-	setDisplay("block", ["addbandage", "addbandage4", "input", "scram","bandage_outer"]); 
+	setDisplay("block", ["addbandage", "addbandage4", "input", "scram","bandage_outer","bandage_outer2"]); 
 	setDisplay("inline", ["custom5", "select9", "rng2"]); 
 
 	if(bandaged2.length > 1 && customb == 1)
@@ -2635,7 +2663,10 @@ function doneBandage(){
 	customb = 0;
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
-	bandaged3[BANDAGE_SELECT.value()] = bandaged;
+	bandaged3[BANDAGE_SELECT.value()] = {
+		[BANDAGE_SLOT.value()]: bandaged, 
+		slot: BANDAGE_SLOT.value()
+	  };
 }
 function cancelBandage(){
 	customb = 0;
@@ -2687,7 +2718,7 @@ function randomBandage(){
 			bandaged[i].push(rnd);
 		}
 	}
-	bandaged3[BANDAGE_SELECT.value()] = bandaged;
+	bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
 	bandaged2 = [];
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
@@ -2802,10 +2833,12 @@ function Custom2(){
 	document.getElementById("okban").style.display = "none";
 	document.getElementById("leftban").style.display = "none";
 	document.getElementById("rightban").style.display = "none";
-	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()))
-		bandaged = bandaged3[BANDAGE_SELECT.value()];
-	else
+	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
+		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
+		bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
+	} else {
 	    bandaged = [];
+	}
 	changeCam(3);
 	doneBandage();
 	modeData("custombandage");
@@ -6073,7 +6106,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(bandaged3);
+		console.log(bandaged3, bandaged, JSON.stringify(bandaged3));
 		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
