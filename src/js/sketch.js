@@ -134,7 +134,7 @@ export default function (p) {
 	let ADDBANDAGE, VIEWBANDAGE;
 	let customb = 0;
 	let bandaged2 = [];
-	let bandaged3 = [];
+	let bandaged3 = {};
 	let bannum = 1;
 	let rotation = [];
 	let rotationx = 0;
@@ -753,6 +753,8 @@ p.setup = () => {
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(() => {
 		bandaged = [];
+		if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()))
+			bandaged = bandaged3[BANDAGE_SELECT.value()];
 		b_selectdim[BANDAGE_SELECT.value()]();
 	});
 
@@ -927,6 +929,9 @@ p.setup = () => {
 	if(localStorage.keyboard) {
 		KEYBOARD.value(localStorage.keyboard);
 		changeKeys();
+	}
+	if(localStorage.bandaged3) {
+		bandaged3 = JSON.parse(localStorage.bandaged3);
 	}
 
 	
@@ -1512,7 +1517,8 @@ setInterval(() => {
 	getEl("rightpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
 	getEl("uppaint").style.opacity = colorindex == 0 ? 0.3 : 1;
 	getEl("downpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
-	if (colorindex > 52) activeKeys.clear();;
+	if (colorindex > 52) activeKeys.clear();
+	localStorage.bandaged3 = JSON.stringify(bandaged3);
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2613,7 +2619,8 @@ function addBandage(){
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
-	// reSetup();
+	if (DIM2 != 50)
+		reSetup();
 }
 function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
@@ -2628,6 +2635,7 @@ function doneBandage(){
 	customb = 0;
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
+	bandaged3[BANDAGE_SELECT.value()] = bandaged;
 }
 function cancelBandage(){
 	customb = 0;
@@ -2679,6 +2687,7 @@ function randomBandage(){
 			bandaged[i].push(rnd);
 		}
 	}
+	bandaged3[BANDAGE_SELECT.value()] = bandaged;
 	bandaged2 = [];
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
@@ -2793,9 +2802,12 @@ function Custom2(){
 	document.getElementById("okban").style.display = "none";
 	document.getElementById("leftban").style.display = "none";
 	document.getElementById("rightban").style.display = "none";
+	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()))
+		bandaged = bandaged3[BANDAGE_SELECT.value()];
+	else
+	    bandaged = [];
 	changeCam(3);
 	doneBandage();
-	bandaged = bandaged3;
 	modeData("custombandage");
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
@@ -2997,7 +3009,6 @@ function timedmode()
 }
 function cubemode()
 {
-	bandaged3 = bandaged;
 	custom = 0;
 	if(MODE == "speed" || MODE == "moves"){
 		ao5 = saveao5[0];
@@ -5080,14 +5091,17 @@ function animate(axis, row, dir, time) {
 				cuthrough = true;
 		}
 		if(cuthrough){
+			// if (row == MAXX || row == -MAXX) {
+			// 	animateWide(axis, row, dir, time);
+			// } else {
+				
+			// }
 			undo.pop();
-			if(timer.isRunning)
-				moves--;
+			if(timer.isRunning) moves--;
 			return;
 		}
 	}
-	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && time)
-	{
+	if (Math.round(timer.getTime() / 10)/100.0 <= 0 && time) {
 		if(!alldown) {
 			timer.reset();
 			timer.start();
@@ -5101,9 +5115,9 @@ function animate(axis, row, dir, time) {
 			CUBE[i].dir = dir;
 			CUBE[i].anim_axis = axis;
 			if(shufflespeed < 5)
-			CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
+				CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
 			else
-			CUBE[i].anim_angle = CUBE[i].dir * SPEED;
+				CUBE[i].anim_angle = CUBE[i].dir * SPEED;
 		}
 	}
 	initAudioContext(); // Ensure AudioContext is active
@@ -5119,8 +5133,7 @@ function cleanAllSelectedCubies() {
 }
 
 function getCubyByColor(arr1) {
-	for(let i = 0; i < SIZE * SIZE * SIZE; i++)
-	{
+	for(let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.white.levels))
 		return CUBE[i];
 		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.yellow.levels))
@@ -5135,6 +5148,7 @@ function getCubyByColor(arr1) {
 		return CUBE[i];
 	}
 }
+
 function getCubyIndexByColor2(arr1) //original
 {
 	// console.log(arr1);
@@ -6059,7 +6073,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(canMan);
+		console.log(bandaged3);
 		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
@@ -6355,7 +6369,7 @@ function multiple(nb, timed) {
 		let cubies = shownCubies();
 		let onedown = true;
 		alldown = false;
-		if(SIZE < 4 && !["x", "y", "z"].includes(arr[nb]) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
+		if(SIZE < 4 && !["x", "y", "z"].includes(arr[nb][0]) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
 			alldown = true;
 			onedown = false;
 			const keyMappings = {
