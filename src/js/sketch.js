@@ -2701,15 +2701,15 @@ function allBandaged(){
 function randomBandage(){
 	// BANDAGE_SELECT.value("3x3");
 	// changeThree();
-	let numB = parseInt(Math.random()*3)+2;
+	let numB = parseInt(Math.random()*SIZE)+2;
 	if (special[6] == 2) numB = parseInt(Math.random()*2)+1;
 	if (special[6] == 15) numB = 1;
 	let possible = [];
 	let possible2 = [];
 	bandaged = [];
 	let size = 2;
-	if(numB == 3) size = 3;
-	if(numB == 2) size = 4;
+	if(numB == 3) size = 2;
+	if(numB == 2) size = 3;
 	if (special[6] != 50) size = 2;
 	if(SIZE >= 4) size++;
 	for(let i = 0; i < numB; i++){
@@ -2743,18 +2743,32 @@ function randomBandage(){
 }
 function smoothBandage() {
 	let cnt = 0;
-	while (cnt < SIZE * SIZE * SIZE - bandaged.flat().length) {
+	console.log("way before", JSON.stringify(bandaged));
+	while (cnt < 1000) {
 		let nosmooth = true;
 		bandaged.forEach((b) => {
 			for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 				if (!getOuterCubes().includes(i)) continue;
-				console.log(!bandaged.flat().includes(i), nextcuby[i], i, bandaged);
-				if (!bandaged.flat().includes(i) && b.reduce((acc, c) => acc + (nextcuby[i].includes(c) ? 1 : 0), 0) >= 2) {
-					b.push(i);
+				if (b.includes(i)) continue;
+				if (b.reduce((acc, c) => acc + (nextcuby[i].includes(c) ? 1 : 0), 0) >= 2) {
+					if (!bandaged.flat().includes(i)) {
+						// console.log(!bandaged.flat().includes(i), nextcuby[i], i, bandaged);
+						console.log("before add", JSON.stringify(bandaged));
+						b.push(i);
+						console.log("after add", JSON.stringify(bandaged));
+					} else {
+						for (let j = 0; j < bandaged.length; j++) {
+							if (bandaged[j].includes(i)) {
+								if (Math.random() < 0.5) b.push(...bandaged[j]);
+								bandaged.splice(j, 1);
+								break;
+							}
+						}
+					}
 					nosmooth = false;
 					++cnt;
 				}
-				bandaged.map(subArray => [...new Set(subArray)]);
+				// bandaged.map(subArray => [...new Set(subArray)]);
 			}
 		})
 		if (nosmooth) break;
@@ -5995,7 +6009,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 32){  //space
-		console.log("mastep", mastep);
+		console.log(bandaged);
 		console.log(DIM, DIM2, special, MODE);
 		setLayout();
 		console.log(layout)
@@ -6081,7 +6095,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		// smoothBandage();
+		smoothBandage();
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
 	}
