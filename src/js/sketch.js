@@ -2711,6 +2711,7 @@ function randomBandage(){
 	if(numB == 3) size = 3;
 	if(numB == 2) size = 4;
 	if (special[6] != 50) size = 2;
+	if(SIZE >= 4) size++;
 	for(let i = 0; i < numB; i++){
 		possible = allBandaged();
 		possible2 = [];
@@ -2731,6 +2732,7 @@ function randomBandage(){
 			bandaged[i].push(rnd);
 		}
 	}
+	smoothBandage(); 
 	bandaged3[BANDAGE_SELECT.value()] = {
 		[BANDAGE_SLOT.value()]: bandaged, 
 		slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
@@ -2739,7 +2741,26 @@ function randomBandage(){
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
 }
-
+function smoothBandage() {
+	let cnt = 0;
+	while (cnt < SIZE * SIZE * SIZE - bandaged.flat().length) {
+		let nosmooth = true;
+		bandaged.forEach((b) => {
+			for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+				if (!getOuterCubes().includes(i)) continue;
+				console.log(!bandaged.flat().includes(i), nextcuby[i], i, bandaged);
+				if (!bandaged.flat().includes(i) && b.reduce((acc, c) => acc + (nextcuby[i].includes(c) ? 1 : 0), 0) >= 2) {
+					b.push(i);
+					nosmooth = false;
+					++cnt;
+				}
+				bandaged.map(subArray => [...new Set(subArray)]);
+			}
+		})
+		if (nosmooth) break;
+	}
+	reSetup();
+}
 function deleteBan(){
 	if(bandaged.length >= bannum) 
 		bandaged.splice(bannum-1, 1);
@@ -6060,7 +6081,8 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(getOuterCubes(), shownCubies());
+		// smoothBandage();
+		// console.log(mapBandaged())
 		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
