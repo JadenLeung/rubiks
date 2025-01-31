@@ -13,6 +13,7 @@ export default class Cuby {
     this.special = special;
     this.adjustedcolor = false;
     this.savecolors = {};
+    this.shown = true;
 
 	/*
     this.colors = {
@@ -527,7 +528,12 @@ export default class Cuby {
       arr = [0,1,2,3,6,9,10,11,12,15,18,19,20,21,22,23,24,25,26];
     else if(this.special[6] == 15)
       arr = [1,3,4,5,7,10,12,13,14,16,19,21,22,23,25];
-    if(arr.includes(this.index) && this.cubysize != 50) return;
+    if(arr.includes(this.index) && this.cubysize != 50) {
+      this.shown = false;
+      return;
+    } else {
+      this.shown = true;
+    }
     let r = 25;
     if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || this.cubysize[7] == 2)
       r = 50;
@@ -649,19 +655,6 @@ export default class Cuby {
 
 function getColor(color)
 {
-	/*
-	if(color[0] == 250)
-	return "w";
-	if(color[1] == 18)
-	return "r";
-	if(color[2] == 219)
-	return "b";
-	if(color[1] == 125)
-	return "o";
-	if(color[0] == 209)
-	return "y";
-	return "g";
-	*/
 	let cl = [];
 	cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
 	cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);

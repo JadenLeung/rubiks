@@ -1660,9 +1660,9 @@ function reSetup(rot) {
 		rotationx = 0;
 		rotationz = 0;
 	}
-	for(let i = 0; i < 27; i++){ //sets up nextcuby
+	for(let i = 0; i < SIZE * SIZE * SIZE; i++){ //sets up nextcuby
 		nextcuby[i] = [];
-		for(let j = 0; j < 27; j++){
+		for(let j = 0; j < SIZE * SIZE * SIZE; j++){
 			if(j == i) continue;
 			let sum = Math.abs(CUBE[i].x - CUBE[j].x) + Math.abs(CUBE[i].y - CUBE[j].y) + Math.abs(CUBE[i].z - CUBE[j].z);
 			if(sum == 50){
@@ -1710,6 +1710,16 @@ function to10(num) {
 	  total += addto;
 	}
 	return total;
+}
+function getOuterCubes() {
+	let outercubes = [];
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		if (CUBE[i].shown && ([-MAXX, MAXX].includes(CUBE[i].x) || [-MAXX, MAXX].includes(CUBE[i].y) 
+			|| [-MAXX, MAXX].includes(CUBE[i].z))) {
+			outercubes.push(i);
+		}
+	}
+	return outercubes;
 }
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
@@ -2682,11 +2692,9 @@ function allBandaged(){
 	let possible = [];
 	let allbandaged = bandaged.flat();
 	console.log("allbandaged is", allbandaged);
-	let cubies = Array.from({ length: 27 }, (_, i) => i);
-	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-	if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
-	for(let j = 0; j < 27; j++){
-		if(!allbandaged.includes(j) && j != 13 && cubies.includes(j)) possible.push(j);
+	let cubies = getOuterCubes();
+	for(let j = 0; j < cubies.length; j++){
+		if(!allbandaged.includes(j) && cubies.includes(j)) possible.push(j);
 	}
 	return possible;
 }
@@ -2731,6 +2739,7 @@ function randomBandage(){
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
 }
+
 function deleteBan(){
 	if(bandaged.length >= bannum) 
 		bandaged.splice(bannum-1, 1);
@@ -5867,6 +5876,12 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 			if(total > 0 && total < bandaged[i].length)
 				cuthrough = true;
 		}
+		if (cuthrough && SIZE < 4) {
+			undo.pop();
+			if(timer.isRunning)
+				moves--;
+			return false;
+		}
 		if(cuthrough){
 			console.log("fails", rows);
 			let tryleft = animate(axis, [rows[0] - CUBYESIZE, ...rows], dir, timed, false);
@@ -6045,7 +6060,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(undo, redo);
+		console.log(getOuterCubes(), shownCubies());
 		// console.log(mapBandaged());
 	}
 	if(p.keyCode == 9){ //tab
@@ -6312,23 +6327,9 @@ function setOLL(obj)
 }
 function shownCubies() {
 	let cubies = [];
-	if(DIM == 6) cubies = [4,5,7,8,13,14,16,17];
-	if(DIM == 1) cubies = [9,10,11,12,13,14,15,16,17];
-	if(DIM == 2) cubies = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-	if(DIM == 15) cubies = [0,2,6,8,9,11,15,17,18,20,24,26];
-	if(DIM == 50){
-		cubies = [];
-		for(let i = 0; i < 27; i++){
-			if(CUBE[i].stroke != 0) cubies.push(i);
-		}
-	}
-	if(Array.isArray(DIM) && DIM[0] != "adding")
-	{
-		cubies = [];
-		for(let i = 0; i < 27; i++)
-		{
-			if(!DIM[6].includes(i))
-				cubies.push(i);
+	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
+		if (CUBE[i].shown) {
+			cubies.push(i);
 		}
 	}
 	return cubies;
