@@ -5447,7 +5447,7 @@ function shuffleCube(nb) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
-			} else if(doubly || (SCRAM.value() == "Like a 3x3x2" && 
+			} else if(doubly || ((SCRAM.value() == "Like a 3x3x2" || (DIM == "2x2x4" && arr.length < 8)) && 
 			([col, op].includes(layout[2][mid][mid][0]) && rnd[0] != "U" && rnd[0] != "D" ||
 			[col, op].includes(layout[5][mid][mid][0]) && rnd[0] != "F" && rnd[0] != "B" ||
 			[col,op].includes(layout[0][mid][mid][0]) && rnd[0] != "L" && rnd[0] != "R")))
