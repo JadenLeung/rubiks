@@ -1238,7 +1238,7 @@ setInterval(() => {
 	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_home").style.display = localStorage.username != "signedout" && MODE == "login" ? "block" : "none";
 	updateScores();
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube") || race > 1))
 	{
 		timer.stop();
 		flipmode2 = 0;
@@ -1459,14 +1459,14 @@ setInterval(() => {
 	}
 	if(MODE == "cube" && Array.isArray(DIM) && DIM[0] != "adding")
 	{
-		if(!((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)){
-			document.getElementById("spacetime").style.display = "block";
-			document.getElementById("stop_div").style.display = "inline";
-		}
-		else{
-			document.getElementById("spacetime").style.display = "none";
-			document.getElementById("stop_div").style.display = "none";
-		}
+		// if(!((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)){
+		// 	document.getElementById("spacetime").style.display = "block";
+		// 	document.getElementById("stop_div").style.display = "inline";
+		// }
+		// else{
+		// 	document.getElementById("spacetime").style.display = "none";
+		// 	document.getElementById("stop_div").style.display = "none";
+		// }
 	}
 	let tempalg = [];
 	const possible = pracmode == "OLL" ? (DIM == 50 ?Array.from({ length: 57 }, (_, i) => (i + 1).toString()) : allplls[9]) : 
@@ -1722,12 +1722,13 @@ function veryOutside(i) {
 }
 function getNeighborsArr(cuby) {
 	if (!CUBE[cuby]) return false;
-	return [getCubyFromPos(CUBE[cuby].x+CUBYESIZE, CUBE[cuby].y, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x-CUBYESIZE, CUBE[cuby].y, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y+CUBYESIZE, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y-CUBYESIZE, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z+CUBYESIZE),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z-CUBYESIZE)]
+	let adder = (DIM2 == 100) ? CUBYESIZE * 2: CUBYESIZE;
+	return [getCubyFromPos(CUBE[cuby].x+adder, CUBE[cuby].y, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x-adder, CUBE[cuby].y, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y+adder, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y-adder, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z+adder),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z-adder)]
 }
 function isInnerCube(cuby) {
 	if (veryOutside(cuby) || !CUBE[cuby].shown) return false;
@@ -9845,79 +9846,6 @@ function isCube() { // only works with no adjustments like the 2x2x3
 }
 function isSolved()
 {
-	//console.log("called");
-	if(DIM == 100 || DIM == 5 || DIM == 10)
-	{
-		for(let i = 0; i < 6; i++)
-		{
-			let curcolor = layout[i][0][0][0]
-			if(layout[i][0][2][0] != curcolor) return false;
-			if(layout[i][2][0][0] != curcolor) return false;
-			if(layout[i][2][2][0] != curcolor) return false;
-		}
-		return true;
-	}
-	if(DIM == 1)
-	{
-		let isgood = true;
-		if(layout[2][1][1][0] == realtop || layout[2][1][1][0] == opposite[realtop])
-		{
-			if(layout[0][1][0][0] != layout[0][1][1][0] || layout[0][1][2][0] != layout[0][1][1][0])
-				isgood = false;
-			if(layout[5][1][0][0] != layout[5][1][1][0] || layout[5][1][2][0] != layout[5][1][1][0])
-				isgood = false;
-			if(layout[1][1][0][0] != layout[1][1][1][0] || layout[1][1][2][0] != layout[1][1][1][0])
-				isgood = false;
-			if(layout[4][1][0][0] != layout[4][1][1][0] || layout[4][1][2][0] != layout[4][1][1][0])
-				isgood = false;
-			let cuby1 = getColor(CUBE[+(layout[5][1][1][2] + layout[5][1][1][3])].right.levels);
-			let cuby2 = getColor(CUBE[+(layout[0][1][1][2] + layout[0][1][1][3])].right.levels);
-			let cuby3 = getColor(CUBE[+(layout[4][1][1][2] + layout[4][1][1][3])].right.levels);
-			let cuby4 = getColor(CUBE[+(layout[1][1][1][2] + layout[1][1][1][3])].right.levels);
-			let cuby5 = getColor(CUBE[+(layout[1][1][2][2] + layout[1][1][2][3])].right.levels);
-			//console.log(cuby1, cuby2, cuby3, cuby4, cuby5);
-			if(cuby1 != cuby5 || cuby2 != cuby5 || cuby3 != cuby5 || cuby4 != cuby5)
-				isgood = false;
-		}
-		else if(layout[5][1][1][0] == realtop || layout[5][1][1][0] == opposite[realtop])
-		{
-			if(layout[2][1][0][0] != layout[2][1][1][0] || layout[2][1][2][0] != layout[2][1][1][0])
-				isgood = false;
-			if(layout[3][1][0][0] != layout[3][1][1][0] || layout[3][1][2][0] != layout[3][1][1][0])
-				isgood = false;
-			if(layout[1][0][1][0] != layout[1][1][1][0] || layout[1][2][1][0] != layout[1][1][1][0])
-				isgood = false;
-			if(layout[0][0][1][0] != layout[0][1][1][0] || layout[0][2][1][0] != layout[0][1][1][0])
-				isgood = false;
-			let cuby1 = getColor(CUBE[+(layout[2][1][1][2] + layout[2][1][1][3])].top.levels);
-			let cuby2 = getColor(CUBE[+(layout[1][1][1][2] + layout[1][1][1][3])].top.levels);
-			let cuby3 = getColor(CUBE[+(layout[3][1][1][2] + layout[3][1][1][3])].top.levels);
-			let cuby4 = getColor(CUBE[+(layout[0][1][1][2] + layout[0][1][1][3])].top.levels);
-			let cuby5 = getColor(CUBE[+(layout[2][1][2][2] + layout[2][1][2][3])].top.levels);
-			//console.log(cuby1, cuby2, cuby3, cuby4, cuby5);
-			if(cuby1 != cuby5 || cuby2 != cuby5 || cuby3 != cuby5 || cuby4 != cuby5)
-				isgood = false;
-		}
-		else{
-			if(layout[2][0][1][0] != layout[2][1][1][0] || layout[2][2][1][0] != layout[2][1][1][0])
-				isgood = false;
-			if(layout[3][0][1][0] != layout[3][1][1][0] || layout[3][2][1][0] != layout[3][1][1][0])
-				isgood = false;
-			if(layout[5][0][1][0] != layout[5][1][1][0] || layout[5][2][1][0] != layout[5][1][1][0])
-				isgood = false;
-			if(layout[4][0][1][0] != layout[4][1][1][0] || layout[4][2][1][0] != layout[4][1][1][0])
-				isgood = false;
-			let cuby1 = getColor(CUBE[+(layout[2][1][1][2] + layout[2][1][1][3])].front.levels);
-			let cuby2 = getColor(CUBE[+(layout[5][1][1][2] + layout[5][1][1][3])].front.levels);
-			let cuby3 = getColor(CUBE[+(layout[3][1][1][2] + layout[3][1][1][3])].front.levels);
-			let cuby4 = getColor(CUBE[+(layout[4][1][1][2] + layout[4][1][1][3])].front.levels);
-			let cuby5 = getColor(CUBE[+(layout[5][0][1][2] + layout[5][0][1][3])].front.levels);
-			//console.log(cuby1, cuby2, cuby3, cuby4, cuby5);
-			if(cuby1 != cuby5 || cuby2 != cuby5 || cuby3 != cuby5 || cuby4 != cuby5)
-				isgood = false;
-		}
-		return isgood;
-	}
 	if(DIM == 3)
 	{
 		for(let i = 0; i < 6; i++)
@@ -9927,38 +9855,6 @@ function isSolved()
 			if(layout[i][1][0][0] != curcolor) return false;
 			if(layout[i][1][2][0] != curcolor) return false;
 			if(layout[i][2][1][0] != curcolor) return false;
-		}
-		return true;
-	}
-	if(DIM == 2)
-	{
-		for(let i = 0; i < 6; i++)
-		{
-			let curcolor = layout[i][1][1][0];
-			if(curcolor == "b" || curcolor == "g")
-			{
-				for(let x = 0; x < 3; x++)
-				{
-					for(let y = 0; y < 3; y++)
-					{
-						if(layout[i][x][y][0] != curcolor)
-							return false;
-					}
-				}
-			}
-			else
-			{
-				let possible = layout[i][0][0][0];
-				let bool = false;
-				if(layout[i][0][1][0] == possible && layout[i][0][2][0] == possible && layout[i][2][0][0] == possible 
-					&& layout[i][2][1][0] == possible && layout[i][2][2][0] == possible && (layout[i][0][1].includes("g") || layout[i][0][1].includes("b")))
-					bool = true;
-				if(layout[i][1][0][0] == possible && layout[i][2][0][0] == possible && layout[i][0][2][0] == possible 
-					&& layout[i][1][2][0] == possible && layout[i][2][2][0] == possible && (layout[i][1][0].includes("g") || layout[i][1][0].includes("b")))
-					bool = true;
-				if(bool == false)
-					return false;
-			}
 		}
 		return true;
 	}
@@ -9979,7 +9875,7 @@ function isSolved()
 		}
 		return false;
 	}
-	if([6, 15, "2x2x4", "3x3x5"].includes(DIM) || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
+	if (![3, 13].includes(DIM))
 	{
 		let cubies = getOuterCubes();
 		let cuby = cubies[0];
@@ -9989,12 +9885,14 @@ function isSolved()
 		let front = getColor(CUBE[cuby].top.levels);
 		let right = getColor(CUBE[cuby].front.levels);
 		let left = getColor(CUBE[cuby].back.levels);
-		if (top == 'k') top = opposite[bottom];
-		if (bottom == 'k') bottom = opposite[top];
-		if (back == 'k') back = opposite[front];
-		if (front == 'k') front = opposite[back];
-		if (right == 'k') right = opposite[left];
-		if (left == 'k') left = opposite[right];
+		if (custom != 1) {
+			if (top == 'k') top = opposite[bottom];
+			if (bottom == 'k') bottom = opposite[top];
+			if (back == 'k') back = opposite[front];
+			if (front == 'k') front = opposite[back];
+			if (right == 'k') right = opposite[left];
+			if (left == 'k') left = opposite[right];
+		}
 		if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
 			if (cubies.length <= 1) return true;
 		}
@@ -10014,7 +9912,7 @@ function isSolved()
 			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
 			let j = 0;
 			for (let dir in compare) {
-				if (dir[1] == "k") continue;
+				if (custom != 1 && dir[1] == "k") continue;
 				if (neighbors[map[dir]] != -1) continue;
 				solved = solved && compare[dir][0] == compare[dir][1]
 				j++;
@@ -10024,20 +9922,7 @@ function isSolved()
 		return solved;
         
 	}
-	for(let i = 0; i < 6; i++)
-	{
-		let curcolor = layout[i][0][0][0]; 
-		for(let x = 0; x < SIZE; x++)
-		{
-			for(let y = 0; y < SIZE; y++)
-			{
-				//console.log(layout[i][x][y][0]+ " " + curcolor);
-				if(layout[i][x][y][0] != curcolor) return false; 
-			}
-		}			 
-	}
-	//console.log("solved");
-	//flipmode2 = 1;
+
 	return true;
 }
 function median(values){  
