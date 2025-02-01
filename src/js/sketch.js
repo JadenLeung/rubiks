@@ -6363,6 +6363,10 @@ function adjustMove(move) {
 			console.log("Illegal!");
 			return false;
 		}
+		if ("lfrbud".includes(move[0]) && !isCube()) {
+			move = move[0].toUpperCase() + move.slice(1);
+			console.log("changedmove ", move)
+		}
 		let toowide = ["L", "F", "R", "B", "U", "D"];
 		console.log(getColor(CUBE[10].left.levels), getColor(CUBE[10].top.levels), getColor(CUBE[10].front.levels));
 		if (isCube()) {
