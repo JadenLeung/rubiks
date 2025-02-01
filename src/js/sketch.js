@@ -5316,7 +5316,7 @@ function shufflePossible(len, total2, prev){
 		return;
 	}
 	let rnd2 = Math.random();
-	let col = TOPWHITE.value()[0];
+	let col = topColor();
 	col = col.toLowerCase();
 	let op = opposite[col];
 	let mid = Math.floor(SIZE / 2)
@@ -5445,7 +5445,7 @@ function shuffleCube(nb) {
 				continue;
 			
 			let rnd2 = Math.random();
-			let col = TOPWHITE.value()[0];
+			let col = topColor();
 			col = col.toLowerCase();
 			let op = opposite[col];
 			if(SCRAM.value() == "Gearcube"){
@@ -6108,7 +6108,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(isSolved());
+		console.log(topColor());
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
 	}
@@ -6140,7 +6140,7 @@ p.keyPressed = (event) => {
 			if (bstep > 0) func = blindmode; 
 			if (mastep > 0) func = startMarathon.bind(0, ma_data.type);
 			if (func) {
-				if (mastep > 0 && layout[2][1][1][0] != topColor()) {
+				if (mastep > 0 && layout[2][1][1][0] != TOPWHITE.value()[0].toLowerCase()) {
 					movesmode();
 					setTimeout(func, 0);
 				}
@@ -6318,6 +6318,7 @@ p.keyPressed = (event) => {
 			break;
 			case 57: //9
 			if (p.keyIsDown(p.SHIFT)) {
+				if (SIZE > 3 && DIM != 50) break;
 				if(["normal", "timed", "cube"].includes(MODE)) {iddefault(); successSQL("Default ID Saved");}
 			} else {
 				if(localStorage.username == "signedout")
@@ -6330,6 +6331,7 @@ p.keyPressed = (event) => {
 				if (!["normal", "timed", "cube","finishpaint"].includes(MODE)) {
 					regular();
 				}
+				if (SIZE > 3) break;
 				try {
 					allcubies = IDtoReal(IDtoLayout(decode(getID())));
 					setLayout();
@@ -9250,7 +9252,7 @@ function hollowCube(adjust = false){
 	reSetup();
 }
 function topColor() {
-	return TOPWHITE.value()[0].toLowerCase();
+	return allcubies[4][5];
 }
 function topWhite(){
 	allcubies = IDtoReal(IDtoLayout(decode(colorvalues[TOPWHITE.value()[0].toLowerCase()])));
