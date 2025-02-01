@@ -116,7 +116,7 @@ export default function (p) {
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR, THREEBYTHREEBYFIVE;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -528,6 +528,7 @@ p.setup = () => {
 	FOURBYFOUR = p.createButton('4x4');
 	FIVEBYFIVE = p.createButton('5x5');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
+	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 	refreshButtons();
 
 
@@ -1708,11 +1709,35 @@ function to10(num) {
 	}
 	return total;
 }
+function getCubyFromPos(x, y, z) {
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		if (CUBE[i].x == x && CUBE[i].y == y && CUBE[i].z == z && CUBE[i].shown) {
+			return i;
+		}
+	}
+	return -1;
+}
+function veryOutside(i) {
+	return [-MAXX, MAXX].includes(CUBE[i].x) || [-MAXX, MAXX].includes(CUBE[i].y) || [-MAXX, MAXX].includes(CUBE[i].z)
+}
+function getNeighborsArr(cuby) {
+	if (!CUBE[cuby]) return false;
+	return [getCubyFromPos(CUBE[cuby].x+CUBYESIZE, CUBE[cuby].y, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x-CUBYESIZE, CUBE[cuby].y, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y+CUBYESIZE, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y-CUBYESIZE, CUBE[cuby].z),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z+CUBYESIZE),
+	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z-CUBYESIZE)]
+}
+function isInnerCube(cuby) {
+	if (veryOutside(cuby) || !CUBE[cuby].shown) return false;
+	let touching = getNeighborsArr(cuby);
+	return !touching.includes(-1);
+}
 function getOuterCubes() {
 	let outercubes = [];
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		if (CUBE[i].shown && ([-MAXX, MAXX].includes(CUBE[i].x) || [-MAXX, MAXX].includes(CUBE[i].y) 
-			|| [-MAXX, MAXX].includes(CUBE[i].z))) {
+		if (CUBE[i].shown && !isInnerCube(i)) {
 			outercubes.push(i);
 		}
 	}
@@ -5447,7 +5472,7 @@ function shuffleCube(nb) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
-			} else if(doubly || ((SCRAM.value() == "Like a 3x3x2" || (DIM == "2x2x4" && arr.length < 8)) && 
+			} else if(doubly || ((SCRAM.value() == "Like a 3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && arr.length < 8)) && 
 			([col, op].includes(layout[2][mid][mid][0]) && rnd[0] != "U" && rnd[0] != "D" ||
 			[col, op].includes(layout[5][mid][mid][0]) && rnd[0] != "F" && rnd[0] != "B" ||
 			[col,op].includes(layout[0][mid][mid][0]) && rnd[0] != "L" && rnd[0] != "R")))
@@ -5814,7 +5839,7 @@ function startAction() {
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
-		// console.log(CUBE[cuby]);
+		console.log(getNeighborsArr(cuby));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -5996,7 +6021,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 32){  //space
-		console.log(bandaged);
+		console.log(getOuterCubes());
 		console.log(DIM, DIM2, special, MODE);
 		setLayout();
 		console.log(layout)
@@ -6082,7 +6107,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(isCube())
+		console.log(isSolved());
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
 	}
@@ -6358,8 +6383,8 @@ function shownCubies() {
 	return cubies;
 }
 function adjustMove(move) {
-	if (DIM == "2x2x4") {
-		if (["M", "S", "E"].includes(move[0]) && !isCube()) {
+	if (["2x2x4", "3x3x5"].includes(DIM)) {
+		if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
 			console.log("Illegal!");
 			return false;
 		}
@@ -6748,6 +6773,7 @@ function refreshButtons()
 	FOURBYFOUR.remove();
 	FIVEBYFIVE.remove();
 	TWOBYTWOBYFOUR.remove();
+	THREEBYTHREEBYFIVE.remove();
 	CUBE3.remove();
 	CUBE4.remove();
 	CUBE5.remove();
@@ -6906,6 +6932,9 @@ function refreshButtons()
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+
+		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
+		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -9736,7 +9765,7 @@ function renderCube() {
 					} else {
 						p.rotateZ(CUBE[i].anim_angle);
 					}
-					CUBE[i].show();
+					CUBE[i].show(SIZE);
 					p.pop();
 				} else {
 					if (CUBE[i].anim_axis === 'x') {
@@ -9748,10 +9777,10 @@ function renderCube() {
 					}
 					CUBE[i].anim_axis = false;
 					CUBE[i].anim_angle = false;
-					CUBE[i].show();
+					CUBE[i].show(SIZE);
 				}
 			} else {
-				CUBE[i].show();
+				CUBE[i].show(SIZE);
 			}
 		}
 	}
@@ -9950,9 +9979,9 @@ function isSolved()
 		}
 		return false;
 	}
-	if([6, 15, "2x2x4"].includes(DIM) || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
+	if([6, 15, "2x2x4", "3x3x5"].includes(DIM) || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
 	{
-		let cubies = shownCubies();
+		let cubies = getOuterCubes();
 		let cuby = cubies[0];
 		let top = getColor(CUBE[cuby].right.levels);
 		let bottom = getColor(CUBE[cuby].left.levels);
@@ -9960,53 +9989,39 @@ function isSolved()
 		let front = getColor(CUBE[cuby].top.levels);
 		let right = getColor(CUBE[cuby].front.levels);
 		let left = getColor(CUBE[cuby].back.levels);
-		if (DIM == 6){
-			const opposite3 = {r:"o", o:"r", g:"b", b:"g", y:"w", w:"y"};
-			if (top == 'k') top = opposite3[bottom];
-			if (bottom == 'k') bottom = opposite3[top];
-			if (back == 'k') back = opposite3[front];
-			if (front == 'k') front = opposite3[back];
-			if (right == 'k') right = opposite3[left];
-			if (left == 'k') left = opposite3[right];
-		} else if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
-			cubies = [];
-			for(let i = 0; i < 27; i++)
-			{
-				if(!DIM[6].includes(i))
-					cubies.push(i);
-			}
+		if (top == 'k') top = opposite[bottom];
+		if (bottom == 'k') bottom = opposite[top];
+		if (back == 'k') back = opposite[front];
+		if (front == 'k') front = opposite[back];
+		if (right == 'k') right = opposite[left];
+		if (left == 'k') left = opposite[right];
+		if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
 			if (cubies.length <= 1) return true;
-			top = getColor(CUBE[cubies[0]].right.levels);
-			bottom = getColor(CUBE[cubies[0]].left.levels);
-			back = getColor(CUBE[cubies[0]].bottom.levels);
-			front = getColor(CUBE[cubies[0]].top.levels);
-			right = getColor(CUBE[cubies[0]].front.levels);
-			left = getColor(CUBE[cubies[0]].back.levels);
 		}
-		//console.log(cubies);
-		//let cubies = [4];
+		let solved = true;
 		for(let i = 0; i < cubies.length; i++)
 		{
 			let curindex = cubies[i];
-			let top2 = getColor(CUBE[curindex].right.levels);
-			let bottom2 = getColor(CUBE[curindex].left.levels);
-			let back2 = getColor(CUBE[curindex].bottom.levels);
-			let front2 = getColor(CUBE[curindex].top.levels);
-			let right2 = getColor(CUBE[curindex].front.levels);
-			let left2 = getColor(CUBE[curindex].back.levels);
-			// console.log(top, top2, bottom, bottom2, back, back2, front, front2, right, right2, left, left2, curindex)
-			if(DIM == 6 || DIM == 15){
-				if((top != top2 && top != "k" && top2 != "k") || (bottom != bottom2 && bottom != "k" && bottom2 != "k") ||
-				(left != left2 && left != "k" && left2 != "k") || (right != right2 && right != "k" && right2 != "k") ||
-				(back != back2 && back != "k" && back2 != "k") || (front != front2 && front != "k" && front2 != "k"))
-                return false;
+			const compare = {
+				top: [top, getColor(CUBE[curindex].right.levels)],
+				bottom: [bottom, getColor(CUBE[curindex].left.levels)],
+				back: [back, getColor(CUBE[curindex].bottom.levels)],
+                front: [front, getColor(CUBE[curindex].top.levels)],
+                right: [right, getColor(CUBE[curindex].front.levels)],
+                left: [left, getColor(CUBE[curindex].back.levels)],
 			}
-			else{
-				if(top != top2 || bottom != bottom2 || left != left2|| right != right2 || back != back2 || front != front2)
-					return false;
+			const neighbors = getNeighborsArr(curindex);
+			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
+			let j = 0;
+			for (let dir in compare) {
+				if (dir[1] == "k") continue;
+				if (neighbors[map[dir]] != -1) continue;
+				solved = solved && compare[dir][0] == compare[dir][1]
+				j++;
 			}
+			
         }
-		return true;
+		return solved;
         
 	}
 	for(let i = 0; i < 6; i++)
