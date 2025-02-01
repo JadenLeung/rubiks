@@ -3802,7 +3802,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "2x2x4" ? 50 : SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
+	ZOOMADD = DIM == "3x3x5" ? 140 : DIM == "2x2x4" ? 50 : SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM + ZOOMADD);
