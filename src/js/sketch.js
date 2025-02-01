@@ -9427,8 +9427,10 @@ function dragCube(cuby1, color1, cuby2, color2)
 	}
 	let revturnorder = turnorder.slice().reverse();
 	
+	let turning = false;
 
 	if (cuby1 == cuby2) { // turning over
+		console.log("Equal cubies")
 		arr = [];
 		let face1 = getFace(cuby1, color1);
 		let face2 = getFace(cuby2, color2);
@@ -9444,40 +9446,15 @@ function dragCube(cuby1, color1, cuby2, color2)
 			let index = TURN.dirs.indexOf(face1);
 			let index2 = TURN.dirs.indexOf(face2);
 			if (index != -1 && index2 != -1 && (TURN.dirs[index+1] == face2 || TURN.dirs[index2+1] == face1)) {
+				turning = true;
 				arr = [TURN.turn[(vec1[TURN.vec] + MAXX) / 50]];
-				console.log("arr ", arr)
 				if (TURN.dirs[index2+1] == face1) {
 					arr[0] = Inverse(arr[0]);
 				}
 			}
 		})
-		if(INPUT.value() == "Double")
-			arr.push(arr[0]);
-		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
-			arr.push(arr[0]);
-		if(INPUT.value() == "Gearcube") {
-			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
-				arr = [];
-			} else {
-				arr.unshift(toGearCube(arr[0]));
-			}
-		}
-		if(INPUT.value() == "Gearcube II") {
-			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
-				arr = []
-			} else {
-				arr.push(arr[0]);
-				console.log(arr[0][0])
-				console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
-				arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
-			}
-		}
-		alldown = false;
-		multiple(0, true);
-		selectedCuby = -1;
-		selectedColor = [];
-		return;
-	} else if (getFace(cuby1, color1) == getFace(cuby2, color2)) {
+	} else if (getFace(cuby1, color1) == getFace(cuby2, color2) && sharedAxis(cuby1, cuby2).timeshared > 1) {
+		console.log("Same face cubies")
 		let face1 = getFace(cuby1, color1);
 		const TURNARR = [
 			{axis: "z", turn: xaxis, faces:
@@ -9504,6 +9481,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 			if (CUBE[cuby1][FACE.axis] == CUBE[cuby2][FACE.axis]) {
 				FACE.faces.forEach((f) => {
 					if (face1 == f.face && !good && CUBE[cuby1][f.lastaxis] == CUBE[cuby2][f.lastaxis]) {
+						turning = true;
 						arr = [FACE.turn[(CUBE[cuby1][FACE.axis] + MAXX) / 50]]
 						let index = f.order.indexOf(CUBE[cuby1][f.upaxis]);
 						let index2 = f.order.indexOf(CUBE[cuby2][f.upaxis]);
@@ -9515,11 +9493,43 @@ function dragCube(cuby1, color1, cuby2, color2)
 				});
 			}
 		})
+	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1) {
+		const sharedata = sharedAxis(cuby1, cuby2);
+		const TURNOBJ = {
+			z: {compare: ["x", "y"], vec: 2, turn: xaxis},
+			x: {compare: ["y", "z"], vec: 0, turn: yaxis},
+			y: {compare: ["z", "x"], vec: 1, turn: zaxis},
+		};
+		let compare = TURNOBJ[sharedata.axis].compare;
+		arr = [TURNOBJ[sharedata.axis].turn[(sharedata.row + MAXX) / CUBYESIZE]];
+		const x1 = CUBE[cuby1][compare[1]], y1 = CUBE[cuby1][compare[0]];
+		const x2 = CUBE[cuby2][compare[1]], y2 = CUBE[cuby2][compare[0]];
+		let dotproduct = x1 * y2 - y1 * x2
+		console.log("dot product is ", dotproduct);
+		if (dotproduct == 0) {
+			if (getFace(cuby1, color1) == getFace(cuby2, color2)) {
+				return false;
+			}
+			const DIAGOBJ = {
+				x: [5, 1, 4, 0, 5],
+				y: [2, 1, 3, 0, 2], // counterclockwise
+				z: [5, 2, 4, 3, 5]
+			}
+			let index = DIAGOBJ[sharedata.axis].indexOf(getFace(cuby1, color1));
+			console.log(index, DIAGOBJ.y[index+1])
+			if (DIAGOBJ[sharedata.axis][index + 1] == getFace(cuby2, color2)) {
+				arr[0] = Inverse(arr[0]);
+			}
+		} else if (dotproduct > 0) {
+			arr[0] = Inverse(arr[0]);
+		}
+		turning = true;
+	}
+	if (turning) {
 		if(INPUT.value() == "Double")
 			arr.push(arr[0]);
-		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0])) {
+		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 			arr.push(arr[0]);
-		}
 		if(INPUT.value() == "Gearcube") {
 			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
 				arr = [];
@@ -9537,7 +9547,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
 			}
 		}
-		if (!good) return;
+		alldown = false;
 		multiple(0, true);
 		selectedCuby = -1;
 		selectedColor = [];
@@ -9632,6 +9642,21 @@ function getFace(cuby1, color1)
 		}
 	}*/
 	return;
+}
+function sharedAxis(cuby1, cuby2) {
+	let obj = false;
+	let timeshared = 0;
+	["x", "y", "z"].forEach((row) => {
+		if (CUBE[cuby1][row] == CUBE[cuby2][row]) {
+			timeshared++;
+			obj = {axis: row, row: CUBE[cuby2][row], timeshared: timeshared};
+		}
+	})
+	if (obj) {
+		console.log("Returning", obj)
+		return obj;
+	}
+	return false;
 }
 function F2ldist(color1, color2, color3, center1, center2, center3, center4, xx)
 {
