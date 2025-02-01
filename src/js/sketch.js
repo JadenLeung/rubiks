@@ -22,8 +22,6 @@ export default function (p) {
 	let DIM4 = 3;
 	let touchrotate = [];
 	const NOMOUSE = [13];
-	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
-		 "Xmas 3x3": changeSeven, "4x4" : switchFour, "5x5" : switchFive};
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	let pracalgs = [];
 	let trackthin = null; // false means thin
@@ -118,7 +116,7 @@ export default function (p) {
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -179,6 +177,8 @@ export default function (p) {
 	 };
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
+	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
+		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5)};
 
 	// attach event
 
@@ -217,14 +217,12 @@ opposite["w"] = "y";
 opposite["o"] = "r";
 opposite["r"] = "o";
 
-let opposite2 = [];
-opposite2["L"] = "R";
-opposite2["R"] = "L";
-opposite2["F"] = "B";
-opposite2["B"] = "F";
-opposite2["U"] = "D";
-opposite2["D"] = "U";
-opposite2["M"] = "bruh"
+const opposite2 = {
+	L: "R", R: "L", F: "B", B: "F", U: "D", D: "U",
+	Lw: "Rw", Rw: "Lw", Fw: "Bw", Bw: "Fw", Uw: "Dw", Dw: "Uw",
+	l: "r", r: "l", f: "b", b: "f", u: "d", d: "u",
+	M: "bruh"
+  };
 
 
 let selectedCuby = -1;
@@ -528,7 +526,8 @@ p.setup = () => {
 	CUBE15 = p.createButton('2x2x3');
 	CUBE16 = p.createButton('Bandaged 3x3x2');
 	FOURBYFOUR = p.createButton('4x4');
-	FIVEBYFIVE = p.createButton('4x4');
+	FIVEBYFIVE = p.createButton('5x5');
+	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	refreshButtons();
 
 
@@ -1203,8 +1202,7 @@ setInterval(() => {
 	secs = 20;
 	if(scrambles.length < mo5.length)
 		scrambles.push(document.getElementById('scramble').innerText);
-	let easyarr = [50,100,3,2,4,7,5,1,6,8,9,10,11,12,13,14,15,16,17,18];
-	easytime = (easyarr.includes(DIM) || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
+	easytime = (custom == 0 || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[0] != "adding" && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22) && special[0] == false)
 		goodsolved = true;
@@ -1239,7 +1237,6 @@ setInterval(() => {
 	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_home").style.display = localStorage.username != "signedout" && MODE == "login" ? "block" : "none";
 	updateScores();
-	
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube" && easytime) || race > 1))
 	{
 		timer.stop();
@@ -2378,25 +2375,14 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
-function switchFour() {
+function switchSize(s, d = 50) {
 	DIM2 = 50;
-	DIM = 50;
+	DIM = d;
 	changeCam(3)
-	SIZE = 4;
-	MAXX = 75;
+	SIZE = s;
+	MAXX = (SIZE - 1) * 25;
 	reSetup();
 	refreshButtons();
-	FOURBYFOUR.style('background-color', "#8ef5ee");
-}
-function switchFive() {
-	DIM2 = 50;
-	DIM = 50;
-	changeCam(3)
-	SIZE = 5;
-	MAXX = 100;
-	reSetup();
-	refreshButtons();
-	FIVEBYFIVE.style('background-color', "#8ef5ee");
 }
 function change20(dim, b){
 	changeFive();
@@ -3790,7 +3776,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
+	ZOOMADD = DIM == "2x2x4" ? 50 : SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM + ZOOMADD);
@@ -5437,6 +5423,7 @@ function shuffleCube(nb) {
 			col = col.toLowerCase();
 			let op = opposite[col];
 			if(SCRAM.value() == "Gearcube"){
+				rnd = rnd.replace(/w/g, '');
 				if(rnd2 < 0.5){
 					arr.push((rnd + "w"));
 					arr.push(rnd);
@@ -5448,6 +5435,7 @@ function shuffleCube(nb) {
 					total += rnd + "w' " + rnd + "' ";
 				}
 			} else if (SCRAM.value() == "Gearcube II") {
+				rnd = rnd.replace(/w/g, '');
 				if (rnd2 < 0.5) {
 					arr.push(rnd);
 					arr.push(rnd);
@@ -5460,9 +5448,9 @@ function shuffleCube(nb) {
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
 			} else if(doubly || (SCRAM.value() == "Like a 3x3x2" && 
-			([col, op].includes(layout[2][mid][mid][0]) && rnd != "U" && rnd != "D" ||
-			[col, op].includes(layout[5][mid][mid][0]) && rnd != "F" && rnd != "B" ||
-			[col,op].includes(layout[0][mid][mid][0]) && rnd != "L" && rnd != "R")))
+			([col, op].includes(layout[2][mid][mid][0]) && rnd[0] != "U" && rnd[0] != "D" ||
+			[col, op].includes(layout[5][mid][mid][0]) && rnd[0] != "F" && rnd[0] != "B" ||
+			[col,op].includes(layout[0][mid][mid][0]) && rnd[0] != "L" && rnd[0] != "R")))
 			{
 				console.log("HEREEEE")
 				arr.push(rnd);
@@ -5826,7 +5814,7 @@ function startAction() {
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
-		console.log(CUBE[cuby]);
+		// console.log(CUBE[cuby]);
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -5937,7 +5925,6 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 			}
 		}
 	}
-	console.log("works", rows);
 	if (!bcheck) {
 		return rows;
 	}
@@ -6095,7 +6082,7 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		smoothBandage();
+		console.log(isCube())
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
 	}
@@ -6370,6 +6357,32 @@ function shownCubies() {
 	}
 	return cubies;
 }
+function adjustMove(move) {
+	if (DIM == "2x2x4") {
+		if (["M", "S", "E"].includes(move[0]) && !isCube()) {
+			console.log("Illegal!");
+			return false;
+		}
+		let toowide = ["L", "F", "R", "B", "U", "D"];
+		console.log(getColor(CUBE[10].left.levels), getColor(CUBE[10].top.levels), getColor(CUBE[10].front.levels));
+		if (isCube()) {
+			const arr = [topColor(), opposite[topColor()]];
+			if (arr.includes(getColor(CUBE[10].left.levels))) {
+				toowide = ["L", "F", "R", "B"];
+			} else if (arr.includes(getColor(CUBE[10].front.levels))) {
+				toowide = ["F", "B", "U", "D"];
+			} else {
+				toowide = ["L", "R", "U", "D"];
+			}
+		}
+		if (toowide.includes(move[0]) && !(move.includes("w"))) {
+			if (move.includes("'")) move = move[0] + "w'";
+			else move += "w";
+		}
+	}
+	console.log("move is " + move)
+	return move;
+}
 function multiple(nb, timed) {
 	if((MODE == "speed" || MODE == "moves") && arr.length > 2)
 	return;
@@ -6378,34 +6391,51 @@ function multiple(nb, timed) {
 		let cubies = shownCubies();
 		let onedown = true;
 		alldown = false;
-		if(SIZE < 4 && !["x", "y", "z"].includes(arr[nb][0]) && (DIM == 1 || DIM == 6 || DIM == 2 || Array.isArray(DIM) || DIM == 50 || DIM == 15)){
+		if (adjustMove(arr[nb]) !== false) {
+			arr[nb] = adjustMove(arr[nb]);
+		} else {
+			multiple(arr.length, timed);
+			return;
+		}
+		if(!["x", "y", "z"].includes(arr[nb][0])){
 			alldown = true;
 			onedown = false;
-			const keyMappings = {
+			let keyMappings = {
 				D: {axis: "x", values: MAXX},
+				d: {axis: "x", values: MAXX - CUBYESIZE},
 				U: {axis: "x", values: -MAXX},
+				u: {axis: "x", values: -MAXX + CUBYESIZE},
 				L: { axis: "z", values: -MAXX},
+				l: {axis: "z", values: -MAXX + CUBYESIZE},
 				R: { axis: "z", values: MAXX },
+				r: {axis: "z", values: MAXX - CUBYESIZE},
 				F: { axis: "y", values: MAXX },
+				f: {axis: "y", values: MAXX - CUBYESIZE},
 				B: { axis: "y", values: -MAXX},
-				E: { axis: "x", values: 0 },
-				M: { axis: "z", values: 0},
-				S: { axis: "y", values: 0},
+				b: {axis: "y", values: -MAXX + CUBYESIZE},
 			  };
 
-			const wideMappings = {
+			let wideMappings = {
 				Rw: { axis: "z", values:[MAXX, MAXX - CUBYESIZE] },
 				Lw: { axis: "z", values: [-MAXX, CUBYESIZE - MAXX] },
 				Uw: { axis: "x", values: [-MAXX, CUBYESIZE - MAXX] },
 				Dw: { axis: "x", values:[MAXX, MAXX - CUBYESIZE] },
-				Fw: { axis: "y", values: [MAXX, MAXX - CUBYESIZE], }
+				Fw: { axis: "y", values: [MAXX, MAXX - CUBYESIZE]},
+				Bw: { axis: "y", values: [-MAXX, CUBYESIZE - MAXX]}
+			}			
+			if (SIZE % 2 == 1) {
+				keyMappings = {E: { axis: "x", values: 0 },
+				M: { axis: "z", values: 0},
+				S: { axis: "y", values: 0}, ...keyMappings};
+			} else {
+				wideMappings = {E: { axis: "x", values: [-25,25] },
+				M: { axis: "z", values: [-25,25]},
+				S: { axis: "y", values: [-25,25]}, ...wideMappings};
 			}
-			console.log("here")
 			for (const move in keyMappings) {
 				const { axis, values } = keyMappings[move];
 				if ([move, move + "'"].includes(arr[nb])) {
 					for(let i = 0; i < cubies.length; i++) {
-						console.log(CUBE[cubies[i]][axis], values)
 						onedown = onedown || (CUBE[cubies[i]][axis] == values);
 					}
 					for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]][axis] == values);
@@ -6422,14 +6452,13 @@ function multiple(nb, timed) {
 					for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]][axis] == values[1]);
 				}
 			}
-			console.log(alldown, onedown)
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
 			canMan = true;
 			return;
 		}
-		console.log("alldown is " + alldown);
+		// console.log("alldown is " + alldown);
 		notation(arr[nb], timed);
 		let bad = -1;
 		if(undo.length > 0)
@@ -6476,6 +6505,12 @@ function multiple2(nb, timed) {
 	if (nb < arr.length) {
 		shufflespeed = 2;
 		canMan = false;
+		if (adjustMove(arr[nb]) !== false) {
+			arr[nb] = adjustMove(arr[nb]);
+		} else {
+			multiple(arr.length, timed);
+			return;
+		}
 		notation(arr[nb], timed);
 		// console.log(nb);
 		waitForCondition(multiple2.bind(null, nb + 1));
@@ -6708,6 +6743,7 @@ function refreshButtons()
 	SANDWICH.remove();
 	FOURBYFOUR.remove();
 	FIVEBYFIVE.remove();
+	TWOBYTWOBYFOUR.remove();
 	CUBE3.remove();
 	CUBE4.remove();
 	CUBE5.remove();
@@ -6859,10 +6895,13 @@ function refreshButtons()
 		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
 	} else {
 		FOURBYFOUR = p.createButton('4x4');
-		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, switchFour);
+		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchSize(4); FOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		FIVEBYFIVE = p.createButton('5x5');
-		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, switchFive);
+		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
+
+		TWOBYTWOBYFOUR = p.createButton('2x2x4');
+		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -9689,6 +9728,20 @@ function sideSolved(color)
 	}
 	return false;
 }
+function isCube() { // only works with no adjustments like the 2x2x3
+	let minx = MAXX, maxx = -MAXX, miny = MAXX, maxy = -MAXX, minz = MAXX, maxz = -MAXX;
+	let cubies = shownCubies();
+	cubies.forEach((c) => {
+		minx = Math.min(minx, CUBE[c].x);
+		miny = Math.min(miny, CUBE[c].y);
+		minz = Math.min(minz, CUBE[c].z);
+		maxx = Math.max(maxx, CUBE[c].x);
+		maxy = Math.max(maxy, CUBE[c].y);
+		maxz = Math.max(maxz, CUBE[c].z);
+	});
+	let outerboxsize = ((maxx - minx) / 50 + 1) * ((maxy - miny) / 50 + 1) * ((maxz - minz) / 50 + 1);
+	return outerboxsize == cubies.length;
+}
 function isSolved()
 {
 	//console.log("called");
@@ -9825,11 +9878,10 @@ function isSolved()
 		}
 		return false;
 	}
-	if(DIM == 6 || DIM == 15 || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
+	if([6, 15, "2x2x4"].includes(DIM) || (Array.isArray(DIM) && DIM[0] != "adding" && goodsolved && difColors()))
 	{
-		let cubies = DIM == 6 ? [4,5,7,8,13,14,16,17] :  [0,2,6,8,9,11,15,17,18,20,24,26];
-		let cuby = 13;
-		if (DIM == 15) cuby = cubies[0]
+		let cubies = shownCubies();
+		let cuby = cubies[0];
 		let top = getColor(CUBE[cuby].right.levels);
 		let bottom = getColor(CUBE[cuby].left.levels);
 		let back = getColor(CUBE[cuby].bottom.levels);

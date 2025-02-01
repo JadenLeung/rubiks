@@ -51,12 +51,12 @@ export default class Cuby {
       m: p.color(245 + xmul,  25 + ymul, 245 + zmul),
     };
 	
-    this.top = this.colors.white;
-    this.bottom = this.colors.yellow;
-    this.front = this.colors.red;
-    this.right = this.colors.blue;
-    this.back = this.colors.orange;
-    this.left = this.colors.green;
+    this.top = this.colors.white; // Red
+    this.bottom = this.colors.yellow; // Orange
+    this.front = this.colors.red; // white
+    this.right = this.colors.blue; // Green
+    this.back = this.colors.orange; // yellow
+    this.left = this.colors.green; // Blue
 
     // const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
     
@@ -74,8 +74,14 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if (SIZE >= 4 && custom) {
-      // const map = {0:0, 1:1, 2:1, 3:2}
+    if (size == "2x2x4") { // rainbow
+      this.back = this.c[this.custom[0][3]];
+      this.front = this.c[this.custom[5][2]];
+      this.bottom = this.c[this.custom[0][1]];
+      this.top = this.c[this.custom[16][0]];
+      this.right = this.c[this.custom[0][5]];
+      this.left = this.c[this.custom[26][4]];
+    } else if (SIZE >= 4 && custom) {
       let map = {};
       for (let x = 0; x < SIZE; ++x) {
         for (let y = 0; y < SIZE; ++y) {
@@ -528,6 +534,17 @@ export default class Cuby {
       arr = [0,1,2,3,6,9,10,11,12,15,18,19,20,21,22,23,24,25,26];
     else if(this.special[6] == 15)
       arr = [1,3,4,5,7,10,12,13,14,16,19,21,22,23,25];
+    else if(this.cubysize == "2x2x4") {
+      arr = [0,1,2,3,4,7,8,11,12,13,14,15];
+      let s = arr.length;
+      for (let i = 1; i < 4; i++) {
+        for (let j = 0; j < s; j++) {
+          arr.push(arr[j] + i * 16)
+        }
+      }
+    }
+
+
     if(arr.includes(this.index) && this.cubysize != 50) {
       this.shown = false;
       return;
