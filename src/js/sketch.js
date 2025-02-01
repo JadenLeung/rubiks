@@ -9428,12 +9428,12 @@ function dragCube(cuby1, color1, cuby2, color2)
 	let revturnorder = turnorder.slice().reverse();
 	
 	let turning = false;
+	let face1 = getFace(cuby1, color1);
+	let face2 = getFace(cuby2, color2);
 
 	if (cuby1 == cuby2) { // turning over
 		console.log("Equal cubies")
 		arr = [];
-		let face1 = getFace(cuby1, color1);
-		let face2 = getFace(cuby2, color2);
 		const vec1 = [CUBE[cuby1].x, CUBE[cuby1].y, CUBE[cuby1].z];
 		const vec2 = [CUBE[cuby2].x, CUBE[cuby2].y, CUBE[cuby2].z];
 		const TURNARRS = [
@@ -9507,12 +9507,18 @@ function dragCube(cuby1, color1, cuby2, color2)
 		let dotproduct = x1 * y2 - y1 * x2
 		console.log("dot product is ", dotproduct);
 		if (dotproduct == 0) {
+			let willinverse = false;
+			let numzero = +(CUBE[cuby1].x == 0) + +(CUBE[cuby1].y == 0) + +(CUBE[cuby1].z == 0)
+			if (numzero > 1) {
+				[cuby1, cuby2] = [cuby2, cuby1];
+				[color1, color2] = [color2, color1];
+				[face1, face2] = [face2, face1];
+				willinverse = true;
+			}
 			if (getFace(cuby1, color1) == getFace(cuby2, color2)) {
-				let willinverse = false;
-				if (CUBE[cuby1].x == 0 && CUBE[cuby1].y == 0 && CUBE[cuby1].z == 0) {
-					[cuby1, cuby2] = [cuby2, cuby1];
-					[color1, color2] = [color2, color1];
-					willinverse = true;
+				console.log("Same faces ", getFace(cuby2, color2));
+				if (CUBE[cuby1].x != 0 && CUBE[cuby1].y != 0 && CUBE[cuby1].z != 0) {
+					return false;
 				}
 				const DIAGOBJ = {
 					0: {0 : "x", 1: "y", maybe1: [-50, 0], maybe2: [0, 50]},
@@ -9527,20 +9533,64 @@ function dragCube(cuby1, color1, cuby2, color2)
 					|| CUBE[cuby1][face[0]] == face.maybe2[0] && CUBE[cuby1][face[1]] == face.maybe2[1]) {
 						arr[0] = Inverse(arr[0]);
 				}
-				if (willinverse) {
-					arr[0] = Inverse(arr[0]);
-				}
 			} else {
-				const DIAGOBJ = {
-					x: [5, 1, 4, 0, 5],
-					y: [2, 1, 3, 0, 2], // counterclockwise
-					z: [5, 2, 4, 3, 5]
+				const direction = {
+					0: {compare: ["x","y"], x : [4, 5], y: [2, 3]},
+					1: {compare: ["x","y"], x : [4, 5], y: [2, 3]},
+					2: {compare: ["y","z"], y : [0, 1], z: [4, 5]},
+					3: {compare: ["y","z"], y : [0, 1], z: [4, 5]},
+					4: {compare: ["x","z"], x : [0, 1], z: [2, 3]},
+					5: {compare: ["x","z"], x : [0, 1], z: [2, 3]},
 				}
-				let index = DIAGOBJ[sharedata.axis].indexOf(getFace(cuby1, color1));
-				console.log(index, DIAGOBJ.y[index+1])
-				if (DIAGOBJ[sharedata.axis][index + 1] == getFace(cuby2, color2)) {
-					arr[0] = Inverse(arr[0]);
+				const dirobj = direction[face2];
+				console.log(dirobj, getFace(cuby2, color2));
+				let axis1 = dirobj.compare[0];
+				let axis2 = dirobj.compare[1];
+				let da = CUBE[cuby1][axis1] - CUBE[cuby2][axis1];
+				let db = CUBE[cuby1][axis2] - CUBE[cuby2][axis2];
+				let realaxis, reald;
+				console.log("da, db", da, db);
+				let diagturn;
+				if (da != 0) {
+					diagturn = dirobj[axis1].includes(face1);
+					realaxis = axis1;
+					reald = da; 
+				} else if (db != 0) {
+					diagturn = dirobj[axis2].includes(face1);
+					realaxis = axis2;
+					reald = db; 
 				}
+				console.log(diagturn)
+				if (!diagturn) {
+					const DIAGOBJ = {
+						x: [5, 1, 4, 0, 5],
+						y: [2, 1, 3, 0, 2], // counterclockwise
+						z: [5, 2, 4, 3, 5]
+					}
+					let index = DIAGOBJ[sharedata.axis].indexOf(getFace(cuby1, color1));
+					console.log(index, DIAGOBJ.y[index+1])
+					if (DIAGOBJ[sharedata.axis][index + 1] == getFace(cuby2, color2)) {
+						arr[0] = Inverse(arr[0]);
+					}
+				} else {
+					const g = (x, y) => x > y;
+					const l = (x, y) => x < y;
+					const DIAGOBJ = {
+						0: {x : l, y : g},
+						1: {x : g, y : l},
+						2: {y : l, z : g},
+						3: {y : g, z : l},
+						4: {x : g, z : l},
+						5: {x : l, z : g},
+					};
+					let func = DIAGOBJ[face2][realaxis];
+					if (func(reald, 0)) {
+						arr[0] = Inverse(arr[0]);
+					}
+				}
+			}
+			if (willinverse) {
+				arr[0] = Inverse(arr[0]);
 			}
 		} else if (dotproduct > 0) {
 			arr[0] = Inverse(arr[0]);
