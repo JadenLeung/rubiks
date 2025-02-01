@@ -9508,17 +9508,39 @@ function dragCube(cuby1, color1, cuby2, color2)
 		console.log("dot product is ", dotproduct);
 		if (dotproduct == 0) {
 			if (getFace(cuby1, color1) == getFace(cuby2, color2)) {
-				return false;
-			}
-			const DIAGOBJ = {
-				x: [5, 1, 4, 0, 5],
-				y: [2, 1, 3, 0, 2], // counterclockwise
-				z: [5, 2, 4, 3, 5]
-			}
-			let index = DIAGOBJ[sharedata.axis].indexOf(getFace(cuby1, color1));
-			console.log(index, DIAGOBJ.y[index+1])
-			if (DIAGOBJ[sharedata.axis][index + 1] == getFace(cuby2, color2)) {
-				arr[0] = Inverse(arr[0]);
+				let willinverse = false;
+				if (CUBE[cuby1].x == 0 && CUBE[cuby1].y == 0 && CUBE[cuby1].z == 0) {
+					[cuby1, cuby2] = [cuby2, cuby1];
+					[color1, color2] = [color2, color1];
+					willinverse = true;
+				}
+				const DIAGOBJ = {
+					0: {0 : "x", 1: "y", maybe1: [-50, 0], maybe2: [0, 50]},
+					1: {0 : "x", 1: "y", maybe1: [50, 0], maybe2: [0, -50]},
+					2: {0 : "y", 1: "z", maybe1: [-50, 0], maybe2: [0, 50]},
+					3: {0 : "y", 1: "z", maybe1: [50, 0], maybe2: [0, -50]},
+					4: {0 : "x", 1: "z", maybe1: [50, 0], maybe2: [0, -50]},
+					5: {0 : "x", 1: "z", maybe1: [-50, 0], maybe2: [0, 50]},
+				};
+				const face = DIAGOBJ[getFace(cuby1, color1)];
+				if (CUBE[cuby1][face[0]] == face.maybe1[0] && CUBE[cuby1][face[1]] == face.maybe1[1] 
+					|| CUBE[cuby1][face[0]] == face.maybe2[0] && CUBE[cuby1][face[1]] == face.maybe2[1]) {
+						arr[0] = Inverse(arr[0]);
+				}
+				if (willinverse) {
+					arr[0] = Inverse(arr[0]);
+				}
+			} else {
+				const DIAGOBJ = {
+					x: [5, 1, 4, 0, 5],
+					y: [2, 1, 3, 0, 2], // counterclockwise
+					z: [5, 2, 4, 3, 5]
+				}
+				let index = DIAGOBJ[sharedata.axis].indexOf(getFace(cuby1, color1));
+				console.log(index, DIAGOBJ.y[index+1])
+				if (DIAGOBJ[sharedata.axis][index + 1] == getFace(cuby2, color2)) {
+					arr[0] = Inverse(arr[0]);
+				}
 			}
 		} else if (dotproduct > 0) {
 			arr[0] = Inverse(arr[0]);
