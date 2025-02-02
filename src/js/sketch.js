@@ -2534,11 +2534,11 @@ function change9(bigchange = false)
 }
 function changeRandom()
 {
-	let cube;
-	if(Math.random() > 0.66)
-		cube = 2;
-	else
-		cube = 3;
+	// let cube;
+	// if(Math.random() > 0.66)
+	// 	cube = 2;
+	// else
+	// 	cube = 3;
 	let face = [];
 	let cubies = [];
 	let colors = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -2553,42 +2553,31 @@ function changeRandom()
 	else if(pick > 0.3)
 	close = 5;
 
-	if(cube == 2)
-	{
-		for(let i = 0; i < 8; i++)
-		{
-			cubies.push(!(Math.random() > (close/8)));
-		}
+	for (let i = 0; i < CHECK.length; i++) {
+		CHECK[i].checked(Math.random() <= (close/8))
 	}
-	else
-	{
-		for(let i = 0; i < 27; i++)
-		{
-			cubies.push(!(Math.random() > (close/8)));
-		}
-	}
-	if(cube == 2)
-	SEL7.selected('2x2');
-	else
-	SEL7.selected('3x3');
+
+	// if(cube == 2)
+	// SEL7.selected('2x2');
+	// else
+	// SEL7.selected('3x3');
 	SEL.selected(face[0]); SEL2.selected(face[1]); SEL3.selected(face[2]); 
 	SEL4.selected(face[3]); SEL5.selected(face[4]); SEL6.selected(face[5]);
-	let twos = [0, 2, 6, 8, 18, 20, 24, 26];
-	if(cube == 3)
-	{
-		for(let i = 0; i < 27; i++)
-		{
-			CHECK[i].checked(cubies[i]);
-		}
-	}
-	else{
-		for(let i = 0; i < 8; i++)
-		{
-			CHECK[twos[i]].checked(cubies[i]);
-		}
-	}
-	console.log(cube, cubies);
-	change9(cubies);
+	// let twos = [0, 2, 6, 8, 18, 20, 24, 26];
+	// if(cube == 3)
+	// {
+	// 	for(let i = 0; i < 27; i++)
+	// 	{
+	// 		CHECK[i].checked(cubies[i]);
+	// 	}
+	// }
+	// else{
+	// 	for(let i = 0; i < 8; i++)
+	// 	{
+	// 		CHECK[twos[i]].checked(cubies[i]);
+	// 	}
+	// }
+	change9();
 }
 function setInput() {
 	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches || isIpad()) { //button
