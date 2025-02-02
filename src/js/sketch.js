@@ -691,7 +691,7 @@ p.setup = () => {
 					paintit(color.className)
 					activeKeys.add("button");
 				}
-				button.mouseReleased(() => { activeKeys.delete("button"); activeKeys.delete(key) });
+				button.mouseReleased(() => { activeKeys.delete("button");});
 				return button;
 			}
 		);
@@ -3153,7 +3153,8 @@ function getColoredCuby(index) {
 function paintmode() {
 	activeKeys.clear();
 	MODE = "paint";
-	reSetup();
+	special[2] = savesetup;
+	// quickSolve(savesetup);
 	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition"]);
 	setDisplay("block", ["paint","finishpaint"]);
 	setDisplay("inline", ["iddefault"]);
@@ -6293,8 +6294,11 @@ p.keyPressed = (event) => {
 			case 192: //`
 			if (p.keyIsDown(p.SHIFT)) {
 				(MODE == "normal" || MODE == "timed")  && solveCube();
-			} else if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login")
+			} else if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login") {
 				shuffleCube();
+			} else if (["moves", "speed"].includes(MODE) && getEl("switcher").style.display == "block") {
+				shuffleCube();
+			}
 			break;
 			case 32: //space
 			// quickSolve();
@@ -6402,12 +6406,13 @@ function adjustMove(move) {
 			console.log("changedmove ", move)
 		}
 		let toowide = ["L", "F", "R", "B", "U", "D"];
-		console.log(getColor(CUBE[10].left.levels), getColor(CUBE[10].top.levels), getColor(CUBE[10].front.levels));
+		let mid = SIZE == 5 ? 12 : 10
+		console.log(getColor(CUBE[mid].left.levels), getColor(CUBE[mid].top.levels), getColor(CUBE[mid].front.levels));
 		if (isCube()) {
 			const arr = [topColor(), opposite[topColor()]];
-			if (arr.includes(getColor(CUBE[10].left.levels))) {
+			if (arr.includes(getColor(CUBE[mid].left.levels))) {
 				toowide = ["L", "F", "R", "B"];
-			} else if (arr.includes(getColor(CUBE[10].front.levels))) {
+			} else if (arr.includes(getColor(CUBE[mid].front.levels))) {
 				toowide = ["F", "B", "U", "D"];
 			} else {
 				toowide = ["L", "R", "U", "D"];
