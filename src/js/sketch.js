@@ -1473,7 +1473,7 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && !mouseAllowed() && easytime) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && (!mouseAllowed() || !canMouse())) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -5826,7 +5826,6 @@ function hasColor(c) {
 	return hasit;
 }
 function startAction() {	
-	if (!easytime) return;
 	if(MODE == "cube" && !mouseAllowed() && custom == 0) return; 
 	if(custom == 1 && !canMouse()) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
