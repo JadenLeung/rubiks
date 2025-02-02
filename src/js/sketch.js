@@ -32,7 +32,7 @@ export default function (p) {
 	let goodsolved = false;
 	let RND_COLORS;
 	let GAP = 0;
-	let SIZE = 5;
+	let SIZE = 3;
 	let MAXX = (SIZE - 1) * 25;
 	let ZOOMADD;
 	let nextcuby = [];
@@ -53,6 +53,7 @@ export default function (p) {
 	let ZOOM3 = -170;
 	let ZOOM2 = -25;
 	let CHECK = [];
+	let CHECKALL = [];
 	let PLLS = [];
 	let pracmode;
 	let SPACE = [];
@@ -177,7 +178,7 @@ export default function (p) {
 	 };
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
-	const b_selectdim = {"3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
+	const b_selectdim = {"2x2": changeTwo, "3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5)};
 
 	// attach event
@@ -672,18 +673,7 @@ p.setup = () => {
 	INPUT2[19].mousePressed(() => {flexDo(Redo, redo)});
 	
 
-	for(let i = 0; i < 27; i++)
-	{
-		if(i < 9)
-			CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
-		else if(i < 18)
-			CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
-		else
-			CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
-		CHECK[i].parent(`check${Math.floor(i / 9) + 1 + Math.floor((i % 9) / 3) * 0.1}`);
-		CHECK[i].style(`display:inline; padding-right:5px`)
-		CHECK[i].changed(change9.bind(null, 0));
-	}
+	setCustomShape();
 
 	const colors = [
 		{ name: 'Red', className: 'red', c: "#da1a18"},
@@ -739,9 +729,11 @@ p.setup = () => {
 	SEL7 = p.createSelect();
 	SEL7.option("2x2");
 	SEL7.option("3x3");
+	SEL7.option("4x4");
+	SEL7.option("5x5");
 	SEL7.parent("select8")
 	SEL7.selected('3x3');
-	SEL7.changed(change9.bind(null, 0));
+	SEL7.changed(() => {b_selectdim[SEL7.value()](); change9(true)});
 
 	BANDAGE_SELECT = p.createSelect();
 	BANDAGE_SELECT.option("3x3");
@@ -1481,7 +1473,7 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && !mouseAllowed()) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && !mouseAllowed() && easytime) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -1645,7 +1637,6 @@ function reSetup(rot) {
 				arr.push("x");
 			}
 			if(rotationz == 3) arr.push("x'");
-			console.log("Arr is ", arr);
 			multiple2(0);
 		}
 		else{
@@ -2220,6 +2211,8 @@ function changeTwo()
 	MAXX = 50;
 	DIM2 = 100;
 	DIM = 100;
+	DIM3 = 2;
+	DIM4 = 2;
 	localStorage.startcube = 2;
 	modeData("twobytwo");
 	THREEBYTHREE.class('btn btn-light btn-sm');
@@ -2243,6 +2236,8 @@ function changeThree()
 	DIM = 50;
 	SIZE = 3;
 	MAXX = 50;
+	DIM3 = 3;
+	DIM4 = 3;
 	localStorage.startcube = 3;
 	THREEBYTHREE.class('btn btn-warning btn-sm');
 	TWOBYTWO.class('btn btn-light btn-sm');
@@ -2285,18 +2280,7 @@ function changeZero()
 	{
 		CHECK[i].remove();
 	}
-	for(let i = 0; i < 27; i++) {
-		if(i < 9)
-			CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
-		else if(i < 18)
-			CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
-		else
-			CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
-		CHECK[i].parent(`check${Math.floor(i / 9) + 1 + Math.floor((i % 9) / 3) * 0.1}`);
-		CHECK[i].style(`display:inline; padding-right:5px`)
-		CHECK[i].changed(change9.bind(null, 0));
-	}
-	change9();
+	change9(true);
 }
 function changeFour(){
 	DIM = 1;
@@ -2445,7 +2429,67 @@ function rightBan(){
 	viewBandage(true);
 
 }
-function change9(cubies)
+function setCustomShape() {
+	// Remove old checkboxes
+	for (let i = 0; i < CHECK.length; i++) {
+		CHECK[i].remove();
+	}
+	for (let i = 0; i < CHECKALL.length; i++) {
+		CHECKALL[i].remove()
+	}
+
+	// Get parent container
+	const parentElement = document.getElementById("check1");
+	const checkboxesPerRow = SIZE;
+	const totalCheckboxes = SIZE * SIZE * SIZE;
+
+	// Clear existing content
+	parentElement.innerHTML = "";
+
+	// Create checkboxes and organize them in rows
+	let row;
+	for (let i = 0; i < totalCheckboxes; i++) {
+		if (DIM3 == 2 && [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25].includes(i)) continue;
+		if (i % checkboxesPerRow === 0) {
+			row = document.createElement("div");
+			row.classList.add("checkbox-row");
+			parentElement.appendChild(row);
+		}
+		const checkboxContainer = document.createElement("div");
+		checkboxContainer.classList.add("checkbox-container");
+		CHECK[i] = p.createCheckbox('', true);
+		CHECK[i].parent(checkboxContainer); 
+		row.appendChild(checkboxContainer);
+		const style = ((i % (SIZE * SIZE)) < SIZE && i > SIZE) ? "padding-right: 3px; padding-top: 15px;" : "padding-right: 3px;";
+		CHECK[i].style(style);
+		let layer = DIM3 != 2 ? (Math.floor(i / (SIZE * SIZE)) + 1) : i < 9 ? 1 : 2;
+		let checkall = false;
+		if ((i % (SIZE * SIZE) == SIZE - 1)) {
+			CHECKALL[layer - 1] = p.createCheckbox(" Layer " + layer, true);
+			CHECKALL[layer - 1].parent(row);
+			CHECKALL[layer - 1].style(style + "padding-left: 30px; line-height: 0;");
+			CHECKALL[layer - 1].changed(() => {
+				let start = Math.floor(i / SIZE / SIZE) * SIZE * SIZE;
+				for (let j = start; j < start + SIZE * SIZE; ++j) {
+					CHECK[j].checked(CHECKALL[layer - 1].checked());
+					change9();
+				}
+			})
+		}
+
+		CHECK[i].changed(() => {
+			CHECKALL[layer - 1].checked(false);
+			let start = Math.floor(i / SIZE / SIZE) * SIZE * SIZE;
+			for (let j = start; j < start + SIZE * SIZE; ++j) {
+				if (CHECK[j].checked()) {
+					CHECKALL[layer - 1].checked(true);
+				}
+			}
+			change9();
+		});
+	}
+}
+function change9(bigchange = false)
 {
 
 	DIM = [];
@@ -2455,56 +2499,13 @@ function change9(cubies)
 	DIM[3] = SEL4.value();
 	DIM[4] = SEL5.value();
 	DIM[5] = SEL6.value();
-	if(SEL7.value() == "3x3")
+	if(bigchange)
 	{
-		DIM2 = 50;
-		if(DIM3 == 2)
-		{
-			for(let i = 0; i < 27; i++)
-			{
-				CHECK[i].remove();
-			}
-			for(let i = 0; i < 27; i++)
-			{
-				if(Array.isArray(cubies))
-				{
-					if(i < 9)
-						CHECK[i] = p.createCheckbox('a' + ((i%9)+1), cubies[i]);
-					else if(i < 18)
-						CHECK[i] = p.createCheckbox('b' + ((i%9)+1),  cubies[i]);
-					else
-						CHECK[i] = p.createCheckbox('c' + ((i%9)+1),  cubies[i]);
-				}
-				else{
-					if(i < 9)
-						CHECK[i] = p.createCheckbox('a' + ((i%9)+1), true);
-					else if(i < 18)
-						CHECK[i] = p.createCheckbox('b' + ((i%9)+1), true);
-					else
-						CHECK[i] = p.createCheckbox('c' + ((i%9)+1), true);
-				}
-				CHECK[i].parent(`check${Math.floor(i / 9) + 1 + Math.floor((i % 9) / 3) * 0.1}`);
-				CHECK[i].style(`display:inline; padding-right:5px`)
-				CHECK[i].changed(change9.bind(null, 0));
-			}
-			DIM3 = 3;
-		}
+		console.log("CHANGING")
+		setCustomShape();
 	}
-	else
-	{
-		DIM2 = 100;
-		DIM3 = 2;
-		let arr3 = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
-		for(let i = 0; i < 27; i++)
-		{
-			if(arr3.includes(i))
-				CHECK[i].remove();
-		}
-
-	}
-
 	let checked = [];
-	for(let i = 0; i < 27; i++)
+	for(let i = 0; i < SIZE * SIZE * SIZE; i++)
 	{
 		if(!CHECK[i].checked())
 			checked.push(i);
@@ -2513,16 +2514,6 @@ function change9(cubies)
 		checked.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
 	DIM[6] = checked; 
 	DIM[7] = DIM3;
-	if(SEL7.value() == "3x3")
-	{
-		document.getElementById("selectm").style.display = "block";
-		//changeCam(3);
-	}
-	else
-	{
-		document.getElementById("selectm").style.display = "none";
-		//changeCam(2);
-	}
 	rotation = CAM.getRotation();
 	reSetup(rotation);
 }
@@ -2884,6 +2875,7 @@ function Custom()
 	INPUT.value("Standard");
 	SCRAM.value("Normal");
 	modeData("customshape");
+	b_selectdim[SEL7.value()]();
 	change9();
 }
 function Reverse(move)
@@ -5818,6 +5810,7 @@ function hasColor(c) {
 	return hasit;
 }
 function startAction() {	
+	if (easytime) return;
 	if(MODE == "cube" && !mouseAllowed() && custom == 0) return; 
 	if(custom == 1 && !canMouse()) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
@@ -5840,7 +5833,6 @@ function startAction() {
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
-		console.log(getNeighborsArr(cuby));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -6108,7 +6100,6 @@ p.keyPressed = (event) => {
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
-		console.log(topColor());
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
 	}
