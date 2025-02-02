@@ -21,6 +21,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
 	const NOMOUSE = [13];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
@@ -5317,7 +5318,7 @@ function shufflePossible(len, total2, prev){
 	let col = topColor();
 	col = col.toLowerCase();
 	let op = opposite[col];
-	let mid = Math.floor(SIZE / 2)
+	let mid = mids[SIZE];
 	const badmoves = [col, op].includes(layout[2][mid][mid][0]) ? ["U", "D", "E"] : 
 	[col, op].includes(layout[5][mid][mid][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
 	// if (layout[5][1][1][0] == ) 
@@ -6181,7 +6182,7 @@ p.keyPressed = (event) => {
 			}
 		}
 		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80] //for 3x3x2
-		let mid = Math.floor(SIZE * SIZE / 2);
+		let mid = mids[SIZE];;
 		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 		if(setup[0] == -MAXX || setup[0] == MAXX) //top
 			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
@@ -6374,7 +6375,7 @@ function adjustMove(move) {
 			console.log("changedmove ", move)
 		}
 		let toowide = ["L", "F", "R", "B", "U", "D"];
-		let mid = SIZE == 5 ? 12 : 10
+		let mid = mids[SIZE];
 		console.log(getColor(CUBE[mid].left.levels), getColor(CUBE[mid].top.levels), getColor(CUBE[mid].front.levels));
 		if (isCube()) {
 			const arr = [topColor(), opposite[topColor()]];
@@ -6630,7 +6631,7 @@ function flexDo(foo, arr, shift = false) {
 		funcMult(foo, 3);
 	} else if (INPUT.value() == "3x3x2") {
 		let bad5 = [];
-		let mid = Math.floor(SIZE * SIZE / 2);
+		let mid = mids[SIZE];
 		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 		if(setup[0] == -MAXX || setup[0] == MAXX) bad5 = ['L','R','F','B','S','M'];
 		else if(setup[2] == -MAXX || setup[2] == MAXX) bad5 = ['U','D','F','B','E','S'];
@@ -9417,7 +9418,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 	if (cuby1 == -1 || cuby2 == -1) return;
 	console.log("Drag that idiot", cuby1, color1, cuby2, color2);
 	let bad5 = [];
-	let mid = Math.floor(SIZE * SIZE / 2)
+	let mid = mids[SIZE];
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 	console.log("setup is ", setup)
 	if(setup[0] == -MAXX || setup[0] == MAXX) //top
