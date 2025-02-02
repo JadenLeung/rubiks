@@ -1,7 +1,8 @@
 import './lib/p5.easycam.js';
 import Picker from './picker.js';
 import Cuby from './cuby.js';
-import {weeklyscrambles} from '../weekly.js'
+import {weeklyscrambles} from '../data/weekly.js'
+import {patterndata} from '../data/pattern.js'
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -184,15 +185,15 @@ export default function (p) {
 	// attach event
 
 	link1.onclick = function(e) { return myHandler(e); };
-	fetch('src/PLL.json')
+	fetch('src/data/PLL.json')
 	.then((response) => response.json())
 	.then((obj) => (setPLL(obj)));
 
-	fetch('src/PBL.json')
+	fetch('src/data/PBL.json')
 	.then((response) => response.json())
 	.then((obj0) => (setPBL(obj0)));
 
-	fetch('src/OLL.json')
+	fetch('src/data/OLL.json')
 	.then((response) => response.json())
 	.then((obj9) => (setOLL(obj9)));
 	let canMan = true;
@@ -586,12 +587,12 @@ p.setup = () => {
 	SCRAM = p.createSelect(); 
 	SCRAM.parent("scram");
 	SCRAM.option("Normal");
-	SCRAM.option("Last Layer");
+	SCRAM.option("Like a 3x3x2");
 	SCRAM.option("Double Turns");
 	SCRAM.option("Middle Slices");
-	SCRAM.option("Like a 3x3x2");
 	SCRAM.option("Gearcube");
 	SCRAM.option("Gearcube II");
+	SCRAM.option("Last Layer");
 	SCRAM.option("Pattern");
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
@@ -775,8 +776,8 @@ p.setup = () => {
 	})
 
 	INPUT.option("Standard");
-	INPUT.option("Double");
 	INPUT.option("3x3x2");
+	INPUT.option("Double");
 	INPUT.option("Gearcube");
 	INPUT.option("Gearcube II")
 	setInput();
@@ -5386,37 +5387,10 @@ function shuffleCube(nb) {
 		{
 			quickSolve();
 			dontdo = true;
-			let rnd = Math.random();
-			if(DIM4 == 3)
-			{
-				let random = ["R2 L' D F2 R' D' R' L U' D R D B2 R' U D2",
-							"F L F U' R U F2 L2 U' L' B D' B' L2 U",
-							"L U B' U' R L' B R' F B' D R D' F'",
-							"F B2 R' D2 B R U D' R L' D' F' R2 D F2 B'",
-							"F2 R' B' U R' L F' L F' B D' R B L2",
-							"M2 E2 S2",
-							"M S M' S' M2 E2 S2",
-							"U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2",
-						"L R F B U' D' L' R'",
-						"R L U2 F' U2 D2 R2 L2 F' D2 F2 D R2 L2 F2 B2 D B2 L2",
-					"U' B2 U L2 D L2 R2 D' B' R D' L R' B2 U2 F' L' U'",
-				"F U F R L2 B D' R D2 L D' B R2 L F U F",
-				"M S M' S'"];
-				let rnd = parseInt(Math.random()*random.length);
-				total = random[rnd];
-			}
-			else{
-				if(rnd < 0.2)
-					total = "F2 R2 U' F' U R' U2 R U' F'";
-				else if(rnd < 0.4)
-					total = "F2 R2 U2 F2";
-				else if(rnd < 0.6)
-					total = "U F2 U2 R2 U";
-				else if(rnd < 0.8)
-					total = "U R F2 U R F2 R U F' R";
-				else
-					total = "U R U' R2 U' R' F' U F2 R F'"
-			}
+			let size = DIM2 == 100 ? 2 : SIZE;
+			let random = patterndata[size];
+			let rnd = parseInt(Math.random()*random.length);
+			total = random[rnd];
 			changeArr(total);
 		}
 	}
@@ -5793,12 +5767,18 @@ function arraysEqual(arr1, arr2) {
     return arr1.length === arr2.length && arr1.every((value, index) => value == arr2[index]);
 }
 function canMouse() {
-	let set = new Set();
-	for (let i = 0; i < 6; ++i) {
-		const color = layout[i][1][1][0];
-		if (color == "k") return false;
-		if (set.has(color)) return false;
-		set.add(color);
+	let cubies = shownCubies();
+	const sides = ["front", "back", "left", "right", "top", "bottom"];
+	for (let i = 0; i < cubies.length; ++i) {
+		let set = new Set();
+		for (let j = 0; j < sides.length; ++j) {
+			const color = getColor(CUBE[i][sides[j]].levels);
+			if (color == "k") {
+				return false;
+			}
+			if (set.has(color)) return false;
+			set.add(color);
+		}
 	}
 	return true;
 }
@@ -6570,14 +6550,14 @@ function changeArr(str)
 	let end  = 1;
 	while(str != "")
 	{
-		console.log(str);
-		console.log(arr);
+		console.log(str, arr);
 		end = 1;
 		temp = "";
+		let extra = "";
 		if(arr2.includes(str[0]))
-		temp += (str[0].toUpperCase() + "w");
+			temp += (str[0].toUpperCase() + "w");
 		else
-		temp += str[0];
+			temp += str[0];
 		if(str[end] == "w")
 		{
 			temp += "w";
@@ -6585,27 +6565,28 @@ function changeArr(str)
 		}
 		if(str[end] == "'" || str[end] == "’")
 		{
-			temp += "'";
+			extra = "'";
 			end++;
 		}
-		if(str[end] == "2")
-		{
+		let move = temp;
+		let num = 0;
+		while (str[end] >= '0' && str[end] <= '9') {
+			num = num * 10 + +(str[end]);
+			console.log("end is " + str[end], "num is " + num);
 			end++;
-			if(str[end] == "'")
-			{
+			if(str[end] == "'") {
+				extra = "'"
 				end++;
-				arr.push(temp + "'");
-				arr.push(temp + "'");
-			}
-			else{
-				arr.push(temp + "");
-				arr.push(temp + "");
+				break;
 			}
 		}
-		else
-		{
-			arr.push(temp);
+		console.log("NUM IS ", num)
+		if (num < 2) num = 1;
+
+		for (let i = 0; i < num; i++) {
+			arr.push(move + extra);
 		}
+
 		str = str.substring(end);
 		while(str[0] == " " || str[0] == ",")
 		{
