@@ -2477,6 +2477,19 @@ function setCustomShape() {
 			})
 		}
 
+		if (DIM3 != 2 && i == SIZE * SIZE - 1) {
+			let button = p.createButton("Apply Layer 1 to all");
+            button.parent(row);
+            setButton(button, row, 'btn btn-info', `text-align:center; font-size: 10px; margin-left: 30px; float: right;`, () => {
+				for (let j = SIZE * SIZE; j < SIZE * SIZE * SIZE; ++j) {
+                    CHECK[j].checked(CHECK[j - SIZE * SIZE].checked());
+					change9();
+                }
+				// change9();
+			});
+			button.style('margin-top', '-10px');  // This moves the button up by 10px
+		}
+
 		CHECK[i].changed(() => {
 			CHECKALL[layer - 1].checked(false);
 			let start = Math.floor(i / SIZE / SIZE) * SIZE * SIZE;
@@ -5810,7 +5823,7 @@ function hasColor(c) {
 	return hasit;
 }
 function startAction() {	
-	if (easytime) return;
+	if (!easytime) return;
 	if(MODE == "cube" && !mouseAllowed() && custom == 0) return; 
 	if(custom == 1 && !canMouse()) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
