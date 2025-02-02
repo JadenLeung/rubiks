@@ -2388,6 +2388,8 @@ function change19(){
 function switchSize(s, d = 50) {
 	DIM2 = 50;
 	DIM = d;
+	DIM3 = 3;
+	DIM4 = 3;
 	changeCam(3)
 	SIZE = s;
 	MAXX = (SIZE - 1) * 25;
