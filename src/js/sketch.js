@@ -5404,6 +5404,7 @@ function shuffleCube(nb) {
 	if(DIM4 == 2)
 		s = 10;
 	if (SIZE >= 4) s = 30;
+	if (["2x2x4", "3x3x5"].includes(DIM)) s = 40;
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -5446,7 +5447,7 @@ function shuffleCube(nb) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
-			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && arr.length < 8)) && 
+			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && i < 15)) && 
 			([col, op].includes(layout[2][mid][mid][0]) && rnd[0] != "U" && rnd[0] != "D" ||
 			[col, op].includes(layout[5][mid][mid][0]) && rnd[0] != "F" && rnd[0] != "B" ||
 			[col,op].includes(layout[0][mid][mid][0]) && rnd[0] != "L" && rnd[0] != "R")))
@@ -6375,25 +6376,24 @@ function adjustMove(move) {
 			move = move[0].toUpperCase() + move.slice(1);
 			console.log("changedmove ", move)
 		}
-		let toowide = ["L", "F", "R", "B", "U", "D"];
-		let mid = mids[SIZE];
-		console.log(getColor(CUBE[mid].left.levels), getColor(CUBE[mid].top.levels), getColor(CUBE[mid].front.levels));
-		if (isCube()) {
-			const arr = [topColor(), opposite[topColor()]];
-			if (arr.includes(getColor(CUBE[mid].left.levels))) {
-				toowide = ["L", "F", "R", "B"];
-			} else if (arr.includes(getColor(CUBE[mid].front.levels))) {
-				toowide = ["F", "B", "U", "D"];
-			} else {
-				toowide = ["L", "R", "U", "D"];
-			}
-		}
-		if (toowide.includes(move[0]) && !(move.includes("w"))) {
+		// let toowide = ["L", "F", "R", "B", "U", "D"];
+		// let mid = mids[SIZE];
+		// console.log(getColor(CUBE[mid].left.levels), getColor(CUBE[mid].top.levels), getColor(CUBE[mid].front.levels));
+		// if (isCube()) {
+		// 	const arr = [topColor(), opposite[topColor()]];
+		// 	if (arr.includes(getColor(CUBE[mid].left.levels))) {
+		// 		toowide = ["L", "F", "R", "B"];
+		// 	} else if (arr.includes(getColor(CUBE[mid].front.levels))) {
+		// 		toowide = ["F", "B", "U", "D"];
+		// 	} else {
+		// 		toowide = ["L", "R", "U", "D"];
+		// 	}
+		// }
+		if (!isCube() && !(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0])) {
 			if (move.includes("'")) move = move[0] + "w'";
 			else move += "w";
 		}
 	}
-	console.log("move is " + move)
 	return move;
 }
 function multiple(nb, timed) {
@@ -6468,8 +6468,15 @@ function multiple(nb, timed) {
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
-			canMan = true;
-			return;
+			const bewide = ["L", "R", "F", "B", "U", "D"];
+			if (!arr[nb].includes("w") && bewide.includes(arr[nb][0])) {
+				arr[nb] = arr[nb][0] + "w" + (arr[nb].includes("'") ? "'" : "");
+				multiple(nb, timed);
+				return;
+			} else {
+				canMan = true;
+				return;
+			}
 		}
 		// console.log("alldown is " + alldown);
 		notation(arr[nb], timed);
@@ -9892,7 +9899,6 @@ function isSolved()
                 right: [right, getColor(CUBE[curindex].front.levels)],
                 left: [left, getColor(CUBE[curindex].back.levels)],
 			}
-			console.log(compare);
 			const neighbors = getNeighborsArr(curindex);
 			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
 			let j = 0;
