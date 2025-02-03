@@ -588,7 +588,7 @@ p.setup = () => {
 	SCRAM = p.createSelect(); 
 	SCRAM.parent("scram");
 	SCRAM.option("Normal");
-	SCRAM.option("Like a 3x3x2");
+	SCRAM.option("3x3x2");
 	SCRAM.option("Double Turns");
 	SCRAM.option("Middle Slices");
 	SCRAM.option("Gearcube");
@@ -776,9 +776,9 @@ p.setup = () => {
 		reSetup();
 	})
 
-	INPUT.option("Standard");
+	INPUT.option("Normal");
 	INPUT.option("3x3x2");
-	INPUT.option("Double");
+	INPUT.option("Double Turns");
 	INPUT.option("Gearcube");
 	INPUT.option("Gearcube II")
 	setInput();
@@ -2258,7 +2258,7 @@ function changeThree()
 }
 function changeCam(changeinp = true)
 {
-	INPUT.selected("Standard");
+	INPUT.selected("Normal");
 	SCRAM.value("Normal");
 	changeinp && changeInput();
 	setSpecial();
@@ -2296,7 +2296,7 @@ function changeFive(){
 	DIM2 = 2;
 	changeCam(3);
 	INPUT.value("3x3x2");
-	SCRAM.value("Like a 3x3x2");
+	SCRAM.value("3x3x2");
 	refreshButtons();
 	SANDWICH.style('background-color', "#8ef5ee");
 }
@@ -2383,7 +2383,7 @@ function change19(){
 	DIM2 = 15;
 	changeCam(3);
 	INPUT.value("3x3x2");
-	SCRAM.value("Like a 3x3x2");
+	SCRAM.value("3x3x2");
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
@@ -2404,7 +2404,7 @@ function change20(dim, b){
 	changeCam(3);
 	DIM2 = 2;
 	INPUT.value("3x3x2");
-	SCRAM.value("Like a 3x3x2");
+	SCRAM.value("3x3x2");
 	reCam();
 	refreshButtons();
 	CUBE16.style('background-color', "#8ef5ee");
@@ -2620,6 +2620,7 @@ function changeInput()
 		DELAY_SLIDER.value(0);
 		DELAY = 0;
 	}
+	SCRAM.selected(INPUT.value())
 	input = INPUT.value();
 	setInput();
 }
@@ -2819,7 +2820,7 @@ function inputPressed(move)
 	if(canMan)
 	{
 		arr = [move];
-		if(INPUT.value() == "Double")
+		if(INPUT.value() == "Double Turns")
 			arr.push(arr[0]);
 		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 			arr.push(arr[0]);
@@ -2878,7 +2879,7 @@ function Custom()
 	document.getElementById("modarrow").style.display = "none";
 	document.getElementById("custom2").style.display = "block";
 	document.getElementById("custom4").style.display = "none";
-	INPUT.value("Standard");
+	INPUT.value("Normal");
 	SCRAM.value("Normal");
 	modeData("customshape");
 	b_selectdim[SEL7.value()]();
@@ -3464,7 +3465,7 @@ function startchallenge() {
 	setDisplay("block", ["input"]);
 	if ([2,15].includes(DIM2)) {
 		INPUT.value("3x3x2");
-		SCRAM.value("Like a 3x3x2");
+		SCRAM.value("3x3x2");
 		INPUT.attribute('disabled', true);
 	}
 }
@@ -3684,7 +3685,7 @@ function speedmode()
 		PLL.html("PBL Attack");
 		PLLPRAC.html("PBL Practice");
 	}
-	INPUT.selected("Standard");
+	INPUT.selected("Normal");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	updateScores();
 	modeData("speed");
@@ -3731,7 +3732,7 @@ function movesmode()
 	m_4step = 0;
 	bstep = 0;
 	mastep = 0;
-	INPUT.selected("Standard");
+	INPUT.selected("Normal");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	modeData("moves");
 }
@@ -5322,7 +5323,7 @@ function shufflePossible(len, total2, prev){
 	const badmoves = [col, op].includes(layout[2][mid][mid][0]) ? ["U", "D", "E"] : 
 	[col, op].includes(layout[5][mid][mid][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
 	// if (layout[5][1][1][0] == ) 
-	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "Like a 3x3x2" && !badmoves.includes(actualmove)))
+	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "3x3x2" && !badmoves.includes(actualmove)))
 	{
 		arr.push(actualmove);
 		arr.push(actualmove);
@@ -5445,7 +5446,7 @@ function shuffleCube(nb) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
-			} else if(doubly || ((SCRAM.value() == "Like a 3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && arr.length < 8)) && 
+			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && arr.length < 8)) && 
 			([col, op].includes(layout[2][mid][mid][0]) && rnd[0] != "U" && rnd[0] != "D" ||
 			[col, op].includes(layout[5][mid][mid][0]) && rnd[0] != "F" && rnd[0] != "B" ||
 			[col,op].includes(layout[0][mid][mid][0]) && rnd[0] != "L" && rnd[0] != "R")))
@@ -6206,7 +6207,7 @@ p.keyPressed = (event) => {
 		if (keyMoveMap[p.keyCode]) {
 			arr = [keyMoveMap[p.keyCode]];
 			if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || 
-			(INPUT.value() == "Double" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))
+			(INPUT.value() == "Double Turns" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))
 			|| (p.keyIsDown(p.SHIFT) && ([37,38,39,40].includes(p.keyCode) || ([1000, 1001].includes(p.keyCode) && KEYBOARD.value() == "Default")))) {
 				arr.push(arr[0]);
 			} else if(INPUT.value() == "Gearcube") {
@@ -6625,7 +6626,7 @@ function flexDo(foo, arr, shift = false) {
 		funcMult(foo, undoTillRotate(arr));
 	} else if (['x', 'y', 'z'].some(c => arr[arr.length - 1].includes(c))) {
 		funcMult(foo, 1);
-	} else if (INPUT.value() == "Double" || INPUT.value() == "Gearcube") {
+	} else if (INPUT.value() == "Double Turns" || INPUT.value() == "Gearcube") {
 		funcMult(foo, 2);
 	} else if (INPUT.value() == "Gearcube II") {
 		funcMult(foo, 3);
@@ -9582,7 +9583,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 		turning = true;
 	}
 	if (turning) {
-		if(INPUT.value() == "Double")
+		if(INPUT.value() == "Double Turns")
 			arr.push(arr[0]);
 		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 			arr.push(arr[0]);
