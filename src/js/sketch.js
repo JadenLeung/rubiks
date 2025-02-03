@@ -9870,12 +9870,12 @@ function isSolved()
 		let right = getColor(CUBE[cuby].front.levels);
 		let left = getColor(CUBE[cuby].back.levels);
 		if (custom != 1) {
-			if (top == 'k') top = opposite[bottom];
-			if (bottom == 'k') bottom = opposite[top];
-			if (back == 'k') back = opposite[front];
-			if (front == 'k') front = opposite[back];
-			if (right == 'k') right = opposite[left];
-			if (left == 'k') left = opposite[right];
+			if (top == 'k' || !top) top = opposite[bottom];
+			if (bottom == 'k'|| !bottom) bottom = opposite[top];
+			if (back == 'k'|| !back) back = opposite[front];
+			if (front == 'k'|| !front) front = opposite[back];
+			if (right == 'k'|| !right) right = opposite[left];
+			if (left == 'k'|| !left) left = opposite[right];
 		}
 		if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
 			if (cubies.length <= 1) return true;
@@ -9892,11 +9892,12 @@ function isSolved()
                 right: [right, getColor(CUBE[curindex].front.levels)],
                 left: [left, getColor(CUBE[curindex].back.levels)],
 			}
+			console.log(compare);
 			const neighbors = getNeighborsArr(curindex);
 			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
 			let j = 0;
 			for (let dir in compare) {
-				if (custom != 1 && dir[1] == "k") continue;
+				if (custom != 1 && (dir[1] == "k" || !dir[1])) continue;
 				if (neighbors[map[dir]] != -1) continue;
 				solved = solved && compare[dir][0] == compare[dir][1]
 				j++;
