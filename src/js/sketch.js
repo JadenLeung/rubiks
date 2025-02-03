@@ -5318,7 +5318,7 @@ function shufflePossible(len, total2, prev){
 	let col = topColor();
 	col = col.toLowerCase();
 	let op = opposite[col];
-	let mid = mids[SIZE];
+	let mid = Math.floor(SIZE / 2);
 	const badmoves = [col, op].includes(layout[2][mid][mid][0]) ? ["U", "D", "E"] : 
 	[col, op].includes(layout[5][mid][mid][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
 	// if (layout[5][1][1][0] == ) 
@@ -9506,7 +9506,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				});
 			}
 		})
-	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1) {
+	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1 && !special[0]) {
 		const sharedata = sharedAxis(cuby1, cuby2);
 		const TURNOBJ = {
 			z: {compare: ["x", "y"], vec: 2, turn: xaxis},

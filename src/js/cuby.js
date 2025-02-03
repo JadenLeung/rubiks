@@ -215,20 +215,12 @@ export default class Cuby {
         }
       }
     }
-    if(special[0] == true && this.special[6] != 2 && this.special[6] != 15 && this.size != 1){ //rainbow
-      let badarr = ["tlf", "tfbl", "blt", "tlfd", "tdfbl", "bltd", "dfl", "fbld", "bdl",
-                    "rtfl", "tfbrl", "rbtl", "tdfrl", "tdfbrl", "tdbrl", "rdfl", "dfbrl", "rbdl",
-                    "rtf", "rbtf", "rbt", "rtdf", "tdfbr", "rtdb", "rfd", "rbfd", "rbd"];
-      for(let i = 0; i < badarr.length; i++){
-        for(let j = 0; j < badarr[i].length && this.index == i; j++){
-          if(badarr[i][j] == "t") this.top = "";
-          if(badarr[i][j] == "d") this.bottom = "";
-          if(badarr[i][j] == "f") this.front = "";
-          if(badarr[i][j] == "b") this.back = "";
-          if(badarr[i][j] == "l" && size != 1) this.left = "";
-          if(badarr[i][j] == "r" && size != 1) this.right = "";
+    if(special[0] == true && this.special[6] != 2 && this.special[6] != 15 && this.size != 1){ //hollow
+      ["back", "front", "bottom", "top", "right", "left"].forEach((c) => {
+        if (getColor(this[c].levels) == "k") {
+          this[c] = "";
         }
-      }
+      })
     }
 
     this.buff_top = buff[2];
@@ -581,10 +573,13 @@ export default class Cuby {
   // if(this.cubysize == 12) bandaged = [0,9,2,11,24,15,26,17];
   // if(this.cubysize == 14) bandaged = [13,14,16,17,22,23,25,26];
 
+  let g = !this.special[0] ? 0 : this.special[3] * (r/25);
+
   if(bandaged.includes(this.index)){
     this.p.strokeWeight(0);
 	  this.p.stroke('black');
     this.stroke = 0;
+    g = 0;
   }
   else{
     this.p.strokeWeight(this.special[1]);
@@ -593,7 +588,6 @@ export default class Cuby {
   }
 	// p1, p2, p3, p4 coordinates
 
-  let g = !this.special[0] ? 0 : this.special[3] * (r/25);
 
   const shift = (dir, x, y, z) => {
     if (dir == "back") this.p.quad(-r+x, -r+y, -r+z, r+x, -r+y, -r+z, r+x, r+y, -r+z, -r+x, r+y, -r+z, 2, 2);
