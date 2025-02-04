@@ -23,7 +23,7 @@ export default function (p) {
 	let DIM4 = 3;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
-	const NOMOUSE = [13];
+	const NOMOUSE = [13, "lasagna"];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	let pracalgs = [];
 	let trackthin = null; // false means thin
@@ -1475,7 +1475,7 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && (!mouseAllowed() || !canMouse())) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
+	if(MODE == "cube" && (!mouseAllowed() || (custom == 1 && !canMouse()))) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1)bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -6066,7 +6066,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isSolved());
+		console.log(mouseAllowed(), canMouse());
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
@@ -6917,7 +6917,6 @@ function refreshButtons()
 
 }
 function iddefault() {
-	allcubies = false;
 	reSetup();
 	TOPWHITE.value(localStorage.topwhite);
 	topWhite();
