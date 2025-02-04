@@ -112,7 +112,7 @@ export default function (p) {
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
-		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT,
+		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
 		BANDAGE_SLOT;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
@@ -1159,11 +1159,15 @@ p.setup = () => {
 	setButton(RIGHTBAN, "rightban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', rightBan.bind(null, 0));
 
 	ADDBANDAGE = p.createButton('Add Bandage Group');
-	setButton(ADDBANDAGE, "addbandage", 'btn btn-light', 'font-size:18px; border-color: black; margin-top:15px;', addBandage.bind(null, 0));
+	setButton(ADDBANDAGE, "addbandage", 'btn btn-primary', 'font-size:18px;', addBandage.bind(null, 0));
 
 
 	VIEWBANDAGE = p.createButton('View/Delete Groups');
-	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-light', 'font-size:18px; border-color: black;', viewBandage.bind(null, 0));
+	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-secondary', 'font-size:18px;', viewBandage.bind(null, 0));
+
+	SMOOTHBANDAGE = p.createCheckbox(' Auto-smooth bandages ', true);
+	SMOOTHBANDAGE.parent("smoothbandage"); 
+	SMOOTHBANDAGE.style("font-size: 12px;")
 
 	const OKBAN = p.createButton('Done');
 	setButton(OKBAN, "okban", 'btn btn-success text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', doneBandage.bind(null, 0));
@@ -2616,7 +2620,7 @@ function viewBandage(def){
 	if(!def)
 		bannum = 1;
 	setDisplay("block", ["okban"]); 
-	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2"]); 
+	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2","smoothbandage"]); 
 	setDisplay("inline", ["leftban", "rightban"]);
 
 	if(bandaged.length >= bannum)
@@ -2637,7 +2641,7 @@ function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
-	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban","bandage_outer","bandage_outer2"]);
+	setDisplay("none", ["rng2", "addbandage", "addbandage4", "smoothbandage", "custom5", "select9", "input", "scram", "deleteban","bandage_outer","bandage_outer2"]);
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
@@ -2648,15 +2652,18 @@ function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
 	document.getElementById("addbandage3").innerHTML= "";
 	setDisplay("none", ["okban", "leftban", "rightban", "deleteban", "cancelban"]); 
-	setDisplay("block", ["addbandage", "addbandage4", "input", "scram","bandage_outer","bandage_outer2"]); 
+	setDisplay("block", ["addbandage", "addbandage4", "smoothbandage", "input", "scram","bandage_outer","bandage_outer2"]); 
 	setDisplay("inline", ["custom5", "select9", "rng2"]); 
 
-	if(bandaged2.length > 1 && customb == 1)
+	let pushing = false
+	if(bandaged2.length > 1 && customb == 1) {
 		bandaged.push(bandaged2);
+		pushing = true;
+	}
 	bandaged2 = [];
 	customb = 0;
 	ban9();
-	b_selectdim[BANDAGE_SELECT.value()]();
+	// quickSolve(special[2])
 	if (!bandaged3[BANDAGE_SELECT.value()]) {
 		bandaged3[BANDAGE_SELECT.value()] = {
 			[BANDAGE_SLOT.value()]: bandaged, 
@@ -2666,6 +2673,15 @@ function doneBandage(){
 		bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
 		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
 	}
+	if (pushing) {
+		addBandage();
+	} else {
+		b_selectdim[BANDAGE_SELECT.value()]();
+		smoothBandage();
+	}
+	// if (SMOOTHBANDAGE.checked()) {
+	// 	smoothBandage();
+	// }
 }
 function cancelBandage(){
 	customb = 0;
@@ -10033,6 +10049,8 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
     cubemode();
 	modnum = 2;
 	changeMod(0);
+	switchSize(4);
+	FOURBYFOUR.style('background-color', "#8ef5ee");
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
