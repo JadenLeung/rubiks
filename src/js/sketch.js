@@ -5374,6 +5374,15 @@ function shuffleCube(nb) {
 	arr = [];
 	let bad = "";
 	let total = "";
+	let bad5 = [];
+	let mid = mids[SIZE];
+	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+	console.log("setup is ", setup)
+	if(setup[0] == -MAXX || setup[0] == MAXX) //top
+		bad5 = ['L','R','F','B','S','M','l','r','f','b'];
+	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
+		bad5 = ['U','D','F','B','E','S','u','d','f','b'];
+	else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 	if(true)
 	{
 		if(SCRAM.value() == "Middle Slices")
@@ -5404,7 +5413,8 @@ function shuffleCube(nb) {
 	if(DIM4 == 2)
 		s = 10;
 	if (SIZE >= 4) s = 30;
-	if (["2x2x4", "3x3x5"].includes(DIM)) s = 40;
+	if (["2x2x4", "3x3x5"].includes(DIM)) s = 45;
+	// possible = ["B"];
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -5448,9 +5458,7 @@ function shuffleCube(nb) {
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
 			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && i < 15)) && 
-			([col, op].includes(layout[2][mid][mid][0]) && rnd[0] != "U" && rnd[0] != "D" ||
-			[col, op].includes(layout[5][mid][mid][0]) && rnd[0] != "F" && rnd[0] != "B" ||
-			[col,op].includes(layout[0][mid][mid][0]) && rnd[0] != "L" && rnd[0] != "R")))
+			bad5.includes(rnd[0])))
 			{
 				console.log("HEREEEE")
 				arr.push(rnd);
@@ -6389,6 +6397,7 @@ function adjustMove(move) {
 		// 		toowide = ["L", "R", "U", "D"];
 		// 	}
 		// }
+		console.log("ADJUST ", move, isCube(), !(move.includes("w")) ,  ["L", "F", "R", "B", "U", "D"].includes(move[0]));
 		if (!isCube() && !(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0])) {
 			if (move.includes("'")) move = move[0] + "w'";
 			else move += "w";
@@ -6396,7 +6405,7 @@ function adjustMove(move) {
 	}
 	return move;
 }
-function multiple(nb, timed) {
+function multiple(nb, timed, shuffling) {
 	if((MODE == "speed" || MODE == "moves") && arr.length > 2)
 	return;
 	if (nb < arr.length) {
@@ -6480,35 +6489,47 @@ function multiple(nb, timed) {
 		}
 		// console.log("alldown is " + alldown);
 		notation(arr[nb], timed);
-		let bad = -1;
-		if(undo.length > 0)
-		{
-			let rnd = arr[nb];
-			if(rnd.slice(-1) == "'")
-				bad = rnd.substring(0, rnd.length-1);
-			else
-				bad = rnd + "'";
-		}
-		if(timer.isRunning && MODE != "moves")
-		{
-			moves++;
-		}
-		else if(MODE == "moves")
-		{
-			if(undo[undo.length-2] == bad)
+		if (!shuffling) {
+			let bad = -1;
+			if(undo.length > 0)
 			{
-				undo.pop();
-				undo.pop();
-				moves--;
+				let rnd = arr[nb];
+				if(rnd.slice(-1) == "'")
+					bad = rnd.substring(0, rnd.length-1);
+				else
+					bad = rnd + "'";
 			}
-			else
+			if(timer.isRunning && MODE != "moves")
+			{
 				moves++;
+			}
+			else if(MODE == "moves")
+			{
+				if(undo[undo.length-2] == bad)
+				{
+					undo.pop();
+					undo.pop();
+					moves--;
+				}
+				else
+					moves++;
+			}
 		}
-		waitForCondition(multiple.bind(null, nb + 1), true);
+		waitForCondition(multiple.bind(null, nb + 1, timed, shuffling), true);
 	}
 	else
 	{
 		canMan = true;
+		if (shuffling) {
+			undo = [];
+			redo = [];
+			shufflespeed = 5;
+			canMan = true;
+			if(race > 1){
+				canMan = false;
+				shuffling = false;
+			}
+		}
 	}
 }
 function waitForCondition(callback, delay) {
@@ -6525,29 +6546,7 @@ function multiple2(nb, timed) {
 	if (nb < arr.length) {
 		shufflespeed = 2;
 		canMan = false;
-		if (adjustMove(arr[nb]) !== false) {
-			arr[nb] = adjustMove(arr[nb]);
-		} else {
-			multiple(arr.length, timed);
-			return;
-		}
-		notation(arr[nb], timed);
-		// console.log(nb);
-		waitForCondition(multiple2.bind(null, nb + 1));
-	}
-	else
-	{
-		if(arr.length > 1)
-		{
-			undo = [];
-			redo = [];
-		}
-		shufflespeed = 5;
-		canMan = true;
-		if(race > 1){
-			canMan = false;
-			shuffling = false;
-		}
+		multiple(nb, false, true);
 	}
 }
 function changeArr(str)
