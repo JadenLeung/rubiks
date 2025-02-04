@@ -45,9 +45,7 @@ export default function (p) {
 	let SPEED_SLIDER;
 	let DELAY_SLIDER;
 	let TWOBYTWO;
-	let THREEBYTHREE;
-	let FOURBYFOUR;
-	let FIVEBYFIVE;
+	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -219,6 +217,7 @@ opposite["y"] = "w";
 opposite["w"] = "y";
 opposite["o"] = "r";
 opposite["r"] = "o";
+opposite["k"] = "k";
 
 const opposite2 = {
 	L: "R", R: "L", F: "B", B: "F", U: "D", D: "U",
@@ -532,6 +531,7 @@ p.setup = () => {
 	FIVEBYFIVE = p.createButton('5x5');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
+	LASAGNA = p.createButton('Lasagna Cube');
 	refreshButtons();
 
 
@@ -6066,6 +6066,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
+		console.log(isSolved());
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
@@ -6747,6 +6748,7 @@ function refreshButtons()
 	FIVEBYFIVE.remove();
 	TWOBYTWOBYFOUR.remove();
 	THREEBYTHREEBYFIVE.remove();
+	LASAGNA.remove();
 	CUBE3.remove();
 	CUBE4.remove();
 	CUBE5.remove();
@@ -6908,6 +6910,9 @@ function refreshButtons()
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+
+		LASAGNA = p.createButton('Lasagna Cube');
+		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchSize(4, "lasagna"); LASAGNA.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -9114,6 +9119,7 @@ function setLayout(){
 	opposite[layout[3][1][1][0]] = layout[2][1][1][0];
 	opposite[layout[4][1][1][0]] = layout[5][1][1][0];
 	opposite[layout[5][1][1][0]] = layout[4][1][1][0];
+	opposite["k"] = "k";
 	
 }
 function getColor(color)
@@ -9818,7 +9824,7 @@ function isCube() { // only works with no adjustments like the 2x2x3
 }
 function isSolved()
 {
-	if(DIM == 3)
+	if(DIM == -11)
 	{
 		for(let i = 0; i < 6; i++)
 		{
@@ -9829,14 +9835,13 @@ function isSolved()
 			if(layout[i][2][1][0] != curcolor) return false;
 		}
 		return true;
-	}
-	if(DIM == 13){
+	} else if([13, "lasagna"].includes(DIM)) {
 		for(let i = 0; i < 6; i+=2){
 			let same = true;
 			let onecolor = layout[i][0][0][0];
 			let othercolor = layout[i+1][0][0][0];
-			for(let x = 0; x < 3; x++){
-				for(let y = 0; y < 3; y++){
+			for(let x = 0; x < SIZE; x++){
+				for(let y = 0; y < SIZE; y++){
 					if(layout[i][x][y][0] != onecolor) same = false;
 					if(layout[i+1][x][y][0] != othercolor) same = false;
 				}
@@ -9846,9 +9851,7 @@ function isSolved()
 			}
 		}
 		return false;
-	}
-	if (![3, 13].includes(DIM))
-	{
+	} else {
 		let cubies = getOuterCubes();
 		let cuby = cubies[0];
 		let top = getColor(CUBE[cuby].right.levels);
@@ -9880,22 +9883,24 @@ function isSolved()
                 right: [right, getColor(CUBE[curindex].front.levels)],
                 left: [left, getColor(CUBE[curindex].back.levels)],
 			}
+			// console.log(compare);
 			const neighbors = getNeighborsArr(curindex);
 			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
-			let j = 0;
 			for (let dir in compare) {
-				if (custom != 1 && (dir[1] == "k" || !dir[1])) continue;
+				if (custom != 1 && (compare[dir][1] == "k" || !compare[dir][1])) continue;
 				if (neighbors[map[dir]] != -1) continue;
-				solved = solved && compare[dir][0] == compare[dir][1]
-				j++;
+				if (compare[dir][0] == "k") {
+					compare[dir][0] = compare[dir][1];
+					continue;
+				}
+				if (compare[dir][0] != compare[dir][1]) {
+					console.log(dir)
+					return false;
+				}
 			}
-			
         }
-		return solved;
-        
+		return true;
 	}
-
-	return true;
 }
 function median(values){  
 

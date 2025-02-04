@@ -160,7 +160,7 @@ export default class Cuby {
           })
         }
     }
-    if(size == 13){
+    if([13, "lasagna"].includes(size)){
       let a = "";
       let c1 = this.custom[4][5];
       let c2 = opposite[c1];
@@ -172,7 +172,13 @@ export default class Cuby {
       console.log(colors);
       if(colors.includes(c1)) a = this.colors.green;
       else if(colors.includes(c2)) a = this.colors.blue;
-      else a = this.colors.orange;
+      else {
+        if (size == "lasagna" && x == -25) {
+          a = this.colors.red;
+        } else {
+          a = this.colors.orange;
+        }
+      }
       this.top = a;
       this.bottom = a;
       this.front = a;
