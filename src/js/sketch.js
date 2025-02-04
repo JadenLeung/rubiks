@@ -1625,32 +1625,6 @@ function reSetup(rot) {
 			}
 		}
 	}
-	if(rot)
-	{
-		arr = [];
-		CAM.setRotation(rot, 0);
-		if(rotationx * rotationz == 0){
-			if(rotationx == 1) arr = ["y'"];
-			if(rotationx == 2) arr = ["y", "y"];
-			if(rotationx == 3) arr = ["y"];
-			if(rotationz == 1) arr.push("x");
-			if(rotationz == 2){
-				arr.push("x");
-				arr.push("x");
-			}
-			if(rotationz == 3) arr.push("x'");
-			multiple2(0);
-		}
-		else{
-			rotationx = 0;
-			rotationz = 0;
-		}
-	}
-	else{
-		rotateIt();
-		rotationx = 0;
-		rotationz = 0;
-	}
 	for(let i = 0; i < SIZE * SIZE * SIZE; i++){ //sets up nextcuby
 		nextcuby[i] = [];
 		for(let j = 0; j < SIZE * SIZE * SIZE; j++){
@@ -3192,21 +3166,21 @@ function paintit(color, dx = 1) {
 	if (dx > 0) {
 		if (colorindex == 27) {
 			arr = ["y", "y"];
-			multiple2(0);
+			multiple2("scramble");
 		}
 		if (colorindex == 45) {
 			arr = ["x"];
-			multiple2(0);
+			multiple2("scramble");
 		}
 	}
 	if (dx < 0) {
 		if (colorindex == 44) {
 			arr = ["x'"];
-			multiple2(0);
+			multiple2("scramble");
 		}
 		if (colorindex == 26) {
 			arr = ["y", "y"];
-			multiple2(0);
+			multiple2("scramble");
 		}
 	}
 	// CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
@@ -5487,7 +5461,7 @@ function shuffleCube(nb) {
 	}
 	if(SCRAM.value() != "Last Layer")
 	document.getElementById("scramble").innerHTML = total;
-	multiple2(0);
+	multiple2("scramble");
 }
 function downloadAll()
 {
@@ -6405,7 +6379,7 @@ function adjustMove(move) {
 	}
 	return move;
 }
-function multiple(nb, timed, shuffling) {
+function multiple(nb, timed, use = "default") {
 	if((MODE == "speed" || MODE == "moves") && arr.length > 2)
 	return;
 	if (nb < arr.length) {
@@ -6489,7 +6463,7 @@ function multiple(nb, timed, shuffling) {
 		}
 		// console.log("alldown is " + alldown);
 		notation(arr[nb], timed);
-		if (!shuffling) {
+		if (use == "default") {
 			let bad = -1;
 			if(undo.length > 0)
 			{
@@ -6515,14 +6489,17 @@ function multiple(nb, timed, shuffling) {
 					moves++;
 			}
 		}
-		waitForCondition(multiple.bind(null, nb + 1, timed, shuffling), true);
+		waitForCondition(multiple.bind(null, nb + 1, timed, use), true);
 	}
 	else
 	{
 		canMan = true;
-		if (shuffling) {
-			undo = [];
-			redo = [];
+		if (use == "scramble" || use == "flexdo") {
+			console.log("HEREHREHRHE")
+			if (use == "scramble") {
+				undo = [];
+				redo = [];
+			}
 			shufflespeed = 5;
 			canMan = true;
 			if(race > 1){
@@ -6542,11 +6519,11 @@ function waitForCondition(callback, delay) {
     }
 }
 
-function multiple2(nb, timed) {
-	if (nb < arr.length) {
+function multiple2(use) {
+	if (0 < arr.length) {
 		shufflespeed = 2;
 		canMan = false;
-		multiple(nb, false, true);
+		multiple(0, false, use);
 	}
 }
 function changeArr(str)
@@ -6700,7 +6677,7 @@ function Undo()
 		}
 	}
 	arr = [move];
-	multiple2(0);
+	multiple2("flexdo");
 	undo.pop();
 	redo.push(move);
 
@@ -6738,7 +6715,7 @@ function Redo()
 		}
 	}
 	arr = [move];
-	multiple2(0);
+	multiple2("flexdo");
 }
 function refreshButtons()
 {
