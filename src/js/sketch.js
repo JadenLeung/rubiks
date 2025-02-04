@@ -5386,8 +5386,8 @@ function shuffleCube(nb) {
 	}
 	if(DIM4 == 2)
 		s = 10;
-	if (SIZE >= 4) s = 30;
-	if (["2x2x4", "3x3x5"].includes(DIM)) s = 45;
+	if (SIZE == 4) s = 30;
+	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4) s = 45;
 	// possible = ["B"];
 	for(let i = 0; i < s; i++)
 	{
@@ -6166,7 +6166,7 @@ p.keyPressed = (event) => {
 			}
 		}
 		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80] //for 3x3x2
-		let mid = mids[SIZE];;
+		let mid = mids[SIZE];
 		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 		if(setup[0] == -MAXX || setup[0] == MAXX) //top
 			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
@@ -6371,7 +6371,6 @@ function adjustMove(move) {
 		// 		toowide = ["L", "R", "U", "D"];
 		// 	}
 		// }
-		console.log("ADJUST ", move, isCube(), !(move.includes("w")) ,  ["L", "F", "R", "B", "U", "D"].includes(move[0]));
 		if (!isCube() && !(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0])) {
 			if (move.includes("'")) move = move[0] + "w'";
 			else move += "w";
@@ -6452,12 +6451,18 @@ function multiple(nb, timed, use = "default") {
 		if(alldown == true) timed = false;
 		if (!onedown) {
 			const bewide = ["L", "R", "F", "B", "U", "D"];
+			const map = {Lw: "M", "Lw'": "M'", Rw: "M'", "Rw'": "M", Fw: "S", "Fw'": "S'",
+				Bw: "S'", "Bw'": "S", Uw: "E'", "Uw'": "E", Dw: "E", "Dw'": "E'"};
 			if (!arr[nb].includes("w") && bewide.includes(arr[nb][0])) {
 				arr[nb] = arr[nb][0] + "w" + (arr[nb].includes("'") ? "'" : "");
 				multiple(nb, timed);
 				return;
+			} else if (map.hasOwnProperty(arr[nb])) {
+				arr[nb] = map[arr[nb]];
+                multiple(nb, timed);
+                return;
 			} else {
-				canMan = true;
+				multiple(nb + 1, timed);
 				return;
 			}
 		}
@@ -6495,7 +6500,6 @@ function multiple(nb, timed, use = "default") {
 	{
 		canMan = true;
 		if (use == "scramble" || use == "flexdo") {
-			console.log("HEREHREHRHE")
 			if (use == "scramble") {
 				undo = [];
 				redo = [];
@@ -6616,6 +6620,7 @@ function flexDo(foo, arr, shift = false) {
 	} else if (INPUT.value() == "3x3x2") {
 		let bad5 = [];
 		let mid = mids[SIZE];
+		// if (custom == 1) mid = shownCubies()[Math.floor(shownCubies().length / 2)];
 		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 		if(setup[0] == -MAXX || setup[0] == MAXX) bad5 = ['L','R','F','B','S','M'];
 		else if(setup[2] == -MAXX || setup[2] == MAXX) bad5 = ['U','D','F','B','E','S'];
