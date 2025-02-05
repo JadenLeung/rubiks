@@ -112,7 +112,7 @@ export default function (p) {
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
-		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT,
+		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
 		BANDAGE_SLOT;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
@@ -1159,11 +1159,18 @@ p.setup = () => {
 	setButton(RIGHTBAN, "rightban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', rightBan.bind(null, 0));
 
 	ADDBANDAGE = p.createButton('Add Bandage Group');
-	setButton(ADDBANDAGE, "addbandage", 'btn btn-light', 'font-size:18px; border-color: black; margin-top:15px;', addBandage.bind(null, 0));
+	setButton(ADDBANDAGE, "addbandage", 'btn btn-primary', 'font-size:18px;', addBandage.bind(null, 0));
 
 
 	VIEWBANDAGE = p.createButton('View/Delete Groups');
-	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-light', 'font-size:18px; border-color: black;', viewBandage.bind(null, 0));
+	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-secondary', 'font-size:18px;', viewBandage.bind(null, 0));
+
+	SMOOTHBANDAGE = p.createCheckbox(' Auto-smooth bandages ', true);
+	SMOOTHBANDAGE.parent("smoothbandage"); 
+	SMOOTHBANDAGE.style("font-size: 12px;");
+	SMOOTHBANDAGE.changed(() => {
+		if (SMOOTHBANDAGE.checked()) smoothBandage();
+	})
 
 	const OKBAN = p.createButton('Done');
 	setButton(OKBAN, "okban", 'btn btn-success text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', doneBandage.bind(null, 0));
@@ -1522,7 +1529,13 @@ setInterval(() => {
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
 				CUBE[i].setColor(CUBE[key].colors.magenta);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
-					CUBE[i].setColor(CUBE[key].colors.black);
+					let index = 0;
+					DIM[2].forEach((group, j) => {
+						if (group.includes(i)) {
+							index = j;
+						}
+					})
+					CUBE[i].setBlack((index * 15) % 150);
 			} else if (!DIM[1].includes(i) && getColor(CUBE[i].right.levels) == "m") {
 				CUBE[i].originalColor();
 			}
@@ -2616,7 +2629,7 @@ function viewBandage(def){
 	if(!def)
 		bannum = 1;
 	setDisplay("block", ["okban"]); 
-	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2"]); 
+	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2","smoothbandage"]); 
 	setDisplay("inline", ["leftban", "rightban"]);
 
 	if(bandaged.length >= bannum)
@@ -2637,7 +2650,7 @@ function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
-	setDisplay("none", ["rng2", "addbandage", "addbandage4", "custom5", "select9", "input", "scram", "deleteban","bandage_outer","bandage_outer2"]);
+	setDisplay("none", ["rng2", "addbandage", "addbandage4", "smoothbandage", "custom5", "select9", "input", "scram", "deleteban","bandage_outer","bandage_outer2"]);
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
@@ -2648,15 +2661,18 @@ function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
 	document.getElementById("addbandage3").innerHTML= "";
 	setDisplay("none", ["okban", "leftban", "rightban", "deleteban", "cancelban"]); 
-	setDisplay("block", ["addbandage", "addbandage4", "input", "scram","bandage_outer","bandage_outer2"]); 
+	setDisplay("block", ["addbandage", "addbandage4", "smoothbandage", "input", "scram","bandage_outer","bandage_outer2"]); 
 	setDisplay("inline", ["custom5", "select9", "rng2"]); 
 
-	if(bandaged2.length > 1 && customb == 1)
+	let pushing = false
+	if(bandaged2.length > 1 && customb == 1) {
 		bandaged.push(bandaged2);
+		pushing = true;
+	}
 	bandaged2 = [];
 	customb = 0;
 	ban9();
-	b_selectdim[BANDAGE_SELECT.value()]();
+	// quickSolve(special[2])
 	if (!bandaged3[BANDAGE_SELECT.value()]) {
 		bandaged3[BANDAGE_SELECT.value()] = {
 			[BANDAGE_SLOT.value()]: bandaged, 
@@ -2665,6 +2681,14 @@ function doneBandage(){
 	} else {
 		bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
 		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
+	}
+	if (pushing) {
+		addBandage();
+	} else {
+		b_selectdim[BANDAGE_SELECT.value()]();
+		if (SMOOTHBANDAGE.checked()) {
+			smoothBandage();
+		}
 	}
 }
 function cancelBandage(){
@@ -2716,7 +2740,7 @@ function randomBandage(){
 			bandaged[i].push(rnd);
 		}
 	}
-	smoothBandage(); 
+	smoothBandage(true); 
 	bandaged3[BANDAGE_SELECT.value()] = {
 		[BANDAGE_SLOT.value()]: bandaged, 
 		slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
@@ -2725,7 +2749,7 @@ function randomBandage(){
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
 }
-function smoothBandage() {
+function smoothBandage(random = false) {
 	let cnt = 0;
 	console.log("way before", JSON.stringify(bandaged));
 	while (cnt < 1000) {
@@ -2742,9 +2766,11 @@ function smoothBandage() {
 						console.log("after add", JSON.stringify(bandaged));
 					} else {
 						for (let j = 0; j < bandaged.length; j++) {
-							if (bandaged[j].includes(i)) {
-								if (Math.random() < 0.5) b.push(...bandaged[j]);
+							if (bandaged[j].includes(i) && i != j) {
+								if (Math.random() < 0.5 || !random) b.push(...bandaged[j]);
+								console.log("before splice", JSON.stringify(bandaged));
 								bandaged.splice(j, 1);
+								console.log("after splice", JSON.stringify(bandaged));
 								break;
 							}
 						}
@@ -2760,9 +2786,13 @@ function smoothBandage() {
 	reSetup();
 }
 function deleteBan(){
-	if(bandaged.length >= bannum) 
+	let deleted = false;
+	if(bandaged.length >= bannum)  {
 		bandaged.splice(bannum-1, 1);
+		deleted = true;
+	}
 	doneBandage();
+	viewBandage();
 }
 function inputPressed(move)
 {
@@ -10033,6 +10063,8 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
     cubemode();
 	modnum = 2;
 	changeMod(0);
+	switchSize(4);
+	FOURBYFOUR.style('background-color', "#8ef5ee");
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {

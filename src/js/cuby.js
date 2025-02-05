@@ -251,7 +251,14 @@ export default class Cuby {
     }
   }
 
-  setColor(c) {
+  setBlack(dx = 0) {
+    const directions = ["back", "front", "bottom", "top", "right", "left"];
+    directions.forEach((face) => {
+      this[face] = this.p.color(25 + dx,  25 + dx, 25 + dx);
+    })
+  }
+
+  setColor(c, variance) {
     if (!this.adjustedcolor)
       this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
     this.top = c;
