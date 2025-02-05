@@ -74,7 +74,7 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if ([6, "2x2x4", "3x3x5"].includes(size)) { // rainbow
+    if ([6, "2x2x4", "3x3x5", "3x3x4"].includes(size)) { // rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -539,15 +539,17 @@ export default class Cuby {
       arr = [0,1,2,3,6,9,10,11,12,15,18,19,20,21,22,23,24,25,26];
     else if(this.special[6] == 15)
       arr = [1,3,4,5,7,10,12,13,14,16,19,21,22,23,25];
-    else if(["2x2x4", "3x3x5"].includes(this.cubysize)) {
+    else if(["2x2x4", "3x3x5", "3x3x4"].includes(this.cubysize)) {
       arr = [0,1,2,3,4,7,8,11,12,13,14,15];
-      if (this.cubysize == "3x3x5") arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
+      if (["3x3x5", "3x3x4"].includes(this.cubysize)) arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
       let s = arr.length;
       for (let i = 1; i < SIZE; i++) {
         for (let j = 0; j < s; j++) {
-          arr.push(arr[j] + i * SIZE * SIZE)
+          if (this.cubysize == "3x3x4" && i == 2) continue;
+          arr.push(arr[j] + i * SIZE * SIZE);
         }
       }
+      if (this.cubysize == "3x3x4") arr.push(...Array.from({ length: 25 }, (_, i) => i + 50));
     }
 
 
@@ -612,13 +614,13 @@ export default class Cuby {
   }
   
 
-  if ([2, 15].includes(this.special[6]) && this.cubysize[0] != "adding") {
+  if ([2, 15, "3x3x4"].includes(this.special[6]) && this.cubysize[0] != "adding") {
     let c1 = this.custom[4][5];
     let c2 = this.custom[22][4];
     const opparr = [c1, c2];
-    let xshift = this.x == -50 ? 25 : -25;
-    let yshift = this.y == -50 ? 25 : -25;
-    let zshift = this.z == -50 ? 25 : -25;
+    let xshift = this.x < 0 ? 25 : -25;
+    let yshift = this.y < 0 ? 25 : -25;
+    let zshift = this.z < 0 ? 25 : -25;
     const dirs = ["back", "front", "bottom", "top", "right", "left"];
     dirs.forEach((dir) => {
       if(this[dir] != ""){ // yellow

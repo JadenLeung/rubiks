@@ -45,7 +45,7 @@ export default function (p) {
 	let SPEED_SLIDER;
 	let DELAY_SLIDER;
 	let TWOBYTWO;
-	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA;
+	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -531,6 +531,7 @@ p.setup = () => {
 	FIVEBYFIVE = p.createButton('5x5');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
+	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
 	LASAGNA = p.createButton('Lasagna Cube');
 	refreshButtons();
 
@@ -2374,12 +2375,14 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
-function switchSize(s, d = 50) {
-	DIM2 = 50;
+function switchSize(s, d = 50, d2 = 50, input = "Normal") {
+	DIM2 = d2;
 	DIM = d;
 	DIM3 = 3;
 	DIM4 = 3;
 	changeCam(3)
+	INPUT.value(input);
+	SCRAM.value(input);
 	SIZE = s;
 	MAXX = (SIZE - 1) * 25;
 	reSetup();
@@ -3806,7 +3809,8 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "3x3x5" ? 140 : DIM == "2x2x4" ? 50 : SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0
+	ZOOMADD = DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM + ZOOMADD);
@@ -5418,7 +5422,7 @@ function shuffleCube(nb) {
 		s = 10;
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4) s = 45;
-	// possible = ["B"];
+	if (["3x3x4"].includes(DIM)) s = 30;
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -6778,6 +6782,7 @@ function refreshButtons()
 	FIVEBYFIVE.remove();
 	TWOBYTWOBYFOUR.remove();
 	THREEBYTHREEBYFIVE.remove();
+	THREEBYTHREEBYFOUR.remove();
 	LASAGNA.remove();
 	CUBE3.remove();
 	CUBE4.remove();
@@ -6937,6 +6942,9 @@ function refreshButtons()
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+
+		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "3x3x4", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
@@ -9912,7 +9920,6 @@ function isSolved()
                 right: [right, getColor(CUBE[curindex].front.levels)],
                 left: [left, getColor(CUBE[curindex].back.levels)],
 			}
-			// console.log(compare);
 			const neighbors = getNeighborsArr(curindex);
 			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
 			for (let dir in compare) {
@@ -9923,7 +9930,6 @@ function isSolved()
 					continue;
 				}
 				if (compare[dir][0] != compare[dir][1]) {
-					console.log(dir)
 					return false;
 				}
 			}
@@ -10063,8 +10069,8 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
     cubemode();
 	modnum = 2;
 	changeMod(0);
-	switchSize(4);
-	FOURBYFOUR.style('background-color', "#8ef5ee");
+	switchSize(5, "3x3x4", "3x3x4", "3x3x2");
+	THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
