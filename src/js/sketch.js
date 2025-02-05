@@ -2740,7 +2740,7 @@ function randomBandage(){
 			bandaged[i].push(rnd);
 		}
 	}
-	smoothBandage(); 
+	smoothBandage(true); 
 	bandaged3[BANDAGE_SELECT.value()] = {
 		[BANDAGE_SLOT.value()]: bandaged, 
 		slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
@@ -2749,7 +2749,7 @@ function randomBandage(){
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
 }
-function smoothBandage() {
+function smoothBandage(random = false) {
 	let cnt = 0;
 	console.log("way before", JSON.stringify(bandaged));
 	while (cnt < 1000) {
@@ -2766,9 +2766,11 @@ function smoothBandage() {
 						console.log("after add", JSON.stringify(bandaged));
 					} else {
 						for (let j = 0; j < bandaged.length; j++) {
-							if (bandaged[j].includes(i)) {
-								if (Math.random() < 0.5) b.push(...bandaged[j]);
+							if (bandaged[j].includes(i) && i != j) {
+								if (Math.random() < 0.5 || !random) b.push(...bandaged[j]);
+								console.log("before splice", JSON.stringify(bandaged));
 								bandaged.splice(j, 1);
+								console.log("after splice", JSON.stringify(bandaged));
 								break;
 							}
 						}
