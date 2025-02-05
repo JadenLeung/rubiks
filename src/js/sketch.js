@@ -1167,7 +1167,10 @@ p.setup = () => {
 
 	SMOOTHBANDAGE = p.createCheckbox(' Auto-smooth bandages ', true);
 	SMOOTHBANDAGE.parent("smoothbandage"); 
-	SMOOTHBANDAGE.style("font-size: 12px;")
+	SMOOTHBANDAGE.style("font-size: 12px;");
+	SMOOTHBANDAGE.changed(() => {
+		if (SMOOTHBANDAGE.checked()) smoothBandage();
+	})
 
 	const OKBAN = p.createButton('Done');
 	setButton(OKBAN, "okban", 'btn btn-success text-dark', 'width: 180px; height:40px; margin-right:5px; margin-top:5px; border-color: black;', doneBandage.bind(null, 0));
@@ -1526,7 +1529,13 @@ setInterval(() => {
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
 				CUBE[i].setColor(CUBE[key].colors.magenta);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
-					CUBE[i].setColor(CUBE[key].colors.black);
+					let index = 0;
+					DIM[2].forEach((group, j) => {
+						if (group.includes(i)) {
+							index = j;
+						}
+					})
+					CUBE[i].setBlack((index * 15) % 150);
 			} else if (!DIM[1].includes(i) && getColor(CUBE[i].right.levels) == "m") {
 				CUBE[i].originalColor();
 			}
@@ -2677,11 +2686,10 @@ function doneBandage(){
 		addBandage();
 	} else {
 		b_selectdim[BANDAGE_SELECT.value()]();
-		smoothBandage();
+		if (SMOOTHBANDAGE.checked()) {
+			smoothBandage();
+		}
 	}
-	// if (SMOOTHBANDAGE.checked()) {
-	// 	smoothBandage();
-	// }
 }
 function cancelBandage(){
 	customb = 0;
@@ -2776,9 +2784,13 @@ function smoothBandage() {
 	reSetup();
 }
 function deleteBan(){
-	if(bandaged.length >= bannum) 
+	let deleted = false;
+	if(bandaged.length >= bannum)  {
 		bandaged.splice(bannum-1, 1);
+		deleted = true;
+	}
 	doneBandage();
+	viewBandage();
 }
 function inputPressed(move)
 {
