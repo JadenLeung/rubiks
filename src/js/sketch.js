@@ -1698,18 +1698,29 @@ function getCubyFromPos(x, y, z) {
 	}
 	return -1;
 }
+
+function findCubyNear(x, y, z, dx, dy, dz) {
+	if ([x, y, z].some((i) => i > MAXX || i < -MAXX)) {
+		return -1;
+	}
+	let cuby = getCubyFromPos(x, y, z);
+	if (cuby != -1) {
+		return cuby;
+	}
+	return findCubyNear(x + dx, y + dy, z + dz, dx, dy, dz)
+}
 function veryOutside(i) {
 	return [-MAXX, MAXX].includes(CUBE[i].x) || [-MAXX, MAXX].includes(CUBE[i].y) || [-MAXX, MAXX].includes(CUBE[i].z)
 }
 function getNeighborsArr(cuby) {
 	if (!CUBE[cuby]) return false;
 	let adder = (DIM2 == 100) ? CUBYESIZE * 2: CUBYESIZE;
-	return [getCubyFromPos(CUBE[cuby].x+adder, CUBE[cuby].y, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x-adder, CUBE[cuby].y, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y+adder, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y-adder, CUBE[cuby].z),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z+adder),
-	getCubyFromPos(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z-adder)]
+	return [findCubyNear(CUBE[cuby].x+adder, CUBE[cuby].y, CUBE[cuby].z, adder, 0, 0),
+	findCubyNear(CUBE[cuby].x-adder, CUBE[cuby].y, CUBE[cuby].z, -adder, 0 ,0),
+	findCubyNear(CUBE[cuby].x, CUBE[cuby].y+adder, CUBE[cuby].z, 0, adder, 0),
+	findCubyNear(CUBE[cuby].x, CUBE[cuby].y-adder, CUBE[cuby].z, 0, -adder, 0),
+	findCubyNear(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z+adder, 0, 0, adder),
+	findCubyNear(CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z-adder, 0, 0, -adder)]
 }
 function isInnerCube(cuby) {
 	if (veryOutside(cuby) || !CUBE[cuby].shown) return false;
@@ -5830,12 +5841,10 @@ function startAction() {
 	}
 
 	setLayout();
-	// console.log(hoveredColor);
-	// console.log(p.color(BACKGROUND_COLOR).levels);
-	// console.log(arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels));
+
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
-		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "");
+		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -9861,18 +9870,7 @@ function isCube() { // only works with no adjustments like the 2x2x3
 }
 function isSolved()
 {
-	if(DIM == -11)
-	{
-		for(let i = 0; i < 6; i++)
-		{
-			let curcolor = layout[i][1][1][0];
-			if(layout[i][0][1][0] != curcolor) return false;
-			if(layout[i][1][0][0] != curcolor) return false;
-			if(layout[i][1][2][0] != curcolor) return false;
-			if(layout[i][2][1][0] != curcolor) return false;
-		}
-		return true;
-	} else if([13, "lasagna"].includes(DIM)) {
+	if([13, "lasagna"].includes(DIM)) {
 		for(let i = 0; i < 6; i+=2){
 			let same = true;
 			let onecolor = layout[i][0][0][0];
