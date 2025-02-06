@@ -6405,7 +6405,7 @@ function adjustMove(move) {
 			console.log("Illegal!");
 			return false;
 		}
-		if ("lfrbud".includes(move[0]) && !isCube()) {
+		if ("lfrbud".includes(move[0]) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
 			move = move[0].toUpperCase() + move.slice(1);
 			console.log("changedmove ", move)
 		}
