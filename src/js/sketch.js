@@ -117,7 +117,8 @@ export default function (p) {
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
-	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR, THREEBYTHREEBYFIVE;
+	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR, THREEBYTHREEBYFIVE,
+		ONEBYFOURBYFOUR;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -529,6 +530,7 @@ p.setup = () => {
 	CUBE16 = p.createButton('Bandaged 3x3x2');
 	FOURBYFOUR = p.createButton('4x4');
 	FIVEBYFIVE = p.createButton('5x5');
+	ONEBYFOURBYFOUR = p.createButton('1x1x4');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
@@ -3820,7 +3822,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+	ZOOMADD = DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
 				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -5433,7 +5435,7 @@ function shuffleCube(nb) {
 		s = 10;
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4) s = 45;
-	if (["3x3x4"].includes(DIM)) s = 30;
+	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -6789,6 +6791,7 @@ function refreshButtons()
 	SANDWICH.remove();
 	FOURBYFOUR.remove();
 	FIVEBYFIVE.remove();
+	ONEBYFOURBYFOUR.remove();
 	TWOBYTWOBYFOUR.remove();
 	THREEBYTHREEBYFIVE.remove();
 	THREEBYTHREEBYFOUR.remove();
@@ -6948,6 +6951,9 @@ function refreshButtons()
 
 		FIVEBYFIVE = p.createButton('5x5');
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
+
+		ONEBYFOURBYFOUR = p.createButton('1x4x4');
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "1x4x4", "1x4x4", "3x3x2"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
