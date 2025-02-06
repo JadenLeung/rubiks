@@ -114,7 +114,7 @@ export default function (p) {
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
-		BANDAGE_SLOT;
+		BANDAGE_SLOT, CUSTOMSHIFT;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
@@ -552,8 +552,11 @@ p.setup = () => {
 	NBYN = p.createButton('More');
 	setButton(NBYN, "type4", 'btn btn-light btn-sm', 'border-color: black; ', cubemode.bind(null, 0));
 
+	CUSTOMSHIFT = p.createCheckbox(" Shape Shift", true);
+	CUSTOMSHIFT.parent("customshift")
+
 	SEL = p.createSelect(); //Top
-	SEL.parent("select1")
+	SEL.parent("select1");
 
 	SEL2 = p.createSelect(); //Left
 	SEL2.parent("select2")
@@ -1557,6 +1560,7 @@ setInterval(() => {
 	if (typeof bandaged3[BANDAGE_SELECT.value()] !== "object") {
 		bandaged3[BANDAGE_SELECT.value()] = {}; // Ensure it's an object
 	  }
+	setDisplay(SIZE > 3 ? "block" : "none", ["customshift"]);
 }, 10)
 //forever
 function reSetup(rot) {
@@ -6396,7 +6400,7 @@ function shownCubies() {
 	return cubies;
 }
 function adjustMove(move) {
-	if (["2x2x4", "3x3x5", "2x3x4"].includes(DIM)) {
+	if (["2x2x4", "3x3x5", "2x3x4"].includes(DIM) || custom == 1 && CUSTOMSHIFT.checked() && SIZE > 3) {
 		if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
 			console.log("Illegal!");
 			return false;
