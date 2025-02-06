@@ -172,13 +172,9 @@ export default class Cuby {
       });
       console.log(colors);
       if(colors.includes(c1)) a = this.colors.green;
-      else if(colors.includes(c2)) a = this.colors.blue;
+      else if(colors.includes(c2)) a = size == "lasagna" ? this.colors.green : this.colors.blue;
       else {
-        if (size == "lasagna" && x == -25) {
-          a = this.colors.red;
-        } else {
-          a = this.colors.orange;
-        }
+        a = size == "lasagna" ? this.colors.blue : this.colors.orange;
       }
       this.top = a;
       this.bottom = a;

@@ -6920,7 +6920,7 @@ function refreshButtons()
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
-		LASAGNA = p.createButton('Lasagna Cube');
+		LASAGNA = p.createButton('Earth Cube');
 		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchSize(4, "lasagna"); LASAGNA.style('background-color', "#8ef5ee");});
 	}
 
