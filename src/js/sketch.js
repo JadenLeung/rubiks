@@ -46,7 +46,7 @@ export default function (p) {
 	let SPEED_SLIDER;
 	let DELAY_SLIDER;
 	let TWOBYTWO;
-	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR;
+	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -533,6 +533,7 @@ p.setup = () => {
 	FIVEBYFIVE = p.createButton('5x5');
 	ONEBYFOURBYFOUR = p.createButton('1x1x4');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
+	TWOBYTHREEBYFOUR = p.createButton('2x3x4');
 	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
 	LASAGNA = p.createButton('Lasagna Cube');
@@ -3823,7 +3824,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+	ZOOMADD = DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
 				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -5479,7 +5480,7 @@ function shuffleCube(nb) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
-			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(DIM) && i < 15)) && 
+			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5", "2x3x4"].includes(DIM) && i < 15)) && 
 			bad5.includes(rnd[0])))
 			{
 				console.log("HEREEEE")
@@ -6111,7 +6112,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(mouseAllowed(), canMouse());
+		console.log(isCube());
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
@@ -6395,7 +6396,7 @@ function shownCubies() {
 	return cubies;
 }
 function adjustMove(move) {
-	if (["2x2x4", "3x3x5"].includes(DIM)) {
+	if (["2x2x4", "3x3x5", "2x3x4"].includes(DIM)) {
 		if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
 			console.log("Illegal!");
 			return false;
@@ -6404,20 +6405,7 @@ function adjustMove(move) {
 			move = move[0].toUpperCase() + move.slice(1);
 			console.log("changedmove ", move)
 		}
-		// let toowide = ["L", "F", "R", "B", "U", "D"];
-		// let mid = mids[SIZE];
-		// console.log(getColor(CUBE[mid].left.levels), getColor(CUBE[mid].top.levels), getColor(CUBE[mid].front.levels));
-		// if (isCube()) {
-		// 	const arr = [topColor(), opposite[topColor()]];
-		// 	if (arr.includes(getColor(CUBE[mid].left.levels))) {
-		// 		toowide = ["L", "F", "R", "B"];
-		// 	} else if (arr.includes(getColor(CUBE[mid].front.levels))) {
-		// 		toowide = ["F", "B", "U", "D"];
-		// 	} else {
-		// 		toowide = ["L", "R", "U", "D"];
-		// 	}
-		// }
-		if (!isCube() && !(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0])) {
+		if (!(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0]) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
 			if (move.includes("'")) move = move[0] + "w'";
 			else move += "w";
 		}
@@ -6757,6 +6745,7 @@ function refreshButtons()
 	FIVEBYFIVE.remove();
 	ONEBYFOURBYFOUR.remove();
 	TWOBYTWOBYFOUR.remove();
+	TWOBYTHREEBYFOUR.remove();
 	THREEBYTHREEBYFIVE.remove();
 	THREEBYTHREEBYFOUR.remove();
 	LASAGNA.remove();
@@ -6921,6 +6910,9 @@ function refreshButtons()
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+
+		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "2x3x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
 		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "3x3x4", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
@@ -9437,7 +9429,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				});
 			}
 		})
-	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1 && !special[0]) {
+	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1 && !special[0] && DIM != "2x3x4") {
 		const sharedata = sharedAxis(cuby1, cuby2);
 		const TURNOBJ = {
 			z: {compare: ["x", "y"], vec: 2, turn: xaxis},
@@ -9744,19 +9736,37 @@ function sideSolved(color)
 	}
 	return false;
 }
+function uniform(dir) {
+	let base = 0;
+	for (let x = -MAXX; x <= MAXX; x += CUBYESIZE) {
+		let numcubies = 0;
+		for (let y = -MAXX; y <= MAXX; y += CUBYESIZE) {
+			for (let z = -MAXX; z <= MAXX; z += CUBYESIZE) {
+				let cuby;
+				if (dir == "x") {
+					cuby = getCubyFromPos(x, y, z);
+				}
+				if (dir == "y") {
+					cuby = getCubyFromPos(z, x, y);
+				}
+				if (dir == "z") {
+					cuby = getCubyFromPos(y, z, x);
+				}
+				numcubies += cuby != -1 ? 1 : 0;
+			}
+		}
+		console.log(numcubies);
+		if (base == 0) {
+			base = numcubies;
+		} else if (base != numcubies && numcubies != 0) {
+			return false;
+		}
+	}
+	return true;
+}
 function isCube() { // only works with no adjustments like the 2x2x3
-	let minx = MAXX, maxx = -MAXX, miny = MAXX, maxy = -MAXX, minz = MAXX, maxz = -MAXX;
-	let cubies = shownCubies();
-	cubies.forEach((c) => {
-		minx = Math.min(minx, CUBE[c].x);
-		miny = Math.min(miny, CUBE[c].y);
-		minz = Math.min(minz, CUBE[c].z);
-		maxx = Math.max(maxx, CUBE[c].x);
-		maxy = Math.max(maxy, CUBE[c].y);
-		maxz = Math.max(maxz, CUBE[c].z);
-	});
-	let outerboxsize = ((maxx - minx) / 50 + 1) * ((maxy - miny) / 50 + 1) * ((maxz - minz) / 50 + 1);
-	return outerboxsize == cubies.length;
+	let base = 0;
+	return uniform("x") && uniform("y") && uniform("z");
 }
 function isSolved()
 {
@@ -9957,8 +9967,8 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
     cubemode();
 	modnum = 2;
 	changeMod(0);
-	switchSize(5, "3x3x4", "3x3x4", "3x3x2");
-	THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");
+	switchSize(5, "2x3x4", "2x3x4", "3x3x2")
+	TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {

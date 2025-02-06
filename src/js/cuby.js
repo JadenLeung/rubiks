@@ -74,7 +74,7 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4"].includes(size)) { // rainbow
+    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4"].includes(size)) { // rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -551,8 +551,18 @@ export default class Cuby {
           }
         }
       }
-    }
-    else if(["2x2x4", "3x3x5", "3x3x4"].includes(this.cubysize)) {
+    } else if(this.cubysize == "2x3x4") {
+      arr = [];
+      for (let x = 0; x < SIZE; x++) {
+        for (let y = 0; y < SIZE; y++) {
+          for (let z = 0; z < SIZE; z++) {
+            if (y >= 1 && y <= 3 || x == 1 || x == 3 || z == 2) {
+              arr.push(x * SIZE * SIZE + y * SIZE + z);
+            }
+          }
+        }
+      }
+    }  else if(["2x2x4", "3x3x5", "3x3x4"].includes(this.cubysize)) {
       arr = [0,1,2,3,4,7,8,11,12,13,14,15];
       if (["3x3x5", "3x3x4"].includes(this.cubysize)) arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
       let s = arr.length;
@@ -627,18 +637,43 @@ export default class Cuby {
   }
   
 
-  if ([2, 15, "3x3x4", "1x4x4"].includes(this.special[6]) && this.cubysize[0] != "adding") {
+  if ([2, 15, "3x3x4", "1x4x4", "2x3x4"].includes(this.special[6]) && this.cubysize[0] != "adding") {
     let c1 = this.custom[4][5];
     let c2 = this.custom[22][4];
+    let c3 = this.custom[14][2];
+    let c4 = this.custom[12][3]
     const opparr = [c1, c2];
-    let xshift = this.x < 0 ? 25 : -25;
-    let yshift = this.y < 0 ? 25 : -25;
-    let zshift = this.z < 0 ? 25 : -25;
+    const sidearr = [c3, c4]
+    let xshift = this.x < 0 ? 25 : this.x > 0 ? -25 : 0;
+    let yshift = this.y < 0 ? 25 : this.y > 0 ? -25 : 0;
+    let zshift = this.z < 0 ? 25 : this.z > 0 ? -25 : 0;
     const dirs = ["back", "front", "bottom", "top", "right", "left"];
     dirs.forEach((dir) => {
       if(this[dir] != ""){ // yellow
         this.p.fill(this[dir]);
-        if ([15, "1x4x4"].includes(this.special[6])) { //2x2x3
+        let shiftarr = []
+        if (["2x3x4"].includes(this.special[6])) { //2x2x3
+          // shift(dir, 0, 0, 0);
+          if (opparr.includes(getColor(this.left.levels))) {
+            if (sidearr.includes(getColor(this.front.levels))) {
+              shift(dir, xshift * 2, yshift * 3, zshift);
+            } else {
+              shift(dir, xshift * 2, yshift, zshift * 3);
+            }
+          } else if (opparr.includes(getColor(this.top.levels))) {
+            if (sidearr.includes(getColor(this.front.levels))) {
+              shift(dir, xshift * 3, yshift * 2, zshift);
+            } else {
+              shift(dir, xshift, yshift * 2, zshift * 3);
+            }
+          } else {
+            if (sidearr.includes(getColor(this.left.levels))) {
+              shift(dir, xshift, yshift * 3, zshift * 2);
+            } else {
+              shift(dir, xshift * 3, yshift, zshift * 2);
+            }
+          }
+        } else if ([15, "1x4x4"].includes(this.special[6])) { //2x2x3
           if (opparr.includes(getColor(this.left.levels))) {
             shift(dir, 0, yshift, zshift);
           } else if (opparr.includes(getColor(this.top.levels))) {
