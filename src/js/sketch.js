@@ -3,6 +3,7 @@ import Picker from './picker.js';
 import Cuby from './cuby.js';
 import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
+import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -5918,7 +5919,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	}
 	let total = 0;
 	let cuthrough = false;
-	if(rows[0] < -MAXX || rows[rows.length - 1] > MAXX || rows.length == (MAXX * 2 / CUBYESIZE + 1)) {
+	if(rows[0] < -MAXX || rows[rows.length - 1] > MAXX || rows.length > (MAXX * 2 / CUBYESIZE + 1)) {
 		return false;
 	}
 	if(bandaged.length > 0){
@@ -5938,7 +5939,6 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 			return false;
 		}
 		if(cuthrough){
-			console.log("fails", rows);
 			let tryleft = animate(axis, [rows[0] - CUBYESIZE, ...rows], dir, timed, false);
 			let tryright = animate(axis, [...rows, rows[rows.length - 1] + CUBYESIZE], dir, timed, false);
 			if (tryleft && tryright) {
@@ -6195,11 +6195,11 @@ p.keyPressed = (event) => {
 		setLayout();
 		//console.log("here");
 		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89 1000 1001 90 191 59";
-		let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89 59";
+		// let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89 59";
 		let bad3 = "88c";
 		if(DIM == 100)
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81 1000 1001";
-		if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
+		// if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
 		if(bad3.includes(p.keyCode) && p.keyCode > 9 || p.keyCode == 18) return;
 		let cubies = shownCubies();
 		let onedown = false;
@@ -6432,6 +6432,10 @@ function multiple(nb, timed, use = "default") {
 		let cubies = shownCubies();
 		let onedown = true;
 		alldown = false;
+		if (!getMove(MAXX, CUBYESIZE, SIZE).hasOwnProperty(arr[nb]) && !["x", "y", "z"].includes(arr[nb][0])) { // Bad move
+			multiple(nb + 1, timed, use)
+			return;
+		}
 		if (adjustMove(arr[nb]) !== false) {
 			arr[nb] = adjustMove(arr[nb]);
 		} else {
@@ -6441,62 +6445,22 @@ function multiple(nb, timed, use = "default") {
 		if(!["x", "y", "z"].includes(arr[nb][0])){
 			alldown = true;
 			onedown = false;
-			let keyMappings = {
-				D: {axis: "x", values: MAXX},
-				d: {axis: "x", values: MAXX - CUBYESIZE},
-				U: {axis: "x", values: -MAXX},
-				u: {axis: "x", values: -MAXX + CUBYESIZE},
-				L: { axis: "z", values: -MAXX},
-				l: {axis: "z", values: -MAXX + CUBYESIZE},
-				R: { axis: "z", values: MAXX },
-				r: {axis: "z", values: MAXX - CUBYESIZE},
-				F: { axis: "y", values: MAXX },
-				f: {axis: "y", values: MAXX - CUBYESIZE},
-				B: { axis: "y", values: -MAXX},
-				b: {axis: "y", values: -MAXX + CUBYESIZE},
-			  };
-
-			let wideMappings = {
-				Rw: { axis: "z", values:[MAXX, MAXX - CUBYESIZE] },
-				Lw: { axis: "z", values: [-MAXX, CUBYESIZE - MAXX] },
-				Uw: { axis: "x", values: [-MAXX, CUBYESIZE - MAXX] },
-				Dw: { axis: "x", values:[MAXX, MAXX - CUBYESIZE] },
-				Fw: { axis: "y", values: [MAXX, MAXX - CUBYESIZE]},
-				Bw: { axis: "y", values: [-MAXX, CUBYESIZE - MAXX]}
-			}			
-			if (SIZE % 2 == 1) {
-				keyMappings = {E: { axis: "x", values: 0 },
-				M: { axis: "z", values: 0},
-				S: { axis: "y", values: 0}, ...keyMappings};
-			} else {
-				wideMappings = {E: { axis: "x", values: [-25,25] },
-				M: { axis: "z", values: [-25,25]},
-				S: { axis: "y", values: [-25,25]}, ...wideMappings};
-			}
-			for (const move in keyMappings) {
-				const { axis, values } = keyMappings[move];
-				if ([move, move + "'"].includes(arr[nb])) {
-					for(let i = 0; i < cubies.length; i++) {
-						onedown = onedown || (CUBE[cubies[i]][axis] == values);
-					}
-					for(let i = 0; i < cubies.length; i++) alldown = alldown && (CUBE[cubies[i]][axis] == values);
+			const move = arr[nb];
+			const movemap = getMove(MAXX, CUBYESIZE, SIZE);
+			const axis = movemap[move][0];
+			const values = movemap[move][1];
+			if ([move, move + "'"].includes(arr[nb])) {
+				for(let i = 0; i < cubies.length; i++) {
+					onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
-			}
-
-			for (const move in wideMappings) {
-				const { axis, values } = wideMappings[move];
-				if ([move, move + "'"].includes(arr[nb])) {
-					for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]][axis]== values[0]);
-					for(let i = 0; i < cubies.length; i++) {
-						alldown = alldown && (CUBE[cubies[i]][axis] == values[0] || CUBE[cubies[i]][axis] == values[1]);
-					}
-					for(let i = 0; i < cubies.length; i++) onedown = onedown || (CUBE[cubies[i]][axis] == values[1]);
+				for(let i = 0; i < cubies.length; i++) {
+					alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 			}
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
-			const bewide = ["L", "R", "F", "B", "U", "D"];
+			const bewide = ["L", "R", "F", "B", "U", "D", "M", "S", "E"];
 			const map = {Lw: "M", "Lw'": "M'", Rw: "M'", "Rw'": "M", Fw: "S", "Fw'": "S'",
 				Bw: "S'", "Bw'": "S", Uw: "E'", "Uw'": "E", Dw: "E", "Dw'": "E'"};
 			if (!arr[nb].includes("w") && bewide.includes(arr[nb][0])) {
@@ -7014,61 +6978,13 @@ function notation(move, timed){
 	{
 		move = flipper[move];
 	}
-	const midarr = SIZE % 2 == 1 ? [0] : [-CUBYESIZE / 2, CUBYESIZE / 2]
 	undo.push(move);
 	setLayout();
-	if(move == "D'")
-	animate('x', [MAXX], -1, timed);
-	if(move == "D")
-	animate('x', [MAXX], 1, timed);
-	if(move == "U")
-	animate('x', [-MAXX], -1, timed);
-	if(move == "U'")
-	animate('x', [-MAXX], 1, timed);
-	if(move == "F")
-	animate('y', [MAXX], -1, timed);
-	if(move == "F'")
-	animate('y', [MAXX], 1, timed);
-	if(move == "B'")
-	animate('y', [-MAXX], -1, timed);
-	if(move == "B")
-	animate('y', [-MAXX], 1, timed);
-	if(move == "R'")
-	animate('z', [MAXX], -1, timed);
-	if(move == "R")
-	animate('z', [MAXX], 1, timed);
-	if(move == "L")
-	animate('z', [-MAXX], -1, timed);
-	if(move == "L'")
-	animate('z', [-MAXX], 1, timed);
-	if(move == "d'")
-	animate('x', [MAXX-CUBYESIZE], -1, timed);
-	if(move == "d")
-	animate('x', [MAXX-CUBYESIZE], 1, timed);
-	if(move == "u")
-	animate('x', [CUBYESIZE-MAXX], -1, timed);
-	if(move == "u'")
-	animate('x', [CUBYESIZE-MAXX], 1, timed);
-	if(move == "f")
-	animate('y', [MAXX-CUBYESIZE], -1, timed);
-	if(move == "f'")
-	animate('y', [MAXX-CUBYESIZE], 1, timed);
-	if(move == "b'")
-	animate('y', [CUBYESIZE-MAXX], -1, timed);
-	if(move == "b")
-	animate('y', [CUBYESIZE-MAXX], 1, timed);
-	if(move == "r'")
-	animate('z', [MAXX-CUBYESIZE], -1, timed);
-	if(move == "r")
-	animate('z', [MAXX-CUBYESIZE], 1, timed);
-	if(move == "l")
-	animate('z', [CUBYESIZE-MAXX], -1, timed);
-	if(move == "l'")
-	animate('z', [CUBYESIZE-MAXX], 1, timed);
-	if(move == "M'")
-	animate('z', midarr, 1, timed);
-	if(move == "M")
-	animate('z', midarr, -1, timed);
+	const moveMap = getMove(MAXX, CUBYESIZE, SIZE)
+	if (moveMap.hasOwnProperty(move)) {
+		animate(moveMap[move][0], moveMap[move][1], moveMap[move][2], timed);
+		return;
+	}
 	if(move == "x'")
 	animateRotate("z", -1);
 	if(move == "x")
@@ -7081,38 +6997,6 @@ function notation(move, timed){
 	animateRotate("y", -1);
 	if(move == "z'")
 	animateRotate("y", 1);
-	if(move == "E")
-	animate('x', midarr, 1, timed);
-	if(move == "E'")
-	animate('x', midarr, -1, timed);
-	if(move == "S")
-	animate('y', midarr, -1, timed);
-	if(move == "S'")
-	animate('y', midarr, 1, timed);
-	if(move == "Lw")
-	animate('z', [-MAXX, CUBYESIZE-MAXX], -1, timed);
-	if(move == "Lw'")
-	animate('z', [-MAXX, CUBYESIZE-MAXX], 1, timed);
-	if(move == "Rw'")
-	animate('z', [MAXX, MAXX-CUBYESIZE], -1, timed);
-	if(move == "Rw")
-	animate('z', [MAXX, MAXX-CUBYESIZE], 1, timed);
-	if(move == "Fw")
-	animate('y', [MAXX, MAXX-CUBYESIZE], -1, timed);
-	if(move == "Fw'")
-	animate('y', [MAXX, MAXX-CUBYESIZE], 1, timed);
-	if(move == "Bw'")
-	animate('y', [-MAXX, CUBYESIZE-MAXX], -1, timed);
-	if(move == "Bw")
-	animate('y', [-MAXX, CUBYESIZE-MAXX], 1, timed);
-	if(move == "Uw")
-	animate('x', [-MAXX, CUBYESIZE-MAXX], -1, timed);
-	if(move == "Uw'")
-	animate('x', [-MAXX, CUBYESIZE-MAXX], 1, timed);
-	if(move == "Dw'")
-	animate('x', [MAXX, MAXX-CUBYESIZE], -1, timed);
-	if(move == "Dw")
-	animate('x', [MAXX, MAXX-CUBYESIZE], 1, timed);
 }
 function stepFour()
 {
