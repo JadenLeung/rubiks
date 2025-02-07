@@ -647,43 +647,33 @@ export default class Cuby {
     dirs.forEach((dir) => {
       if(this[dir] != ""){ // yellow
         this.p.fill(this[dir]);
-        let shiftarr = []
-        if (["2x3x4"].includes(this.special[6])) { //2x2x3
-          // shift(dir, 0, 0, 0);
+        let shiftarr = [];
+        if (["2x3x4"].includes(this.special[6])) {
+          shiftarr = [2, 3, 1];
+        } else if ([15, "1x4x4"].includes(this.special[6])) { // 2x3x3
+          shiftarr = [0, 1, 1];  
+        } else {
+          shiftarr = [1, 0, 0];
+        }
+        if (shiftarr.length > 0) {
           if (opparr.includes(getColor(this.left.levels))) {
             if (sidearr.includes(getColor(this.front.levels))) {
-              shift(dir, xshift * 2, yshift * 3, zshift);
+              shift(dir, xshift * shiftarr[0], yshift * shiftarr[1], zshift * shiftarr[2]);
             } else {
-              shift(dir, xshift * 2, yshift, zshift * 3);
+              shift(dir, xshift * shiftarr[0], yshift * shiftarr[2], zshift * shiftarr[1]);
             }
           } else if (opparr.includes(getColor(this.top.levels))) {
             if (sidearr.includes(getColor(this.front.levels))) {
-              shift(dir, xshift * 3, yshift * 2, zshift);
+              shift(dir, xshift * shiftarr[1], yshift * shiftarr[0], zshift * shiftarr[2]);
             } else {
-              shift(dir, xshift, yshift * 2, zshift * 3);
+              shift(dir, xshift * shiftarr[2], yshift * shiftarr[0], zshift * shiftarr[1]);
             }
           } else {
             if (sidearr.includes(getColor(this.left.levels))) {
-              shift(dir, xshift, yshift * 3, zshift * 2);
+              shift(dir, xshift * shiftarr[2], yshift * shiftarr[1], zshift * shiftarr[0]);
             } else {
-              shift(dir, xshift * 3, yshift, zshift * 2);
+              shift(dir, xshift * shiftarr[1], yshift * shiftarr[2], zshift * shiftarr[0]);
             }
-          }
-        } else if ([15, "1x4x4"].includes(this.special[6])) { //2x2x3
-          if (opparr.includes(getColor(this.left.levels))) {
-            shift(dir, 0, yshift, zshift);
-          } else if (opparr.includes(getColor(this.top.levels))) {
-            shift(dir, xshift, 0, zshift);
-          } else {
-            shift(dir, xshift, yshift, 0);
-          }
-        } else {
-          if (opparr.includes(getColor(this.left.levels))) {
-            shift(dir, xshift, 0, 0);
-          } else if (opparr.includes(getColor(this.top.levels))) {
-            shift(dir, 0, yshift, 0);
-          } else {
-            shift(dir, 0, 0, zshift);
           }
         }
       }
