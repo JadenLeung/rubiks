@@ -552,7 +552,7 @@ export default class Cuby {
       for (let x = 0; x < SIZE; x++) {
         for (let y = 0; y < SIZE; y++) {
           for (let z = 0; z < SIZE; z++) {
-            if (y >= 1 && y <= 3 || x == 1 || x == 3 || z == 2) {
+            if ([0,2,4].includes(y) || [0, 4].includes(x) || z == 2) {
               arr.push(x * SIZE * SIZE + y * SIZE + z);
             }
           }
@@ -633,7 +633,7 @@ export default class Cuby {
   }
   
 
-  if ([2, 15, "3x3x4", "1x4x4", "2x3x4"].includes(this.special[6]) && this.cubysize[0] != "adding") {
+  if ([2, 15, "4x3x3", "1x4x4", "3x2x4"].includes(this.special[6]) && this.cubysize[0] != "adding") {
     let c1 = this.custom[4][5];
     let c2 = this.custom[22][4];
     let c3 = this.custom[14][2];
@@ -648,12 +648,13 @@ export default class Cuby {
       if(this[dir] != ""){ // yellow
         this.p.fill(this[dir]);
         let shiftarr = [];
-        if (["2x3x4"].includes(this.special[6])) {
-          shiftarr = [2, 3, 1];
-        } else if ([15, "1x4x4"].includes(this.special[6])) { // 2x3x3
+        if (this.special[6].length > 0 && this.special[6].includes("x")) {
+          let dims = this.special[6].split("x");
+          shiftarr = [(+dims[0] + 1) % 2, (+dims[1] + 1) % 2, (+dims[2] + 1) % 2];
+        } else if ([15].includes(this.special[6])) { // 2x2x3
           shiftarr = [0, 1, 1];  
         } else {
-          shiftarr = [1, 0, 0];
+          shiftarr = [1, 0, 0]; // 2x3x3, 3x3x4
         }
         if (shiftarr.length > 0) {
           if (opparr.includes(getColor(this.left.levels))) {

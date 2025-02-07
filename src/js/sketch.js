@@ -6917,10 +6917,10 @@ function refreshButtons()
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "2x3x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "3x2x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "3x3x4", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "4x3x3", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
@@ -9972,7 +9972,7 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
     cubemode();
 	modnum = 2;
 	changeMod(0);
-	switchSize(5, "2x3x4", "2x3x4", "3x3x2")
+	switchSize(5, "2x3x4", "3x2x4", "3x3x2")
 	TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
