@@ -5440,7 +5440,7 @@ function shuffleCube(nb) {
 	if(DIM4 == 2)
 		s = 10;
 	if (SIZE == 4) s = 30;
-	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4) s = 45;
+	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4 || (SIZE == 4 && custom == 1)) s = 45;
 	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
 	for(let i = 0; i < s; i++)
 	{
@@ -5484,8 +5484,9 @@ function shuffleCube(nb) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
-			} else if(doubly || ((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5", "2x3x4"].includes(DIM) && i < 15)) && 
-			bad5.includes(rnd[0])))
+			} else if(doubly || ((SCRAM.value() == "3x3x2" 
+			|| ((["2x2x4", "3x3x5", "2x3x4"].includes(DIM) || (custom == 1 && SIZE > 3 && CUSTOMSHIFT.checked())) && i < 15))
+			 &&  bad5.includes(rnd[0])))
 			{
 				console.log("HEREEEE")
 				arr.push(rnd);
