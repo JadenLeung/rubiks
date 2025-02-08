@@ -5355,14 +5355,18 @@ function shufflePossible(len, total2, prev){
 		return;
 	}
 	let rnd2 = Math.random();
-	let col = topColor();
-	col = col.toLowerCase();
-	let op = opposite[col];
-	let mid = Math.floor(SIZE / 2);
-	const badmoves = [col, op].includes(layout[2][mid][mid][0]) ? ["U", "D", "E"] : 
-	[col, op].includes(layout[5][mid][mid][0]) ? ["B", "S", "F"] : ["L", "M", "R"];
-	// if (layout[5][1][1][0] == ) 
-	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "3x3x2" && !badmoves.includes(actualmove)))
+	let bad5 = [];
+	let mid = mids[SIZE];
+	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+	console.log("setup is ", setup)
+	if(setup[0] == -MAXX || setup[0] == MAXX) //top
+		bad5 = ['L','R','F','B','S','M','l','r','f','b', "Lw", "Rw", "Fw", "Bw", "Mw", "Sw"];
+	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
+		bad5 = ['U','D','F','B','E','S','u','d','f','b',"Uw","Dw","Fw","Bw","Ew","Sw"];
+	else bad5 = ['L','R','U','D','E','M','l','r','u','d',"Lw","Rw","Uw","Dw","Ew","Mw"]; // front
+
+	
+	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "3x3x2" && bad5.includes(actualmove)))
 	{
 		arr.push(actualmove);
 		arr.push(actualmove);
@@ -5393,7 +5397,7 @@ function shuffleCube(nb) {
 		if (DIM == 8)
 			shufflePossible(60, "", "  ");
 		if(DIM4 == 3)
-			shufflePossible(35, "", "  ");
+			shufflePossible(45, "", "  ");
 		else
 			shufflePossible(15, "", "  ");
 		return;
