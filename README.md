@@ -31,6 +31,16 @@ The mouse turning works on any non-shape/color mod.
 For keyboard turning, you can give yourself restrictions, such as double turns only or making the cube turn like a 3x3x2. You can give yourself similar restrictions with the scrambling, such as making it only scramble the last layer.
 Press Settings to see all the keyboard hotkeys.
 
+<h1>Cube Variety</h1>
+<div>
+  <img width="30%" src="https://github.com/user-attachments/assets/db9ffc88-05c4-473f-bd5b-2d3c51ca79a3">
+  <img width="30%" src="https://github.com/user-attachments/assets/ac81f10d-9f3d-4540-85eb-57322753bab4">
+  <img width="30%" alt="image" src="https://github.com/user-attachments/assets/925862e7-f8e4-401a-acbf-44ee7d5084f4" />
+</div>
+Choose from 25+ cubes with different colors, dimensions, and bandages!
+
+
+
 <h1>Custom Bandage/Shape Mod</h1>
 <div>
 <img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/7bb6dead-0470-41ab-a8b1-d4af284cd516">
