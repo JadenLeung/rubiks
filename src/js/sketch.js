@@ -181,7 +181,11 @@ export default function (p) {
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo, "3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
-		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5)};
+		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
+		"2x2x4" : switchSize.bind(null, 4, "2x2x4"),
+		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
+		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
+		"3x3x5" : switchSize.bind(null, 5, "3x3x5")};
 
 	// attach event
 
@@ -747,11 +751,15 @@ p.setup = () => {
 
 	BANDAGE_SELECT = p.createSelect();
 	BANDAGE_SELECT.option("3x3");
-	BANDAGE_SELECT.option("3x3x2");
-	BANDAGE_SELECT.option("2x2x3");
-	BANDAGE_SELECT.option("Xmas 3x3");
 	BANDAGE_SELECT.option("4x4");
 	BANDAGE_SELECT.option("5x5");
+	BANDAGE_SELECT.option("2x2x3");
+	BANDAGE_SELECT.option("2x2x4");
+	BANDAGE_SELECT.option("2x3x4");
+	BANDAGE_SELECT.option("3x3x2");
+	BANDAGE_SELECT.option("3x3x4");
+	BANDAGE_SELECT.option("3x3x5");
+	// BANDAGE_SELECT.option("Xmas 3x3");
 	BANDAGE_SELECT.parent("bandage_select")
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(() => {
@@ -1167,11 +1175,11 @@ p.setup = () => {
 	setButton(RIGHTBAN, "rightban", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', rightBan.bind(null, 0));
 
 	ADDBANDAGE = p.createButton('Add Bandage Group');
-	setButton(ADDBANDAGE, "addbandage", 'btn btn-primary', 'font-size:18px;', addBandage.bind(null, 0));
+	setButton(ADDBANDAGE, "addbandage", 'btn btn-primary', 'font-size:18px;', addBandage.bind(null));
 
 
 	VIEWBANDAGE = p.createButton('View/Delete Groups');
-	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-secondary', 'font-size:18px;', viewBandage.bind(null, 0));
+	setButton(VIEWBANDAGE, "addbandage4", 'btn btn-secondary', 'font-size:18px;', viewBandage.bind(null, false));
 
 	SMOOTHBANDAGE = p.createCheckbox(' Auto-smooth bandages ', true);
 	SMOOTHBANDAGE.parent("smoothbandage"); 
@@ -2648,8 +2656,9 @@ function ban9(){
 }
 function viewBandage(def){
 	customb = 2;
-	if(!def)
+	if(!def) {
 		bannum = 1;
+	}
 	setDisplay("block", ["okban"]); 
 	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2","smoothbandage"]); 
 	setDisplay("inline", ["leftban", "rightban"]);
@@ -2665,10 +2674,13 @@ function viewBandage(def){
 	else bandaged2 = [-2];
 	
 	ban9();
+	if (!def) {
+		reSetup();
+	}
 	//canMan = false;
 	
 }
-function addBandage(){
+function addBandage(reset = true){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
@@ -2676,7 +2688,7 @@ function addBandage(){
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
-	if (DIM2 != 50)
+	if (reset && DIM2 != 50)
 		reSetup();
 }
 function doneBandage(){
@@ -2705,7 +2717,7 @@ function doneBandage(){
 		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
 	}
 	if (pushing) {
-		addBandage();
+		addBandage(false);
 	} else {
 		b_selectdim[BANDAGE_SELECT.value()]();
 		if (SMOOTHBANDAGE.checked()) {
@@ -5938,7 +5950,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 			if(total > 0 && total < bandaged[i].length)
 				cuthrough = true;
 		}
-		if (cuthrough && SIZE < 4) {
+		if (cuthrough && !(DIM == 50 && SIZE > 3)) {
 			undo.pop();
 			if(timer.isRunning)
 				moves--;

@@ -74,7 +74,8 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4"].includes(size)) { // rainbow
+    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4"].includes(size) ||
+        ["3x2x4", "4x3x3"].includes(this.special[6])) { // rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -547,7 +548,7 @@ export default class Cuby {
           }
         }
       }
-    } else if(this.cubysize == "2x3x4") {
+    } else if(this.special[6] == "3x2x4") {
       arr = [];
       for (let x = 0; x < SIZE; x++) {
         for (let y = 0; y < SIZE; y++) {
@@ -558,17 +559,17 @@ export default class Cuby {
           }
         }
       }
-    }  else if(["2x2x4", "3x3x5", "3x3x4"].includes(this.cubysize)) {
+    }  else if(["2x2x4", "3x3x5"].includes(this.cubysize) || this.special[6] == "4x3x3") {
       arr = [0,1,2,3,4,7,8,11,12,13,14,15];
-      if (["3x3x5", "3x3x4"].includes(this.cubysize)) arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
+      if (["3x3x5"].includes(this.cubysize) || this.special[6] == "4x3x3") arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
       let s = arr.length;
       for (let i = 1; i < SIZE; i++) {
         for (let j = 0; j < s; j++) {
-          if (this.cubysize == "3x3x4" && i == 2) continue;
+          if (this.special[6] == "4x3x3" && i == 2) continue;
           arr.push(arr[j] + i * SIZE * SIZE);
         }
       }
-      if (this.cubysize == "3x3x4") arr.push(...Array.from({ length: 25 }, (_, i) => i + 50));
+      if (this.special[6] == "4x3x3") arr.push(...Array.from({ length: 25 }, (_, i) => i + 50));
     }
 
 
