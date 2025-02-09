@@ -3051,6 +3051,7 @@ function regular(nocustom){
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
 	}
 	getEl("times_desc").innerHTML = "Times:";
+	getEl("outertime").style.color = document.body.style.color;
 	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
 		document.getElementById("cnv_div").style.display = "block";
 		fullScreen(false);
@@ -5393,7 +5394,7 @@ function shufflePossible(len, total2, prev){
 	multipleMod(0, len, total2, prev);
 }
 function shuffleCube(nb) { 
-	if(canMan == false || customb == 1)return;
+	if(canMan == false || customb == 1) return;
 	if(bandaged.length > 0){
 		if (DIM == 8)
 			shufflePossible(60, "", "  ");
@@ -6057,13 +6058,15 @@ p.keyPressed = (event) => {
 		console.log(layout)
 		if (blinded() && getEl("overlay").style.display == "block") {
 			toggleOverlay(false);
-		}
-		if (canMan == false && (MODE == "normal" || MODE == "timed")) {
+		} else if (canMan == false && (MODE == "normal" || MODE == "timed")) {
 			stopMoving();
 			return;
-		}
-		if (getEl("s_start").style.display == "block") {
+		} else if (getEl("s_start").style.display == "block") {
 			practicePLL();
+		} else if (getEl("readybot").style.display == "block") {
+			speedRace2();
+		} else if (race == 2) {
+			getEl("outertime").style.color = "green";
 		}
 	}
 	if(p.keyCode == 49) { //1 //one
@@ -6435,7 +6438,7 @@ function adjustMove(move) {
 	return move;
 }
 function multiple(nb, timed, use = "default") {
-	if((MODE == "speed" || MODE == "moves") && arr.length > 2)
+	if((MODE == "speed" && race == 0 || MODE == "moves") && arr.length > 2)
 	return;
 	if (nb < arr.length) {
 		canMan = false;
@@ -10009,6 +10012,7 @@ document.addEventListener("keydown", (event) => { //paint hotkey
 let activeKeys = new Set();
 document.onkeyup = function(e) { //space
 	if (e.keyCode == 32) {
+		getEl("outertime").style.color = document.body.style.color;
 		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
 			canMan = true;
 			solveCube();
@@ -10029,6 +10033,8 @@ document.onkeydown = function(event) {
 			finishpaint();
 		} else if (getEl("s_start").style.display == "block") {
 			practicePLL();
+		} else if (getEl("readybot").style.display == "block") {
+			speedRace2();
 		}
 	} else if (event.keyCode == 27) { //escape
 		if (getEl("okban").style.display == "block") {
