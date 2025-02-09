@@ -2,11 +2,14 @@
 
 <h1>Introducing ... virtual-cube.net!</h1>
 
-<img width=50% alt="image" src="https://github.com/user-attachments/assets/11d78ea2-e80a-498f-80b8-78cfb39cdc69">
-<img width=50% alt="image" src="https://github.com/user-attachments/assets/f43ba05c-2683-4c8d-9935-75078118108e">
+<div>
+  <img width=40% alt="image" src="https://github.com/user-attachments/assets/11d78ea2-e80a-498f-80b8-78cfb39cdc69">
+  <img width=40% alt="image" src="https://github.com/user-attachments/assets/f43ba05c-2683-4c8d-9935-75078118108e">
+</div>
 
 
-virtual-cube.net is a passion project of mine that allows you to learn and practice your cubing skills virtually. I used [Antoine Gaubert’s cube](https://github.com/angauber/p5-js-rubik-s-cube) for the basic animation, but coded my own mouse and keyboard movements to support many features it doesn’t have. You can choose cubes of a variety of shapes: the traditional 2x2 and 3x3, as well as other cubes like the Sandwich Cube and bandaged cubes. You can use the Auto-Solver to solve any positions, input and test other algorithms, set turning/scrambling restrictions to challenge yourself, and analyze your own solve. It can also scan your physical 3x3 and transpose its position to the virtual cube.
+
+virtual-cube.net is a passion project of mine that allows you to learn and practice your cubing skills virtually. I used [Antoine Gaubert’s cube](https://github.com/angauber/p5-js-rubik-s-cube) for the basic animation, but coded my own mouse and keyboard movements to support many features it doesn’t have. It's filled with a variety of cubes, fun game modes, customizability settings, solve analysis, and more!
 
 <h1>Base features</h1>
 
@@ -14,7 +17,7 @@ virtual-cube.net is a passion project of mine that allows you to learn and pract
 
 You can input an algorithm into the algorithm bar and the cube will perform it.
 The Auto-Solve feature is my best attempt and making the cube solve using the CFOP method. You can adjust the turn speed to make it solve faster or slower.
-There are undo and redo buttons in case you misturn.
+Use the undo and redo buttons in case you misturn. <br>
 
 <h1>Cube settings</h1>
 <img width=50% alt="image" src="https://github.com/user-attachments/assets/fcc260d1-87d0-4e21-ae44-40e86666fca1"> <br>
@@ -23,7 +26,8 @@ You can change the cube settings to make the cube hollow, change the background 
 
 <h1>Turning</h1>
 
-<img width=20% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/628e787e-da03-458c-8e5e-478b9cd4554a">
+<img width="179" alt="image" src="https://github.com/user-attachments/assets/22eeac37-b93c-4844-8ad4-df306b4792b9" />
+
 
 
 The keyboard and button turning works with any cube. You can select between the default keyboard (which has the CS Timer keybinding) and a more beginner-friendly alternative keyboard. 
@@ -32,6 +36,7 @@ For keyboard turning, you can give yourself restrictions, such as double turns o
 Press Settings to see all the keyboard hotkeys.
 
 <h1>Cube Variety</h1>
+<h3>Pre-made Cubes</h3>
 <div>
   <img width="30%" src="https://github.com/user-attachments/assets/db9ffc88-05c4-473f-bd5b-2d3c51ca79a3">
   <img width="30%" src="https://github.com/user-attachments/assets/ac81f10d-9f3d-4540-85eb-57322753bab4">
@@ -41,40 +46,55 @@ Choose from 25+ cubes with different colors, dimensions, and bandages!
 
 
 
-<h1>Custom Bandage/Shape Mod</h1>
+<h3>Custom Bandage/Shape Mod</h3>
 <div>
-<img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/7bb6dead-0470-41ab-a8b1-d4af284cd516">
+<img width=40% alt="image" src="https://github.com/user-attachments/assets/5e000c2d-acae-40ca-9722-fe206ce910e6" />
 <p><i>Custom shape and color</i></p>
-<img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/1d9727e0-a334-4d35-b3a6-73ead08091b4">
-<p><i>Selecting cuby to bandage</i></p>
-<img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/0610b1c8-b72a-488c-ac97-6c561c87dc17">
-<p><i>Completed bandaging</i></p>
+  <div>
+    <img width=40% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/1d9727e0-a334-4d35-b3a6-73ead08091b4">
+    <img width=40% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/0610b1c8-b72a-488c-ac97-6c561c87dc17">
+  </div>
+<p><i>Creating a custom bandage</i></p>
 </div>
 
 
-
-
-For the custom shape, you can adjust the color of a side and the appearance of a cuby.
+Design your own cube! <br>
+The colors, dimensions, bandages, and shown cubies can be adjusted. <br>
 For the custom bandaging, you can even create bandage cubies that usually cannot be physically bandaged. For example, you can bandage 2 corners together.
 
 <h1>Stats Mode</h1>
-
-<img width=15% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/ed34ec53-4d26-49bc-abbc-d55db600c781">
-
 See, analyze, and delete your times.
 
 <h1>Speed Mode</h1>
 
+<h3>Time Attack</h3>
 <img width=30% alt="image" src="https://github.com/user-attachments/assets/dae759d4-33aa-4dfa-8565-440d1f068c28">
 
+You are given 4 challenges, and your time is the sum of the times it takes to complete the 4 challenges. There are 4 attack modes: Easy, Medium, OLL, and PLL. 
+Selecting a 2x2 or 3x3 will result in different challenges.
+
+<h3>OLL/PLL Practice</h3>
+<div>
+  <img width=30% alt="image" src="https://github.com/user-attachments/assets/8c90e66b-628a-4c70-9bf3-09be87619296" />
+  <img width=31% alt="image" src="https://github.com/user-attachments/assets/fe167691-5830-4bb6-85bd-a277538d984f" />
+</div>
+
+Select the OLLs, PLLs, and PBLs you want to practice. The website even gives you the recommended algorithm.
+
+<h3>Bot Racing</h3>
+Race the auto-solve bot with your own physical cube! You can adjust the speed of the bot as well.
 
 
-You are given 4 challenges, and your time is the sum of the times it takes to complete the 4 challenges. This is a good way to practice OLL/PLL.
-Bot Racing: Race against the Auto-Solver with your own physical cube! You can adjust how fast the Auto-Solver solves, and it simulates a race.
 
-<h1>Fewest Moves Challenge</h1>
+<h1>Challenge Mode</h1>
 
-Given a short scramble, you must figure out an efficient way to solve it.
+<h3>Fewest Moves Challenge</h3>
+<img width="30% alt="image" src="https://github.com/user-attachments/assets/3ee5ad51-8a11-4353-893e-5a076aae0d00" /> <br>
+Given a short scramble, you must figure out an efficient way to solve it. You have 3 lives, so use your hints wisely.
+<h3>Marathons</h3>
+Solve 8 cubes in the shortest amount of time! Select from a Shape mod marathon or a Bandage mod marathon.
+<h3>Blind Challenge</h3>
+How many "peeks" do you need to solve a 3x3? A 2x2? The entire shape mod collection? Give a hand at your memorization abilities.
 
 <h1>Weekly Challenges</h1>
 
@@ -83,17 +103,20 @@ Weekly scramble: Everyone has the same scramble for a week. So how fast you can 
 
 <h1>Position ID</h1>
 
-<img width=50% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/2269c74e-9593-490e-95ff-2274608f1313">
+Every valid 3x3 position is marked with an text-based ID. You can copy the ID and save it somewhere in case you want to get back the same position.
 
-
-Every valid position is marked with an text-based ID. You can copy the ID and save it somewhere in case you want to get back the same position.
+<h3>Webcam ID Generator</h3>
+<img width=30% alt="image" src="https://github.com/JadenLeung/rubiks/assets/94010935/2269c74e-9593-490e-95ff-2274608f1313"> <br>
 Use the ID generator to generate an ID for your **real cube**. The program will use the webcam to calibrate the colors and then take a picture of all the faces to generate it. If the camera incorrectly detected a color, you can press the detected color to manually adjust it.
 
-<h1>Solve your physical cube</h1>
+<h3>Paint ID Generator</h3>
+<img width=30% alt="image" src="https://github.com/user-attachments/assets/6bc0d771-5221-4bef-8f67-c2dcdb60a9f9" /> <br>
+Paint the cube how you want it! I recommend using the hotkeys ("r" for red, etc.) to make this faster.
 
-Use the ID generator to generate the corresponding position in the virtual cube and follow the Auto-Solver’s steps. You might want to add a bit of delay to make it easy to follow.
 
-I made this cube because I wanted to an easy way to practice cubing online. Hope you find this fun/useful!
+<h3>Solve your physical cube</h3>
+
+Use any ID generator to generate the corresponding position in the virtual cube and follow the Auto-Solver’s steps. You might want to add a bit of delay to make it easy to follow.
 
 <h1>Login System</h1>
 
