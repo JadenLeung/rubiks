@@ -2753,7 +2753,7 @@ function randomBandage(){
 	if(numB == 3) size = 2;
 	if(numB == 2) size = 3;
 	if (special[6] != 50) size = 2;
-	if(SIZE >= 4) size++;
+	if(shownCubies().length >= 50) size++;
 	for(let i = 0; i < numB; i++){
 		possible = allBandaged();
 		possible2 = [];
@@ -5366,7 +5366,8 @@ function shufflePossible(len, total2, prev){
 	else bad5 = ['L','R','U','D','E','M','l','r','u','d',"Lw","Rw","Uw","Dw","Ew","Mw"]; // front
 
 	
-	if(SCRAM.value() == "Double Turns" || (SCRAM.value() == "3x3x2" && bad5.includes(actualmove)))
+	if(SCRAM.value() == "Double Turns" || 
+	((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(BANDAGE_SELECT.value()) && len < 15)) && bad5.includes(actualmove)))
 	{
 		arr.push(actualmove);
 		arr.push(actualmove);
