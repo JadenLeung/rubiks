@@ -6065,7 +6065,7 @@ p.keyPressed = (event) => {
 			practicePLL();
 		} else if (getEl("readybot").style.display == "block") {
 			speedRace2();
-		} else if (race == 2) {
+		} else if (race == 2 && !isAnimating()) {
 			getEl("outertime").style.color = "green";
 		}
 	}
@@ -10011,7 +10011,7 @@ document.addEventListener("keydown", (event) => { //paint hotkey
 });
 let activeKeys = new Set();
 document.onkeyup = function(e) { //space
-	if (e.keyCode == 32) {
+	if (e.keyCode == 32 && getEl("outertime").style.color == "green") {
 		getEl("outertime").style.color = document.body.style.color;
 		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
 			canMan = true;
