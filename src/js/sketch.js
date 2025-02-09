@@ -6438,8 +6438,8 @@ function adjustMove(move) {
 	return move;
 }
 function multiple(nb, timed, use = "default") {
-	if((MODE == "speed" && race == 0 || MODE == "moves") && arr.length > 2)
-	return;
+	// if((MODE == "speed" && race == 0 || MODE == "moves") && arr.length > 2)
+	// return;
 	if (nb < arr.length) {
 		canMan = false;
 		let cubies = shownCubies();
