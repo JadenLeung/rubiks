@@ -5,6 +5,7 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
+const socket = io("http://localhost:3000");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -16,6 +17,7 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
+	let room = 0;
 	let fullscreen = false;
 	let CUBE = {};
 	let DIM = 50; //50 means 3x3, 100 means 2x2
@@ -907,6 +909,15 @@ p.setup = () => {
 
 	const RNG2 = p.createButton(String.fromCharCode(0x2684));
 	setButton(RNG2, "rng2", 'btn btn-light', 'font-size:15px; border-color: black;', randomBandage.bind(null, 0));
+
+	const CREATE_MATCH = p.createButton("Create Match");
+	setButton(CREATE_MATCH, "create_match", 'btn btn-primary', 'font-size: 25px; width: 180px;', createMatch);
+
+	const FINISH_MATCH = p.createButton("Finished");
+	setButton(FINISH_MATCH, "finish_match", 'btn btn-success', 'font-size: 25px;', finishMatch);
+
+	const JOINROOM = p.createButton("Join Room");
+	setButton(JOINROOM, "joinroom", 'btn btn-primary', 'font-size: 25px; width:180px;', joinRoom);
 
 	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
@@ -3045,7 +3056,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3078,6 +3089,8 @@ function regular(nocustom){
 	ma_data.type = "";
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
+	socket.emit("leave-room", room);
+	room = 0;
 }
 function timedmode()
 {
@@ -3275,6 +3288,54 @@ function finishpaint() {
 	setLayout();
 	console.log(savesetup);
 }
+document.getElementById("compete").onclick = competemode;
+function competemode() {
+	regular();
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3"]);
+	setDisplay("block", ["lobby"]);
+	SCRAM.value("Normal");
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+	MODE = "compete";
+}
+
+
+socket.on("connect", () => {
+	console.log("Youre are connected with id: ", socket.id)
+})
+
+socket.on("refresh_rooms", (data, r) => {
+	console.log("Refreshed")
+	room = r;
+	getEl("waitingroomid").innerHTML = "Joined room " + room;
+	getEl("waitingroomdata").innerHTML = JSON.stringify(data);
+})
+
+function createMatch() {
+	setDisplay("none", ["lobby"]);
+	setDisplay("block", ["creating_match"])
+}
+
+function finishMatch() {
+	setDisplay("none", ["creating_match"]);
+	setDisplay("block", ["waitingroom"]);
+	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
+	socket.emit("create-room", {rounds: 5, dims: [50, 50, 50, 50, 50]}, localStorage.username);
+}
+
+function joinRoom() {
+	const room = getEl("join_input").value;
+	setDisplay("none", ["lobby"]);
+	setDisplay("block", ["waitingroom"]);
+	getEl("waitingroomid").innerHTML = "Attempting to Join Room " + room;
+	socket.emit("join-room", room, localStorage.username, () => {
+		alert("Invalid room #");
+		competemode();
+	})
+}
+
 document.getElementById("challenge").onclick = challengemode;
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', (e) => {
@@ -6137,7 +6198,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isCube());
+		console.log(room);
 		// quickSolve();
 		// moveSetup();
 		// switchFour();

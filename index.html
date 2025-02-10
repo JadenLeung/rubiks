@@ -4,9 +4,11 @@
     <title>The Virtual Cube</title>
 	<!--script src = "https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script-->   
     <!--script src = "https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script-->
+	<script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
 	<script type="text/javascript" src = "./p5.min.js"></script>
 	<script src = "src/index.js" type="module"></script>	
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	
 	
     <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"/>
@@ -37,6 +39,7 @@
 			<button class = "btn btn-light btn-sm login" id = "savedata">Save data</button>
 		</div>
 		<button class = "btn btn-warning btn-sm login bi bi-trophy" id = "challenge">&nbsp;Weekly Challenges</button>
+		<button class = "btn btn-sm login bi bi-stopwatch" style = "background-color: orange;"id = "compete">&nbsp;Compete</button>
 		<li style = "float:right;" id = "bannercube"><a style = "color:white">Check out the new Big Cubes section!</a></li>
 		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
@@ -96,7 +99,6 @@
 					</div>
 				</div>
 			</div>
-			
 			<div id = "cube">
 				<p id ="turnoff" style = "text-align:center; font-size:12px;">(Mouse inputs are turned off.)</p>
 				<div style = "text-align:center">
@@ -399,6 +401,21 @@
 			<div id = "highscore" class = "noselect">
 				<h5>You got a personal best!</h5>
 				<button class = "btn btn-light" style = "font-size:25px; border-color:black; margin-bottom: 20px;" id = "savedata2">Save score</button>
+			</div>
+			<div id = "lobby">
+				<h4 style = "margin-bottom: 30px;">Compete against a friend!</h4>
+				<p id = "create_match"></p>
+				<h4 style = "margin-bottom: 15px;">-or-</h4>
+				<input id = "join_input" style = "margin-bottom: 15px;"></input>
+				<p id = "joinroom"></p>
+			</div>
+			<div id = "creating_match">
+				<h4 style = "margin-bottom: 30px;">Select Cube</h4>
+				<p id = "finish_match"></p>
+			</div>
+			<div id = "waitingroom">
+				<h4 id = "waitingroomid" style = "margin-bottom: 30px;">Joining Room</h4>
+				<p id = "waitingroomdata"></p>
 			</div>
 			<div id = "c_INSTRUCT">
 				<h4 id = "c_title" class = "noselect"></h4>
