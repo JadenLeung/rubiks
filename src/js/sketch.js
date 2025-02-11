@@ -78,7 +78,7 @@ export default function (p) {
 	let m_type = 0;
 	let m_4step = 0;
 	let ma_data = {};
-	let bstep = 0, cstep = 0, dstep = false, mastep = 0;
+	let bstep = 0, cstep = 0, dstep = false, mastep = 0, comstep = 0;
 	let OLL, PLL, PLLPRAC, OLLPRAC;
 	let REGULAR;
 	let SPEEDMODE;
@@ -916,6 +916,9 @@ p.setup = () => {
 	const FINISH_MATCH = p.createButton("Finished");
 	setButton(FINISH_MATCH, "finish_match", 'btn btn-success', 'font-size: 25px;', finishMatch);
 
+	const STARTMATCH = p.createButton("Start Match");
+	setButton(STARTMATCH, "startmatch", 'btn btn-success', 'font-size: 25px;', startMatch);
+
 	const JOINROOM = p.createButton("Join Room");
 	setButton(JOINROOM, "joinroom", 'btn btn-primary', 'font-size: 25px; width:180px;', joinRoom);
 
@@ -1266,7 +1269,7 @@ setInterval(() => {
 	document.getElementById("l_bigforgot").style.display = localStorage.username == "signedout" ? "block" : "none";
 	document.getElementById("l_home").style.display = localStorage.username != "signedout" && MODE == "login" ? "block" : "none";
 	updateScores();
-	if(isSolved() && timer.getTime() > secs && timer.isRunning && (MODE == "normal" || MODE == "timed" || (MODE == "cube") || race > 1))
+	if(isSolved() && timer.getTime() > secs && timer.isRunning && (["normal", "timed", "cube"].includes(MODE) || race > 1))
 	{
 		timer.stop();
 		flipmode2 = 0;
@@ -1468,7 +1471,29 @@ setInterval(() => {
 			setTimeout(() => {fadeInText(0, "3 secs")}, 400);
 			cstep = 1.5;
 		}
-
+	} else if (comstep > 1 && comstep % 2 == 0) {
+		if (isSolved()) {
+			comstep++;
+			timer.stop();
+			if(ao5 == 0) ao5 = [Math.round(timer.getTime() / 10)/100.0];
+			else ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			socket.emit("solved", room, Math.round(timer.getTime() / 10)/100.0);
+			canMan = false;
+		} else if (timer.isRunning && timer.inspection == 2 && timer.getTime() > 0) {
+			timer.stop();
+			timer.reset();
+			comstep++;
+			if(ao5 == 0) ao5 = ["DNF"];
+			else ao5.push("DNF");
+			socket.emit("solved", room, "DNF");
+			fadeInText(1, "DNF");
+			setTimeout(() => {fadeInText(0, "DNF")}, 400);
+			canMan = false;
+		} else if (timer.isRunning && timer.inspection == 1 && timer.getTime() > -3000 && timer.getTime() < 0) {
+			timer.inspection = 2;
+			fadeInText(1, "3 secs");
+			setTimeout(() => {fadeInText(0, "3 secs")}, 400);
+		}
 	}
 	if(MODE != "cube")
 	{
@@ -3056,7 +3081,7 @@ function regular(nocustom){
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
-		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom"]);
+		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3082,6 +3107,7 @@ function regular(nocustom){
 	ollstep = 0;
 	pllstep = 0;
 	customb = 0;
+	comstep = 0;
 	pllpracstep = 0;
 	m_34step = 0;
 	m_4step = 0;
@@ -3304,25 +3330,26 @@ function competemode() {
 
 socket.on("connect", () => {
 	console.log("Youre are connected with id: ", socket.id)
-})
+});
 
 socket.on("refresh_rooms", (data, r) => {
 	console.log("Refreshed")
 	room = r;
 	getEl("waitingroomid").innerHTML = "Joined room " + room;
 	getEl("waitingroomdata").innerHTML = JSON.stringify(data);
-})
+	setDisplay(data.names.length > 1 ? "block" : "none", ["startmatch"]);
+});
 
 function createMatch() {
 	setDisplay("none", ["lobby"]);
-	setDisplay("block", ["creating_match"])
+	setDisplay("block", ["creating_match"]);
 }
 
 function finishMatch() {
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
 	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
-	socket.emit("create-room", {rounds: 5, dims: [50, 50, 50, 50, 50]}, localStorage.username);
+	socket.emit("create-room", {rounds: 3, dims: ["2x2", "2x2", "2x2"]}, localStorage.username);
 }
 
 function joinRoom() {
@@ -3330,11 +3357,70 @@ function joinRoom() {
 	setDisplay("none", ["lobby"]);
 	setDisplay("block", ["waitingroom"]);
 	getEl("waitingroomid").innerHTML = "Attempting to Join Room " + room;
-	socket.emit("join-room", room, localStorage.username, () => {
-		alert("Invalid room #");
+	socket.emit("join-room", room, localStorage.username, (err) => {
+		alert(err);
 		competemode();
 	})
 }
+
+function startMatch() {
+	socket.emit("start-match", room);
+}
+
+
+socket.on("started-match", (data, scramble) => {
+	MODE = "competing";
+	setDisplay("none", ["waitingroom"]);
+	setDisplay("inline", ["in_match", "input", "speed", "slider_div", "undo", "redo","outertime", "time"]);
+	setDisplay("block", ["times_par"])
+	changeInput();
+	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
+	getEl("match_INSTRUCT2").innerHTML = "Opponent progress: 0%, time: 0s";
+	saveao5 = [ao5, mo5, scrambles, movesarr];
+	ao5 = [];
+	mo5 = [];
+	scrambles = [];
+	movesarr = [];
+	comstep = 1;
+	b_selectdim[data.data.dims[0]]();
+	getEl("match_TITLE").innerHTML = "Round 1";
+	changeArr(scramble);
+	multiple2("scramble");
+	canMan = false;
+	waitStopTurning(true);
+})
+
+socket.on("someone-solved", (data) => {
+	let str = "Your progress: 0%, time: 0s<br>";
+	if (data.solved[socket.id]) {
+		str = `Your progress: 100%, time: ${ao5[data.round]}s<br>`;
+	}
+	data.userids.forEach((id) => {
+		if (id != socket.id) {
+			if (!data.solved[id]) str += id + " (opponent) progress: 0%, time: 0s<br>"
+			else str += id + "(opponent) progress: 100%, time: " + data.solved[id] + "s<br>";
+		}
+	});
+	getEl("match_INSTRUCT2").innerHTML = str;
+});
+
+socket.on("all-solved", (data, winners) => {
+	getEl("match_TITLE").innerHTML = "Round 1 Results";
+	let str = "Your time: " + data.solved[socket.id] + "s<br>";
+	let opponents = [];
+	for (let id in data.solved) {
+		if (id != socket.id) {
+			str += id + "'s time (opponent): " + data.solved[id] + "s<br>";
+			opponents.push(id);
+		}
+	}
+	getEl("match_INSTRUCT2").innerHTML = str;
+	str = "Your score: " + (winners[socket.id] ?? 0) + "<br>";
+	opponents.forEach((id) => {
+		str += id + "'s score (opponent): " + (winners[id] ?? 0) + "<br>";
+	})
+	getEl("match_INSTRUCT").innerHTML = str;
+});
 
 document.getElementById("challenge").onclick = challengemode;
 document.querySelectorAll('button').forEach(button => {
@@ -3505,6 +3591,8 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			timer.start(true);      // Start the timer
 		}
 		if (bstep == 1) bstep = 2;
+		if (comstep > 0 && comstep % 2 == 1) comstep++;
+		console.log("CHANGING COMPSTEP", comstep);
 		if (getEl("marathon2").style.display == "block" && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
 		if (!nosavesetupdim.includes(DIM)) {
 			const interval2 = setInterval(() => {
@@ -5761,7 +5849,7 @@ function displayTimes()
 }
 function displayAverage()
 {
-	if(canMan == false) return;
+	// if(canMan == false) return;
 	let min = ao5[0];
 	let max = ao5[0];
 	let minpos = 0;
@@ -6198,7 +6286,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(room);
+		console.log(comstep);
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
@@ -6503,6 +6591,7 @@ function multiple(nb, timed, use = "default") {
 	// return;
 	if (nb < arr.length) {
 		canMan = false;
+		timer.inspection = false;
 		let cubies = shownCubies();
 		let onedown = true;
 		alldown = false;
@@ -9782,6 +9871,11 @@ $(document).on("keypress", "#test_alg_div", function(e){ //enter
 		testAlg();
 	}
 });
+$(document).on("keypress", "#join_input", function(e){ //enter
+	if(e.which == 13){
+		joinRoom();
+	}
+});
 $(document).on("keypress", "#password", function(e){
 	if(e.which == 13){
 		document.getElementById('l_submit').click();
@@ -10086,6 +10180,7 @@ document.onkeydown = function(event) {
 	if(activeKeys.size === 1 && activeKeys.has('Space') && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
 		speedRace2();
 	} else if (event.keyCode == 13) { //enter
+		console.log(getEl("creating_match").style.display)
 		if (getEl("s_start").style.display == "block") {
 			practicePLL();
 		} else if (getEl("okban").style.display == "block") {
@@ -10096,6 +10191,10 @@ document.onkeydown = function(event) {
 			practicePLL();
 		} else if (getEl("readybot").style.display == "block") {
 			speedRace2();
+		} else if (getEl("startmatch").style.display == "block") {
+			startMatch();
+		} else if (getEl("creating_match").style.display == "block") {
+			finishMatch();
 		}
 	} else if (event.keyCode == 27) { //escape
 		if (getEl("okban").style.display == "block") {
