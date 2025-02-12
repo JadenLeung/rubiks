@@ -411,13 +411,32 @@
 				<p id = "lobby_warn" style = "font-size: 15px; color: red; padding-top: 5px;" ></p>
 			</div>
 			<div id = "creating_match">
-				<h4 style = "margin-bottom: 30px;">Select Cube</h4>
-				<p id = "finish_match"></p>
+				<h4>Set match settings</h4>
+				<p>Total Rounds: <input id = "compete_rounds" type = "number" max = "10" min = "1" 
+					style = "font-size: 15px;" value="3"></input></p>
+				<p style = "margin-bottom: 5px;">Match type:</p>
+				<div>
+					<p id = "compete_1v1" style = "display:inline"></p>
+					<p id = "compete_group" style = "display:inline"></p>
+				</div>
+				<div id = "com_1v1_div" style = "margin-top: 20px;">
+					<p>Select cubes for each round and player</p>
+					<div id="1v1_container"></div>
+				</div>
+				<div id = "com_group_div" style = "margin-top: 20px;">
+					<p>Select cubes for each round</p>
+					<div id="group_container"></div>
+				</div>
+				<p id = "finish_match" style = "margin-top: 40px;"></p>
 			</div>
 			<div id = "waitingroom">
 				<h4 id = "waitingroomid" style = "margin-bottom: 30px;">Joining Room</h4>
-				<p>Current Room Participants</p>
+				<h6>Current Room Participants</h6>
 				<p id = "waitingroomdata"></p>
+				<h6 style = "padding-top: 20px;">Competition Rules</h6>
+				<p>Get 1 point for being the fastest to solve the cube each round.</p>
+				<p id = "competerules"></p>
+				<p id = "cantmatch">Exactly 2 players are required to start.</p>
 				<p id = "startmatch"></p>
 			</div>
 			<div id = "in_match">
@@ -427,6 +446,11 @@
 				<p id = "match_INSTRUCT3"></p>
 				<p id = "match_INSTRUCT4"></p>
 				<p id = "continuematch"></p>
+			</div>
+			<div id = "final_tally">
+				<p id = "match_rank"></p>
+				<h4>Final Rankings</h4>
+				<p id = "final_points"></p>
 			</div>
 			<div id = "c_INSTRUCT">
 				<h4 id = "c_title" class = "noselect"></h4>
