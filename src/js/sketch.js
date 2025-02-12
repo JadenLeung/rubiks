@@ -3485,7 +3485,7 @@ socket.on("started-match", (data, scramble) => {
 socket.on("next-match", (data, scramble) => startRound(data, scramble))
 
 function startRound(data, scramble) {
-	setDisplay("none", ["continuematch"])
+	setDisplay("none", ["continuematch", "waitingmatch"])
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
@@ -3602,7 +3602,12 @@ socket.on("all-solved", (data) => {
 	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
 	competeTimes(data, true);
 	competePoints(data);
-	setDisplay("block", ["continuematch"]);
+	if (data.data.leader == socket.id || data.round >= competedata.data.dims.length - 1) {
+		setDisplay("block", ["continuematch"]);
+		setDisplay("none", ["waitingmatch"]);
+	} else {
+		setDisplay("block", ["waitingmatch"]);
+	}
 	CONTINUEMATCH.html(data.round < competedata.data.dims.length - 1 ? "Next Round" : "Final Tally")
 });
 
