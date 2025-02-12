@@ -3137,6 +3137,7 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn"]);
+	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
 	}
@@ -3465,7 +3466,7 @@ function startMatch() {
 
 socket.on("started-match", (data, scramble) => {
 	MODE = "competing";
-	setDisplay("none", ["waitingroom"]);
+	setDisplay("none", ["waitingroom", "startmatch"]);
 	setDisplay("inline", ["in_match", "speed", "input", "slider_div", "undo", "redo","outertime", "time"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
@@ -3882,7 +3883,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 	  if (canMan) {
 		clearInterval(interval); // Stop the interval when the cube stops animating
 		if (timed) {
-			timer.setTime(-3000); // Set the timer to -15000
+			timer.setTime(-15000); // Set the timer to -15000
 			timer.start(true);      // Start the timer
 		}
 		if (bstep == 1) bstep = 2;
@@ -6541,9 +6542,18 @@ p.keyPressed = (event) => {
 			}
 			return;
 		} 
+		if(MODE == "compete") {
+			if (getEl("lobby").style.display != "none") {
+				regular();
+			} else {
+				competemode();
+			}
+			return;
+		} 
 		if(MODE == "paint") {idmode(); return;}
+		if(MODE == "competing") {competemode(); return;}
 		if(MODE == "finishpaint") {paintmode(); return;}
-		if(MODE == "timed" || MODE == "challenge" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:")
+		if(MODE == "timed" || MODE == "challenge" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:" || MODE == "compete")
 		regular();
 		if(MODE == "daily" || MODE == "weekly")
 		challengemode();
@@ -6641,7 +6651,7 @@ p.keyPressed = (event) => {
 	} else if (p.keyCode == 27 && MODE == "finishpaint") {
 		quickSolve(savesetup);
 		return;
-	} else if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed")) {
+	} else if(p.keyCode == 27 && (MODE == "normal" || MODE == "timed" || MODE == "compete")) {
 		reSetup();
 		return;
 	} else if(p.keyCode == 27 && (MODE == "speed" && (race == 1 || getEl("s_high").style.display != "none"))) {
@@ -6769,7 +6779,7 @@ p.keyPressed = (event) => {
 			case 192: //`
 			if (p.keyIsDown(p.SHIFT)) {
 				(MODE == "normal" || MODE == "timed")  && solveCube();
-			} else if(MODE == "normal" || MODE == "cube" || MODE == "timed" || MODE == "account" || MODE == "login") {
+			} else if(["normal", "cube", "timed", "account", "login", "compete"].includes(MODE)) {
 				shuffleCube();
 			} else if (["moves", "speed"].includes(MODE) && getEl("switcher").style.display == "block") {
 				shuffleCube();
@@ -10490,7 +10500,6 @@ document.onkeydown = function(event) {
 	if(activeKeys.size === 1 && activeKeys.has('Space') && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
 		speedRace2();
 	} else if (event.keyCode == 13) { //enter
-		console.log(getEl("creating_match").style.display)
 		if (getEl("s_start").style.display == "block") {
 			practicePLL();
 		} else if (getEl("okban").style.display == "block") {
@@ -10505,6 +10514,8 @@ document.onkeydown = function(event) {
 			startMatch();
 		} else if (getEl("creating_match").style.display == "block") {
 			finishMatch();
+		} else if (getEl("continuematch").style.display == "block") {
+			continueMatch();
 		}
 	} else if (event.keyCode == 27) { //escape
 		if (getEl("okban").style.display == "block") {
