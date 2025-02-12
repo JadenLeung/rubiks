@@ -19,6 +19,7 @@ export default function (p) {
 	let PICKER;
 	let room = 0;
 	let compete_type = "1v1";
+	let compete_alltimes = [];
 	let fullscreen = false;
 	let CUBE = {};
 	const DNF = 99999999
@@ -60,6 +61,7 @@ export default function (p) {
 	let ZOOM2 = -25;
 	let CHECK = [];
 	let CHECKALL = [];
+	const COMPETE_YOU = `<b style = "color: blue">`;
 	let PLLS = [];
 	let pracmode;
 	let SPACE = [];
@@ -3403,7 +3405,7 @@ socket.on("refresh_rooms", (data, r) => {
 	data.userids.forEach((id, x) => {
 		str += (x + 1) + ") "
 		if (id == socket.id) {
-			str += `<b style = "color: green">`;
+			str += COMPETE_YOU;
 		}
 		str += data.names[id];
 		if (id == socket.id) {
@@ -3418,12 +3420,12 @@ socket.on("refresh_rooms", (data, r) => {
 		data.data.dims.forEach((cube, x) => {
 			str += `Round ${x + 1})`
 			if (data.data.leader == socket.id) {
-				str += `<b style = "color: green"> ${data.names[socket.id]}: ${cube[0]}</b>, `;
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0]}</b>, `;
 				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[1]}`;
 				str += "<br>";
 			} else {
 				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[0]}, `;
-				str += `<b style = "color: green"> ${data.names[socket.id]}: ${cube[1]}</b>`;
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1]}</b>`;
 				str += "<br>";
 			}
 		})
@@ -3528,7 +3530,7 @@ function competeTimes(data, end = false) {
 	let rank = 1;
 	for (let i = 0; i < strarr.length; ++i) {
 		if (strarr[i][0] == socket.id) {
-			str += `<b style = "color: green">`;
+			str += COMPETE_YOU;
 		}
 		if (i == 0 || strarr[i][2] != strarr[i - 1][2]) {
 			rank = (i + 1);
@@ -3553,6 +3555,7 @@ function competeTimes(data, end = false) {
 
 function competePoints(data, el = "match_INSTRUCT4") {
 	competedata = data;
+	compete_alltimes = [];
 	let strarr = [];
 	let myrank = -1;
 	data.userids.forEach((id) => {
@@ -3570,11 +3573,12 @@ function competePoints(data, el = "match_INSTRUCT4") {
 	let rank = 1;
 	for (let i = 0; i < strarr.length; ++i) {
 		if (strarr[i][0] == socket.id) {
-			str += `<b style = "color: green">`;
+			str += COMPETE_YOU;
 		}
 		if (i == 0 || strarr[i][1] != strarr[i - 1][1]) {
 			rank = (i + 1);
 		}
+		compete_alltimes.push([rank, strarr[i][0]]);
 		str += `${rank}) `;
 		str += data.names[strarr[i][0]];
 		str += ", points: " + strarr[i][1];
@@ -3609,15 +3613,59 @@ function continueMatch() {
 		socket.emit("next-round", room);
 	} else {
 		setDisplay("none", ["in_match", "keymap"]);
+		setDisplay("none", ["in_match", "keymap"]);
 		SCRAM.value("Normal");
 		var elements = document.getElementsByClassName('normal');
-		for(var i=0; i<elements.length; i++) { 
-			elements[i].style.display='none';
+		for (var i = 0; i < elements.length; i++) {
+			elements[i].style.display = 'none';
 		}
 		canMan = true;
 		let myrank = competePoints(competedata, "final_points");
-		getEl("match_rank").innerHTML = `You ranked #${myrank}. Good job!`
+		getEl("match_rank").innerHTML = `You ranked #${myrank}. Good job!`;
 		setDisplay("block", ["final_tally"]);
+		
+		let minarr = [];
+		competedata.solvedarr.forEach((timeobj) => {
+			let min = DNF;
+			let minvalue = "DNF";
+			for (let id in timeobj) {
+				let res = timeobj[id];
+				if (res == "DNF") {
+					res = DNF;
+				}
+				if (res < min) {
+					min = res;
+					minvalue = res;
+				}
+			}
+			minarr.push(minvalue);
+		});
+		
+		console.log("YEE", minarr);
+		
+		let str = `<table style="border-collapse: collapse; width: auto; border: none;">`;
+		str += `<tr><th style="text-align: center; white-space: nowrap; padding: 0 10px;">Name</th>`;
+		competedata.solvedarr.forEach((_, i) => {
+			str += `<th style="text-align: center; white-space: nowrap; padding: 0 10px;">r${i + 1}</th>`;
+		});
+		str += `</tr>`;
+		
+		compete_alltimes.forEach((arr) => {
+			let nameStyle = arr[1] == socket.id ? "color: blue; font-family: Courier" : "";
+			str += `<tr><td style="text-align: center; white-space: nowrap; padding: 0 10px;"><span style="${nameStyle}">${arr[0]}) ${competedata.names[arr[1]]}</span></td>`;
+			
+			competedata.solvedarr.forEach((timeobj, i) => {
+				let timeStyle = minarr[i] == timeobj[arr[1]] ? "color: green;" : "";
+				str += `<td style="text-align: center; white-space: nowrap; padding: 0 10px;"><span style="${timeStyle}">${timeobj[arr[1]]}</span></td>`;
+			});
+			str += `</tr>`;
+		});
+		
+		str += `</table>`;
+		
+		getEl("final_times").innerHTML = str;
+
+	
 	}
 }
 function competeSettings(num = compete_type) {
@@ -6597,7 +6645,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata, competeDims());
+		console.log(competedata, compete_alltimes);
 		// quickSolve();
 		// moveSetup();
 		// switchFour();
