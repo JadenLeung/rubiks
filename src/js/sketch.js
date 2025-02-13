@@ -934,7 +934,11 @@ p.setup = () => {
 	setButton(JOINROOM, "joinroom", 'btn btn-primary', 'font-size: 25px; width:180px;', joinRoom);
 	
 	const COMPETE_AGAIN = p.createButton("Play Again");
-	setButton(COMPETE_AGAIN, "compete_again", 'btn btn-primary', 'font-size: 25px; width:180px;', competeAgain);
+	setButton(COMPETE_AGAIN, "compete_again", 'btn btn-light', 'font-size: 25px; width:180px;  border-color: black; ', competeAgain);
+
+	const COMPETEHOME = p.createButton("Home");
+	setButton(COMPETEHOME, "compete_home", 'btn btn-light', 'font-size: 25px; width:180px; border-color: black; ', competemode);
+
 
 	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
@@ -1693,7 +1697,7 @@ function reSetup(rot) {
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
-	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "giveup", "giveup2", "hint"]);
+	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "giveup2", "hint"]);
 	setSpecial();
 	let cnt = 0;
 	//allcubies = false;
@@ -2239,7 +2243,18 @@ function stopMoving(){
 }
 function giveUp()
 {
-	if(m_4step > 0 && m_4step % 2 == 1)
+	if (comstep > 0) {
+		timer.stop();
+		timer.reset();
+		comstep++;
+		if(ao5 == 0) ao5 = ["DNF"];
+		else ao5.push("DNF");
+		socket.emit("solved", room, "DNF");
+		fadeInText(1, "DNF");
+		setTimeout(() => {fadeInText(0, "DNF")}, 400);
+		canMan = false;
+		getEl("giveup").style.display = "none";
+	} else if(m_4step > 0 && m_4step % 2 == 1)
 	{
 		if(giveups > 0.5)
 			giveups--;
@@ -3484,7 +3499,7 @@ function competeAgain() {
 socket.on("started-match", (data, scramble) => {
 	MODE = "competing";
 	setDisplay("none", ["waitingroom", "startmatch"]);
-	setDisplay("inline", ["in_match", "speed", "input", "slider_div", "undo", "redo","outertime", "time"]);
+	setDisplay("inline", ["in_match", "speed", "input", "slider_div", "undo", "redo","outertime", "time", "giveup"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
@@ -3634,6 +3649,7 @@ socket.on("all-solved", (data) => {
 
 function continueMatch() {
 	setDisplay("none", ["continuematch"]);
+	setDisplay("inline", ["giveup"]);
 	if (competedata.round < competedata.data.dims.length - 1) {
 		console.log("emitting")
 		socket.emit("next-round", room);
@@ -6671,8 +6687,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata, compete_alltimes);
-		// quickSolve();
+		// console.log(competedata, compete_alltimes);
+		quickSolve();
 		// moveSetup();
 		// switchFour();
 		// console.log(mapBandaged())
