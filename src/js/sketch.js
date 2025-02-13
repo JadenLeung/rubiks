@@ -3300,6 +3300,7 @@ function getColoredCuby(index) {
 	return obj;
 }
 function paintmode() {
+	modeData("paint");
 	activeKeys.clear();
 	MODE = "paint";
 	special[2] = savesetup;
@@ -3395,6 +3396,7 @@ function finishpaint() {
 }
 document.getElementById("compete").onclick = competemode;
 function competemode() {
+	modeData("compete");
 	regular();
 	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3"]);
 	setDisplay("block", ["lobby"]);
@@ -10559,11 +10561,7 @@ function arrowPaint(dir) {
 }
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-    cubemode();
-	modnum = 2;
-	changeMod(0);
-	switchSize(5, "2x3x4", "3x2x4", "3x3x2")
-	TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");
+    competemode();
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
