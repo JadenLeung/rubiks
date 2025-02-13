@@ -99,7 +99,7 @@ button:hover {
     z-index: 1; /* Ensure it's on top of the container's content */
     opacity: 1; /* Adjust transparency if needed */
   }
-#dnf {
+.fadetext {
     position: absolute;
     top: 15%;
     left: 50%;

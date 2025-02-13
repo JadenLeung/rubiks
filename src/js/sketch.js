@@ -3159,7 +3159,7 @@ function regular(nocustom){
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
-		"com_group_div", "finish_match", "cantmatch", "final_tally"]);
+		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn"]);
 	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3517,6 +3517,8 @@ socket.on("next-match", (data, scramble) => startRound(data, scramble))
 
 function startRound(data, scramble) {
 	setDisplay("none", ["continuematch", "waitingmatch"])
+	setDisplay("inline", ["giveup"]);
+	canMan = true;
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
@@ -3980,8 +3982,8 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
 			comstep++;
-			fadeInText(1, "Go!", "green");
-			setTimeout(() => {fadeInText(0, "Go!", "green")}, 600);
+			fadeInText(1, "Go!", "green", "go!");
+			setTimeout(() => {fadeInText(0, "Go!", "green", "go!")}, 600);
 		}
 		console.log("CHANGING COMPSTEP", comstep);
 		if (getEl("marathon2").style.display == "block" && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
@@ -4127,8 +4129,8 @@ function halfScreen(isfull) {
 	fullscreen = isfull;
 	resized();
 }
-async function fadeInText(o, text, color = "red") {
-	const dnfElement = document.getElementById('dnf');
+async function fadeInText(o, text, color = "red", el = "dnf") {
+	const dnfElement = document.getElementById(el);
 	dnfElement.style.display='block';
 	dnfElement.innerHTML = text;
 	dnfElement.style.color = color;
