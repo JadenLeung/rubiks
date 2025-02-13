@@ -191,6 +191,7 @@ export default function (p) {
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo, "3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
+		"1x3x3" : changeFour,
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
@@ -931,6 +932,9 @@ p.setup = () => {
 
 	const JOINROOM = p.createButton("Join Room");
 	setButton(JOINROOM, "joinroom", 'btn btn-primary', 'font-size: 25px; width:180px;', joinRoom);
+	
+	const COMPETE_AGAIN = p.createButton("Play Again");
+	setButton(COMPETE_AGAIN, "compete_again", 'btn btn-primary', 'font-size: 25px; width:180px;', competeAgain);
 
 	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
@@ -2301,6 +2305,7 @@ function changeTwo()
 		movesmode();
 	if(MODE == "paint")
 		idmode();
+	changeCam(true);
 }
 function changeThree()
 {
@@ -2325,6 +2330,7 @@ function changeThree()
 		movesmode();
 	if(MODE == "paint")
 		idmode();
+	changeCam(true);
 }
 function changeCam(changeinp = true)
 {
@@ -3391,15 +3397,19 @@ socket.on("connect", () => {
 
 socket.on("refresh_rooms", (data, r) => {
 	competedata = data;
-	setDisplay("none", ["lobby"]);
+	enterLobby(data, r)
+});
+
+function enterLobby(data, r) {
+	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("block", ["waitingroom"]);
 	console.log("Refreshed")
 	room = r;
 	getEl("waitingroomid").innerHTML = "Joined room " + room;
-	setDisplay(data.userids.length > 1 || data.data.type == "group" ? "block" : "none", ["startmatch"]);
-	setDisplay(data.userids.length > 1 || data.data.type == "group" ? "none" : "block", ["cantmatch"]);
+	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "block" : "none", ["startmatch"]);
+	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "none" : "block", ["cantmatch"]);
 	getEl("cantmatch").innerHTML = 
-			`${data.data.type == "1v1" ? "Exactly 2 " : "At least 2 "}players are required to start.`
+			`${data.data.leader != socket.id ? "Waiting for host to start match." : "Exactly 2 players are required to start."}`
 	competedata = data;
 	let str = ""
 	data.userids.forEach((id, x) => {
@@ -3435,8 +3445,7 @@ socket.on("refresh_rooms", (data, r) => {
 		})
 	}
 	getEl("competerules").innerHTML = str;
-});
-
+}
 function createMatch() {
 	setDisplay("none", ["lobby"]);
 	setDisplay("block", ["creating_match"]);
@@ -3466,6 +3475,12 @@ function startMatch() {
 	socket.emit("start-match", room);
 }
 
+function competeAgain() {
+	socket.emit("restart-game", room, competedata, (err) => {
+		successSQL(err, "final_warn");
+	});
+}
+
 socket.on("started-match", (data, scramble) => {
 	MODE = "competing";
 	setDisplay("none", ["waitingroom", "startmatch"]);
@@ -3490,18 +3505,23 @@ function startRound(data, scramble) {
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
 	competedata = data;
-	console.log('YI', data.data.type, data.data.leader == socket.id, data.data.dims, data.round)
 	if (data.data.type == "group" || data.data.leader == socket.id)
 		b_selectdim[data.data.dims[data.round][0]]();
 	else
 		b_selectdim[data.data.dims[data.round][1]]();
-	INPUT.attribute('disabled', true);
-	competeTimes(data);
-	changeArr(scramble);
-	multiple2("scramble");
-	competeprogress = 0;
-	canMan = false;
-	waitStopTurning(true);
+	setTimeout(() => {
+		INPUT.attribute('disabled', true);
+		competeTimes(data);
+		if (scramble) {
+			changeArr(scramble);
+			multiple2("scramble");
+		} else {
+			shuffleCube();
+		}
+		competeprogress = 0;
+		canMan = false;
+		waitStopTurning(true);
+	}, 10);
 }
 
 socket.on("someone-solved", (data) => competeTimes(data));
@@ -3598,6 +3618,7 @@ function competePoints(data, el = "match_INSTRUCT4") {
 socket.on("all-solved", (data) => {
 	canMan = false;
 	competedata = data;
+	console.log("DATA IS", data)
 	getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
 	competeTimes(data, true);
@@ -3947,7 +3968,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		}
 		console.log("CHANGING COMPSTEP", comstep);
 		if (getEl("marathon2").style.display == "block" && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
-		if (!nosavesetupdim.includes(DIM)) {
+		if (!nosavesetupdim.includes(DIM) && comstep == 0) {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
 				special[2] = savesetup;
@@ -6951,8 +6972,6 @@ function adjustMove(move) {
 	return move;
 }
 function multiple(nb, timed, use = "default") {
-	// if((MODE == "speed" && race == 0 || MODE == "moves") && arr.length > 2)
-	// return;
 	if (nb < arr.length) {
 		canMan = false;
 		timer.inspection = false;
@@ -6966,7 +6985,7 @@ function multiple(nb, timed, use = "default") {
 		if (adjustMove(arr[nb]) !== false) {
 			arr[nb] = adjustMove(arr[nb]);
 		} else {
-			multiple(arr.length, timed);
+			multiple(arr.length, timed, use);
 			return;
 		}
 		if(!["x", "y", "z"].includes(arr[nb][0])){
@@ -6978,32 +6997,35 @@ function multiple(nb, timed, use = "default") {
 			const values = movemap[move][1];
 			if ([move, move + "'"].includes(arr[nb])) {
 				for(let i = 0; i < cubies.length; i++) {
+					console.log("ONEDOWN ATTEMPT", values,  CUBE[cubies[i]][axis], MAXX);
 					onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 				for(let i = 0; i < cubies.length; i++) {
 					alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 			}
+			console.log("ONEDOWN IS", onedown);
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
+			console.log("NOTATION CHANGING", arr[nb]);
 			const bewide = ["L", "R", "F", "B", "U", "D", "M", "S", "E"];
 			const map = {Lw: "M", "Lw'": "M'", Rw: "M'", "Rw'": "M", Fw: "S", "Fw'": "S'",
 				Bw: "S'", "Bw'": "S", Uw: "E'", "Uw'": "E", Dw: "E", "Dw'": "E'"};
 			if (!arr[nb].includes("w") && bewide.includes(arr[nb][0])) {
 				arr[nb] = arr[nb][0] + "w" + (arr[nb].includes("'") ? "'" : "");
-				multiple(nb, timed);
+				multiple(nb, timed, use);
 				return;
 			} else if (map.hasOwnProperty(arr[nb])) {
 				arr[nb] = map[arr[nb]];
-                multiple(nb, timed);
+                multiple(nb, timed, use);
                 return;
 			} else {
-				multiple(nb + 1, timed);
+				multiple(nb + 1, timed, use);
 				return;
 			}
 		}
-		// console.log("alldown is " + alldown);
+		console.log("NOTATION", arr[nb]);
 		notation(arr[nb], timed);
 		if (use == "default") {
 			let bad = -1;
