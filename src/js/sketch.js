@@ -190,7 +190,7 @@ export default function (p) {
 	 };
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
-	const b_selectdim = {"2x2": changeTwo, "3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
+	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4"),
@@ -559,10 +559,10 @@ p.setup = () => {
 
 
 	TWOBYTWO = p.createButton('2x2');
-	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null, 0));
+	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null));
 
 	THREEBYTHREE = p.createButton('3x3');
-	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null, 0));
+	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null));
 
 	NBYN = p.createButton('More');
 	setButton(NBYN, "type4", 'btn btn-light btn-sm', 'border-color: black; ', cubemode.bind(null, 0));
@@ -2297,7 +2297,7 @@ function giveUp()
 	}
 }
 
-function changeTwo()
+function changeTwo(switchstart = true)
 {
 	SIZE = 3;
 	MAXX = 50;
@@ -2305,7 +2305,8 @@ function changeTwo()
 	DIM = 100;
 	DIM3 = 2;
 	DIM4 = 2;
-	localStorage.startcube = 2;
+	if (switchstart)
+		localStorage.startcube = 2;
 	modeData("twobytwo");
 	THREEBYTHREE.class('btn btn-light btn-sm');
 	TWOBYTWO.class('btn btn-warning btn-sm');
@@ -2323,7 +2324,7 @@ function changeTwo()
 		idmode();
 	changeCam(true);
 }
-function changeThree()
+function changeThree(switchstart = true)
 {
 	DIM2 = 50;
 	DIM = 50;
@@ -2331,7 +2332,8 @@ function changeThree()
 	MAXX = 50;
 	DIM3 = 3;
 	DIM4 = 3;
-	localStorage.startcube = 3;
+	if (switchstart)
+		localStorage.startcube = 3;
 	THREEBYTHREE.class('btn btn-warning btn-sm');
 	TWOBYTWO.class('btn btn-light btn-sm');
 	SIZE_SLIDER2.remove();
@@ -3121,8 +3123,8 @@ function regular(nocustom){
 		scrambles = saveao5[2];
 		movesarr = saveao5[3];
 	}
-	if (DIM2 != 50 && DIM2 != 100) {
-		startCube()
+	if (DIM2 != 50 && DIM2 != 100 || comstep > 0) {
+		startCube();
 	}
 	document.getElementById("scramble").innerHTML = "N/A";
 	document.getElementById('password').value = '';
@@ -6692,6 +6694,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
+		console.log(localStorage.startcube)
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
 		// quickSolve();
