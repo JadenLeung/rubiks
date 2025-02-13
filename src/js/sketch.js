@@ -6,6 +6,7 @@ import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+// const socket = io("http://localhost:3000");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -6689,7 +6690,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 16){ //shift
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
-		quickSolve();
+		// quickSolve();
 		// moveSetup();
 		// switchFour();
 		// console.log(mapBandaged())
