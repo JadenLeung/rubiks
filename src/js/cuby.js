@@ -75,7 +75,7 @@ export default class Cuby {
       this.back = this.colors.red;
     }
     if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4"].includes(size) ||
-        ["3x2x4", "4x3x3"].includes(this.special[6])) { // rainbow
+        ["3x2x4", "4x3x3", "1x3x2"].includes(this.special[6])) { // rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -548,12 +548,20 @@ export default class Cuby {
           }
         }
       }
-    } else if(this.special[6] == "3x2x4") {
+    } else if(["3x2x4", "1x3x2"].includes(this.special[6])) {
       arr = [];
       for (let x = 0; x < SIZE; x++) {
         for (let y = 0; y < SIZE; y++) {
           for (let z = 0; z < SIZE; z++) {
-            if ([0,2,4].includes(y) || [0, 4].includes(x) || z == 2) {
+            let arraymap = {
+              1: [0, 1, 3, 4],
+              2: [0, 2, 4],
+              3: [0, 4],
+              4: [2],
+              5: []
+            }
+            let dimarr = this.special[6].split("x").map(Number);
+            if (arraymap[dimarr[0]].includes(x) || arraymap[dimarr[1]].includes(y) || arraymap[dimarr[2]].includes(z)) {
               arr.push(x * SIZE * SIZE + y * SIZE + z);
             }
           }
@@ -634,7 +642,7 @@ export default class Cuby {
   }
   
 
-  if ([2, 15, "4x3x3", "1x4x4", "3x2x4"].includes(this.special[6]) && this.cubysize[0] != "adding") {
+  if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "1x3x2"].includes(this.special[6]) && this.cubysize[0] != "adding") {
     let c1 = this.custom[4][5];
     let c2 = this.custom[22][4];
     let c3 = this.custom[14][2];

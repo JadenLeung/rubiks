@@ -5,7 +5,7 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("http://localhost:3000");
+const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -191,7 +191,7 @@ export default function (p) {
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo, "3x3": changeThree, "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
-		"1x3x3" : changeFour,
+		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
@@ -3745,7 +3745,7 @@ function competeSettings(num = compete_type) {
         container.appendChild(headerRow);
     }
 
-	const alldims = ["3x3", "2x2",  "1x3x3", "2x2x3", "2x2x4", "3x3x2", "3x3x4", "3x3x5"];
+	const alldims = ["3x3", "2x2",  "1x2x3", "1x3x3", "2x2x3", "2x2x4", "3x3x2", "3x3x4", "3x3x5"];
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
         let label = createEl("span", `Round ${i + 1}`, { width: "80px" });
@@ -4381,7 +4381,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+	ZOOMADD = DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
 				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -6687,6 +6687,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
+		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
 		quickSolve();
 		// moveSetup();
