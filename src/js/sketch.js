@@ -5,8 +5,9 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3000");
+const socket = io("http://72.70.58.195/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -3643,6 +3644,7 @@ socket.on("all-solved", (data) => {
 	console.log("DATA IS", data)
 	getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
+	setDisplay("none", ["giveup"]);
 	competeTimes(data, true);
 	competePoints(data);
 	if (data.data.leader == socket.id || data.round >= competedata.data.dims.length - 1) {
