@@ -10319,7 +10319,7 @@ function sendMessage(type, message, id, names, image) {;
 	
 	if (type == "person") {
 		if (id == socket.id) {
-			str += `<span style="color:green">`;
+			str += `<span style="color:blue">`;
 		}
 		if (id != previouschatid) {
 			if (getEl("allmessages").innerText != "") {
