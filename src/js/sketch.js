@@ -847,21 +847,15 @@ p.setup = () => {
 		["⇧ -", "Other Cubes"],
 	];
 
-    const table = document.getElementById('hotkeytable');
+    appendToTable(hotkeys, "hotkeytable", 2);
 
-    for (let i = 0; i < hotkeys.length; i += 2) {
-        const row = document.createElement('tr');
-        
-        // Create first cell set (number and description)
-        row.innerHTML += `<td><b>${hotkeys[i][0]}</b></td><td>${hotkeys[i][1]}</td>`;
-        
-        // Check if there's a second cell set (for odd-length arrays)
-        if (i + 1 < hotkeys.length) {
-            row.innerHTML += `<td><b>${hotkeys[i + 1][0]}</b></td><td>${hotkeys[i + 1][1]}</td>`;
-        }
-        
-        table.appendChild(row);
-    }
+	const hotkeys2 = [
+		["'@everyone'", "Highligts your message to everyone"],
+		["'@name'", "Highlights message to username name"],
+		["Screenshot + paste", "Pastes screenshots"],
+	];
+
+	appendToTable(hotkeys2, "chattable", 1);
 
 	const BACK = p.createButton('Back');
 	setButton(BACK, "custom3", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
@@ -4036,6 +4030,24 @@ function mapBandaged() {
 	}
 	return copyban;
 }
+function appendToTable(hotkeys, id, step, padding = "5px") {
+    const table = document.getElementById(id);
+
+    for (let i = 0; i < hotkeys.length; i += step) {
+        const row = document.createElement('tr');
+        
+        // Create first cell set (number and description) with adjustable padding
+        row.innerHTML += `<td style="padding-left: ${padding}; padding-right: ${padding};"><b>${hotkeys[i][0]}</b></td><td style="padding-left: ${padding}; padding-right: ${padding};">${hotkeys[i][1]}</td>`;
+        
+        // Check if there's a second cell set (for odd-length arrays) with adjustable padding
+        if (i + 1 < hotkeys.length && step == 2) {
+            row.innerHTML += `<td style="padding-left: ${padding}; padding-right: ${padding};"><b>${hotkeys[i + 1][0]}</b></td><td style="padding-left: ${padding}; padding-right: ${padding};">${hotkeys[i + 1][1]}</td>`;
+        }
+        
+        table.appendChild(row);
+    }
+}
+
 function startchallenge() {
 	const cubemap = {3 : 50, 2: 100, 4 : 2, 5 : 15};
 	DIM2 = cubemap[weeklyscrambles[week].cube];
