@@ -194,10 +194,10 @@ export default function (p) {
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
-		"2x2x4" : switchSize.bind(null, 4, "2x2x4"),
+		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
-		"3x3x5" : switchSize.bind(null, 5, "3x3x5")};
+		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3")};
 
 	// attach event
 
@@ -1633,6 +1633,9 @@ setInterval(() => {
 	setDisplay(SIZE > 3 ? "block" : "none", ["customshift"]);
 	if (comstep > 0 && competedata.stage == "ingame") {
 		socket.emit("progress-update", room, competeprogress, Math.round(timer.getTime() / 10)/100.0);
+	}
+	if (comstep > 0 && competedata.stage != "ingame") {
+		getEl("giveup").style.display = "none";
 	}
 }, 10)
 //forever
@@ -3430,7 +3433,7 @@ function enterLobby(data, r) {
 	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "block" : "none", ["startmatch"]);
 	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "none" : "block", ["cantmatch"]);
 	getEl("cantmatch").innerHTML = 
-			`${data.data.leader != socket.id ? "Waiting for host to start match." : "Exactly 2 players are required to start."}`
+			`${data.data.leader != socket.id ? "Waiting for host to start match." : "Waiting for opponent."}`
 	competedata = data;
 	let str = ""
 	data.userids.forEach((id, x) => {
@@ -6696,7 +6699,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(localStorage.startcube)
+		// console.log(localStorage.startcube)
+		reSetup();
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
 		// quickSolve();
@@ -7499,7 +7503,7 @@ function refreshButtons()
 		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "1x4x4", "1x4x4", "3x3x2"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
-		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchSize(4, "2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
 		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "3x2x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
@@ -7508,7 +7512,7 @@ function refreshButtons()
 		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "4x3x3", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
-		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		LASAGNA = p.createButton('Earth Cube');
 		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchSize(4, "lasagna"); LASAGNA.style('background-color', "#8ef5ee");});
