@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3000");
+// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -3165,8 +3165,9 @@ function regular(nocustom){
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
-		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!"]);
-	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn"]);
+		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
+		"send-btn"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages"]);
 	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -3404,8 +3405,13 @@ document.getElementById("compete").onclick = competemode;
 function competemode() {
 	modeData("compete");
 	regular();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3"]);
-	setDisplay("block", ["lobby"]);
+	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
+			"or_instruct", "or_instruct2", "or_instruct4"
+	]);
+	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct"]);
+	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
+	getEl("send-btn").style.display = "inline-block"; // To show the button
+
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -3508,7 +3514,7 @@ function competeAgain() {
 socket.on("started-match", (data, scramble) => {
 	MODE = "competing";
 	setDisplay("none", ["waitingroom", "startmatch"]);
-	setDisplay("inline", ["in_match", "speed", "input", "slider_div", "undo", "redo","outertime", "time", "giveup"]);
+	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time", "giveup"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
@@ -6699,7 +6705,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(localStorage.startcube)
+		// console.log(getEl("allmodes").style.display);
 		reSetup();
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
@@ -10285,6 +10291,50 @@ function renderCube() {
 			}
 		}
 	}
+function sendMessage(type, message, id, names) {;
+	if (message === "") return; // Prevent empty messages
+
+	let str = "";
+	
+	// Function to safely escape HTML
+	function escapeHTML(text) {
+		const element = document.createElement('div');
+		if (text) element.innerText = text;
+		return element.innerHTML;
+	}
+	
+	if (type == "person") {
+		if (id == socket.id) {
+			str += `<span style="color:green">`;
+		}
+		str += `<b>${escapeHTML(names[id])}</b><br>`;
+		if (id == socket.id) {
+			str += `</span>`;
+		}
+		str += escapeHTML(message) + "<br>";
+	} else if (type == "joined") {
+		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} joined room ${escapeHTML(message.room)}</i><br>`;
+	} else if (type == "left") {
+		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} left room ${escapeHTML(message.room)}</i><br>`;
+	}
+	
+	str += `<div style="padding-top: 10px;"></div>`;
+	getEl("allmessages").innerHTML += str;
+	
+}
+
+socket.on("sending-message", (message, id, names) => {
+	sendMessage("person", message, id, names)
+})
+
+socket.on("joined_room", (room, id, name) => {
+	sendMessage("joined", {room : room, id : id, name : name})
+})
+
+socket.on("left_room", (room, id, names) => {
+	sendMessage("left", {room : room, id : id, name : names[id]})
+})
+
 $(document).on("keypress", "#test_alg_div", function(e){ //enter
 	if(e.which == 13){
 		testAlg();
@@ -10300,6 +10350,18 @@ $(document).on("keypress", "#password", function(e){
 		document.getElementById('l_submit').click();
 	}
 });
+$(document).on("keypress", "#message-input", function(e){
+	if (e.which == 13)
+		document.getElementById('send-btn').click();
+});
+
+getEl("send-btn").onclick = () => {
+	if(getEl("message-input").value != "") {
+		socket.emit("send-message", getEl("message-input").value, room, localStorage.username);
+		getEl("message-input").value = "";
+		document.getElementById("message-input").focus();
+	}
+};
 function isIpad(){
 	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;
@@ -10601,7 +10663,7 @@ document.onkeydown = function(event) {
 	activeKeys.add(event.code);
 	if(activeKeys.size === 1 && activeKeys.has('Space') && MODE == "speed" && document.getElementById("s_RACE2").style.display == "block"){
 		speedRace2();
-	} else if (event.keyCode == 13) { //enter
+	} else if (event.keyCode == 13 && document.activeElement !== document.getElementById("message-input")) { //enter
 		if (getEl("s_start").style.display == "block") {
 			practicePLL();
 		} else if (getEl("okban").style.display == "block") {

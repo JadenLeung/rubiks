@@ -58,8 +58,8 @@
 				<p style = "text-align:center; display: inline; padding-top: 5px;" id = "type6"><b>Scramble:</b></p>
 			</div>
 			<p id = "or_instruct" style = "font-size:20px; text-align:center; padding-left:0px; padding-top:20px;"><b>How this Works:</b></p>
-			<p id = "or_instruct2" style = "font-size:12px;">Drag the mouse on a cube layer <b>across a solid black line</b> to rotate it. You can also use the keyboard. <a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a></p>
-			<p id = "or_instruct4" style = "font-size:20px; text-align:center; padding-left:0px;"><b>Select Modes:</b></p>
+			<p id = "or_instruct2" style = "font-size:12px; margin: 0px;">Drag the mouse on a cube layer <b>across a solid black line</b> to rotate it. You can also use the keyboard. <a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a></p>
+			<p id = "or_instruct4" style = "font-size:20px; text-align:center; padding-left:0px; padding-top: 20px;"><b>Select Modes:</b></p>
 			<div class = "buttoncontainer">	
 				<p id="mode" class = "button buttonitems" style = "text-align:center; margin-top: 0px; margin-bottom: 5px; display:inline;"></p>
 				<p id="mode3" class = "button buttonitems" style = "text-align:center;  margin-top: 0px; margin-bottom: 5px;display:inline;"></p>
@@ -68,7 +68,7 @@
 			</div>
 			<div id = "ID_left"></div>
 			
-			<div id = "allmodes">
+			<div id = "allmodes"  style = "margin-top: 10px;">
 				<p id="mode4" style = "display: inline; text-align:center; margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode6" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
 				<p id="mode5" style = "display: inline; text-align:center;  margin-top: 10px; margin-bottom: 5px;"></p>
@@ -171,6 +171,25 @@
 				<p id = "cancelban" style = "text-align:center; margin:5px; padding:0px;"></p>
 				<p id = "deleteban" style = "text-align:center; margin:5px; padding:0px;"></p>
 			</div>
+			<h5 style = "text-align: center; margin-top: 20px;" id = "chat_instruct">Chat </h5>
+			<div id="chat-container" style = "margin-top: 20px;">
+				<div id="chat-messages"  class="autoscrollable-wrapper">
+					<p id = "allmessages"></p>
+				</div>
+			</div>
+			<div id = "competeinput" class="input-group" style="margin-top: 10px; max-width: 500px; margin-left: auto; margin-right: auto;">
+				<input type="text" id="message-input" class="form-control rounded-left" placeholder="Type a message..."
+					   style="border-right: none; padding-right: 40px;">
+				<div class="input-group-append">
+					<!-- Paper airplane icon button -->
+					<button class="btn btn-outline-secondary rounded-right" type="button" id="send-btn"
+							style="border-left: none; background-color: #007bff; color: white; padding: 10px 15px;">
+							<i class="bi bi-send"></i> <!-- Paper airplane icon -->
+					</button>
+				</div>
+			</div>
+			
+			
 		</div>
 		<div class="col-xl-6 noselect" style = "padding-right: 0px;"  id="cnv_div" disabled="disabled">
 			<div id="overlay"></div>
@@ -431,7 +450,7 @@
 				<p id = "finish_match" style = "margin-top: 40px;"></p>
 			</div>
 			<div id = "waitingroom">
-				<h4 id = "waitingroomid" style = "margin-bottom: 30px;">Joining Room</h4>
+				<h4 id = "waitingroomid" style = "margin-bottom: 30px;" class = "user-select: text;">Joining Room</h4>
 				<h6>Current Room Participants</h6>
 				<p id = "waitingroomdata"></p>
 				<h6 style = "padding-top: 20px;">Competition Rules</h6>

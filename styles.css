@@ -110,6 +110,50 @@ button:hover {
     opacity: 0; /* Start fully opaque */
     transition: opacity 0.4s ease-out; /* 1-second fade-out effect */
 }
+#chat-container {
+    height: 65vh; /* Chat box takes 80% of screen height */
+    border: 2px solid #333;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: white;
+}
+#chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: white; /* White background */
+}
+.message {
+    background: #d1e7ff;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    width: fit-content;
+    max-width: 80%;
+}
+#chat-input {
+    display: flex;
+    border-top: 2px solid #333;
+    padding: 2px;
+    background: #fff;
+}
+#allmessages {
+    word-wrap: break-word; /* Ensure long words wrap */
+    overflow-wrap: break-word; /* Modern alternative for word wrapping */
+    white-space: pre-wrap; /* Preserve new lines and wrap text */
+}
+#message-input {
+    flex-grow: 1;
+    padding: 5px;
+}
+.autoscrollable-wrapper {
+    overflow: auto;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+}
 #outertime {
         position: absolute;
         top: 9%;
@@ -205,6 +249,9 @@ button:hover {
     }
     .allcubes {
         display: inline-block;
+    }
+    #chat-container {
+        height: 20vh; /* Chat box takes 80% of screen height */
     }
 }
 @media screen and (max-width: 767px) {
