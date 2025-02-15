@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-const socket = io("http://localhost:3000");
+const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+// const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -19,6 +19,7 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
+	let previouschatid = "";
 	let room = 0;
 	let compete_type = "1v1";
 	let compete_alltimes = [];
@@ -3199,6 +3200,7 @@ function regular(nocustom){
 	m_4step = 0;
 	bstep = 0;
 	ma_data.type = "";
+	previouschatid = ""
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	socket.emit("leave-room", room);
@@ -6706,7 +6708,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// console.log(getEl("allmodes").style.display);
-		reSetup();
+		// reSetup();
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
 		// quickSolve();
@@ -10291,7 +10293,7 @@ function renderCube() {
 			}
 		}
 	}
-function sendMessage(type, message, id, names) {;
+function sendMessage(type, message, id, names, image) {;
 	if (message === "") return; // Prevent empty messages
 
 	let str = "";
@@ -10307,32 +10309,81 @@ function sendMessage(type, message, id, names) {;
 		if (id == socket.id) {
 			str += `<span style="color:green">`;
 		}
-		str += `<b>${escapeHTML(names[id])}</b><br>`;
+		if (id != previouschatid) {
+			if (getEl("allmessages").innerText != "") {
+				str += `<div style="padding-top: 10px;"></div>`;
+			}
+			str += `<b>${escapeHTML(names[id])}</b><br>`;
+		}
+		previouschatid = id;
 		if (id == socket.id) {
 			str += `</span>`;
 		}
-		str += escapeHTML(message) + "<br>";
+		if (message.includes("/moley")) {
+			str += `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"`;
+		}
+		if (message.includes("@everyone")) {
+			str += `<span style="background-color:#FBFFB2">`;
+		}
+		if (message.includes(`@${localStorage.username}`)) {
+			str += `<span style="background-color:#B2FFB7">`;
+		}
+		if (!image) {
+			str += escapeHTML(message) + "<br>";
+		} else {
+			str += message + "<br>";
+		}
+
+		if (message.includes(`@${localStorage.username}`)) {
+			str += `</span>`;
+		}
+		if (message.includes("@everyone")) {
+			str += `</span>`;
+		}
 	} else if (type == "joined") {
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} joined room ${escapeHTML(message.room)}</i><br>`;
+		previouschatid = "";
 	} else if (type == "left") {
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} left room ${escapeHTML(message.room)}</i><br>`;
+		previouschatid = "";
 	}
-	
-	str += `<div style="padding-top: 10px;"></div>`;
 	getEl("allmessages").innerHTML += str;
 	
 }
 
-socket.on("sending-message", (message, id, names) => {
-	sendMessage("person", message, id, names)
+document.getElementById("message-input").addEventListener("paste", function(event) {
+	console.log("pasting");
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+    for (let item of items) {
+        if (item.type.indexOf("image") === 0) {
+            const file = item.getAsFile();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                sendPastedImage(e.target.result); // Send image to chat
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+function sendPastedImage(imageDataUrl) {
+    socket.emit("send-message", `<img class="chat-image" style="width: 200px; height: 100px; object-fit: contain;" src="${imageDataUrl}" alt="Pasted Image"><br>`,
+		room, localStorage.username, true);
+}
+
+socket.on("sending-message", (message, id, names, image) => {
+	sendMessage("person", message, id, names, image)
 })
 
-socket.on("joined_room", (room, id, name) => {
-	sendMessage("joined", {room : room, id : id, name : name})
+socket.on("joined_room", (room, id, name, image) => {
+	sendMessage("joined", {room : room, id : id, name : name}, image)
 })
 
-socket.on("left_room", (room, id, names) => {
-	sendMessage("left", {room : room, id : id, name : names[id]})
+socket.on("left_room", (room, id, names, image) => {
+	sendMessage("left", {room : room, id : id, name : names[id]}, image)
 })
 
 $(document).on("keypress", "#test_alg_div", function(e){ //enter
@@ -10356,12 +10407,19 @@ $(document).on("keypress", "#message-input", function(e){
 });
 
 getEl("send-btn").onclick = () => {
-	if(getEl("message-input").value != "") {
+	if (getEl("message-input").value == "/c") {
+		getEl("message-input").value = "";
+		getEl("allmessages").innerHTML = "";
+		previouschatid = "";
+	} else if(getEl("message-input").value != "") {
 		socket.emit("send-message", getEl("message-input").value, room, localStorage.username);
 		getEl("message-input").value = "";
 		document.getElementById("message-input").focus();
 	}
 };
+getEl("chat-container").onclick = () => {
+	document.getElementById("message-input").focus();
+}
 function isIpad(){
 	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;

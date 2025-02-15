@@ -143,6 +143,7 @@ button:hover {
     word-wrap: break-word; /* Ensure long words wrap */
     overflow-wrap: break-word; /* Modern alternative for word wrapping */
     white-space: pre-wrap; /* Preserve new lines and wrap text */
+    color: #0b196f;
 }
 #message-input {
     flex-grow: 1;
