@@ -850,9 +850,11 @@ p.setup = () => {
     appendToTable(hotkeys, "hotkeytable", 2);
 
 	const hotkeys2 = [
-		["'@everyone'", "Highligts your message to everyone"],
-		["'@name'", "Highlights message to username name"],
-		["Screenshot + paste", "Pastes screenshots"],
+		["@everyone", "Highligts your message to everyone"],
+		["@name", "Highlights message to username name"],
+		["/c", "Clears screen"],
+		["/:) /:), etc.", "🙂, 😉"],
+		["Ctrl + V/Cmd + V", "Pastes text & screenshots"],
 	];
 
 	appendToTable(hotkeys2, "chattable", 1);
@@ -10331,9 +10333,37 @@ function sendMessage(type, message, id, names, image) {;
 		if (id == socket.id) {
 			str += `</span>`;
 		}
-		if (message.includes("/moley")) {
-			str += `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"`;
+		const special = {
+			"/:)"  : "🙂",
+			"/;)"  : "😉",
+			"/:D"  : "😁",
+			"/:P"  : "😛",
+			"/:p"  : "😛",
+			"/:O"  : "😮",
+			"/B)"  : "😎",
+			"/<3"  : "❤️",
+			"/:|"  : "😐",
+			"/:/"  : "😕",
 		}
+		let stringarr = message.split(" ");
+		for (let i = 0; i < stringarr.length; ++i) {
+			if (special.hasOwnProperty(stringarr[i])) {
+				stringarr[i] = special[stringarr[i]];
+			}
+		}
+
+		const replace = {
+			"/tickle" : `<img width = "200px;" src = "https://images.shoutwiki.com/sanrio/thumb/0/0e/Mr_Tickle.png/200px-Mr_Tickle.png"/>`,
+			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`
+		}
+
+		if (replace.hasOwnProperty(message)) {
+			message = replace[message];
+			image = true;
+		} else {
+			message = stringarr.join(" ");
+		}
+
 		if (message.includes("@everyone")) {
 			str += `<span style="background-color:#FBFFB2">`;
 		}

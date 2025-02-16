@@ -125,6 +125,10 @@ button:hover {
     padding: 10px;
     background: white; /* White background */
 }
+#hotkeycontainer {
+    height: 80vh; /* Adjust the height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+}
 .message {
     background: #d1e7ff;
     padding: 5px 10px;
