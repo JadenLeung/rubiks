@@ -159,6 +159,12 @@ button:hover {
     display: flex;
     flex-direction: column-reverse;
 }
+#public_room_container {
+    height: 43vh; /* Fixed height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    display: flex;
+    flex-direction: column; /* Keeps latest content at the bottom */
+}
 #outertime {
         position: absolute;
         top: 9%;

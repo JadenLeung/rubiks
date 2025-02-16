@@ -89,6 +89,7 @@ export default function (p) {
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0, comstep = 0;
 	let OLL, PLL, PLLPRAC, OLLPRAC;
 	let competedata = {};
+	let competerooms = {};
 	let REGULAR;
 	let SPEEDMODE;
 	let TIMEDMODE;
@@ -1634,6 +1635,7 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
 	}
+	displayPublicRooms();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3416,6 +3418,7 @@ function competemode() {
 		elements[i].style.display='none';
 	}
 	MODE = "compete";
+	socket.emit("get-rooms");
 }
 
 
@@ -3427,6 +3430,10 @@ socket.on("refresh_rooms", (data, r) => {
 	competedata = data;
 	enterLobby(data, r)
 });
+
+socket.on("room_change", rooms => {
+	competerooms = rooms;
+})
 
 function enterLobby(data, r) {
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
@@ -3489,11 +3496,11 @@ function finishMatch() {
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
 	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
-	socket.emit("create-room", {rounds: 3, dims: dimarr, type: compete_type, leader: socket.id}, localStorage.username);
+	socket.emit("create-room", {rounds: 3, dims: dimarr, type: compete_type, leader: socket.id, 
+		visibility: getEl("private").checked ? "private" : "public"}, localStorage.username);
 }
 
-function joinRoom() {
-	const room = getEl("join_input").value;
+function joinRoom(room = getEl("join_input").value) {
 	socket.emit("join-room", room, localStorage.username, (err) => {
 		successSQL(err, "lobby_warn");
 	})
@@ -3801,6 +3808,77 @@ function competeSettings(num = compete_type) {
         rows.push({ select1, select2 });
     }
 }
+
+function displayPublicRooms() {
+    let container = document.getElementById("public_rooms");  
+    container.innerHTML = ""; // Clear previous content
+
+    let hasRooms = false;
+	let totalrooms = 0;
+    for (let room in competerooms) {
+        if (competerooms[room].data.visibility === "public" && competerooms[room].stage === "lobby"
+			&& !(competerooms[room].data.type == "1v1" && competerooms[room].userids.length >= 2)) {
+			totalrooms++;
+            hasRooms = true;
+
+            let roomId = Number(room); // Ensure room is treated as a number
+
+            // Create room wrapper
+            let roomDiv = document.createElement("div");
+            roomDiv.style.display = "flex";  // Use flexbox
+            roomDiv.style.alignItems = "center"; // Align text and button
+            roomDiv.style.gap = "6px"; // Space between text and button
+            roomDiv.style.marginBottom = "5px"; // Add space between rooms
+			roomDiv.style.marginTop = "10px"; // Add space between rooms
+
+            // Room title
+            let roomTitle = document.createElement("b");
+            roomTitle.textContent = `Room ${roomId}`;
+
+            // Create the button
+            let button = document.createElement("button");
+            button.className = "btn btn-secondary";
+            button.style = "padding: 2px 6px; font-size: 12px;";
+            button.textContent = "Join";
+
+            // Attach event listener properly
+            button.addEventListener("mousedown", function () {
+                console.log(`Joining Room ${roomId}`); // Debugging
+                joinRoom(roomId);
+            });
+
+            // Append title and button in the same line
+            roomDiv.appendChild(roomTitle);
+            roomDiv.appendChild(button);
+
+            // Room details
+            let roomDetails = document.createElement("div");
+            roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
+                &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
+
+            // Generate cube info
+            let cubes = "";
+			competerooms[room].data.dims.forEach((cube, i) => {
+				if (i == 5) {
+					cubes += ".....";
+					return;
+				}
+				if ( i > 5) return;
+				cubes += `${cube[cube.length - 1]}${i < competerooms[room].data.dims.length - 1 ? "," : ""} `;
+			})
+            roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
+
+            container.appendChild(roomDiv);
+            container.appendChild(roomDetails);
+        }
+    }
+	getEl("public_scroll").style.display = totalrooms >= 4 ? "block" : "none";
+    // If no rooms exist, show message
+    if (!hasRooms) {
+        container.innerHTML = "No public rooms found.";
+    }
+}
+
 
 function getSelectedValues(containerId, rows, cols) {
     let container = document.getElementById(containerId);
@@ -6725,7 +6803,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(getEl("allmodes").style.display);
+		console.log(competerooms);
 		// reSetup();
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);

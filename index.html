@@ -434,12 +434,22 @@
 				<input id = "join_input" style = "margin-bottom: 15px;"></input>
 				<p style = "font-size: 15px; padding: 0px; margin: 0px;" id = "joinroom"></p>
 				<p id = "lobby_warn" style = "font-size: 15px; color: red; padding-top: 5px;" ></p>
+				<h5 style = "margin-top:30px;">Public rooms</h5>
+				<div id = "public_room_container">
+					<p id = "public_rooms"></p>
+				</div>
+				<p id = "public_scroll" style = "font-size: 11px; padding-top: 5px;">↓Scroll Down for more public rooms↓</p>
 			</div>
 			<div id = "creating_match">
 				<h4>Set match settings</h4>
 				<p>Total Rounds: <input id = "compete_rounds" type = "number" max = "10" min = "1" 
 					style = "font-size: 15px;" value="3"></input></p>
-				<p style = "margin-bottom: 5px;">Match type:</p>
+				<p style = "margin-bottom: 5px;">Match visibility:</p>
+				<input type="radio" id="private" name="age" checked>
+				<label for="private">Private</label><br>
+				<input type="radio" id="public" name="age">
+				<label for="public">Public</label><br>  
+				<p style = "margin-bottom: 5px; margin-top: 10px;">Match type:</p>
 				<div>
 					<p id = "compete_1v1" style = "display:inline"></p>
 					<p id = "compete_group" style = "display:inline"></p>
