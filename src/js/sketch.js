@@ -853,9 +853,10 @@ p.setup = () => {
 	const hotkeys2 = [
 		["@everyone", "Highligts your message to everyone"],
 		["@name", "Highlights message to username name"],
-		["/c", "Clears screen"],
-		["/:) /:), etc.", "🙂, 😉"],
 		["Ctrl + V/Cmd + V", "Pastes text & screenshots"],
+		["/c", "Clears screen"],
+		["/:) /;), etc.", "🙂, 😉"],
+		["/crown", "Special crown emote"]
 	];
 
 	appendToTable(hotkeys2, "chattable", 1);
@@ -10436,7 +10437,8 @@ function sendMessage(type, message, id, names, image) {;
 
 		const replace = {
 			"/tickle" : `<img width = "200px;" src = "https://images.shoutwiki.com/sanrio/thumb/0/0e/Mr_Tickle.png/200px-Mr_Tickle.png"/>`,
-			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`
+			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`,
+			"/crown" : `<img width = "100px;" src = "../../images/Compete/cubecrown.gif"/>`
 		}
 
 		if (replace.hasOwnProperty(message)) {
