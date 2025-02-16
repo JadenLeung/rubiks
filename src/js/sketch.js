@@ -3163,7 +3163,7 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn"]);
+		"send-btn", "ss_container"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages"]);
 	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3530,6 +3530,7 @@ socket.on("next-match", (data, scramble) => startRound(data, scramble))
 function startRound(data, scramble) {
 	setDisplay("none", ["continuematch", "waitingmatch"])
 	setDisplay("inline", ["giveup"]);
+	getEl("ss_container").src = "";
 	canMan = true;
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
@@ -3651,12 +3652,13 @@ socket.on("all-solved", (data) => {
 	console.log("DATA IS", data)
 	getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
+	getEl("ss_container").style.display = "none";
 	setDisplay("none", ["giveup"]);
 	competeTimes(data, true);
 	competePoints(data);
 	if (data.data.leader == socket.id || data.round >= competedata.data.dims.length - 1) {
 		setDisplay("block", ["continuematch"]);
-		setDisplay("none", ["waitingmatch"]);
+		setDisplay("none", ["waitingmatch", "ss_container"]);
 	} else {
 		setDisplay("block", ["waitingmatch"]);
 	}
@@ -3995,6 +3997,8 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
 			comstep++;
+			competeScreenshot();
+			setDisplay(competedata.data.type == "group" ? "none" : "block", ["ss_container"]);
 			fadeInText(1, "Go!", "green", "go!");
 			setTimeout(() => {fadeInText(0, "Go!", "green", "go!")}, 600);
 		}
@@ -6730,6 +6734,7 @@ p.keyPressed = (event) => {
 		// switchFour();
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
+		// competeScreenshot();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7050,14 +7055,12 @@ function multiple(nb, timed, use = "default") {
 			const values = movemap[move][1];
 			if ([move, move + "'"].includes(arr[nb])) {
 				for(let i = 0; i < cubies.length; i++) {
-					console.log("ONEDOWN ATTEMPT", values,  CUBE[cubies[i]][axis], MAXX);
 					onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 				for(let i = 0; i < cubies.length; i++) {
 					alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 			}
-			console.log("ONEDOWN IS", onedown);
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
@@ -7124,6 +7127,7 @@ function multiple(nb, timed, use = "default") {
 			}
 		} else if (comstep > 0) {
 			competeprogress = Math.max(competeprogress, getProgress());
+			competeScreenshot();
 		}
 	}
 }
@@ -10730,6 +10734,25 @@ function arrowPaint(dir) {
 		} 
 	}
 }
+
+function getOp() {
+	let opponent = "";
+	competedata.userids.forEach(id => {
+		if (id != socket.id) opponent = id;
+	})
+	return opponent;
+}
+
+function competeScreenshot() {
+	let str = p.canvas.toDataURL('image/jpeg');
+	console.log("room is ", room);
+	socket.emit("send-screenshot", str, getOp());
+}
+
+socket.on("update-screenshot", (screenshot) => {
+	getEl("opponent_ss").src = screenshot;
+})
+
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
     competemode();
