@@ -892,6 +892,9 @@ p.setup = () => {
 	const SETTINGSBACK = p.createButton('Back');
 	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
 
+	const COMPETEBACK = p.createButton('Back');
+	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
+
 	const HOTKEYBACK = p.createButton('Back');
 	setButton(HOTKEYBACK, "hotkeyback", 'btn btn-light', 'font-size:20px; border-color: black;', settingsmode.bind(null, 0));
 
@@ -1237,6 +1240,16 @@ p.setup = () => {
 
 	COMPETE_GROUP = p.createButton('Group Battle');
 	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 10px; borderWidth: 0px;', competeSettings.bind(null, "group"));
+
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const r = urlParams.get('room')
+	if (r && r >= 1 && r <= 10000) {
+		console.log("Param", r);
+		competemode();
+		joinRoom(r)
+	}
+
 }
 
 
