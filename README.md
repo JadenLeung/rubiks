@@ -96,6 +96,23 @@ Solve 8 cubes in the shortest amount of time! Select from a Shape mod marathon o
 <h3>Blind Challenge</h3>
 How many "peeks" do you need to solve a 3x3? A 2x2? The entire shape mod collection? Give a hand at your memorization abilities.
 
+<h1>Multiplayer Battle</h1>
+<div>
+  <img width="20%" alt="image" src="https://github.com/user-attachments/assets/3cd54ed0-c9c0-4f85-adfc-7be441d92054" />
+  <img width="47%" alt="image" src="https://github.com/user-attachments/assets/0b3af85a-b111-4db0-9841-a8782a3787be" />
+</div>
+
+<p>Race against your friends! Select your cubes and round length. Includes a chat feature to interact with opponents.</p>
+
+<h3>2 Player Battle</h3>
+<p>Select from 8+ cubes for yourself and your opponent. These cubes can be different - if you feel your opponent is more of a beginner, pick an easier cube for them. 
+Includes a live opponent perspective during solves, and live progress/time reports.</p>
+
+<h3>Group Battle</h3>
+<p>Select from 8+ for everyone to solve. (Everyone solves the same cube). Unlimited Room Capacity - invite a party! Includes live progress/time reports.</p>
+
+
+
 <h1>Weekly Challenges</h1>
 
 Daily scamble: Each day you have one attempt to solve a 2x2 and a 3x3.
