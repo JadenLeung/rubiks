@@ -10556,9 +10556,7 @@ getEl("send-btn").onclick = () => {
 		document.getElementById("message-input").focus();
 	}
 };
-getEl("chat-container").onclick = () => {
-	document.getElementById("message-input").focus();
-}
+
 function isIpad(){
 	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;
@@ -10908,6 +10906,14 @@ document.getElementById('account').addEventListener('click', function() {
 });
 document.getElementById('login').addEventListener('click', function() {
 	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
+});
+getEl("competelink").addEventListener("click", function(event) {
+    event.preventDefault();
+	navigator.clipboard.writeText(`https://virtual-cube.net/?room=${room}`);
+	getEl("competelink").innerHTML = `<i class="bi bi-check2"></i>`;
+	setTimeout(() => {
+        getEl("competelink").innerHTML = `<i class="bi bi-link"></i>`;
+    }, 1000);
 });
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements

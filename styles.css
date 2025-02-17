@@ -149,6 +149,10 @@ button:hover {
     white-space: pre-wrap; /* Preserve new lines and wrap text */
     color: #0b196f;
 }
+#chat-messages {
+    user-select: text;
+}
+
 #message-input {
     flex-grow: 1;
     padding: 5px;
