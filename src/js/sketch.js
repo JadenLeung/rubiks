@@ -1064,10 +1064,13 @@ p.setup = () => {
 	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
-	setButton(IDCOPY, "idcopy", 'btn btn-primary', 'margin-left: 10px', () => {
+	setButton(IDCOPY, "idcopy", 'btn btn-secondary', 'width: 50px; margin-left: 6px; font-size: 13px; padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px;', () => {
 		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
 			function(){
-				successSQL("Position ID Copied");
+				IDCOPY.html("✓");
+				setTimeout(() => {
+					IDCOPY.html("Copy");
+				}, 1000)
 			})
 		  .catch(
 			 function() {
