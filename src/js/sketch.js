@@ -3454,6 +3454,7 @@ socket.on("refresh_rooms", (data, r) => {
 
 socket.on("room_change", rooms => {
 	competerooms = rooms;
+	displayPublicRooms();
 })
 
 function enterLobby(data, r) {
