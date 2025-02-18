@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3000");
+// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -19,7 +19,6 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
-	let previouschatid = "";
 	let room = 0;
 	let compete_type = "1v1";
 	let compete_alltimes = [];
@@ -89,7 +88,6 @@ export default function (p) {
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0, comstep = 0;
 	let OLL, PLL, PLLPRAC, OLLPRAC;
 	let competedata = {};
-	let competerooms = {};
 	let REGULAR;
 	let SPEEDMODE;
 	let TIMEDMODE;
@@ -848,18 +846,21 @@ p.setup = () => {
 		["⇧ -", "Other Cubes"],
 	];
 
-    appendToTable(hotkeys, "hotkeytable", 2);
+    const table = document.getElementById('hotkeytable');
 
-	const hotkeys2 = [
-		["@everyone", "Highligts your message to everyone"],
-		["@name", "Highlights message to username name"],
-		["Ctrl + V/Cmd + V", "Pastes text & screenshots"],
-		["/c", "Clears screen"],
-		["/:) /;), etc.", "🙂, 😉"],
-		["/crown", "Special crown emote"]
-	];
-
-	appendToTable(hotkeys2, "chattable", 1);
+    for (let i = 0; i < hotkeys.length; i += 2) {
+        const row = document.createElement('tr');
+        
+        // Create first cell set (number and description)
+        row.innerHTML += `<td><b>${hotkeys[i][0]}</b></td><td>${hotkeys[i][1]}</td>`;
+        
+        // Check if there's a second cell set (for odd-length arrays)
+        if (i + 1 < hotkeys.length) {
+            row.innerHTML += `<td><b>${hotkeys[i + 1][0]}</b></td><td>${hotkeys[i + 1][1]}</td>`;
+        }
+        
+        table.appendChild(row);
+    }
 
 	const BACK = p.createButton('Back');
 	setButton(BACK, "custom3", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
@@ -891,9 +892,6 @@ p.setup = () => {
 
 	const SETTINGSBACK = p.createButton('Back');
 	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
-
-	const COMPETEBACK = p.createButton('Back');
-	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
 
 	const HOTKEYBACK = p.createButton('Back');
 	setButton(HOTKEYBACK, "hotkeyback", 'btn btn-light', 'font-size:20px; border-color: black;', settingsmode.bind(null, 0));
@@ -1064,13 +1062,10 @@ p.setup = () => {
 	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
-	setButton(IDCOPY, "idcopy", 'btn btn-secondary', 'width: 50px; margin-left: 6px; font-size: 13px; padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px;', () => {
+	setButton(IDCOPY, "idcopy", 'btn btn-primary', 'margin-left: 10px', () => {
 		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
 			function(){
-				IDCOPY.html("✓");
-				setTimeout(() => {
-					IDCOPY.html("Copy");
-				}, 1000)
+				successSQL("Position ID Copied");
 			})
 		  .catch(
 			 function() {
@@ -1243,16 +1238,6 @@ p.setup = () => {
 
 	COMPETE_GROUP = p.createButton('Group Battle');
 	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 10px; borderWidth: 0px;', competeSettings.bind(null, "group"));
-
-	const queryString = window.location.search;
-	const urlParams = new URLSearchParams(queryString);
-	const r = urlParams.get('room')
-	if (r && r >= 1 && r <= 10000) {
-		console.log("Param", r);
-		competemode();
-		joinRoom(r)
-	}
-
 }
 
 
@@ -1652,7 +1637,6 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
 	}
-	displayPublicRooms();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3182,7 +3166,7 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn", "ss_container"]);
+		"send-btn"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages"]);
 	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3215,7 +3199,6 @@ function regular(nocustom){
 	m_4step = 0;
 	bstep = 0;
 	ma_data.type = "";
-	previouschatid = ""
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	socket.emit("leave-room", room);
@@ -3435,7 +3418,6 @@ function competemode() {
 		elements[i].style.display='none';
 	}
 	MODE = "compete";
-	socket.emit("get-rooms");
 }
 
 
@@ -3447,10 +3429,6 @@ socket.on("refresh_rooms", (data, r) => {
 	competedata = data;
 	enterLobby(data, r)
 });
-
-socket.on("room_change", rooms => {
-	competerooms = rooms;
-})
 
 function enterLobby(data, r) {
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
@@ -3513,11 +3491,11 @@ function finishMatch() {
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
 	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
-	socket.emit("create-room", {rounds: 3, dims: dimarr, type: compete_type, leader: socket.id, 
-		visibility: getEl("private").checked ? "private" : "public"}, localStorage.username);
+	socket.emit("create-room", {rounds: 3, dims: dimarr, type: compete_type, leader: socket.id}, localStorage.username);
 }
 
-function joinRoom(room = getEl("join_input").value) {
+function joinRoom() {
+	const room = getEl("join_input").value;
 	socket.emit("join-room", room, localStorage.username, (err) => {
 		successSQL(err, "lobby_warn");
 	})
@@ -3554,7 +3532,6 @@ socket.on("next-match", (data, scramble) => startRound(data, scramble))
 function startRound(data, scramble) {
 	setDisplay("none", ["continuematch", "waitingmatch"])
 	setDisplay("inline", ["giveup"]);
-	getEl("ss_container").src = "";
 	canMan = true;
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
@@ -3676,13 +3653,12 @@ socket.on("all-solved", (data) => {
 	console.log("DATA IS", data)
 	getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
-	getEl("ss_container").style.display = "none";
 	setDisplay("none", ["giveup"]);
 	competeTimes(data, true);
 	competePoints(data);
 	if (data.data.leader == socket.id || data.round >= competedata.data.dims.length - 1) {
 		setDisplay("block", ["continuematch"]);
-		setDisplay("none", ["waitingmatch", "ss_container"]);
+		setDisplay("none", ["waitingmatch"]);
 	} else {
 		setDisplay("block", ["waitingmatch"]);
 	}
@@ -3825,77 +3801,6 @@ function competeSettings(num = compete_type) {
         rows.push({ select1, select2 });
     }
 }
-
-function displayPublicRooms() {
-    let container = document.getElementById("public_rooms");  
-    container.innerHTML = ""; // Clear previous content
-
-    let hasRooms = false;
-	let totalrooms = 0;
-    for (let room in competerooms) {
-        if (competerooms[room].data.visibility === "public" && competerooms[room].stage === "lobby"
-			&& !(competerooms[room].data.type == "1v1" && competerooms[room].userids.length >= 2)) {
-			totalrooms++;
-            hasRooms = true;
-
-            let roomId = Number(room); // Ensure room is treated as a number
-
-            // Create room wrapper
-            let roomDiv = document.createElement("div");
-            roomDiv.style.display = "flex";  // Use flexbox
-            roomDiv.style.alignItems = "center"; // Align text and button
-            roomDiv.style.gap = "6px"; // Space between text and button
-            roomDiv.style.marginBottom = "5px"; // Add space between rooms
-			roomDiv.style.marginTop = "10px"; // Add space between rooms
-
-            // Room title
-            let roomTitle = document.createElement("b");
-            roomTitle.textContent = `Room ${roomId}`;
-
-            // Create the button
-            let button = document.createElement("button");
-            button.className = "btn btn-secondary";
-            button.style = "padding: 2px 6px; font-size: 12px;";
-            button.textContent = "Join";
-
-            // Attach event listener properly
-            button.addEventListener("mousedown", function () {
-                console.log(`Joining Room ${roomId}`); // Debugging
-                joinRoom(roomId);
-            });
-
-            // Append title and button in the same line
-            roomDiv.appendChild(roomTitle);
-            roomDiv.appendChild(button);
-
-            // Room details
-            let roomDetails = document.createElement("div");
-            roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
-                &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
-
-            // Generate cube info
-            let cubes = "";
-			competerooms[room].data.dims.forEach((cube, i) => {
-				if (i == 5) {
-					cubes += ".....";
-					return;
-				}
-				if ( i > 5) return;
-				cubes += `${cube[cube.length - 1]}${i < competerooms[room].data.dims.length - 1 ? "," : ""} `;
-			})
-            roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
-
-            container.appendChild(roomDiv);
-            container.appendChild(roomDetails);
-        }
-    }
-	getEl("public_scroll").style.display = totalrooms >= 4 ? "block" : "none";
-    // If no rooms exist, show message
-    if (!hasRooms) {
-        container.innerHTML = "No public rooms found.";
-    }
-}
-
 
 function getSelectedValues(containerId, rows, cols) {
     let container = document.getElementById(containerId);
@@ -4092,8 +3997,6 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
 			comstep++;
-			competeScreenshot();
-			setDisplay(competedata.data.type == "group" ? "none" : "block", ["ss_container"]);
 			fadeInText(1, "Go!", "green", "go!");
 			setTimeout(() => {fadeInText(0, "Go!", "green", "go!")}, 600);
 		}
@@ -4131,24 +4034,6 @@ function mapBandaged() {
 	}
 	return copyban;
 }
-function appendToTable(hotkeys, id, step, padding = "5px") {
-    const table = document.getElementById(id);
-
-    for (let i = 0; i < hotkeys.length; i += step) {
-        const row = document.createElement('tr');
-        
-        // Create first cell set (number and description) with adjustable padding
-        row.innerHTML += `<td style="padding-left: ${padding}; padding-right: ${padding};"><b>${hotkeys[i][0]}</b></td><td style="padding-left: ${padding}; padding-right: ${padding};">${hotkeys[i][1]}</td>`;
-        
-        // Check if there's a second cell set (for odd-length arrays) with adjustable padding
-        if (i + 1 < hotkeys.length && step == 2) {
-            row.innerHTML += `<td style="padding-left: ${padding}; padding-right: ${padding};"><b>${hotkeys[i + 1][0]}</b></td><td style="padding-left: ${padding}; padding-right: ${padding};">${hotkeys[i + 1][1]}</td>`;
-        }
-        
-        table.appendChild(row);
-    }
-}
-
 function startchallenge() {
 	const cubemap = {3 : 50, 2: 100, 4 : 2, 5 : 15};
 	DIM2 = cubemap[weeklyscrambles[week].cube];
@@ -6820,8 +6705,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(competerooms);
-		// reSetup();
+		// console.log(getEl("allmodes").style.display);
+		reSetup();
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
 		// quickSolve();
@@ -6829,7 +6714,6 @@ p.keyPressed = (event) => {
 		// switchFour();
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
-		// competeScreenshot();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7150,12 +7034,14 @@ function multiple(nb, timed, use = "default") {
 			const values = movemap[move][1];
 			if ([move, move + "'"].includes(arr[nb])) {
 				for(let i = 0; i < cubies.length; i++) {
+					console.log("ONEDOWN ATTEMPT", values,  CUBE[cubies[i]][axis], MAXX);
 					onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 				for(let i = 0; i < cubies.length; i++) {
 					alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 			}
+			console.log("ONEDOWN IS", onedown);
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
@@ -7222,7 +7108,6 @@ function multiple(nb, timed, use = "default") {
 			}
 		} else if (comstep > 0) {
 			competeprogress = Math.max(competeprogress, getProgress());
-			competeScreenshot();
 		}
 	}
 }
@@ -10406,7 +10291,7 @@ function renderCube() {
 			}
 		}
 	}
-function sendMessage(type, message, id, names, image) {;
+function sendMessage(type, message, id, names) {;
 	if (message === "") return; // Prevent empty messages
 
 	let str = "";
@@ -10420,112 +10305,34 @@ function sendMessage(type, message, id, names, image) {;
 	
 	if (type == "person") {
 		if (id == socket.id) {
-			str += `<span style="color:blue">`;
+			str += `<span style="color:green">`;
 		}
-		if (id != previouschatid) {
-			if (getEl("allmessages").innerText != "") {
-				str += `<div style="padding-top: 10px;"></div>`;
-			}
-			str += `<b>${escapeHTML(names[id])}</b><br>`;
-		}
-		previouschatid = id;
+		str += `<b>${escapeHTML(names[id])}</b><br>`;
 		if (id == socket.id) {
 			str += `</span>`;
 		}
-		const special = {
-			"/:)"  : "🙂",
-			"/;)"  : "😉",
-			"/:D"  : "😁",
-			"/:P"  : "😛",
-			"/:p"  : "😛",
-			"/:O"  : "😮",
-			"/B)"  : "😎",
-			"/<3"  : "❤️",
-			"/:|"  : "😐",
-			"/:/"  : "😕",
-		}
-		let stringarr = message.split(" ");
-		for (let i = 0; i < stringarr.length; ++i) {
-			if (special.hasOwnProperty(stringarr[i])) {
-				stringarr[i] = special[stringarr[i]];
-			}
-		}
-
-		const replace = {
-			"/tickle" : `<img width = "200px;" src = "https://images.shoutwiki.com/sanrio/thumb/0/0e/Mr_Tickle.png/200px-Mr_Tickle.png"/>`,
-			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`,
-			"/crown" : `<img width = "100px;" src = "../../images/Compete/cubecrown.gif"/>`
-		}
-
-		if (replace.hasOwnProperty(message)) {
-			message = replace[message];
-			image = true;
-		} else {
-			message = stringarr.join(" ");
-		}
-
-		if (message.includes("@everyone")) {
-			str += `<span style="background-color:#FBFFB2">`;
-		}
-		if (message.includes(`@${localStorage.username}`)) {
-			str += `<span style="background-color:#B2FFB7">`;
-		}
-		if (!image) {
-			str += escapeHTML(message) + "<br>";
-		} else {
-			str += message + "<br>";
-		}
-
-		if (message.includes(`@${localStorage.username}`)) {
-			str += `</span>`;
-		}
-		if (message.includes("@everyone")) {
-			str += `</span>`;
-		}
+		str += escapeHTML(message) + "<br>";
 	} else if (type == "joined") {
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} joined room ${escapeHTML(message.room)}</i><br>`;
-		previouschatid = "";
 	} else if (type == "left") {
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} left room ${escapeHTML(message.room)}</i><br>`;
-		previouschatid = "";
 	}
+	
+	str += `<div style="padding-top: 10px;"></div>`;
 	getEl("allmessages").innerHTML += str;
 	
 }
 
-document.getElementById("message-input").addEventListener("paste", function(event) {
-	console.log("pasting");
-    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-
-    for (let item of items) {
-        if (item.type.indexOf("image") === 0) {
-            const file = item.getAsFile();
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                sendPastedImage(e.target.result); // Send image to chat
-            };
-
-            reader.readAsDataURL(file);
-        }
-    }
-});
-
-function sendPastedImage(imageDataUrl) {
-    socket.emit("send-message", `<img class="chat-image" style="width: 200px; height: 100px; object-fit: contain;" src="${imageDataUrl}" alt="Pasted Image"><br>`,
-		room, localStorage.username, true);
-}
-
-socket.on("sending-message", (message, id, names, image) => {
-	sendMessage("person", message, id, names, image)
+socket.on("sending-message", (message, id, names) => {
+	sendMessage("person", message, id, names)
 })
 
-socket.on("joined_room", (room, id, name, image) => {
-	sendMessage("joined", {room : room, id : id, name : name}, image)
+socket.on("joined_room", (room, id, name) => {
+	sendMessage("joined", {room : room, id : id, name : name})
 })
 
-socket.on("left_room", (room, id, names, image) => {
-	sendMessage("left", {room : room, id : id, name : names[id]}, image)
+socket.on("left_room", (room, id, names) => {
+	sendMessage("left", {room : room, id : id, name : names[id]})
 })
 
 $(document).on("keypress", "#test_alg_div", function(e){ //enter
@@ -10549,17 +10356,12 @@ $(document).on("keypress", "#message-input", function(e){
 });
 
 getEl("send-btn").onclick = () => {
-	if (getEl("message-input").value == "/c") {
-		getEl("message-input").value = "";
-		getEl("allmessages").innerHTML = "";
-		previouschatid = "";
-	} else if(getEl("message-input").value != "") {
+	if(getEl("message-input").value != "") {
 		socket.emit("send-message", getEl("message-input").value, room, localStorage.username);
 		getEl("message-input").value = "";
 		document.getElementById("message-input").focus();
 	}
 };
-
 function isIpad(){
 	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;
@@ -10828,25 +10630,6 @@ function arrowPaint(dir) {
 		} 
 	}
 }
-
-function getOp() {
-	let opponent = "";
-	competedata.userids.forEach(id => {
-		if (id != socket.id) opponent = id;
-	})
-	return opponent;
-}
-
-function competeScreenshot() {
-	let str = p.canvas.toDataURL('image/jpeg');
-	console.log("room is ", room);
-	socket.emit("send-screenshot", str, getOp());
-}
-
-socket.on("update-screenshot", (screenshot) => {
-	getEl("opponent_ss").src = screenshot;
-})
-
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
     competemode();
@@ -10909,14 +10692,6 @@ document.getElementById('account').addEventListener('click', function() {
 });
 document.getElementById('login').addEventListener('click', function() {
 	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
-});
-getEl("competelink").addEventListener("click", function(event) {
-    event.preventDefault();
-	navigator.clipboard.writeText(`https://virtual-cube.net/?room=${room}`);
-	getEl("competelink").innerHTML = `<i class="bi bi-check2"></i>`;
-	setTimeout(() => {
-        getEl("competelink").innerHTML = `<i class="bi bi-link"></i>`;
-    }, 1000);
 });
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
