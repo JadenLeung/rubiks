@@ -1656,7 +1656,6 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
 	}
-	displayPublicRooms();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3424,6 +3423,7 @@ function finishpaint() {
 }
 document.getElementById("compete").onclick = competemode;
 function competemode() {
+	displayPublicRooms();
 	modeData("compete");
 	regular();
 	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
@@ -3858,16 +3858,20 @@ function displayPublicRooms() {
             roomTitle.textContent = `Room ${roomId}`;
 
             // Create the button
+            let button = document.createElement("button");
+            button.className = "btn btn-secondary";
+            button.style = "padding: 2px 6px; font-size: 12px;";
+            button.textContent = "Join";
 
             // Attach event listener properly
-            // roomTitle.addEventListener("mousedown", function () {
-            //     console.log(`Joining Room ${roomId}`); // Debugging
-            //     joinRoom(roomId);
-            // });
+            button.addEventListener("mousedown", function () {
+                console.log(`Joining Room ${roomId}`); // Debugging
+                joinRoom(roomId);
+            });
 
             // Append title and button in the same line
             roomDiv.appendChild(roomTitle);
-            // roomDiv.appendChild(button);
+            roomDiv.appendChild(button);
 
             // Room details
             let roomDetails = document.createElement("div");
