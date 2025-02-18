@@ -194,12 +194,14 @@ export default function (p) {
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
-		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
+		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
+		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
-		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3")};
+		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
+		"Sandwich" : change17.bind(null, 0)};
 
 	// attach event
 
@@ -3789,7 +3791,7 @@ function competeSettings(num = compete_type) {
         container.appendChild(headerRow);
     }
 
-	const alldims = ["3x3", "2x2",  "1x2x3", "1x3x3", "2x2x3", "2x2x4", "3x3x2", "3x3x4", "3x3x5"];
+	const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "2x2x3", "2x2x4", "2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "Xmas 2x2", "Xmas 3x3", "Sandwich"];
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
         let label = createEl("span", `Round ${i + 1}`, { width: "80px" });
@@ -3809,8 +3811,9 @@ function competeSettings(num = compete_type) {
             let applyButton = document.createElement("button");
             applyButton.textContent = "Apply row to all";
             applyButton.classList.add("btn", "btn-secondary");
-            applyButton.style.marginLeft = "10px";
-			applyButton.style.fontSize = "14px";
+			applyButton.style.fontSize = "10px";
+			applyButton.style.paddingLeft = "6px";
+			applyButton.style.paddingRight = "6px";
             applyButton.onclick = () => {
                 for (let j = 1; j < rows.length; j++) {
                     rows[j].select1.value = rows[0].select1.value;
@@ -7576,7 +7579,7 @@ function refreshButtons()
 		CUBE6 = p.createButton('Jank 2x2');
 		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, change10.bind(null, 0));
 
-		CUBE13 = p.createButton('Sandwhich Cube');
+		CUBE13 = p.createButton('Sandwich Cube');
 		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, change17.bind(null, 0));
 
 		CUBE15 = p.createButton('2x2x3');
@@ -7614,16 +7617,16 @@ function refreshButtons()
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "1x4x4", "1x4x4", "3x3x2"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "3x2x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "4x3x3", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
