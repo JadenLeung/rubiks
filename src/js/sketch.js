@@ -1635,7 +1635,7 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
 	}
-	// displayPublicRooms();
+	displayPublicRooms();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3842,10 +3842,10 @@ function displayPublicRooms() {
             button.textContent = "Join";
 
             // Attach event listener properly
-            button.addEventListener("mousedown", function () {
-                console.log(`Joining Room ${roomId}`); // Debugging
-                joinRoom(roomId);
-            });
+            // button.addEventListener("click", function () {
+            //     console.log(`Joining Room ${roomId}`); // Debugging
+            //     joinRoom(roomId);
+            // });
 
             // Append title and button in the same line
             roomDiv.appendChild(roomTitle);
