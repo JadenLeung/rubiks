@@ -3860,10 +3860,10 @@ function displayPublicRooms() {
             // Create the button
 
             // Attach event listener properly
-            roomTitle.addEventListener("mousedown", function () {
-                console.log(`Joining Room ${roomId}`); // Debugging
-                joinRoom(roomId);
-            });
+            // roomTitle.addEventListener("mousedown", function () {
+            //     console.log(`Joining Room ${roomId}`); // Debugging
+            //     joinRoom(roomId);
+            // });
 
             // Append title and button in the same line
             roomDiv.appendChild(roomTitle);
