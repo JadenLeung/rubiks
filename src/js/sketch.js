@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-const socket = io("http://localhost:3000");
+const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+// const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -19,6 +19,7 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
+	let previouschatid = "";
 	let room = 0;
 	let compete_type = "1v1";
 	let compete_alltimes = [];
@@ -846,21 +847,17 @@ p.setup = () => {
 		["⇧ -", "Other Cubes"],
 	];
 
-    const table = document.getElementById('hotkeytable');
+    appendToTable(hotkeys, "hotkeytable", 2);
 
-    for (let i = 0; i < hotkeys.length; i += 2) {
-        const row = document.createElement('tr');
-        
-        // Create first cell set (number and description)
-        row.innerHTML += `<td><b>${hotkeys[i][0]}</b></td><td>${hotkeys[i][1]}</td>`;
-        
-        // Check if there's a second cell set (for odd-length arrays)
-        if (i + 1 < hotkeys.length) {
-            row.innerHTML += `<td><b>${hotkeys[i + 1][0]}</b></td><td>${hotkeys[i + 1][1]}</td>`;
-        }
-        
-        table.appendChild(row);
-    }
+	const hotkeys2 = [
+		["@everyone", "Highligts your message to everyone"],
+		["@name", "Highlights message to username name"],
+		["/c", "Clears screen"],
+		["/:) /:), etc.", "🙂, 😉"],
+		["Ctrl + V/Cmd + V", "Pastes text & screenshots"],
+	];
+
+	appendToTable(hotkeys2, "chattable", 1);
 
 	const BACK = p.createButton('Back');
 	setButton(BACK, "custom3", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
@@ -3166,7 +3163,7 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn"]);
+		"send-btn", "ss_container"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages"]);
 	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3199,6 +3196,7 @@ function regular(nocustom){
 	m_4step = 0;
 	bstep = 0;
 	ma_data.type = "";
+	previouschatid = ""
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	socket.emit("leave-room", room);
@@ -3532,6 +3530,7 @@ socket.on("next-match", (data, scramble) => startRound(data, scramble))
 function startRound(data, scramble) {
 	setDisplay("none", ["continuematch", "waitingmatch"])
 	setDisplay("inline", ["giveup"]);
+	getEl("ss_container").src = "";
 	canMan = true;
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
@@ -3653,12 +3652,13 @@ socket.on("all-solved", (data) => {
 	console.log("DATA IS", data)
 	getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
+	getEl("ss_container").style.display = "none";
 	setDisplay("none", ["giveup"]);
 	competeTimes(data, true);
 	competePoints(data);
 	if (data.data.leader == socket.id || data.round >= competedata.data.dims.length - 1) {
 		setDisplay("block", ["continuematch"]);
-		setDisplay("none", ["waitingmatch"]);
+		setDisplay("none", ["waitingmatch", "ss_container"]);
 	} else {
 		setDisplay("block", ["waitingmatch"]);
 	}
@@ -3997,6 +3997,8 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
 			comstep++;
+			competeScreenshot();
+			setDisplay(competedata.data.type == "group" ? "none" : "block", ["ss_container"]);
 			fadeInText(1, "Go!", "green", "go!");
 			setTimeout(() => {fadeInText(0, "Go!", "green", "go!")}, 600);
 		}
@@ -4034,6 +4036,24 @@ function mapBandaged() {
 	}
 	return copyban;
 }
+function appendToTable(hotkeys, id, step, padding = "5px") {
+    const table = document.getElementById(id);
+
+    for (let i = 0; i < hotkeys.length; i += step) {
+        const row = document.createElement('tr');
+        
+        // Create first cell set (number and description) with adjustable padding
+        row.innerHTML += `<td style="padding-left: ${padding}; padding-right: ${padding};"><b>${hotkeys[i][0]}</b></td><td style="padding-left: ${padding}; padding-right: ${padding};">${hotkeys[i][1]}</td>`;
+        
+        // Check if there's a second cell set (for odd-length arrays) with adjustable padding
+        if (i + 1 < hotkeys.length && step == 2) {
+            row.innerHTML += `<td style="padding-left: ${padding}; padding-right: ${padding};"><b>${hotkeys[i + 1][0]}</b></td><td style="padding-left: ${padding}; padding-right: ${padding};">${hotkeys[i + 1][1]}</td>`;
+        }
+        
+        table.appendChild(row);
+    }
+}
+
 function startchallenge() {
 	const cubemap = {3 : 50, 2: 100, 4 : 2, 5 : 15};
 	DIM2 = cubemap[weeklyscrambles[week].cube];
@@ -6706,7 +6726,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// console.log(getEl("allmodes").style.display);
-		reSetup();
+		// reSetup();
 		// b_selectdim["1x2x3"]();
 		// console.log(competedata, compete_alltimes);
 		// quickSolve();
@@ -6714,6 +6734,7 @@ p.keyPressed = (event) => {
 		// switchFour();
 		// console.log(mapBandaged())
 		// console.log(mapBandaged());
+		// competeScreenshot();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7034,14 +7055,12 @@ function multiple(nb, timed, use = "default") {
 			const values = movemap[move][1];
 			if ([move, move + "'"].includes(arr[nb])) {
 				for(let i = 0; i < cubies.length; i++) {
-					console.log("ONEDOWN ATTEMPT", values,  CUBE[cubies[i]][axis], MAXX);
 					onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 				for(let i = 0; i < cubies.length; i++) {
 					alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
 				}
 			}
-			console.log("ONEDOWN IS", onedown);
 		}
 		if(alldown == true) timed = false;
 		if (!onedown) {
@@ -7108,6 +7127,7 @@ function multiple(nb, timed, use = "default") {
 			}
 		} else if (comstep > 0) {
 			competeprogress = Math.max(competeprogress, getProgress());
+			competeScreenshot();
 		}
 	}
 }
@@ -10291,7 +10311,7 @@ function renderCube() {
 			}
 		}
 	}
-function sendMessage(type, message, id, names) {;
+function sendMessage(type, message, id, names, image) {;
 	if (message === "") return; // Prevent empty messages
 
 	let str = "";
@@ -10305,34 +10325,111 @@ function sendMessage(type, message, id, names) {;
 	
 	if (type == "person") {
 		if (id == socket.id) {
-			str += `<span style="color:green">`;
+			str += `<span style="color:blue">`;
 		}
-		str += `<b>${escapeHTML(names[id])}</b><br>`;
+		if (id != previouschatid) {
+			if (getEl("allmessages").innerText != "") {
+				str += `<div style="padding-top: 10px;"></div>`;
+			}
+			str += `<b>${escapeHTML(names[id])}</b><br>`;
+		}
+		previouschatid = id;
 		if (id == socket.id) {
 			str += `</span>`;
 		}
-		str += escapeHTML(message) + "<br>";
+		const special = {
+			"/:)"  : "🙂",
+			"/;)"  : "😉",
+			"/:D"  : "😁",
+			"/:P"  : "😛",
+			"/:p"  : "😛",
+			"/:O"  : "😮",
+			"/B)"  : "😎",
+			"/<3"  : "❤️",
+			"/:|"  : "😐",
+			"/:/"  : "😕",
+		}
+		let stringarr = message.split(" ");
+		for (let i = 0; i < stringarr.length; ++i) {
+			if (special.hasOwnProperty(stringarr[i])) {
+				stringarr[i] = special[stringarr[i]];
+			}
+		}
+
+		const replace = {
+			"/tickle" : `<img width = "200px;" src = "https://images.shoutwiki.com/sanrio/thumb/0/0e/Mr_Tickle.png/200px-Mr_Tickle.png"/>`,
+			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`
+		}
+
+		if (replace.hasOwnProperty(message)) {
+			message = replace[message];
+			image = true;
+		} else {
+			message = stringarr.join(" ");
+		}
+
+		if (message.includes("@everyone")) {
+			str += `<span style="background-color:#FBFFB2">`;
+		}
+		if (message.includes(`@${localStorage.username}`)) {
+			str += `<span style="background-color:#B2FFB7">`;
+		}
+		if (!image) {
+			str += escapeHTML(message) + "<br>";
+		} else {
+			str += message + "<br>";
+		}
+
+		if (message.includes(`@${localStorage.username}`)) {
+			str += `</span>`;
+		}
+		if (message.includes("@everyone")) {
+			str += `</span>`;
+		}
 	} else if (type == "joined") {
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} joined room ${escapeHTML(message.room)}</i><br>`;
+		previouschatid = "";
 	} else if (type == "left") {
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} left room ${escapeHTML(message.room)}</i><br>`;
+		previouschatid = "";
 	}
-	
-	str += `<div style="padding-top: 10px;"></div>`;
 	getEl("allmessages").innerHTML += str;
 	
 }
 
-socket.on("sending-message", (message, id, names) => {
-	sendMessage("person", message, id, names)
+document.getElementById("message-input").addEventListener("paste", function(event) {
+	console.log("pasting");
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+    for (let item of items) {
+        if (item.type.indexOf("image") === 0) {
+            const file = item.getAsFile();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                sendPastedImage(e.target.result); // Send image to chat
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+function sendPastedImage(imageDataUrl) {
+    socket.emit("send-message", `<img class="chat-image" style="width: 200px; height: 100px; object-fit: contain;" src="${imageDataUrl}" alt="Pasted Image"><br>`,
+		room, localStorage.username, true);
+}
+
+socket.on("sending-message", (message, id, names, image) => {
+	sendMessage("person", message, id, names, image)
 })
 
-socket.on("joined_room", (room, id, name) => {
-	sendMessage("joined", {room : room, id : id, name : name})
+socket.on("joined_room", (room, id, name, image) => {
+	sendMessage("joined", {room : room, id : id, name : name}, image)
 })
 
-socket.on("left_room", (room, id, names) => {
-	sendMessage("left", {room : room, id : id, name : names[id]})
+socket.on("left_room", (room, id, names, image) => {
+	sendMessage("left", {room : room, id : id, name : names[id]}, image)
 })
 
 $(document).on("keypress", "#test_alg_div", function(e){ //enter
@@ -10356,12 +10453,19 @@ $(document).on("keypress", "#message-input", function(e){
 });
 
 getEl("send-btn").onclick = () => {
-	if(getEl("message-input").value != "") {
+	if (getEl("message-input").value == "/c") {
+		getEl("message-input").value = "";
+		getEl("allmessages").innerHTML = "";
+		previouschatid = "";
+	} else if(getEl("message-input").value != "") {
 		socket.emit("send-message", getEl("message-input").value, room, localStorage.username);
 		getEl("message-input").value = "";
 		document.getElementById("message-input").focus();
 	}
 };
+getEl("chat-container").onclick = () => {
+	document.getElementById("message-input").focus();
+}
 function isIpad(){
 	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;
@@ -10630,6 +10734,25 @@ function arrowPaint(dir) {
 		} 
 	}
 }
+
+function getOp() {
+	let opponent = "";
+	competedata.userids.forEach(id => {
+		if (id != socket.id) opponent = id;
+	})
+	return opponent;
+}
+
+function competeScreenshot() {
+	let str = p.canvas.toDataURL('image/jpeg');
+	console.log("room is ", room);
+	socket.emit("send-screenshot", str, getOp());
+}
+
+socket.on("update-screenshot", (screenshot) => {
+	getEl("opponent_ss").src = screenshot;
+})
+
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
     competemode();
