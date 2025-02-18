@@ -1635,7 +1635,7 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
 	}
-	displayPublicRooms();
+	// displayPublicRooms();
 }, 10)
 //forever
 function reSetup(rot) {
