@@ -3837,6 +3837,7 @@ function displayPublicRooms() {
 
             // Create the button
             let button = document.createElement("button");
+			button.type = "button"; 
             // button.className = "btn btn-secondary";
             // button.style = "padding: 2px 6px; font-size: 12px;";
             // button.textContent = "Join";
