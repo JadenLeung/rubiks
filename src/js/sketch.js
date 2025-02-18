@@ -194,14 +194,12 @@ export default function (p) {
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
-		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
+		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
-		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
-		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
-		"Sandwich" : change17.bind(null, 0)};
+		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3")};
 
 	// attach event
 
@@ -1246,8 +1244,6 @@ p.setup = () => {
 	COMPETE_GROUP = p.createButton('Group Battle');
 	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 10px; borderWidth: 0px;', competeSettings.bind(null, "group"));
 
-	if (!localStorage.username) 
-		localStorage.username = "signedout";
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const r = urlParams.get('room')
@@ -3791,7 +3787,7 @@ function competeSettings(num = compete_type) {
         container.appendChild(headerRow);
     }
 
-	const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "2x2x3", "2x2x4", "2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "Xmas 2x2", "Xmas 3x3", "Sandwich"];
+	const alldims = ["3x3", "2x2",  "1x2x3", "1x3x3", "2x2x3", "2x2x4", "3x3x2", "3x3x4", "3x3x5"];
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
         let label = createEl("span", `Round ${i + 1}`, { width: "80px" });
@@ -3811,9 +3807,8 @@ function competeSettings(num = compete_type) {
             let applyButton = document.createElement("button");
             applyButton.textContent = "Apply row to all";
             applyButton.classList.add("btn", "btn-secondary");
-			applyButton.style.fontSize = "10px";
-			applyButton.style.paddingLeft = "6px";
-			applyButton.style.paddingRight = "6px";
+            applyButton.style.marginLeft = "10px";
+			applyButton.style.fontSize = "14px";
             applyButton.onclick = () => {
                 for (let j = 1; j < rows.length; j++) {
                     rows[j].select1.value = rows[0].select1.value;
@@ -6825,7 +6820,16 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(isRectangle([0,2,6,8]));
+		// console.log(competerooms);
+		// reSetup();
+		// b_selectdim["1x2x3"]();
+		// console.log(competedata, compete_alltimes);
+		// quickSolve();
+		// moveSetup();
+		// switchFour();
+		// console.log(mapBandaged())
+		// console.log(mapBandaged());
+		// competeScreenshot();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7579,7 +7583,7 @@ function refreshButtons()
 		CUBE6 = p.createButton('Jank 2x2');
 		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, change10.bind(null, 0));
 
-		CUBE13 = p.createButton('Sandwich Cube');
+		CUBE13 = p.createButton('Sandwhich Cube');
 		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, change17.bind(null, 0));
 
 		CUBE15 = p.createButton('2x2x3');
@@ -7617,16 +7621,16 @@ function refreshButtons()
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "1x4x4", "1x4x4", "3x3x2"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "3x2x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "4x3x3", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
@@ -10591,39 +10595,10 @@ function sideSolved(color)
 	}
 	return false;
 }
-function isRectangle(cubies) {
-	console.log("t", CUBE[cubies[0]], cubies);
-	if (cubies.length == 0) {
-		return true;
-	}
-	let minx = CUBE[cubies[0]].x;
-	let maxx = CUBE[cubies[0]].x;
-	let miny = CUBE[cubies[0]].y;
-	let maxy = CUBE[cubies[0]].y;
-	let minz = CUBE[cubies[0]].z;
-	let maxz = CUBE[cubies[0]].z;
-	cubies.forEach(cuby => {
-		minx = Math.min(CUBE[cuby].x, minx);
-		maxx = Math.max(CUBE[cuby].x, maxx);
-		miny = Math.min(CUBE[cuby].y, miny);
-		maxy = Math.max(CUBE[cuby].y, maxy);
-		minz = Math.min(CUBE[cuby].z, minz);
-		maxz = Math.max(CUBE[cuby].z, maxz);
-	});
-	let corners = 0;
-	cubies.forEach(cuby => {
-		if ([minx, maxx].includes(CUBE[cuby].x) && [miny, maxy].includes(CUBE[cuby].y) 
-			&& [minz, maxz].includes(CUBE[cuby].z)) {
-			corners++;
-		}
-	})
-	return corners == 4;
-}
 function uniform(dir) {
 	let base = 0;
 	for (let x = -MAXX; x <= MAXX; x += CUBYESIZE) {
 		let numcubies = 0;
-		let cubies = [];
 		for (let y = -MAXX; y <= MAXX; y += CUBYESIZE) {
 			for (let z = -MAXX; z <= MAXX; z += CUBYESIZE) {
 				let cuby;
@@ -10636,16 +10611,10 @@ function uniform(dir) {
 				if (dir == "z") {
 					cuby = getCubyFromPos(y, z, x);
 				}
-				if (cuby != -1) {
-					numcubies++;
-					cubies.push(cuby)
-				}
+				numcubies += cuby != -1 ? 1 : 0;
 			}
 		}
-		console.log(numcubies, !isRectangle(cubies), cubies);
-		if (!isRectangle(cubies)) {
-			return false;
-		}
+		console.log(numcubies);
 		if (base == 0) {
 			base = numcubies;
 		} else if (base != numcubies && numcubies != 0) {
