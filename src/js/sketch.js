@@ -3848,15 +3848,15 @@ function displayPublicRooms() {
             // });
 
             // Append title and button in the same line
-            // roomDiv.appendChild(roomTitle);
-            // roomDiv.appendChild(button);
+            roomDiv.appendChild(roomTitle);
+            roomDiv.appendChild(button);
 
-            // // Room details
-            // let roomDetails = document.createElement("div");
-            // roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
-            //     &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
+            // Room details
+            let roomDetails = document.createElement("div");
+            roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
+                &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
 
-            // // Generate cube info
+            // Generate cube info
             // let cubes = "";
 			// competerooms[room].data.dims.forEach((cube, i) => {
 			// 	if (i == 5) {
