@@ -194,12 +194,14 @@ export default function (p) {
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
-		"Xmas 3x3": changeSeven, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), 
+		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
+		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
-		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3")};
+		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
+		"Sandwich" : change17.bind(null, 0)};
 
 	// attach event
 
@@ -853,9 +855,10 @@ p.setup = () => {
 	const hotkeys2 = [
 		["@everyone", "Highligts your message to everyone"],
 		["@name", "Highlights message to username name"],
-		["/c", "Clears screen"],
-		["/:) /:), etc.", "🙂, 😉"],
 		["Ctrl + V/Cmd + V", "Pastes text & screenshots"],
+		["/c", "Clears screen"],
+		["/:) /;), etc.", "🙂, 😉"],
+		["/crown", "Special crown emote"]
 	];
 
 	appendToTable(hotkeys2, "chattable", 1);
@@ -890,6 +893,9 @@ p.setup = () => {
 
 	const SETTINGSBACK = p.createButton('Back');
 	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
+
+	const COMPETEBACK = p.createButton('Back');
+	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
 
 	const HOTKEYBACK = p.createButton('Back');
 	setButton(HOTKEYBACK, "hotkeyback", 'btn btn-light', 'font-size:20px; border-color: black;', settingsmode.bind(null, 0));
@@ -1060,10 +1066,13 @@ p.setup = () => {
 	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
-	setButton(IDCOPY, "idcopy", 'btn btn-primary', 'margin-left: 10px', () => {
+	setButton(IDCOPY, "idcopy", 'btn btn-secondary', 'width: 50px; margin-left: 6px; font-size: 13px; padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px;', () => {
 		navigator.clipboard.writeText(document.getElementById("idcurrent").innerText).then(
 			function(){
-				successSQL("Position ID Copied");
+				IDCOPY.html("✓");
+				setTimeout(() => {
+					IDCOPY.html("Copy");
+				}, 1000)
 			})
 		  .catch(
 			 function() {
@@ -1236,6 +1245,18 @@ p.setup = () => {
 
 	COMPETE_GROUP = p.createButton('Group Battle');
 	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 10px; borderWidth: 0px;', competeSettings.bind(null, "group"));
+
+	if (!localStorage.username) 
+		localStorage.username = "signedout";
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const r = urlParams.get('room')
+	if (r && r >= 1 && r <= 10000) {
+		console.log("Param", r);
+		competemode();
+		joinRoom(r)
+	}
+
 }
 
 
@@ -3770,7 +3791,7 @@ function competeSettings(num = compete_type) {
         container.appendChild(headerRow);
     }
 
-	const alldims = ["3x3", "2x2",  "1x2x3", "1x3x3", "2x2x3", "2x2x4", "3x3x2", "3x3x4", "3x3x5"];
+	const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "2x2x3", "2x2x4", "2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "Xmas 2x2", "Xmas 3x3", "Sandwich"];
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
         let label = createEl("span", `Round ${i + 1}`, { width: "80px" });
@@ -3790,8 +3811,9 @@ function competeSettings(num = compete_type) {
             let applyButton = document.createElement("button");
             applyButton.textContent = "Apply row to all";
             applyButton.classList.add("btn", "btn-secondary");
-            applyButton.style.marginLeft = "10px";
-			applyButton.style.fontSize = "14px";
+			applyButton.style.fontSize = "10px";
+			applyButton.style.paddingLeft = "6px";
+			applyButton.style.paddingRight = "6px";
             applyButton.onclick = () => {
                 for (let j = 1; j < rows.length; j++) {
                     rows[j].select1.value = rows[0].select1.value;
@@ -3836,21 +3858,20 @@ function displayPublicRooms() {
             roomTitle.textContent = `Room ${roomId}`;
 
             // Create the button
-            let button = document.createElement("div");
-			// button.type = "button"; 
-            // button.className = "btn btn-secondary";
-            // button.style = "padding: 2px 6px; font-size: 12px;";
-            // button.textContent = "Join";
+            let button = document.createElement("button");
+            button.className = "btn btn-secondary";
+            button.style = "padding: 2px 6px; font-size: 12px;";
+            button.textContent = "Join";
 
             // Attach event listener properly
-            // button.addEventListener("click", function () {
-            //     console.log(`Joining Room ${roomId}`); // Debugging
-            //     joinRoom(roomId);
-            // });
+            button.addEventListener("mousedown", function () {
+                console.log(`Joining Room ${roomId}`); // Debugging
+                joinRoom(roomId);
+            });
 
             // Append title and button in the same line
             roomDiv.appendChild(roomTitle);
-            roomDiv.appendChild(button);
+            // roomDiv.appendChild(button);
 
             // Room details
             let roomDetails = document.createElement("div");
@@ -3858,19 +3879,19 @@ function displayPublicRooms() {
                 &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
 
             // Generate cube info
-            // let cubes = "";
-			// competerooms[room].data.dims.forEach((cube, i) => {
-			// 	if (i == 5) {
-			// 		cubes += ".....";
-			// 		return;
-			// 	}
-			// 	if ( i > 5) return;
-			// 	cubes += `${cube[cube.length - 1]}${i < competerooms[room].data.dims.length - 1 ? "," : ""} `;
-			// })
-            // roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
+            let cubes = "";
+			competerooms[room].data.dims.forEach((cube, i) => {
+				if (i == 5) {
+					cubes += ".....";
+					return;
+				}
+				if ( i > 5) return;
+				cubes += `${cube[cube.length - 1]}${i < competerooms[room].data.dims.length - 1 ? "," : ""} `;
+			})
+            roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
 
             container.appendChild(roomDiv);
-            // container.appendChild(roomDetails);
+            container.appendChild(roomDetails);
         }
     }
 	getEl("public_scroll").style.display = totalrooms >= 4 ? "block" : "none";
@@ -6804,16 +6825,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competerooms);
-		// reSetup();
-		// b_selectdim["1x2x3"]();
-		// console.log(competedata, compete_alltimes);
-		// quickSolve();
-		// moveSetup();
-		// switchFour();
-		// console.log(mapBandaged())
-		// console.log(mapBandaged());
-		// competeScreenshot();
+		// console.log(isRectangle([0,2,6,8]));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7567,7 +7579,7 @@ function refreshButtons()
 		CUBE6 = p.createButton('Jank 2x2');
 		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, change10.bind(null, 0));
 
-		CUBE13 = p.createButton('Sandwhich Cube');
+		CUBE13 = p.createButton('Sandwich Cube');
 		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, change17.bind(null, 0));
 
 		CUBE15 = p.createButton('2x2x3');
@@ -7605,16 +7617,16 @@ function refreshButtons()
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "1x4x4", "1x4x4", "3x3x2"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "2x3x4", "3x2x4", "3x3x2"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchSize(5, "3x3x4", "4x3x3", "3x3x2"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
@@ -10437,7 +10449,8 @@ function sendMessage(type, message, id, names, image) {;
 
 		const replace = {
 			"/tickle" : `<img width = "200px;" src = "https://images.shoutwiki.com/sanrio/thumb/0/0e/Mr_Tickle.png/200px-Mr_Tickle.png"/>`,
-			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`
+			"/moley" : `<img width = "200px;" src = "https://i.ytimg.com/vi/EhmN8Pa1g6c/maxresdefault.jpg"/>`,
+			"/crown" : `<img width = "100px;" src = "../../images/Compete/cubecrown.gif"/>`
 		}
 
 		if (replace.hasOwnProperty(message)) {
@@ -10542,9 +10555,7 @@ getEl("send-btn").onclick = () => {
 		document.getElementById("message-input").focus();
 	}
 };
-getEl("chat-container").onclick = () => {
-	document.getElementById("message-input").focus();
-}
+
 function isIpad(){
 	return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !((window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)) 
 	&& !matchMedia('(pointer:fine)').matches;
@@ -10580,10 +10591,39 @@ function sideSolved(color)
 	}
 	return false;
 }
+function isRectangle(cubies) {
+	console.log("t", CUBE[cubies[0]], cubies);
+	if (cubies.length == 0) {
+		return true;
+	}
+	let minx = CUBE[cubies[0]].x;
+	let maxx = CUBE[cubies[0]].x;
+	let miny = CUBE[cubies[0]].y;
+	let maxy = CUBE[cubies[0]].y;
+	let minz = CUBE[cubies[0]].z;
+	let maxz = CUBE[cubies[0]].z;
+	cubies.forEach(cuby => {
+		minx = Math.min(CUBE[cuby].x, minx);
+		maxx = Math.max(CUBE[cuby].x, maxx);
+		miny = Math.min(CUBE[cuby].y, miny);
+		maxy = Math.max(CUBE[cuby].y, maxy);
+		minz = Math.min(CUBE[cuby].z, minz);
+		maxz = Math.max(CUBE[cuby].z, maxz);
+	});
+	let corners = 0;
+	cubies.forEach(cuby => {
+		if ([minx, maxx].includes(CUBE[cuby].x) && [miny, maxy].includes(CUBE[cuby].y) 
+			&& [minz, maxz].includes(CUBE[cuby].z)) {
+			corners++;
+		}
+	})
+	return corners == 4;
+}
 function uniform(dir) {
 	let base = 0;
 	for (let x = -MAXX; x <= MAXX; x += CUBYESIZE) {
 		let numcubies = 0;
+		let cubies = [];
 		for (let y = -MAXX; y <= MAXX; y += CUBYESIZE) {
 			for (let z = -MAXX; z <= MAXX; z += CUBYESIZE) {
 				let cuby;
@@ -10596,10 +10636,16 @@ function uniform(dir) {
 				if (dir == "z") {
 					cuby = getCubyFromPos(y, z, x);
 				}
-				numcubies += cuby != -1 ? 1 : 0;
+				if (cuby != -1) {
+					numcubies++;
+					cubies.push(cuby)
+				}
 			}
 		}
-		console.log(numcubies);
+		console.log(numcubies, !isRectangle(cubies), cubies);
+		if (!isRectangle(cubies)) {
+			return false;
+		}
 		if (base == 0) {
 			base = numcubies;
 		} else if (base != numcubies && numcubies != 0) {
@@ -10894,6 +10940,14 @@ document.getElementById('account').addEventListener('click', function() {
 });
 document.getElementById('login').addEventListener('click', function() {
 	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
+});
+getEl("competelink").addEventListener("click", function(event) {
+    event.preventDefault();
+	navigator.clipboard.writeText(`https://virtual-cube.net/?room=${room}`);
+	getEl("competelink").innerHTML = `<i class="bi bi-check2"></i>`;
+	setTimeout(() => {
+        getEl("competelink").innerHTML = `<i class="bi bi-link"></i>`;
+    }, 1000);
 });
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
