@@ -3849,7 +3849,7 @@ function displayPublicRooms() {
 
             // Append title and button in the same line
             roomDiv.appendChild(roomTitle);
-            roomDiv.appendChild(button);
+            // roomDiv.appendChild(button);
 
             // Room details
             let roomDetails = document.createElement("div");
