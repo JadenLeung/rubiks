@@ -3858,13 +3858,9 @@ function displayPublicRooms() {
             roomTitle.textContent = `Room ${roomId}`;
 
             // Create the button
-            let button = document.createElement("button");
-            button.className = "btn btn-secondary";
-            button.style = "padding: 2px 6px; font-size: 12px;";
-            button.textContent = "Join";
 
             // Attach event listener properly
-            button.addEventListener("mousedown", function () {
+            roomTitle.addEventListener("mousedown", function () {
                 console.log(`Joining Room ${roomId}`); // Debugging
                 joinRoom(roomId);
             });
