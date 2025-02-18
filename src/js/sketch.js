@@ -3837,9 +3837,9 @@ function displayPublicRooms() {
 
             // Create the button
             let button = document.createElement("button");
-            button.className = "btn btn-secondary";
-            button.style = "padding: 2px 6px; font-size: 12px;";
-            button.textContent = "Join";
+            // button.className = "btn btn-secondary";
+            // button.style = "padding: 2px 6px; font-size: 12px;";
+            // button.textContent = "Join";
 
             // Attach event listener properly
             // button.addEventListener("click", function () {
@@ -3849,7 +3849,7 @@ function displayPublicRooms() {
 
             // Append title and button in the same line
             roomDiv.appendChild(roomTitle);
-            // roomDiv.appendChild(button);
+            roomDiv.appendChild(button);
 
             // Room details
             let roomDetails = document.createElement("div");
