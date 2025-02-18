@@ -1244,6 +1244,8 @@ p.setup = () => {
 	COMPETE_GROUP = p.createButton('Group Battle');
 	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 10px; borderWidth: 0px;', competeSettings.bind(null, "group"));
 
+	if (!localStorage.username) 
+		localStorage.username = "signedout";
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const r = urlParams.get('room')
@@ -6820,16 +6822,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(competerooms);
-		// reSetup();
-		// b_selectdim["1x2x3"]();
-		// console.log(competedata, compete_alltimes);
-		// quickSolve();
-		// moveSetup();
-		// switchFour();
-		// console.log(mapBandaged())
-		// console.log(mapBandaged());
-		// competeScreenshot();
+		// console.log(isRectangle([0,2,6,8]));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -10595,10 +10588,39 @@ function sideSolved(color)
 	}
 	return false;
 }
+function isRectangle(cubies) {
+	console.log("t", CUBE[cubies[0]], cubies);
+	if (cubies.length == 0) {
+		return true;
+	}
+	let minx = CUBE[cubies[0]].x;
+	let maxx = CUBE[cubies[0]].x;
+	let miny = CUBE[cubies[0]].y;
+	let maxy = CUBE[cubies[0]].y;
+	let minz = CUBE[cubies[0]].z;
+	let maxz = CUBE[cubies[0]].z;
+	cubies.forEach(cuby => {
+		minx = Math.min(CUBE[cuby].x, minx);
+		maxx = Math.max(CUBE[cuby].x, maxx);
+		miny = Math.min(CUBE[cuby].y, miny);
+		maxy = Math.max(CUBE[cuby].y, maxy);
+		minz = Math.min(CUBE[cuby].z, minz);
+		maxz = Math.max(CUBE[cuby].z, maxz);
+	});
+	let corners = 0;
+	cubies.forEach(cuby => {
+		if ([minx, maxx].includes(CUBE[cuby].x) && [miny, maxy].includes(CUBE[cuby].y) 
+			&& [minz, maxz].includes(CUBE[cuby].z)) {
+			corners++;
+		}
+	})
+	return corners == 4;
+}
 function uniform(dir) {
 	let base = 0;
 	for (let x = -MAXX; x <= MAXX; x += CUBYESIZE) {
 		let numcubies = 0;
+		let cubies = [];
 		for (let y = -MAXX; y <= MAXX; y += CUBYESIZE) {
 			for (let z = -MAXX; z <= MAXX; z += CUBYESIZE) {
 				let cuby;
@@ -10611,10 +10633,16 @@ function uniform(dir) {
 				if (dir == "z") {
 					cuby = getCubyFromPos(y, z, x);
 				}
-				numcubies += cuby != -1 ? 1 : 0;
+				if (cuby != -1) {
+					numcubies++;
+					cubies.push(cuby)
+				}
 			}
 		}
-		console.log(numcubies);
+		console.log(numcubies, !isRectangle(cubies), cubies);
+		if (!isRectangle(cubies)) {
+			return false;
+		}
 		if (base == 0) {
 			base = numcubies;
 		} else if (base != numcubies && numcubies != 0) {
