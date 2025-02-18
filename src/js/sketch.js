@@ -3848,28 +3848,28 @@ function displayPublicRooms() {
             // });
 
             // Append title and button in the same line
-            roomDiv.appendChild(roomTitle);
-            roomDiv.appendChild(button);
+            // roomDiv.appendChild(roomTitle);
+            // roomDiv.appendChild(button);
 
-            // Room details
-            let roomDetails = document.createElement("div");
-            roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
-                &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
+            // // Room details
+            // let roomDetails = document.createElement("div");
+            // roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
+            //     &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
 
-            // Generate cube info
-            let cubes = "";
-			competerooms[room].data.dims.forEach((cube, i) => {
-				if (i == 5) {
-					cubes += ".....";
-					return;
-				}
-				if ( i > 5) return;
-				cubes += `${cube[cube.length - 1]}${i < competerooms[room].data.dims.length - 1 ? "," : ""} `;
-			})
-            roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
+            // // Generate cube info
+            // let cubes = "";
+			// competerooms[room].data.dims.forEach((cube, i) => {
+			// 	if (i == 5) {
+			// 		cubes += ".....";
+			// 		return;
+			// 	}
+			// 	if ( i > 5) return;
+			// 	cubes += `${cube[cube.length - 1]}${i < competerooms[room].data.dims.length - 1 ? "," : ""} `;
+			// })
+            // roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
 
-            container.appendChild(roomDiv);
-            container.appendChild(roomDetails);
+            // container.appendChild(roomDiv);
+            // container.appendChild(roomDetails);
         }
     }
 	getEl("public_scroll").style.display = totalrooms >= 4 ? "block" : "none";
