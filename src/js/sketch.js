@@ -3868,7 +3868,7 @@ function displayPublicRooms() {
 			// })
             // roomDetails.innerHTML += `&emsp;Cubes: ${cubes}<br>`;
 
-            // container.appendChild(roomDiv);
+            container.appendChild(roomDiv);
             // container.appendChild(roomDetails);
         }
     }
