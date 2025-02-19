@@ -3448,8 +3448,12 @@ socket.on("connect", () => {
 });
 
 socket.on("refresh_rooms", (data, r) => {
-	competedata = data;
-	enterLobby(data, r)
+	if (MODE == "compete" || MODE == "competing") {
+		competedata = data;
+		enterLobby(data, r)
+	} else {
+		socket.emit("leave-room", room);
+	}
 });
 
 socket.on("room_change", rooms => {
