@@ -6965,7 +6965,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		quickSolve();
+		// quickSolve();
 		console.log(getEl("outertime").style.display, getEl("outertime").style.zIndex)
 	}
 	if(p.keyCode == 9){ //tab
