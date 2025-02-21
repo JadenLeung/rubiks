@@ -21,7 +21,7 @@ export default function (p) {
 	let PICKER;
 	let previouschatid = "";
 	let room = 0;
-	let compete_type = "1v1";
+	let compete_type = "";
 	let compete_alltimes = [];
 	let fullscreen = false;
 	let CUBE = {};
@@ -30,6 +30,8 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let SWITCHTIME = 15;
+	let isShuffling = false;
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
@@ -55,6 +57,7 @@ export default function (p) {
 	let SPEED_SLIDER;
 	let DELAY_SLIDER;
 	let TWOBYTWO;
+	let TEAMBLIND_SEL;
 	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR;
 	let NBYN;
 	let ROTX = 2.8
@@ -98,7 +101,7 @@ export default function (p) {
 	let SPEEDMODE2;
 	let TIMEDMODE2;
 	let MOVESMODE2;
-	let TIMEGONE, COMPETE_1V1, COMPETE_GROUP;
+	let TIMEGONE, COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND;
 	let audioon = true;
 	let input = "keyboard";
 	let scramblemoves = 0;
@@ -274,9 +277,12 @@ class Timer {
 		this.inspection = false;
 	}
 
-	setTime(s) {
-		this.startTime = s;
-		this.overallTime = s;
+	setTime(s, stopped = false) {
+		this.startTime = Date.now() - s;
+		if (stopped) {
+			this.startTime = s;
+			this.overallTime = s;
+		}
 	}
 	
 	_getTimeElapsedSinceLastStart () {
@@ -807,6 +813,12 @@ p.setup = () => {
 		console.log(bandaged, bandaged3)
 		reSetup();
 	})
+	
+	TEAMBLIND_SEL = p.createSelect();
+	TEAMBLIND_SEL.parent("com_teamblind_container");
+	["3x3", "2x2", "Xmas 2x2", "Xmas 3x3"].forEach(cube => {
+		TEAMBLIND_SEL.option(cube)
+	}) 
 
 	INPUT.option("Normal");
 	INPUT.option("3x3x2");
@@ -1083,6 +1095,9 @@ p.setup = () => {
 	const PEEK = p.createButton('Peek');
 	setButton(PEEK, "peekbutton", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', () => {toggleOverlay(false);});
 
+	const COMPETESWITCH = p.createButton('Switch Blindfold');
+	setButton(COMPETESWITCH, "competeswitch", 'btn btn-primary', ' font-size:20px;', switchBlindfold);
+
 	FULLSCREEN = p.createButton('');
 	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
@@ -1244,7 +1259,10 @@ p.setup = () => {
 	setButton(COMPETE_1V1, "compete_1v1", 'btn btn-primary', 'margin-right: 5px; borderWidth: 0px;', competeSettings.bind(null, "1v1"));
 
 	COMPETE_GROUP = p.createButton('Group Battle');
-	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 10px; borderWidth: 0px;', competeSettings.bind(null, "group"));
+	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 5px; borderWidth: 0px;', competeSettings.bind(null, "group"));
+
+	COMPETE_TEAMBLIND = p.createButton('Team Blind');
+	setButton(COMPETE_TEAMBLIND, "compete_teamblind", 'btn btn-primary', 'margin-right: 5px; borderWidth: 0px;', competeSettings.bind(null, "teamblind"));
 
 	if (!localStorage.username) 
 		localStorage.username = "signedout";
@@ -1523,6 +1541,9 @@ setInterval(() => {
 			if(ao5 == 0) ao5 = [Math.round(timer.getTime() / 10)/100.0];
 			else ao5.push(Math.round(timer.getTime() / 10)/100.0);
 			socket.emit("solved", room, Math.round(timer.getTime() / 10)/100.0);
+			if (competedata.data.type == "teamblind") {
+				competeSolved(competedata);
+			}
 			canMan = false;
 		} else if (timer.isRunning && timer.inspection == 2 && timer.getTime() > 0) {
 			timer.stop();
@@ -1606,8 +1627,12 @@ setInterval(() => {
 	if (MODE == "timed") { TIMEDMODE2.style('background-color', '#8ef5ee');  TIMEDMODE.style('background-color', '#8ef5ee');}
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
-	getEl("wannapeek").style.display = getEl("overlay").style.display;
-	getEl("peekbutton").style.display = getEl("overlay").style.display;
+	if (MODE == "moves") {
+		getEl("wannapeek").style.display = getEl("overlay").style.display;
+		getEl("peekbutton").style.display = getEl("overlay").style.display;
+	} else {
+		setDisplay("none", ["wannapeek", "peekbutton"])
+	}
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 	getEl("custommouse").innerHTML = canMouse() ? "(Mouse inputs are turned on.)" : "(Mouse inputs are turned off.)";
 	getEl("switcher").style.display = (getEl("blind").style.display == "block" || (getEl("s_prac").style.display != "none")) ? "block" : "none";
@@ -1643,15 +1668,17 @@ setInterval(() => {
 	getEl("uppaint").style.opacity = colorindex == 0 ? 0.3 : 1;
 	getEl("downpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
 	if (colorindex > 52) activeKeys.clear();
-	// bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
-	// bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
 	localStorage.bandaged3 = JSON.stringify(bandaged3);
 	if (typeof bandaged3[BANDAGE_SELECT.value()] !== "object") {
 		bandaged3[BANDAGE_SELECT.value()] = {}; // Ensure it's an object
 	  }
 	setDisplay(SIZE > 3 ? "block" : "none", ["customshift"]);
 	if (comstep > 0 && competedata.stage == "ingame") {
-		socket.emit("progress-update", room, competeprogress, Math.round(timer.getTime() / 10)/100.0);
+		socket.emit("progress-update", room, competeprogress, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
+		if (competedata.data.type == "teamblind" && competedata.data.time > competedata.data.startblind + SWITCHTIME) {
+			if (!isSolved())
+				getEl("competeswitch").style.display = "block";
+		}
 	}
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
@@ -2278,6 +2305,8 @@ function giveUp()
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
 		canMan = false;
 		getEl("giveup").style.display = "none";
+		if (competedata.data.type == "teamblind")
+			socket.emit("giveup_blind", room);
 	} else if(m_4step > 0 && m_4step % 2 == 1)
 	{
 		if(giveups > 0.5)
@@ -3185,9 +3214,9 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn", "ss_container"]);
-	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages"]);
-	[COMPETE_1V1, COMPETE_GROUP].forEach((b) => b && b.style("backgroundColor", ""));
+		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
+	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
 	}
@@ -3217,6 +3246,7 @@ function regular(nocustom){
 	m_34step = 0;
 	m_4step = 0;
 	bstep = 0;
+	isShuffling = false;
 	ma_data.type = "";
 	previouschatid = ""
 	pracmode = "none";
@@ -3429,7 +3459,7 @@ function competemode() {
 	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
 			"or_instruct", "or_instruct2", "or_instruct4"
 	]);
-	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct"]);
+	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
 	getEl("send-btn").style.display = "inline-block"; // To show the button
 
@@ -3462,6 +3492,7 @@ socket.on("room_change", rooms => {
 })
 
 function enterLobby(data, r) {
+	compete_type = data.data.type;
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("block", ["waitingroom"]);
 	console.log("Refreshed")
@@ -3485,8 +3516,15 @@ function enterLobby(data, r) {
 		str += `<br>`;
 	})
 	getEl("waitingroomdata").innerHTML = str;
+	getEl("competerules2").innerHTML = competeText();
+	const title = {
+		"1v1": "2 Player Battle Rules",
+		"group": "Group Battle Rules",
+		"teamblind": "Team Blind Rules"
+	}
+	getEl("competeruletitle").innerHTML = title[data.data.type];
 	str = ""
-	str = `Total Rounds: ${data.data.dims.length} <br>`;
+	str = `<h6 style = "margin-top:20px">Total Rounds: ${data.data.dims.length} </h6>`;
 	if (data.data.type == "1v1") {
 		data.data.dims.forEach((cube, x) => {
 			str += `Round ${x + 1})`
@@ -3508,8 +3546,9 @@ function enterLobby(data, r) {
 	getEl("competerules").innerHTML = str;
 }
 function createMatch() {
-	setDisplay("none", ["lobby"]);
+	setDisplay("none", ["lobby", "round_length"]);
 	setDisplay("block", ["creating_match"]);
+	compete_type = "";
 }
 
 function finishMatch() {
@@ -3522,7 +3561,7 @@ function finishMatch() {
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
 	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
-	socket.emit("create-room", {rounds: 3, dims: dimarr, type: compete_type, leader: socket.id, 
+	socket.emit("create-room", {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
 		visibility: getEl("private").checked ? "private" : "public"}, localStorage.username);
 }
 
@@ -3569,13 +3608,14 @@ function startRound(data, scramble) {
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
 	competedata = data;
-	if (data.data.type == "group" || data.data.leader == socket.id)
+	if (data.data.type != "1v1" || data.data.leader == socket.id)
 		b_selectdim[data.data.dims[data.round][0]]();
 	else
 		b_selectdim[data.data.dims[data.round][1]]();
 	setTimeout(() => {
 		INPUT.attribute('disabled', true);
 		competeTimes(data);
+		isShuffling = true;
 		if (scramble) {
 			changeArr(scramble);
 			multiple2("scramble");
@@ -3584,57 +3624,78 @@ function startRound(data, scramble) {
 		}
 		competeprogress = 0;
 		canMan = false;
-		waitStopTurning(true);
+		waitStopTurning(data.data.type != "teamblind");
 	}, 10);
 }
 
-socket.on("someone-solved", (data) => competeTimes(data));
+socket.on("update-data", (data) => competeTimes(data));
 
 function competeTimes(data, end = false) {
-	competedata = data;
-	let strarr = [];
-	data.userids.forEach((id) => {
-		if (!data.solved[id]) strarr.push([id, data.progress[id] ?? 0, data.times[id] ?? 0])
-		else strarr.push([id, data.progress[id] ?? 0, data.solved[id]])
-	});
-	strarr.sort((a, b) => {
-		if (a[1] != b[1]) {
-			return b[1] - a[1];
-		}
-		if (a[2] == "DNF") a[2] = DNF;
-		if (b[2] == "DNF") b[2] = DNF;
-		if (a[2] != b[2]) return a[2] - b[2];
-		let copya = a[2];
-		let copyb = b[2];
-		if (a[0] == socket.id) copya--;
-		if (b[0] == socket.id) copyb--;
-		return copya - copyb;
-	});
-	let str = "";
-	let rank = 1;
-	for (let i = 0; i < strarr.length; ++i) {
-		if (strarr[i][0] == socket.id) {
-			str += COMPETE_YOU;
-		}
-		if (i == 0 || strarr[i][2] != strarr[i - 1][2]) {
-			rank = (i + 1);
-		}
-		str += `${rank}) `;
-		str += data.names[strarr[i][0]];
-		if (!end) {
-			str += ", progress: " + strarr[i][1] + "%";
-		}
-		str += ", time: " + (strarr[i][2] >= DNF ? "DNF" : strarr[i][2]) + "s";
-		// if (rank == 1 && end) {
-		// 	str += " 🔥";
-		// }
-		if (strarr[i][0] == socket.id) {
-			str += `</b>`;
-		}
-		str += "<br>";
+	if (MODE != "competing" || (competedata.data.type == "teamblind" && moves > 0 && !timer.isRunning)) {
+		return;
 	}
-	getEl("match_INSTRUCT2").innerHTML = str;
-	getEl("match_TITLE").innerHTML = `Round ${data.round + 1}`;
+	competedata = data;
+	if (["1v1", "group"].includes(competedata.data.type)) {
+		let strarr = [];
+		data.userids.forEach((id) => {
+			if (!data.solved[id]) strarr.push([id, data.progress[id] ?? 0, data.times[id] ?? 0])
+			else strarr.push([id, data.progress[id] ?? 0, data.solved[id]])
+		});
+		strarr.sort((a, b) => {
+			if (a[1] != b[1]) {
+				return b[1] - a[1];
+			}
+			if (a[2] == "DNF") a[2] = DNF;
+			if (b[2] == "DNF") b[2] = DNF;
+			if (a[2] != b[2]) return a[2] - b[2];
+			let copya = a[2];
+			let copyb = b[2];
+			if (a[0] == socket.id) copya--;
+			if (b[0] == socket.id) copyb--;
+			return copya - copyb;
+		});
+		let str = "";
+		let rank = 1;
+		for (let i = 0; i < strarr.length; ++i) {
+			if (strarr[i][0] == socket.id) {
+				str += COMPETE_YOU;
+			}
+			if (i == 0 || strarr[i][2] != strarr[i - 1][2]) {
+				rank = (i + 1);
+			}
+			str += `${rank}) `;
+			str += data.names[strarr[i][0]];
+			if (!end) {
+				str += ", progress: " + strarr[i][1] + "%";
+			}
+			str += ", time: " + (strarr[i][2] >= DNF ? "DNF" : strarr[i][2]) + "s";
+			// if (rank == 1 && end) {
+			// 	str += " 🔥";
+			// }
+			if (strarr[i][0] == socket.id) {
+				str += `</b>`;
+			}
+			str += "<br>";
+		}
+		getEl("match_INSTRUCT2").innerHTML = str;
+		getEl("match_TITLE").innerHTML = `Round ${data.round + 1}`;
+	} else if (["teamblind"].includes(data.data.type)) {
+		// console.log(data, data.data, data.data.blinded, socket.id)
+		getEl("compete_group_container").style.display = "block";
+		getEl("compete_group_container").innerHTML = "<b style = 'font-size: 20px;'>" + (data.data.blinded == socket.id ? (data.data.time == 0 ? "You will start blindfolded 🕶️" : `You are blindfolded 🕶️`) : `You have vision 👁️`) + "</b> <br>";
+		getEl("compete_group_container").innerHTML += data.data.blinded == socket.id ? (data.data.time == 0 ? "<span style = 'color:green'>Turning enabled, blinding will start after first turn</span>" : "<span style = 'color:green'>Turning enabled</span>")
+				: "<span style = 'color:red'>Turning disabled, only opponent (blinded) can turn.</span>";
+		getEl("match_TITLE").innerHTML = ""
+		getEl("match_INSTRUCT").innerHTML = getEl("match_INSTRUCT2").innerHTML = "";
+		if (data.data.blinded != socket.id) {
+			console.log(data.data.posid, data.data.startblind);
+			if (data.data.time > 0 && data.data.posid) {
+				quickSolve(IDtoReal(IDtoLayout(decode(data.data.posid))))
+				timer.start();
+			}
+		}
+		getEl("times_par").style.display = "none";
+	}
 }
 
 function competePoints(data, el = "match_INSTRUCT4") {
@@ -3679,16 +3740,35 @@ function competePoints(data, el = "match_INSTRUCT4") {
 	return myrank;
 }
 
-socket.on("all-solved", (data) => {
+socket.on("all-solved", data => competeSolved(data));
+
+function competeSolved(data) {
 	canMan = false;
 	competedata = data;
-	console.log("DATA IS", data)
-	getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
-	getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
-	getEl("ss_container").style.display = "none";
-	setDisplay("none", ["giveup"]);
-	competeTimes(data, true);
-	competePoints(data);
+	if (data.data.type == "teamblind") {
+		toggleOverlay(false);
+		getEl("competeswitch").style.display = "none";
+		getEl("compete_group_container").style.display = "none";
+		getEl("match_INSTRUCT2").innerHTML = "Time: " + data.data.time;
+		if (data.data.time == "DNF") {
+			ao5 = ["DNF"];
+		}
+		timer.stop();
+		if (data.data.time != "DNF") {
+			getEl("match_TITLE").innerHTML = "You solved the cube!!!";
+			getEl("match_INSTRUCT").innerHTML = "Teamwork makes the dream work :D";
+		} else {
+			getEl("match_TITLE").innerHTML = "You gave up";
+			getEl("match_INSTRUCT").innerHTML = "Try again?";
+		}
+	} else {
+		getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
+		getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
+		getEl("ss_container").style.display = "none";
+		setDisplay("none", ["giveup"]);
+		competeTimes(data, true);
+		competePoints(data);
+	}
 	if (data.data.leader == socket.id || data.round >= competedata.data.dims.length - 1) {
 		setDisplay("block", ["continuematch"]);
 		setDisplay("none", ["waitingmatch", "ss_container"]);
@@ -3696,7 +3776,7 @@ socket.on("all-solved", (data) => {
 		setDisplay("block", ["waitingmatch"]);
 	}
 	CONTINUEMATCH.html(data.round < competedata.data.dims.length - 1 ? "Next Round" : "Final Tally")
-});
+}
 
 function continueMatch() {
 	setDisplay("none", ["continuematch"]);
@@ -3716,7 +3796,9 @@ function continueMatch() {
 		let myrank = competePoints(competedata, "final_points");
 		getEl("match_rank").innerHTML = `You ranked #${myrank}. Good job!`;
 		setDisplay("block", ["final_tally"]);
-		
+		setDisplay(competedata.data.type == "teamblind" ? "block" : "none", ["teamblind_leaderboard"]);
+		setDisplay(competedata.data.type != "teamblind" ? "block" : "none", ["final_leaderboard"]);
+		getEl("teamblind_times").innerHTML = `Final Time: ${competedata.data.time}`;
 		let minarr = [];
 		competedata.solvedarr.forEach((timeobj) => {
 			let min = DNF;
@@ -3764,12 +3846,19 @@ function continueMatch() {
 function competeSettings(num = compete_type) {
     compete_type = num;
     getEl("com_1v1_div").style.display = num == "1v1" ? "block" : "none";
-    getEl("com_group_div").style.display = num == "1v1" ? "none" : "block";
+    getEl("com_group_div").style.display = num == "group" ? "block" : "none";
+	getEl("com_teamblind_div").style.display = num == "teamblind" ? "block" : "none";
 	console.log(num);
     COMPETE_1V1.style("backgroundColor", num == "1v1" ? "#00488F" : "");
-    COMPETE_GROUP.style("backgroundColor", num != "1v1" ? "#00488F" : "");
+    COMPETE_GROUP.style("backgroundColor", num == "group" ? "#00488F" : "");
+	COMPETE_TEAMBLIND.style("backgroundColor", num == "teamblind" ? "#00488F" : "");
     getEl("finish_match").style.display = "block";
-
+	getEl("match_description").innerHTML = competeText();
+	if (["1v1", "group"].includes(num)) {
+		getEl("round_length").style.display = "block";
+	} else {
+		getEl("round_length").style.display = "none";
+	}
     let container = document.getElementById(num == "1v1" ? "1v1_container" : "group_container");
     container.innerHTML = "";
     container.style.display = "block";
@@ -3880,7 +3969,12 @@ function displayPublicRooms() {
 
             // Room details
             let roomDetails = document.createElement("div");
-            roomDetails.innerHTML = `&emsp;Type: ${competerooms[room].data.type === "1v1" ? "2 Player Battle" : "Group Battle"}<br>
+			const types = {
+				"1v1" : "2 Player Battle",
+				"group" : "Group Battle",
+				"teamblind" : "Team Blind"
+			}
+            roomDetails.innerHTML = `&emsp;Type: ${types[competerooms[room].data.type]}<br>
                 &emsp;Rounds: ${competerooms[room].data.dims.length}<br>`;
 
             // Generate cube info
@@ -3925,11 +4019,39 @@ function getSelectedValues(containerId, rows, cols) {
 
 function competeDims() {
 	let a = []
-	if (compete_type == "1v1") a = getSelectedValues("1v1_container", getEl("compete_rounds").value, 2);
+	if (compete_type == "teamblind") a = [[TEAMBLIND_SEL.value()]]
+	else if (compete_type == "1v1") a = getSelectedValues("1v1_container", getEl("compete_rounds").value, 2);
 	else a = getSelectedValues("group_container", getEl("compete_rounds").value, 1);
 	return a;
 }
 
+function switchBlindfold() {
+	let blinded = socket.id;
+	if (competedata.data.blinded == socket.id) {
+		blinded = getOp();
+	}
+	socket.emit("switch_blindfold", room, blinded);
+	toggleBlindfold(blinded == socket.id);
+}
+
+socket.on("switched-blindfold", (data) => {
+	competedata = data;
+	toggleBlindfold(data.data.blinded == socket.id);
+})
+
+function toggleBlindfold(blinded) {
+	getEl("competeswitch").style.display = "none";
+	console.log("TIME IS ", competedata.data.time)
+	timer.start();
+	timer.setTime(competedata.data.time * 1000);
+	if (blinded) {
+		toggleOverlay(true);
+		canMan = true;
+	} else {
+		toggleOverlay(false);
+		canMan = false;
+	}
+}
 
 document.getElementById("challenge").onclick = challengemode;
 document.querySelectorAll('button').forEach(button => {
@@ -4096,16 +4218,24 @@ function waitStopTurning(timed = true, mode = "wtev") {
 	  if (canMan) {
 		clearInterval(interval); // Stop the interval when the cube stops animating
 		if (timed) {
-			timer.setTime(-15000); // Set the timer to -15000
+			timer.setTime(-15000, true); // Set the timer to -15000
 			timer.start(true);      // Start the timer
 		}
+		isShuffling = false;
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
 			comstep++;
 			competeScreenshot();
-			setDisplay(competedata.data.type == "group" ? "none" : "block", ["ss_container"]);
-			fadeInText(1, "Go!", "green", "go!");
-			setTimeout(() => {fadeInText(0, "Go!", "green", "go!")}, 600);
+			setDisplay(competedata.data.type == "1v1" ? "block" : "none", ["ss_container"]);
+			let word = "Go!"
+			if (competedata.data.type == "teamblind") {
+				word = (competedata.data.blinded == socket.id) ? "🕶️" : "👁️";
+			}
+			fadeInText(1, word, "green", "go!");
+			setTimeout(() => {fadeInText(0, word, "green", "go!")}, 600);
+			if (competedata.data.type == "teamblind") {
+				canMan = competedata.data.blinded == socket.id;
+			}
 		}
 		console.log("CHANGING COMPSTEP", comstep);
 		if (getEl("marathon2").style.display == "block" && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
@@ -4174,7 +4304,7 @@ function startchallenge() {
 	timer.stop();
 	timer.reset();
 	MODE = "weekly";
-	timer.setTime(-15000);
+	timer.setTime(-15000, true);
 	timer.start(true);
 	savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
 	special[2] = savesetup;
@@ -4233,8 +4363,12 @@ function toggleOverlay(show, p = true) {
 		setDisplay("none", ["overlay"]);
 		if (p) peeks++;
 	}
-	getEl("wannapeek").style.display = getEl("overlay").style.display;
-	getEl("peekbutton").style.display = getEl("overlay").style.display;
+	if (MODE != "competing") {
+		getEl("wannapeek").style.display = getEl("overlay").style.display;
+		getEl("peekbutton").style.display = getEl("overlay").style.display;
+	} else {
+		setDisplay("none", ["wannapeek", "peekbutton"]);
+	}
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 }
 function fullScreen(isfull) {
@@ -6622,7 +6756,8 @@ function animateRotate(axis, dir) {
 function animate(axis, rows, dir, timed, bcheck = true) {
 	
 	if(isAnimating()) return false;
-	if (blinded()) {
+	if (blinded() || (MODE == "competing" && competedata.data.type == "teamblind" 
+		&& moves == 0 && competedata.data.blinded == socket.id && !isShuffling)) {
 		toggleOverlay(true);
 	}
 	let total = 0;
@@ -6830,7 +6965,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log(isRectangle([0,2,6,8]));
+		quickSolve();
+		console.log(getEl("outertime").style.display, getEl("outertime").style.zIndex)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -10874,6 +11010,9 @@ function getOp() {
 }
 
 function competeScreenshot() {
+	if (competedata.data.type != "1v1") {
+		return;
+	}
 	let str = p.canvas.toDataURL('image/jpeg');
 	console.log("room is ", room);
 	socket.emit("send-screenshot", str, getOp());
@@ -10933,6 +11072,8 @@ document.onkeydown = function(event) {
 			finishMatch();
 		} else if (getEl("continuematch").style.display == "block") {
 			continueMatch();
+		} else if (getEl("competeswitch").style.display == "block") {
+			switchBlindfold();
 		}
 	} else if (event.keyCode == 27) { //escape
 		if (getEl("okban").style.display == "block") {
@@ -10948,12 +11089,39 @@ document.getElementById('login').addEventListener('click', function() {
 });
 getEl("competelink").addEventListener("click", function(event) {
     event.preventDefault();
-	navigator.clipboard.writeText(`https://virtual-cube.net/?room=${room}`);
+	navigator.clipboard.writeText(`${window.location.host}/?room=${room}`);
 	getEl("competelink").innerHTML = `<i class="bi bi-check2"></i>`;
 	setTimeout(() => {
         getEl("competelink").innerHTML = `<i class="bi bi-link"></i>`;
     }, 1000);
 });
+
+const competitions = {
+    "1v1": "Get 1 point for being the fastest to solve the cube each round. 2 players required.",
+    group: "Get 1 point for being the fastest to solve the cube each round. No restrictions on player count.",
+    teamblind: `A team of 2 players take turns being blind. 
+        After ${SWITCHTIME} seconds, the team can switch who is blinded, and must wait another ${SWITCHTIME} seconds for the next switch. <i>Only the blindfolded player can turn the cube.</i> Mouse turning recommended.`
+};
+
+function competeText() {
+	if (competitions.hasOwnProperty(compete_type)) {
+		return competitions[compete_type];
+	}
+	return "";
+}
+
+Object.entries(competitions).forEach(([id, text]) => {
+    const el = getEl("compete_" + id);
+    el.addEventListener("mouseenter", () => {
+        if (compete_type === "") getEl("match_description").innerHTML = text;
+    });
+    el.addEventListener("mouseleave", () => {
+        getEl("match_description").innerHTML = competeText();
+    });
+});
+
+  
+
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
 		switch (e.keyCode) {

@@ -38,9 +38,9 @@
 			<button class = "btn btn-light btn-sm login" id = "loaddata">Load data</button>
 			<button class = "btn btn-light btn-sm login" id = "savedata">Save data</button>
 		</div>
-		<button class = "btn btn-sm login bi bi-trophy" style = "background-color: orange;"id = "compete">&nbsp;Multiplayer Battle</button>
+		<button class = "btn btn-sm login bi bi-trophy" style = "background-color: orange;"id = "compete">&nbsp;Multiplayer Games</button>
 		<button class = "btn btn-warning btn-sm login bi bi-stopwatch" id = "challenge">&nbsp;Weekly Challenges</button>
-		<li style = "float:right;" id = "bannercube"><a style = "color:white">Multiplayer Battle added. 1v1 your friends!</a></li>
+		<li style = "float:right;" id = "bannercube"><a style = "color:white">Team Blind added. Team up with your friends!</a></li>
 		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
 	<div class="row">
@@ -193,8 +193,11 @@
 		</div>
 		<div class="col-xl-6 noselect" style = "padding-right: 0px;"  id="cnv_div" disabled="disabled">
 			<div id="overlay"></div>
-			<p style = "display: inline;" class = "normal" id = "outertime"><span id="time">0</span>s</p>
+			<p style = "display: inline; z-index: 2;" class = "normal" id = "outertime"><span id="time">0</span>s</p>
 			<p style = "display: inline;"  class = "normal" id = "outermoves"><span id = "moves">0</span></p>
+			<div id = "compete_group_container" style = "font-size: 14px;">
+
+			</div>
 			<div id = "cnvbuttons">
 				<p id="shuffle_div" style = "display: inline;"  class = "normal"></p>
 				<p id="solve" style = "display: inline;"  class = "normal"></p>
@@ -428,7 +431,7 @@
 				<button class = "btn btn-light" style = "font-size:25px; border-color:black; margin-bottom: 20px;" id = "savedata2">Save score</button>
 			</div>
 			<div id = "lobby">
-				<h4 style = "margin-bottom: 30px;">Compete against a friend!</h4>
+				<h4 style = "margin-bottom: 30px;">Play with a friend!</h4>
 				<p id = "create_match"></p>
 				<h4 style = "margin-bottom: 15px;">-or-</h4>
 				<input id = "join_input" style = "margin-bottom: 15px;"></input>
@@ -442,19 +445,23 @@
 			</div>
 			<div id = "creating_match">
 				<p id = "competeback"></p>
-				<h4>Set match settings</h4>
-				<p>Total Rounds: <input id = "compete_rounds" type = "number" max = "10" min = "1" 
-					style = "font-size: 15px;" value="3"></input></p>
-				<p style = "margin-bottom: 5px;">Match visibility:</p>
-				<input type="radio" id="private" name="age" checked>
-				<label for="private">Private</label><br>
-				<input type="radio" id="public" name="age">
-				<label for="public">Public</label><br>  
-				<p style = "margin-bottom: 5px; margin-top: 10px;">Match type:</p>
+				<h4>Set game settings</h4>
+				<p style = "margin-bottom: 5px;">Game visibility:</p>
+				<div>
+					<input type="radio" id="private" name="age" style = "display: inline" checked>
+					<label for="private" style = "display: inline; margin-right: 20px;" >Private</label>
+					<input type="radio" id="public" name="age" style = "display: inline">
+					<label for="public" style = "display: inline" >Public</label>
+				</div> 
+				<p style = "margin-bottom: 5px; margin-top: 10px;">Game type:</p>
 				<div>
 					<p id = "compete_1v1" style = "display:inline"></p>
 					<p id = "compete_group" style = "display:inline"></p>
+					<p id = "compete_teamblind" style = "display:inline"></p>
 				</div>
+				<p id = "match_description" style = "margin-top: 20px;"></p>
+				<p id = "round_length">Total Rounds: <input id = "compete_rounds" type = "number" max = "10" min = "1" 
+					style = "font-size: 15px;" value="3"></input></p>
 				<div id = "com_1v1_div" style = "margin-top: 20px;">
 					<p>Select cubes for each round and player</p>
 					<div id="1v1_container"></div>
@@ -462,6 +469,10 @@
 				<div id = "com_group_div" style = "margin-top: 20px;">
 					<p>Select cubes for each round</p>
 					<div id="group_container"></div>
+				</div>
+				<div id = "com_teamblind_div" style = "margin-top: 20px;">
+					<p>Select cube</p>
+					<p id = "com_teamblind_container"></p>
 				</div>
 				<p id = "finish_match" style = "margin-top: 40px;"></p>
 			</div>
@@ -472,8 +483,8 @@
 				</div>
 				<h6>Current Room Participants</h6>
 				<p id = "waitingroomdata"></p>
-				<h6 style = "padding-top: 20px;">Competition Rules</h6>
-				<p>Get 1 point for being the fastest to solve the cube each round.</p>
+				<h6 id = "competeruletitle" style = "padding-top: 20px;"></h6>
+				<p id = "competerules2"></p>
 				<p id = "competerules"></p>
 				<h6 id = "cantmatch" style = "margin-top: 20px; padding-top: 20px;">Waiting for opponent.</h6>
 				<p id = "startmatch"></p>
@@ -492,11 +503,17 @@
 				<p id = "waitingmatch">Waiting for host to start next round.</p>
 			</div>
 			<div id = "final_tally">
-				<p id = "match_rank"></p>
-				<h4>Final Rankings</h4>
-				<p id = "final_points"></p>
-				<h4 style = "padding-top: 20px;">Final Times</h4>
-				<p id = "final_times" style = "font-family: Courier"></p>
+				<div id = "final_leaderboard">
+					<p id = "match_rank"></p>
+					<h4>Final Rankings</h4>
+					<p id = "final_points"></p>
+					<h4 style = "padding-top: 20px;">Final Times</h4>
+					<p id = "final_times" style = "font-family: Courier"></p>
+				</div>
+				<div id = "teamblind_leaderboard">
+					<h4>Solve Statistics</h4>
+					<p id = "teamblind_times">Final Time: </p>
+                </div>
 				<p id = "compete_home" style = "margin-top: 20px; padding-top: 20px;"></p>
 				<p id = "compete_again"></p>
 				<p id = "final_warn" style = "color:red"></p>
@@ -550,6 +567,7 @@
 			<div id = "blind2">
 				<p id = "peeks" style = "font-family: Orbitron; font-size:25px;">0 peeks</p>
 				<p id = "peekbutton"></p>
+				<p id = "competeswitch"></p>
 				<b id = "wannapeek">Or, press space to peek.</b>
 				<p id = "b_win">You did it! You solved the cube in 0 peeks!</p>
 			</div>
