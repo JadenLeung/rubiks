@@ -176,12 +176,12 @@ button:hover {
         font-family: 'Orbitron';
         font-size: 30px;
 }
-#peeks {
+#peek_container {
     position: absolute;
     top: 9%;
     right: 1%;
-    font-family: 'Orbitron';
     font-size: 30px;
+    text-align: right;
     z-index:2;
 }
 #outermoves {

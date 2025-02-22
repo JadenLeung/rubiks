@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3000");
+// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -30,7 +30,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
-	let SWITCHTIME = 15;
+	let SWITCHTIME = 3;
 	let isShuffling = false;
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
@@ -1099,13 +1099,13 @@ p.setup = () => {
 	setButton(COMPETESWITCH, "competeswitch", 'btn btn-primary', ' font-size:20px;', switchBlindfold);
 
 	FULLSCREEN = p.createButton('');
-	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  border: none;', () => {fullScreen(!fullscreen)});
+	setButton(FULLSCREEN, "fullscreen", 'bi bi-arrows-fullscreen', 'font-size: 40px; height: 60px; width: 60px;  z-index: 2; border: none;', () => {fullScreen(!fullscreen)});
 	FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	FULLSCREEN.attribute('title', 'Fullscreen');
 
 	ALIGN = p.createButton('');
-	setButton(ALIGN, "align", 'bi bi-camera', 'font-size: 40px; height: 60px; width: 60px;  border: none;', alignIt);
+	setButton(ALIGN, "align", 'bi bi-camera', 'font-size: 40px; height: 60px; width: 60px; z-index: 2; border: none;', alignIt);
 	ALIGN.position(30,window.innerHeight-145);
 	ALIGN.attribute("title", "Align Camera");
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
@@ -3216,7 +3216,7 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container"]);
+		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3687,13 +3687,15 @@ function competeTimes(data, end = false) {
 		getEl("compete_group_container").style.display = "block";
 		getEl("compete_group_container").innerHTML = "<b style = 'font-size: 20px;'>" + (data.data.blinded == socket.id ? (data.data.time == 0 ? "You will start blindfolded 🕶️" : `You are blindfolded 🕶️`) : `You have vision 👁️`) + "</b> <br>";
 		getEl("compete_group_container").innerHTML += data.data.blinded == socket.id ? (data.data.time == 0 ? "<span style = 'color:green'>Turning enabled, blinding will start after first turn</span>" : "<span style = 'color:green'>Turning enabled</span>")
-				: `<span style = 'color:red'>Turning disabled, only opponent ${data.data.time == 0 ? "(blinded after first turn)" : "(blinded)"} can turn.</span>`;
+				: `<span style = 'color:red'>Turning disabled, only opponent ${timer.getTime() == 0 ? "(blinded after first turn)" : "(blinded)"} can turn.</span>`;
 		getEl("match_TITLE").innerHTML = ""
 		getEl("match_INSTRUCT").innerHTML = getEl("match_INSTRUCT2").innerHTML = "";
 		if (data.data.blinded != socket.id) {
 			console.log(data.data.posid, data.data.startblind);
-			if (data.data.time > 0 && data.data.posid) {
+			if (!isShuffling && data.data.posid) {
 				quickSolve(IDtoReal(IDtoLayout(decode(data.data.posid))))
+			}
+			if (data.data.time > 0) {
 				timer.start();
 			}
 		}
@@ -4138,7 +4140,7 @@ function blindmode() {
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
-		setDisplay("block", ["input", "peeks"]);
+		setDisplay("block", ["input", "peeks", "peek_container"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 		getEl("times_desc").innerHTML = "Times:";
 		reSetup();
@@ -4194,6 +4196,19 @@ function shapemarathon() {
 	if (mastep % 2 == 0 && mastep / 2 < ma_data.dims.length) {
 		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.dims.length;
 		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + (ma_data.type == "blind" ? " with the fewest peeks.": ".");
+		let str = "Cube Lineup<br>";
+		ma_data.cubes.forEach((cube, i) => {
+			console.log(i, mastep / 2)
+			if (i == mastep / 2) {
+				str += "<b style = 'color: green'>"
+			}
+			str += (i+1) + ") " + cube;
+			if (i == mastep / 2) {
+				str += "</b>"
+			}
+			str +=  "<br>"
+		})
+		getEl("ma_list").innerHTML = str
 		ma_data.dims[mastep / 2]();
 		shuffleCube();
 		waitStopTurning(false, ma_data.type);
@@ -6878,9 +6893,7 @@ p.keyPressed = (event) => {
 		console.log(DIM, DIM2, special, MODE);
 		setLayout();
 		console.log(layout)
-		if (blinded() && getEl("overlay").style.display == "block") {
-			toggleOverlay(false);
-		} else if (canMan == false && (MODE == "normal" || MODE == "timed")) {
+		if (canMan == false && (MODE == "normal" || MODE == "timed")) {
 			stopMoving();
 			return;
 		} else if (getEl("s_start").style.display == "block") {
@@ -11077,6 +11090,8 @@ document.onkeydown = function(event) {
 			continueMatch();
 		} else if (getEl("competeswitch").style.display == "block") {
 			switchBlindfold();
+		} else if (getEl("peekbutton").style.display == "block") {
+			toggleOverlay(false);
 		}
 	} else if (event.keyCode == 27) { //escape
 		if (getEl("okban").style.display == "block") {
