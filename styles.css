@@ -179,7 +179,7 @@ button:hover {
 #peeks {
     position: absolute;
     top: 9%;
-    left: 5%;
+    right: 1%;
     font-family: 'Orbitron';
     font-size: 30px;
     z-index:2;

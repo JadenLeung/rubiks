@@ -3936,7 +3936,7 @@ function displayPublicRooms() {
 	let totalrooms = 0;
     for (let room in competerooms) {
         if (competerooms[room].data.visibility === "public" && competerooms[room].stage === "lobby"
-			&& !(competerooms[room].data.type == "1v1" && competerooms[room].userids.length >= 2)) {
+			&& !(competerooms[room].data.type != "group" && competerooms[room].userids.length >= 2)) {
 			totalrooms++;
             hasRooms = true;
 
@@ -6968,7 +6968,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
+		quickSolve();
 		console.log(getEl("outertime").style.display, getEl("outertime").style.zIndex)
 	}
 	if(p.keyCode == 9){ //tab
