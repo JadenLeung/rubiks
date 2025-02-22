@@ -816,7 +816,7 @@ p.setup = () => {
 	
 	TEAMBLIND_SEL = p.createSelect();
 	TEAMBLIND_SEL.parent("com_teamblind_container");
-	["3x3", "2x2", "Xmas 2x2", "Xmas 3x3"].forEach(cube => {
+	["3x3", "2x2", "Xmas 2x2", "Xmas 3x3", "Plus Cube"].forEach(cube => {
 		TEAMBLIND_SEL.option(cube)
 	}) 
 
