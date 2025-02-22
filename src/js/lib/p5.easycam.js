@@ -119,8 +119,10 @@ class EasyCam {
     // mouse action speed
     this.scale_rotation  = 0.001;
     this.scale_pan       = 0.0002;
-    this.scale_zoom      = 0.001;
+    // this.scale_zoom      = 0.001;
     //this.scale_zoomwheel = 20.0;
+    this.scale_zoom = 0;
+    this.scale_zoomwheel = 0;
 
     // zoom limits
     this.distance_min_limit = 0.01;
@@ -651,16 +653,16 @@ class EasyCam {
 
   /** implemented zoom-cb for mouswheel handler.*/
   mouseWheelZoom() {
-    var cam = this;
-    var mouse = cam.mouse;
-    cam.dampedZoom.addForce(mouse.mwheel * cam.scale_zoomwheel);
+    // var cam = this;
+    // var mouse = cam.mouse;
+    // cam.dampedZoom.addForce(mouse.mwheel * cam.scale_zoomwheel);
   }
 
   /** implemented zoom-cb for mousedrag/touch handler.*/
   mouseDragZoom() {
-    var cam = this;
-    var mouse = cam.mouse;
-    cam.dampedZoom.addForce(-mouse.dist[2]);
+    // var cam = this;
+    // var mouse = cam.mouse;
+    // cam.dampedZoom.addForce(-mouse.dist[2]);
   }
 
   /** implemented pan-cb for mousedrag/touch handler.*/
