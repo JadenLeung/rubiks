@@ -533,6 +533,8 @@ p.setup = () => {
 	IDMODE = p.createButton('Save/Load ID');
 	SETTINGS = p.createButton('');
 	SWITCHER = p.createButton('');
+	setButton(SWITCHER, "switcher", 'btn btn-primary', 'text-align:center; font-size:20px;',() => {if (DIM2 == 50) changeTwo() 
+		else changeThree()});
 	VOLUME = p.createButton('');
 	REGULAR2 = p.createButton('Normal');
 	SPEEDMODE2 = p.createButton('Speed');
@@ -1683,6 +1685,7 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage != "ingame") {
 		getEl("giveup").style.display = "none";
 	}
+	SWITCHER.html(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
 }, 10)
 //forever
 function reSetup(rot) {
@@ -1748,7 +1751,6 @@ function reSetup(rot) {
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	document.getElementById("s_instruct").innerHTML = "";
-	setDisplay("none", ["s_easy", "s_medium", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "m_34", "m_4", "m_high", "points_par", "giveup2", "hint"]);
 	setSpecial();
 	let cnt = 0;
 	//allcubies = false;
@@ -2370,16 +2372,21 @@ function changeTwo(switchstart = true)
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
 	reSetup();
-	if(MODE == "speed")
+	changeCam(!["speed", "moves", "idmode"].includes(MODE) && !["id"].includes(MINIMODE));
+	if (["speed", "moves"].includes(MODE)) {
+		refreshButtons();
+	}
+	if (MODE == "speed") {
 		speedmode();
+	}
 	if(MODE == "moves")
 		movesmode();
 	if(MODE == "paint")
 		idmode();
-	changeCam(true);
 }
 function changeThree(switchstart = true)
 {
+	console.log("Changetree")
 	DIM2 = 50;
 	DIM = 50;
 	SIZE = 3;
@@ -2396,13 +2403,17 @@ function changeThree(switchstart = true)
 	SIZE_SLIDER2.parent("size");
 	SIZE_SLIDER2.style('width', '100px');
 	reSetup();
-	if(MODE == "speed")
+	changeCam(!["speed", "moves", "idmode"].includes(MODE) && !["id"].includes(MINIMODE));
+	if (["speed", "moves"].includes(MODE)) {
+		refreshButtons();
+	}
+	if (MODE == "speed") {
 		speedmode();
+	}
 	if(MODE == "moves")
 		movesmode();
 	if(MODE == "paint")
 		idmode();
-	changeCam(true);
 }
 function changeCam(changeinp = true)
 {
@@ -3216,7 +3227,7 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container"]);
+		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3312,6 +3323,7 @@ function idmode()
 	// 	regular();
 	// 	return;
 	// }
+	MINIMODE = "id"
 	DIM = DIM2;
 	//reSetup();
 	stopMoving();
@@ -4140,7 +4152,7 @@ function blindmode() {
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
-		setDisplay("block", ["input", "peeks", "peek_container"]);
+		setDisplay("block", ["input", "peeks", "peek_container", "blind2"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 		getEl("times_desc").innerHTML = "Times:";
 		reSetup();
@@ -7631,7 +7643,6 @@ function refreshButtons()
 	CUBE14.remove();
 	CUBE15.remove();
 	CUBE16.remove();
-	SWITCHER.remove();
 
 	let d = isthin? 1.5 : 1;
 	let d2 = isthin? 2.5 : 1;
@@ -7669,8 +7680,6 @@ function refreshButtons()
 		}
 	}
 
-	SWITCHER = p.createButton(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
-	setButton(SWITCHER, "switcher", 'btn btn-primary', 'text-align:center; font-size:20px;', DIM == 50 ? changeTwo : changeThree);
 
 	if (localStorage.audioon === "false") {
 		audioon = false;
