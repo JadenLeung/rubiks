@@ -98,7 +98,7 @@ button:hover {
     background-color: white;
     z-index: 1; /* Ensure it's on top of the container's content */
     opacity: 1; /* Adjust transparency if needed */
-  }
+}
 .fadetext {
     position: absolute;
     top: 15%;
@@ -175,6 +175,14 @@ button:hover {
         left: 5%;
         font-family: 'Orbitron';
         font-size: 30px;
+}
+#peeks {
+    position: absolute;
+    top: 9%;
+    left: 5%;
+    font-family: 'Orbitron';
+    font-size: 30px;
+    z-index:2;
 }
 #outermoves {
     position: absolute;

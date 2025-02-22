@@ -1093,7 +1093,7 @@ p.setup = () => {
 	});
 
 	const PEEK = p.createButton('Peek');
-	setButton(PEEK, "peekbutton", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', () => {toggleOverlay(false);});
+	setButton(PEEK, "peekbutton", 'btn btn-primary', 'font-size: 30px', () => {toggleOverlay(false);});
 
 	const COMPETESWITCH = p.createButton('Switch Blindfold');
 	setButton(COMPETESWITCH, "competeswitch", 'btn btn-primary', ' font-size:20px;', switchBlindfold);
