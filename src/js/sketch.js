@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3000");
+// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -2298,8 +2298,10 @@ function giveUp()
 		timer.stop();
 		timer.reset();
 		comstep++;
-		if(ao5 == 0) ao5 = ["DNF"];
-		else ao5.push("DNF");
+		if (competedata.data.type != "teamblind") {
+			if(ao5 == 0) ao5 = ["DNF"];
+			else ao5.push("DNF");
+		}
 		socket.emit("solved", room, "DNF");
 		fadeInText(1, "DNF");
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
@@ -3562,7 +3564,7 @@ function finishMatch() {
 	setDisplay("block", ["waitingroom"]);
 	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
 	socket.emit("create-room", {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
-		visibility: getEl("private").checked ? "private" : "public"}, localStorage.username);
+		visibility: getEl("private").checked ? "private" : "public", orpos : allcubies}, localStorage.username);
 }
 
 function joinRoom(room = getEl("join_input").value) {
@@ -3616,6 +3618,7 @@ function startRound(data, scramble) {
 		INPUT.attribute('disabled', true);
 		competeTimes(data);
 		isShuffling = true;
+		quickSolve(data.data.orpos);
 		if (scramble) {
 			changeArr(scramble);
 			multiple2("scramble");
@@ -3684,7 +3687,7 @@ function competeTimes(data, end = false) {
 		getEl("compete_group_container").style.display = "block";
 		getEl("compete_group_container").innerHTML = "<b style = 'font-size: 20px;'>" + (data.data.blinded == socket.id ? (data.data.time == 0 ? "You will start blindfolded 🕶️" : `You are blindfolded 🕶️`) : `You have vision 👁️`) + "</b> <br>";
 		getEl("compete_group_container").innerHTML += data.data.blinded == socket.id ? (data.data.time == 0 ? "<span style = 'color:green'>Turning enabled, blinding will start after first turn</span>" : "<span style = 'color:green'>Turning enabled</span>")
-				: "<span style = 'color:red'>Turning disabled, only opponent (blinded) can turn.</span>";
+				: `<span style = 'color:red'>Turning disabled, only opponent ${data.data.time == 0 ? "(blinded after first turn)" : "(blinded)"} can turn.</span>`;
 		getEl("match_TITLE").innerHTML = ""
 		getEl("match_INSTRUCT").innerHTML = getEl("match_INSTRUCT2").innerHTML = "";
 		if (data.data.blinded != socket.id) {
@@ -6975,7 +6978,7 @@ p.keyPressed = (event) => {
 			fullScreen(!fullscreen);
 		return;
 	}
-	if(customb > 0 && (p.keyCode <37 || p.keyCode > 40)) return;
+	if(customb > 0 && (p.keyCode < 37 || p.keyCode > 40)) return;
 
 	if (p.keyCode == 27 && p.keyIsDown(p.SHIFT)) { //escape
 		if (MODE == "speed") {

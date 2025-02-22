@@ -94,7 +94,7 @@ button:hover {
     top: 0;
     left: 1%;
     width: 99%;
-    height: 98.5%;
+    height: 99%;
     background-color: white;
     z-index: 1; /* Ensure it's on top of the container's content */
     opacity: 1; /* Adjust transparency if needed */
