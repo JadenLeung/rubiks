@@ -35,6 +35,7 @@ export default function (p) {
 	let othershuffle = false;
 	let SWITCHTIME = 3;
 	let isShuffling = false;
+	let otherShuffling = false;
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
@@ -5829,14 +5830,14 @@ function multipleEasy(nb, dificil, mode = "") {
 	if (nb < arr.length) {
 		canMan = false;
 		shufflespeed = 2;
-		isShuffling = true;
+		otherShuffling = true;
 		notation(arr[nb]);
 		console.log(nb, "easy", dificil);
 		waitForCondition(multipleEasy.bind(null, nb + 1, dificil, mode), "other");
 	}
 	else
 	{
-		isShuffling = false;
+		otherShuffling = false;
 		shufflespeed = 5;
 		setLayout();
 		savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -7517,7 +7518,7 @@ function multiple(nb, timed, use = "default") {
 	}
 }
 function waitForCondition(callback, use = "default") {
-	if (use == "default" && isShuffling) {
+	if (use == "default" && otherShuffling) {
 		return;
 	}
     if (!isAnimating()) {
