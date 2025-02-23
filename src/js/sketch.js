@@ -26,6 +26,9 @@ export default function (p) {
 	let compete_type = "";
 	let compete_alltimes = [];
 	let fullscreen = false;
+	const speeddata = {
+		0:0.28, 25: 0.25, 50:0.2, 75:0.16677, 100:0.116, 125:0.083, 150:0.033, 175:0.016667, 200:0.016667, 225: 0.016667
+	};
 	let CUBE = {};
 	const DNF = 99999999
 	let DIM = 50; //50 means 3x3, 100 means 2x2
@@ -1332,7 +1335,8 @@ setInterval(() => {
 	// alert("here2")
 	localStorage.saveao5 = JSON.stringify(savetimes);
 	localStorage.session = session;
-	localStorage.speed = SPEED;
+	if (MODE != "bot")
+		localStorage.speed = SPEED;
 	localStorage.topwhite = TOPWHITE.value();
 	localStorage.toppll = TOPPLL.value();
 	localStorage.keyboard = KEYBOARD.value();
@@ -1696,9 +1700,31 @@ setInterval(() => {
 	SWITCHER.html(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
 	if (MINIMODE == "virtual" && timer.getTime() > 0 && juststarted) {
 		socket.emit("start_race");
+		setDisplay("inline", ["giveup"]);
 		juststarted = false;
 	}
-	getEl("r_speed").innerHTML = RACE_SLIDER.value();
+	if (MINIMODE == "physical" && timer.getTime() > 0 && juststarted) {
+		setDisplay("inline", ["giveup"]);
+		juststarted = false;
+	}
+	let estimate = -1;
+	let speedval = RACE_SLIDER.value() * 100;
+	for (let x in speeddata) {
+		if (speedval - 25 < x) {
+			estimate = speeddata[x];
+			let offset = estimate - speeddata[+x + 25];
+			estimate -= ((speedval % 25) / 25) * offset;
+			break;
+		}
+	}
+	let avgmoves = 66;
+	if (DIM == 100) {
+		avgmoves = 30;
+	}
+	estimate += (avgmoves * estimate) + RACE_DELAY_SLIDER.value() * (avgmoves - 1);
+	getEl("botestimate").innerHTML = "Estimated bot solve time: " + Math.round(estimate * 100)/100.0;
+
+	getEl("r_speed").innerHTML = Math.round(RACE_SLIDER.value() * 100);
 	getEl("r_delay2").innerHTML = RACE_DELAY_SLIDER.value();
 }, 10)
 //forever
@@ -2310,7 +2336,15 @@ function stopMoving(){
 }
 function giveUp()
 {
-	if (comstep > 0) {
+
+	if (MINIMODE == "virtual") {
+		socket.emit("race_win", socket.id, 1)
+	} else if (MINIMODE == "physical") {
+		raceWinner(1);
+		stopMoving();
+		timer.stop();
+		getEl("giveup").style.display = "none";
+	} else if (comstep > 0) {
 		timer.stop();
 		timer.reset();
 		comstep++;
@@ -2325,8 +2359,7 @@ function giveUp()
 		getEl("giveup").style.display = "none";
 		if (competedata.data.type == "teamblind")
 			socket.emit("giveup_blind", room);
-	} else if(m_4step > 0 && m_4step % 2 == 1)
-	{
+	} else if(m_4step > 0 && m_4step % 2 == 1) {
 		if(giveups > 0.5)
 			giveups--;
 		else
@@ -5491,12 +5524,14 @@ function speedRace2(){
 		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
 		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
 			: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
+		juststarted = true;
+		setDisplay("none", ["delaywhole", "speedwhole"]);
 	} else {
 		document.getElementById("s_INSTRUCT").innerHTML = "Connecting to autosolve bot";
-		setDisplay("inline", ["reset2_div", "undo", "redo"]);
+		setDisplay("inline", ["reset2_div", "undo", "redo", "slider_div", "delaywhole", "speed"]);
 		setDisplay("block", ["r_physical"]);
 	}
-	setDisplay("none", ["race_instruct_div", "readybot", "delaywhole", "slider_div", "speed", "s_RACE2", "r_sliders", "r_iframe"]);
+	setDisplay("none", ["race_instruct_div", "readybot", "s_RACE2", "r_sliders", "r_iframe"]);
 	setDisplay("block", ["scramble_par", "outertime"])
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	if (MINIMODE == "virtual") {
@@ -5510,6 +5545,7 @@ function speedRace2(){
 	canMan = false;
 }
 function raceWinner(winner) {
+	getEl("giveup").style.display = "none";
 	round++;
 	roundresult[winner]++;
 	roundresult.push([Math.round(timer.getTime() / 10)/100.0, winner]);
@@ -7039,7 +7075,7 @@ p.keyPressed = (event) => {
 			practicePLL();
 		} else if (getEl("readybot").style.display == "block") {
 			speedRace2();
-		} else if (race == 2 && !isAnimating() && MODE == "physical") {
+		} else if (race == 2 && !isAnimating() && MINIMODE == "physical") {
 			getEl("outertime").style.color = "green";
 		}
 	}
@@ -7469,7 +7505,7 @@ function multiple(nb, timed, use = "default") {
 		}
 		console.log("NOTATION", arr[nb], use);
 		notation(arr[nb], timed);
-		if (use == "default") {
+		if (["default", "testalg"].includes(use)) {
 			let bad = -1;
 			if(undo.length > 0)
 			{
@@ -7495,7 +7531,8 @@ function multiple(nb, timed, use = "default") {
 					moves++;
 			}
 		}
-		waitForCondition(multiple.bind(null, nb + 1, timed, use));
+		console.log("RIGHT BEFORE", use)
+		waitForCondition(multiple.bind(null, nb + 1, timed, use), use);
 	}
 	else
 	{
@@ -7518,11 +7555,19 @@ function multiple(nb, timed, use = "default") {
 	}
 }
 function waitForCondition(callback, use = "default") {
-	if (use == "default" && otherShuffling) {
+	if (["default", "testalg"].includes(use) && otherShuffling) {
 		return;
 	}
     if (!isAnimating()) {
-        callback();
+		console.log(use);
+		if (["solving", "testalg"].includes(use) && DELAY > 0) {
+			setTimeout(function() {
+				callback();
+			}, DELAY * 1000); 
+		} else {
+			callback();
+		}
+
     } else {
         setTimeout(function() {
             waitForCondition(callback, use);
@@ -9454,7 +9499,7 @@ function multipleCross3(nb) {
 		notation(arr[nb]);
 		console.log(nb);
 		moves++;
-		waitForCondition(multipleCross3.bind(null, nb + 1), "other");
+		waitForCondition(multipleCross3.bind(null, nb + 1), "solving");
 	}
 	else
 	{
@@ -9483,7 +9528,7 @@ function multipleCross2(nb) {
 		moves++;
 		notation(arr[nb]);
 		console.log(nb);
-		waitForCondition(multipleCross2.bind(null, nb + 1), "other");
+		waitForCondition(multipleCross2.bind(null, nb + 1), "solving");
 	}
 	else
 	{
@@ -9524,7 +9569,7 @@ function multipleCross(nb) {
 		canMan = false;
 		notation(arr[nb]);
 		console.log(nb);
-		waitForCondition(multipleCross.bind(null, nb + 1), "other");
+		waitForCondition(multipleCross.bind(null, nb + 1), "solving");
 	}
 	else
 	{
@@ -10200,7 +10245,7 @@ function testAlg(){
 		} else {
 			changeArr(inp.value());
 		}
-		multiple(0, false);	
+		multiple(0, false, "testalg");	
 	}
 }
 function raceDetect(){
