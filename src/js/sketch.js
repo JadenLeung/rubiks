@@ -5501,7 +5501,7 @@ function speedRace2(){
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	if (MINIMODE == "virtual") {
 		if (round == 1) {
-			getEl("r_iframe").src = `http://localhost:8000/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&posid=${getID()}
+			getEl("r_iframe").src = `${window.location.origin}/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&posid=${getID()}
 			&speed=${RACE_SLIDER.value()}&delay=${RACE_DELAY_SLIDER.value()}`;
 		} else {
 			socket.emit("bot_shuffle", socket.id, DIM);
