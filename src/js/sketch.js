@@ -30,6 +30,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let othershuffle = false;
 	let SWITCHTIME = 3;
 	let isShuffling = false;
 	let competeprogress = 0;
@@ -5131,6 +5132,7 @@ function practicePLL() {
 		let rnd = p.random(pracalgs);
 		let str = "";
 		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? obj2 : pbls;
+		arr = [];
 		changeArr(tempobj[rnd][1])
 		str = tempobj[rnd][0];
 		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>" + str + "</p>";
@@ -5705,12 +5707,14 @@ function multipleEasy(nb, dificil, mode = "") {
 	if (nb < arr.length) {
 		canMan = false;
 		shufflespeed = 2;
+		isShuffling = true;
 		notation(arr[nb]);
 		console.log(nb, "easy", dificil);
-		waitForCondition(multipleEasy.bind(null, nb + 1, dificil, mode), false);
+		waitForCondition(multipleEasy.bind(null, nb + 1, dificil, mode), "other");
 	}
 	else
 	{
+		isShuffling = false;
 		shufflespeed = 5;
 		setLayout();
 		savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -7246,7 +7250,7 @@ p.keyPressed = (event) => {
 			}
 			break;
 		}
-		if (keyMoveMap[p.keyCode] && arr.length > 0) {
+		if (keyMoveMap[p.keyCode] && arr.length > 0 && !isAnimating()) {
 			multiple(0, true);
 		}
 	}
@@ -7341,7 +7345,7 @@ function multiple(nb, timed, use = "default") {
 				return;
 			}
 		}
-		console.log("NOTATION", arr[nb]);
+		console.log("NOTATION", arr[nb], use);
 		notation(arr[nb], timed);
 		if (use == "default") {
 			let bad = -1;
@@ -7369,7 +7373,7 @@ function multiple(nb, timed, use = "default") {
 					moves++;
 			}
 		}
-		waitForCondition(multiple.bind(null, nb + 1, timed, use), true);
+		waitForCondition(multiple.bind(null, nb + 1, timed, use));
 	}
 	else
 	{
@@ -7391,13 +7395,17 @@ function multiple(nb, timed, use = "default") {
 		}
 	}
 }
-function waitForCondition(callback, delay) {
+function waitForCondition(callback, use = "default") {
+	if (use == "default" && isShuffling) {
+		return;
+	}
     if (!isAnimating()) {
         callback();
     } else {
         setTimeout(function() {
-            waitForCondition(callback);
-        }, 0 + DELAY * 1000 * delay); // Check every milliseconds
+			console.log("WAITING", callback)
+            waitForCondition(callback, use);
+        }, 0); // Check every milliseconds
     }
 }
 
@@ -9324,7 +9332,7 @@ function multipleCross3(nb) {
 		notation(arr[nb]);
 		console.log(nb);
 		moves++;
-		waitForCondition(multipleCross3.bind(null, nb + 1), true);
+		waitForCondition(multipleCross3.bind(null, nb + 1), "other");
 	}
 	else
 	{
@@ -9353,7 +9361,7 @@ function multipleCross2(nb) {
 		moves++;
 		notation(arr[nb]);
 		console.log(nb);
-		waitForCondition(multipleCross2.bind(null, nb + 1), true);
+		waitForCondition(multipleCross2.bind(null, nb + 1), "other");
 	}
 	else
 	{
@@ -9374,7 +9382,7 @@ function multipleMod(nb, len, total2, prev)
 	if (nb < arr.length) {
 		canMan = false;
 		notation(arr[nb]);
-		waitForCondition(multipleMod.bind(null, nb + 1, len, total2, prev));
+		waitForCondition(multipleMod.bind(null, nb + 1, len, total2, prev), "other");
 	}
 	else{
 		if(arr.length > 1)
@@ -9394,7 +9402,7 @@ function multipleCross(nb) {
 		canMan = false;
 		notation(arr[nb]);
 		console.log(nb);
-		waitForCondition(multipleCross.bind(null, nb + 1), true);
+		waitForCondition(multipleCross.bind(null, nb + 1), "other");
 	}
 	else
 	{
