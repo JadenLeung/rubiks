@@ -1708,7 +1708,8 @@ setInterval(() => {
 		juststarted = false;
 	}
 	let estimate = -1;
-	let speedval = RACE_SLIDER.value() * 100;
+	let speedval = MINIMODE == "physical" ? SPEED_SLIDER.value() * 100 : RACE_SLIDER.value() * 100;
+	let delay = MINIMODE == "physical" ? DELAY_SLIDER.value() : RACE_DELAY_SLIDER.value();
 	for (let x in speeddata) {
 		if (speedval - 25 < x) {
 			estimate = speeddata[x];
@@ -1721,7 +1722,7 @@ setInterval(() => {
 	if (DIM == 100) {
 		avgmoves = 30;
 	}
-	estimate += (avgmoves * estimate) + RACE_DELAY_SLIDER.value() * (avgmoves - 1);
+	estimate += (avgmoves * estimate) + delay * (avgmoves - 1);
 	getEl("botestimate").innerHTML = "Estimated bot solve time: " + Math.round(estimate * 100)/100.0;
 
 	getEl("r_speed").innerHTML = Math.round(RACE_SLIDER.value() * 100);
@@ -3275,7 +3276,7 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
-		"race_instruct_div", "r_iframe", "r_sliders", "r_physical"]);
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -5496,7 +5497,7 @@ function speedRace(type){
 	roundresult = [0, 0];
 	showSpeed();
 	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par"]); 
-	setDisplay("block", ["readybot", "delaywhole", "race_instruct_div"]);
+	setDisplay("block", ["readybot", "delaywhole", "race_instruct_div", "botestimate"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct"])
 
 	document.getElementById("s_instruct2").innerHTML = "";
@@ -5507,7 +5508,7 @@ function speedRace(type){
 		setDisplay("block", ["r_sliders"]);
 		setDisplay("none", ["slider_div", "speed", "delaywhole"]);
 	} else {
-		setDisplay("none", ["r_sliders"]);
+		setDisplay("none", ["r_sliders", "r_physical"]);
 		setDisplay("inline", ["slider_div", "speed"]);
 	}
 	modeData("race");
@@ -5525,13 +5526,13 @@ function speedRace2(){
 		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
 			: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
 		juststarted = true;
-		setDisplay("none", ["delaywhole", "speedwhole"]);
+		setDisplay("none", ["delaywhole", "speed", "slider_div"]);
 	} else {
 		document.getElementById("s_INSTRUCT").innerHTML = "Connecting to autosolve bot";
 		setDisplay("inline", ["reset2_div", "undo", "redo", "slider_div", "delaywhole", "speed"]);
 		setDisplay("block", ["r_physical"]);
 	}
-	setDisplay("none", ["race_instruct_div", "readybot", "s_RACE2", "r_sliders", "r_iframe"]);
+	setDisplay("none", ["race_instruct_div", "readybot", "s_RACE2", "r_sliders", "r_iframe", "botestimate"]);
 	setDisplay("block", ["scramble_par", "outertime"])
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	if (MINIMODE == "virtual") {
