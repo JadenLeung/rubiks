@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3000");
+// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -19,6 +19,8 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
+	let juststarted = false;
+	let raceid = "";
 	let previouschatid = "";
 	let room = 0;
 	let compete_type = "";
@@ -56,7 +58,7 @@ export default function (p) {
 	let GAP_SLIDER;
 	let saveao5data = {length: -1, session: -1};
 	let SPEED_SLIDER;
-	let DELAY_SLIDER;
+	let DELAY_SLIDER, RACE_SLIDER, RACE_DELAY_SLIDER;
 	let TWOBYTWO;
 	let TEAMBLIND_SEL;
 	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR;
@@ -515,6 +517,13 @@ p.setup = () => {
 		DELAY_SLIDER.input(sliderUpdate);
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
+
+		RACE_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
+		RACE_SLIDER.parent("r_slider");
+
+		RACE_DELAY_SLIDER = p.createSlider(0, 4, 0, 0.1);
+		RACE_DELAY_SLIDER.parent("r_delay");
+		
 
 		setWidth();
 		SIZE_SLIDER2 = p.createSlider(-1000, 300, -(ZOOM3), 5);
@@ -1131,11 +1140,14 @@ p.setup = () => {
 	PLL = p.createButton('PLL/PBL Attack');
 	setButton(PLL, "s_PLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedPLL.bind(null, 0));
 
-	const RACE = p.createButton('Start Race');
-	setButton(RACE, "s_RACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, 0));
+	const RACE = p.createButton('Physical Race');
+	setButton(RACE, "s_PHYSICALRACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, "physical"));
+
+	const VIRTUALRACE = p.createButton('Virtual Race');
+	setButton(VIRTUALRACE, "s_VIRTUALRACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, "virtual"));
 
 	const S_START = p.createButton('Start Practice');
-	setButton(S_START, "s_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', practicePLL.bind(null, 0));
+	setButton(S_START, "s_start", 'btn btn-success', 'font-size:25px;', practicePLL.bind(null, 0));
 
 	PLLPRAC = p.createButton('PLL Practice');
 	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, "PLL"));
@@ -1144,7 +1156,7 @@ p.setup = () => {
 	setButton(OLLPRAC, "s_ollprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, "OLL"));
 
 	const READYBOT = p.createButton('Ready');
-	setButton(READYBOT, "readybot", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
+	setButton(READYBOT, "readybot", 'btn btn-success', 'font-size:25px;', speedRace2.bind(null, 0));
 
 	const RACE2 = p.createButton('Continue');
 	setButton(RACE2, "s_RACE2", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
@@ -1277,7 +1289,11 @@ p.setup = () => {
 		competemode();
 		joinRoom(r)
 	}
+	if (urlParams.get('race') == "true") {
+		botConnect(urlParams);
+	}
 
+	//end setup
 }
 
 
@@ -1353,22 +1369,12 @@ setInterval(() => {
 		}
 		if(race > 1){ //racedetect
 			console.log("racedetect");
-			round++;
-			roundresult[1]++;
-			roundresult.push([Math.round(timer.getTime() / 10)/100.0, 1]);
-			if(roundresult[1] < 5){
-				document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
-				document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
-				document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-				document.getElementById("s_RACE2").style.display = "block";
-				raceTimes();
-			}
-			else{
-				document.getElementById("s_INSTRUCT").innerHTML = "You were defeated by the bot :(";
-				document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
-				document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-				document.getElementById("s_RACE").style.display = "block";
-				raceTimes();
+			if ((MINIMODE == "physical")) {
+				raceWinner(1);
+			} else if (MINIMODE == "virtual") {
+				socket.emit("race_win", socket.id, 0)
+			} else {
+				socket.emit("race_win", raceid, 1)
 			}
 		}
 	}
@@ -1687,6 +1693,12 @@ setInterval(() => {
 		getEl("giveup").style.display = "none";
 	}
 	SWITCHER.html(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
+	if (MINIMODE == "virtual" && timer.getTime() > 0 && juststarted) {
+		socket.emit("start_race");
+		juststarted = false;
+	}
+	getEl("r_speed").innerHTML = RACE_SLIDER.value();
+	getEl("r_delay2").innerHTML = RACE_DELAY_SLIDER.value();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3228,7 +3240,8 @@ function regular(nocustom){
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
-		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2"]);
+		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3260,6 +3273,8 @@ function regular(nocustom){
 	m_34step = 0;
 	m_4step = 0;
 	bstep = 0;
+	getEl("r_iframe").src = "";
+	juststarted = false;
 	isShuffling = false;
 	ma_data.type = "";
 	previouschatid = ""
@@ -4552,7 +4567,7 @@ function speedmode()
 	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Time Attack" : "2x2 Time Attack";
 	document.getElementById("s_speedtitle").innerHTML = DIM == 50 ? "3x3 Speed Practice" : "2x2 Speed Practice";
 	document.getElementById("s_bottitle").innerHTML = DIM == 50 ? "3x3 Bot Race" : "2x2 Bot Race";
-	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!<br>Select Difficulty/Mode";
+	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!<br>Select Difficulty/Mode:";
 	document.getElementById("s_difficulty").innerHTML = "";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -5440,41 +5455,148 @@ function successSQL(text, id = "logindesc") {
 	}, 2000)
 }
 
-function speedRace(){
+function speedRace(type){
+	MINIMODE = type;
 	race = 1;
 	round = 1;
 	roundresult = [0, 0];
 	showSpeed();
 	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par"]); 
-	setDisplay("block", ["readybot", "delaywhole"]);
-
+	setDisplay("block", ["readybot", "delaywhole", "race_instruct_div"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct"])
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
-	document.getElementById("s_INSTRUCT").innerHTML = "Pre-Setup";
-	document.getElementById("s_instruct").innerHTML = "First, adjust bot turn speed (1 = slow, 200 = fast)<br>Then, adjust bot turn delay (in seconds)";
+	getEl("r_INSTRUCT").innerHTML = `It's you versus the bot, first to 5. <br>
+		${type == "physical" ? "You will be racing the bot using a <b>Physical</b> Rubik's cube." : ""}`;
+	if (type == "virtual") {
+		setDisplay("block", ["r_sliders"]);
+		setDisplay("none", ["slider_div", "speed", "delaywhole"]);
+	} else {
+		setDisplay("none", ["r_sliders"]);
+		setDisplay("inline", ["slider_div", "speed"]);
+	}
 	modeData("race");
 	canMan = true;
 }
 function speedRace2(){
 	canMan = true;
-	shuffling = true;
 	race = 2;
+	timer.reset();
 	quickSolve();
-	shuffleCube();
-	document.getElementById("readybot").style.display = "none";
-	document.getElementById("delaywhole").style.display = "none";
-	document.getElementById("slider_div").style.display = "none";
-	document.getElementById("speed").style.display = "none";
-	document.getElementById("scramble_par").style.display = "block";
-	document.getElementById("outertime").style.display = "block";
-	document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
-	document.getElementById("s_instruct").innerHTML = "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!";
+	if (MINIMODE == "physical") {
+		shuffling = true;
+		shuffleCube();
+		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
+		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
+			: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
+	} else {
+		document.getElementById("s_INSTRUCT").innerHTML = "Connecting to autosolve bot";
+		setDisplay("inline", ["reset2_div", "undo", "redo"]);
+		setDisplay("block", ["r_physical"]);
+	}
+	setDisplay("none", ["race_instruct_div", "readybot", "delaywhole", "slider_div", "speed", "s_RACE2", "r_sliders", "r_iframe"]);
+	setDisplay("block", ["scramble_par", "outertime"])
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-	document.getElementById("s_RACE2").style.display = "none";
+	if (MINIMODE == "virtual") {
+		if (round == 1) {
+			getEl("r_iframe").src = `http://localhost:8000/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&posid=${getID()}
+			&speed=${RACE_SLIDER.value()}&delay=${RACE_DELAY_SLIDER.value()}`;
+		} else {
+			socket.emit("bot_shuffle", socket.id, DIM);
+		}
+	}
 	canMan = false;
 }
-function raceTimes(){
+function raceWinner(winner) {
+	round++;
+	roundresult[winner]++;
+	roundresult.push([Math.round(timer.getTime() / 10)/100.0, winner]);
+	raceResults(winner);
+}
+function raceResults(winner) {
+	if (winner == 0) {
+		if(roundresult[0] < 5){
+			document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
+			document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
+			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+			document.getElementById("s_RACE2").style.display = "block";
+			raceTimes(0);
+		}
+		else{
+			document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
+			document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
+			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+			document.getElementById("s_RACE").style.display = "block";
+			raceTimes(0);
+		}
+	} else if(roundresult[1] < 5){
+		document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
+		document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
+		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+		document.getElementById("s_RACE2").style.display = "block";
+		raceTimes(1);
+	} else{
+		document.getElementById("s_INSTRUCT").innerHTML = "You were defeated by the bot :(";
+		document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
+		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+		document.getElementById("s_RACE").style.display = "block";
+		raceTimes(1);
+	}
+}
+function botConnect(obj) {
+	b_selectdim[obj.get('dim')]();
+	fullScreen(true);
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+	setDisplay("none", ["banner", "settings"]);
+	socket.emit("bot_connect", obj.get('id'), DIM);
+	raceid = obj.get('id');
+	MODE = "bot";
+	const s = obj.get('speed');
+	SPEED_SLIDER.value(s);
+	SPEED = s;
+	DELAY_SLIDER = obj.get('delay');
+	DELAY = obj.get('delay');
+	race = 2;
+}
+socket.on("bot_connected", (scramble) => {
+	reSetup();
+	if (MODE != "bot") {
+		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
+		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
+				: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
+		getEl("r_iframe").style.display = "block";
+	}
+	console.log("TRYNA SCRAMBLE", scramble)
+	changeArr(scramble);
+	getEl("scramble").innerHTML = scramble;
+	multiple2("scramble");
+	waitStopTurning(true, "virtual_race");
+	juststarted = true;
+});
+
+socket.on("started_race", () => {
+	if (MODE == "bot") {
+		canMan = true;
+		race = 2;
+		solveCube();
+	}
+});
+
+socket.on("race_won", (winner) => {
+	if (winner == 0) {
+		raceDetect();
+	} else {
+		raceWinner(1);
+	}
+	timer.stop();
+	stopMoving();
+})
+
+function raceTimes(winner){
 	let str = "";
 	for(let i = 2; i < roundresult.length; i++){
 		if(roundresult[i][1] == 0)
@@ -6706,7 +6828,7 @@ function hasColor(c) {
 function startAction() {	
 	if(MODE == "cube" && !mouseAllowed() && custom == 0) return; 
 	if(custom == 1 && !canMouse()) return; 
-	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5){ //racedetect
+	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5 && MINIMODE == "physical"){ //racedetect
 		raceDetect();
 		return;
 	}
@@ -6900,7 +7022,7 @@ p.keyPressed = (event) => {
 	if(KEYBOARD.value() == "Default"){
 		if(needsnew.includes(p.keyCode)) p.keyCode = newkey[p.keyCode];
 	}
-	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 0){ //racedetect
+	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 0 && MINIMODE == "physical"){ //racedetect
 		raceDetect();
 		return;
 	}
@@ -6916,7 +7038,7 @@ p.keyPressed = (event) => {
 			practicePLL();
 		} else if (getEl("readybot").style.display == "block") {
 			speedRace2();
-		} else if (race == 2 && !isAnimating()) {
+		} else if (race == 2 && !isAnimating() && MODE == "physical") {
 			getEl("outertime").style.color = "green";
 		}
 	}
@@ -6998,7 +7120,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(getEl("outertime").style.display, getEl("outertime").style.zIndex)
+		console.log(roundresult);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7182,7 +7304,6 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 32: //space
-			// quickSolve();
 			console.log(DIM, DIM2, isSolved(), mastep, mapBandaged());
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
@@ -7385,7 +7506,7 @@ function multiple(nb, timed, use = "default") {
 			}
 			shufflespeed = 5;
 			canMan = true;
-			if(race > 1){
+			if(race > 1 && MINIMODE == "physical"){
 				canMan = false;
 				shuffling = false;
 			}
@@ -7403,7 +7524,6 @@ function waitForCondition(callback, use = "default") {
         callback();
     } else {
         setTimeout(function() {
-			console.log("WAITING", callback)
             waitForCondition(callback, use);
         }, 0); // Check every milliseconds
     }
@@ -7858,6 +7978,7 @@ function notation(move, timed){
 	undo.push(move);
 	setLayout();
 	const moveMap = getMove(MAXX, CUBYESIZE, SIZE)
+	console.log("TRYNA ANIMATE", move)
 	if (moveMap.hasOwnProperty(move)) {
 		animate(moveMap[move][0], moveMap[move][1], moveMap[move][2], timed);
 		return;
@@ -9317,8 +9438,8 @@ else
 }
 function multipleCross3(nb) {
 	if(canMan == true) return;
-	if (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block") return;
-	if(MODE != "normal" && MODE != "timed" && race == 0)
+	if (MINIMODE == "physical" && (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block")) return;
+	if(!["normal", "timed", "bot"].includes(MODE) && race == 0)
 	{
 		flipmode = 0;
 		flipmode2 = 0;
@@ -9348,13 +9469,13 @@ function multipleCross3(nb) {
 }
 function multipleCross2(nb) {
 	if(canMan == true) return;
-	if(MODE != "normal" && MODE != "timed" && race == 0)
+	if(!["normal", "timed", "bot"].includes(MODE) && race == 0)
 	{
 		flipmode = 0;
 		flipmode2 = 0;
 		return;
 	}
-	if (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block") return;
+	if (MINIMODE == "physical" && (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block")) return;
 	setLayout();
 	if (nb < arr.length) {
 		canMan = false;
@@ -10088,24 +10209,7 @@ function raceDetect(){
 	document.getElementById("stepbig").innerHTML = "";
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
-	console.log("racedetect2");
-	round++;
-	roundresult[0]++;
-	roundresult.push([Math.round(timer.getTime() / 10)/100.0, 0]);
-	if(roundresult[0] < 5){
-		document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
-		document.getElementById("s_instruct").innerHTML = "Press continue to go to the next round!";
-		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-		document.getElementById("s_RACE2").style.display = "block";
-		raceTimes();
-	}
-	else{
-		document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
-		document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
-		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
-		document.getElementById("s_RACE").style.display = "block";
-		raceTimes();
-	}
+	raceWinner(0);
 	return;
 }  
 //   *************************************
@@ -10167,7 +10271,7 @@ p.touchEnded = () => {
 		}
 	}
 	touchrotate[2] = false;
-	if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
+	if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling && MINIMODE == "physical"){
 		canMan = true;
 		solveCube();
 	}
@@ -11057,7 +11161,7 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-    competemode();
+    speedmode();
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
@@ -11077,7 +11181,7 @@ let activeKeys = new Set();
 document.onkeyup = function(e) { //space
 	if (e.keyCode == 32 && getEl("outertime").style.color == "green") {
 		getEl("outertime").style.color = document.body.style.color;
-		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling){
+		if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling && MINIMODE == "physical"){
 			canMan = true;
 			solveCube();
 		}
@@ -11109,6 +11213,8 @@ document.onkeydown = function(event) {
 			switchBlindfold();
 		} else if (getEl("peekbutton").style.display == "block") {
 			toggleOverlay(false);
+		} else if (getEl("s_RACE2").style.display == "block") {
+			speedRace2();
 		}
 	} else if (event.keyCode == 27) { //escape
 		if (getEl("okban").style.display == "block") {
@@ -11154,7 +11260,6 @@ Object.entries(competitions).forEach(([id, text]) => {
         getEl("match_description").innerHTML = competeText();
     });
 });
-
   
 
 window.addEventListener('keydown', (e) => {

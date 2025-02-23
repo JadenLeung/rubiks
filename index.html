@@ -40,7 +40,7 @@
 		</div>
 		<button class = "btn btn-sm login bi bi-people" style = "background-color: orange;"id = "compete">&nbsp;Multiplayer Games</button>
 		<button class = "btn btn-warning btn-sm login bi bi-stopwatch" id = "challenge">&nbsp;Weekly Challenges</button>
-		<li style = "float:right;" id = "bannercube"><a style = "color:white">Team Blind added. Team up with your friends!</a></li>
+		<li style = "float:right;" id = "bannercube"><a style = "color:white">Virtual racing added! Go race the autosolver.</a></li>
 		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
 	<div class="row">
@@ -396,6 +396,20 @@
 				<span id="test_alg_input" type="text"></span>
 				<span id="test_alg_button"></span>
 			</div>
+			<div id = "race_instruct_div" style = "padding-top: 20px;">
+				<h5 class = "noselect">Instructions</h5>
+				<p id = "r_INSTRUCT"></p>
+				<h5 class = "noselect">Pre-Setup</h5>
+				<p class = "noselect">First, adjust bot turn speed (1 = slow, 200 = fast)<br>Then, adjust bot turn delay (in seconds)</p>
+				<div id = "r_sliders" style = "padding-bottom:7px; padding-top: 8px;"  class = "noselect">
+					<p id="r_slider" style = "display: inline;"><span>Bot Turn Speed: </span></p>
+					<span style = "display: inline;" id = "r_speed">0.01 </span>
+					<div style = "margin-top: 10px;">
+						<p id="r_delay" style = "display: inline;" ><span>Bot Delay: &nbsp;</span></p>
+						<span style = "display: inline;" id = "r_delay2">4</span>
+					</div>
+				</div>
+			</div>
 			<div style = "padding-bottom:7px; padding-top: 8px;"  class = "noselect">
 				<p id="slider_div" style = "display: inline;"  class = "normal"><span>Turn Speed: </span></p>
 				<span style = "display: inline;" id = "speed"  class = "normal">0.01 </span>
@@ -465,7 +479,7 @@
 					<p id = "compete_teamblind" style = "display:inline"></p>
 				</div>
 				<p id = "match_description" style = "margin-top: 20px;"></p>
-				<p id = "round_length">Total Rounds: <input id = "compete_rounds" type = "number" max = "10" min = "1" 
+				<p id = "round_length">Total Rounds: <input id = "compete_rounds" type = "number" min = "1" 
 					style = "font-size: 15px;" value="3"></input></p>
 				<div id = "com_1v1_div" style = "margin-top: 20px;">
 					<p>Select cubes for each round and player</p>
@@ -551,6 +565,12 @@
 				<img id = "s_image" style="width: 30%; height: auto;"/>
 			</div>
 			<p id = "s_difficulty" class = "noselect"></p>
+			<div id="r_physical" style="position: relative;" height="300px">
+				<h6>Autosolve POV:</h6>
+				<iframe id="r_iframe" width="100%" height="300px" style="border: none;" tabindex="-1"></iframe>
+				<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent;"></div>
+			</div>
+			
 			<div>
 				<p style = "display: inline;" id = "s_easy"></p>
 				<p style = "display: inline;" id = "s_medium"></p>
@@ -642,11 +662,14 @@
 			</div>
 			<div id = "s_bot" style = "padding-top: 30px;">
 				<h5 id = "s_bottitle">Bot Racing</h5>
-				<p>Race the autosolve bot using your OWN CUBE.</p>
+				<p>Race the autosolve bot.</p>
 			</div>
-			<p style = "display: inline;" id = "s_RACE"></p>
-			<p style = "display: inline;" id = "s_RACE2"></p>
-			<p style = "display: inline;" id = "s_RACE3"></p>
+			<div id = "s_RACE">
+				<p style = "display: inline;" id = "s_VIRTUALRACE"></p>
+				<p style = "display: inline;" id = "s_PHYSICALRACE"></p>
+			</div>
+			<p style = "display: block; padding-top:10px;" id = "s_RACE2"></p>
+			<p style = "display: block; padding-top:10px;" id = "s_RACE3"></p>
 			<div id = "s_high" style = "padding-top: 10px">
 				<h5>Your Best Scores</h5>
 				<p id = "s_easyscore" class = "skinnyscore">Easy: N/A</p>
