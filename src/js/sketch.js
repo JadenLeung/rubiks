@@ -183,7 +183,7 @@ export default function (p) {
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
 	// const nosavesetupdim = [1, 2, 15, 6];
-	const nosavesetupdim = [1,6];
+	const nosavesetupdim = [1,6, ""];
 	let session = 0;
 	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
@@ -212,7 +212,16 @@ export default function (p) {
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
 		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
-		"Sandwich" : change17.bind(null, 0)};
+		"Sandwich" : change17.bind(null, 0), "Jank 2x2" : change10,
+		"Cube Bandage" : change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]),
+		"Slice Bandage" : change11.bind(null, 7, [[3,4,5,6,7,8]]),
+		"Bandaged 2x2" : change14.bind(null, 10, [[6,8]]),
+		"Bandaged 3x3x2" : change20.bind(null, 16, [[0,1], [24,25]]),
+		"Pillars" : change12.bind(null, 8, [[0,3,6], [2,5,8]]),
+		"Triple Quad" :change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]),
+		"Z Perm" : 	change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]),
+		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]])
+	};
 
 	// attach event
 
@@ -1065,7 +1074,7 @@ p.setup = () => {
 	setButton(RESET3, "reset3_div", bstyle, '', speedSetup.bind(null, 0));
 
 	SHUFFLE_BTN = p.createButton('Scramble');
-	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-primary', '', shuffleCube.bind(null, 0));
+	setButton(SHUFFLE_BTN, "shuffle_div", 'btn btn-primary', '', shuffleCube);
 
 	const STOP = p.createButton('Stop Time');
 	setButton(STOP, "stop_div", bstyle, '', stopTime.bind(null, 0));
@@ -1181,11 +1190,14 @@ p.setup = () => {
 	const STARTBLIND2 = p.createButton('Blind Marathon');
 	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); startMarathon("blind")});
 
-	const STARTMARATHON = p.createButton('Shape Marathon');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
+	const STARTMARATHON = p.createButton('Shape');
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:50px; width:120px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
 	
-	const STARTMARATHON2 = p.createButton('Bandage Marathon');
-	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:60px; width:200px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
+	const STARTMARATHON2 = p.createButton('Bandage');
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:50px; width:120px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
+
+	const STARTMARATHON3 = p.createButton('Cuboid');
+	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', 'height:50px; width:120px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("cuboid")});
 
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
@@ -2247,7 +2259,7 @@ function undoSetup() {
 function moveSetup()
 {
 	if ((mastep > 0 || cstep > 0) && timer.getTime() <= 0) return;
-	if (mastep > 0 && nosavesetupdim.includes(DIM)) {
+	if (mastep > 0 && (nosavesetupdim.includes(DIM) || ma_data.type == "cuboid")) {
 		undoSetup();
 		return;
 	}
@@ -3694,7 +3706,7 @@ function startRound(data, scramble) {
 		competeprogress = 0;
 		canMan = false;
 		waitStopTurning(data.data.type != "teamblind");
-	}, 10);
+	}, 50);
 }
 
 socket.on("update-data", (data) => competeTimes(data));
@@ -4224,7 +4236,7 @@ function showMarathon() {
 		"highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
 	setDisplay("inline", ["speed", "slider_div", "undo", "redo", "reset2_div"]);
 	setDisplay("table", ["keymap"]);
-	setDisplay("block", ["times_par", "outertime", "marathon2"]);
+	setDisplay("block", ["times_par", "outertime", "marathon2", "scramble_par"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 	if (ma_data.type == "blind") {
 		setDisplay("block", ["peeks","times_par"]);
@@ -4237,19 +4249,12 @@ function showMarathon() {
 function startMarathon(type) {
 	reSetup();
 	ma_data.type = type;
-	if (type == "shape" || type == "blind") {
-		ma_data.dims = [changeFive, change19, changeFour, change10, changeSix, changeSeven, change8, change17];
-		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Christmas 3x3", "Christmas 2x2", "Sandwich Cube"];
+	if (type == "cuboid") {
+		ma_data.cubes = ["1x2x3", "1x4x4", "2x2x4", "2x3x4", "3x3x4", "3x3x5"];
+	} else if (type == "shape" || type == "blind") {
+		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Xmas 3x3", "Xmas 2x2", "Sandwich"];
 	} else if (type == "bandage") {
-		ma_data.dims = [change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]), 
-		change11.bind(null, 7, [[3,4,5,6,7,8]]), 
-		change14.bind(null, 10, [[6,8]]), 
-		change20.bind(null, 16, [[0,1], [24,25]]), 
-		change12.bind(null, 8, [[0,3,6], [2,5,8]]), 
-		change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]), 
-		change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]), 
-		change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]])];
-		ma_data.cubes = ["Cube Bandage", "Slice Bandage", "Bandaged 2x2", "Bandaged 3x3x2", "Pillars", "Triple Quad", "Z Perm", "T perm"];
+		ma_data.cubes = ["Cube Bandage", "Slice Bandage", "Bandaged 2x2", "Bandaged 3x3x2", "Pillars", "Triple Quad", "Z Perm", "T Perm"];
 	}
 	mastep = 0;
 	shapemarathon();
@@ -4259,8 +4264,8 @@ function shapemarathon() {
 		showMarathon();
 		ao5 = [];
 	}
-	if (mastep % 2 == 0 && mastep / 2 < ma_data.dims.length) {
-		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.dims.length;
+	if (mastep % 2 == 0 && mastep / 2 < ma_data.cubes.length) {
+		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
 		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + (ma_data.type == "blind" ? " with the fewest peeks.": ".");
 		let str = "Cube Lineup<br>";
 		ma_data.cubes.forEach((cube, i) => {
@@ -4274,15 +4279,18 @@ function shapemarathon() {
 			}
 			str +=  "<br>"
 		})
-		getEl("ma_list").innerHTML = str
-		ma_data.dims[mastep / 2]();
-		shuffleCube();
-		waitStopTurning(false, ma_data.type);
-		toggleOverlay(false, false);
+		getEl("ma_list").innerHTML = str;
+		b_selectdim[ma_data.cubes[mastep / 2]]();
+		reSetup();
+		setTimeout(() => {
+			shuffleCube();
+			waitStopTurning(false, ma_data.type);
+			toggleOverlay(false, false);
+		}, 50)
 
 	}
-	if (mastep / 2 == ma_data.dims.length) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks"]);
+	if (mastep / 2 == ma_data.cubes.length) {
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par"]);
 		setDisplay("block", ["m_high"]);
 		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
@@ -4292,7 +4300,7 @@ function shapemarathon() {
 		} else {
 			setDisplay("block", ["ma_buttons"]);
 		}
-		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3"};
+		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4"};
 		setScore(map[ma_data.type], score, true);
 	}
 }
@@ -4322,8 +4330,8 @@ function waitStopTurning(timed = true, mode = "wtev") {
 			}
 		}
 		console.log("CHANGING COMPSTEP", comstep);
-		if (getEl("marathon2").style.display == "block" && (mode == "shape" || mode == "bandage" || mode == "blind")) mastep++;
-		if (!nosavesetupdim.includes(DIM) && comstep == 0) {
+		if (getEl("marathon2").style.display == "block" && (["shape", "bandage", "blind", "cuboid"].includes(mode))) mastep++;
+		if (!nosavesetupdim.includes(DIM) && comstep == 0 && mode != "cuboid") {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
 				special[2] = savesetup;
@@ -4784,12 +4792,11 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon","marathon2","marathon3", "race2x2", "race3x3"];
 	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "Virtual Race 2x2",
-			race3x3: "Virtual Race 3x3"};
-	modes.forEach((mode) => {
+			race3x3: "Virtual Race 3x3", marathon4: "Cuboid Marathon"};
+	Object.keys(display).forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + JSON.parse(score).score;
@@ -5355,8 +5362,9 @@ async function saveData(username, password, method, al) {
 		marathon2:localStorage.marathon2 ?? -1,
 		marathon3:localStorage.marathon3 ?? -1,
 		bandaged3: localStorage.bandaged3 ?? "null",
-		race2x2: localStorage.race2x2,
-		race3x3: localStorage.race3x3
+		race2x2: localStorage.race2x2 ?? -1, 
+		race3x3: localStorage.race3x3 ?? -1,
+		marathon4: localStorage.marathon4 ?? -1,
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -5402,7 +5410,7 @@ async function loadData(times) {
 	console.log("Userdata is ", userdata[index]);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
-			"marathon", "marathon2","marathon3","race2x2","race3x3"];
+			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4"];
 		params.forEach((param) => {
 			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[index][param]))
 				localStorage[param] = userdata[index][param];
@@ -6419,8 +6427,8 @@ function shufflePossible(len, total2, prev){
 	canMan = false;
 	multipleMod(0, len, total2, prev);
 }
-function shuffleCube(nb) { 
-	if(canMan == false || customb == 1) return;
+function shuffleCube(override = false) { 
+	if((canMan == false || customb == 1) && !override) return;
 	if(bandaged.length > 0){
 		if (DIM == 8)
 			shufflePossible(60, "", "  ");
@@ -6486,6 +6494,7 @@ function shuffleCube(nb) {
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4 || (SIZE == 4 && custom == 1)) s = 45;
 	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
+	if (["1x2x3"].includes(DIM)) s = 10;
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -6559,7 +6568,7 @@ function shuffleCube(nb) {
 	}
 	if(SCRAM.value() != "Last Layer")
 	document.getElementById("scramble").innerHTML = total;
-	multiple2("scramble");
+	multiple2("realscramble");
 }
 function downloadAll()
 {
@@ -7171,7 +7180,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
+		quickSolve();
 		console.log(roundresult);
 	}
 	if(p.keyCode == 9){ //tab
@@ -7551,6 +7560,10 @@ function multiple(nb, timed, use = "default") {
 	}
 	else
 	{
+		if (use == "realscramble" && isSolved() && ["speed", "moves"].includes(MODE)) {
+			shuffleCube(true);
+			return;
+		}
 		canMan = true;
 		if (use == "scramble" || use == "flexdo") {
 			if (use == "scramble") {
