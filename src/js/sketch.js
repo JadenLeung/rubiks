@@ -1728,6 +1728,8 @@ setInterval(() => {
 
 	getEl("r_speed").innerHTML = Math.round(RACE_SLIDER.value() * 100);
 	getEl("r_delay2").innerHTML = RACE_DELAY_SLIDER.value();
+	getEl("race3x3score").style.display = DIM == 50 ? "block" : "none";
+	getEl("race2x2score").style.display = DIM == 100 ? "block" : "none";
 }, 10)
 //forever
 function reSetup(rot) {
@@ -4603,7 +4605,7 @@ function speedmode()
 	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Time Attack" : "2x2 Time Attack";
 	document.getElementById("s_speedtitle").innerHTML = DIM == 50 ? "3x3 Speed Practice" : "2x2 Speed Practice";
 	document.getElementById("s_bottitle").innerHTML = DIM == 50 ? "3x3 Bot Race" : "2x2 Bot Race";
-	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!<br>Select Difficulty/Mode:";
+	document.getElementById("s_instruct").innerHTML = "Complete <b>4</b> challenges, as fast as possible!";
 	document.getElementById("s_difficulty").innerHTML = "";
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -4782,10 +4784,11 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon","marathon2","marathon3"];
+	modes = ["m_easy", "m_medium", "c_week", "c_day", "c_day2", "c_day_bweek", "c_day2_bweek", "blind2x2", "blind3x3", "marathon","marathon2","marathon3", "race2x2", "race3x3"];
 	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
-			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon"};
+			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "Virtual Race 2x2",
+			race3x3: "Virtual Race 3x3"};
 	modes.forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -5570,6 +5573,7 @@ function raceResults(winner) {
 			document.getElementById("s_RACE").style.display = "block";
 			raceTimes(0);
 			raceHide();
+			setScore(DIM == 50 ? "race3x3" : "race2x2", botestimate);
 		}
 	} else if(roundresult[1] < 5){
 		document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
@@ -7164,7 +7168,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		quickSolve();
+		// quickSolve();
 		console.log(roundresult);
 	}
 	if(p.keyCode == 9){ //tab
