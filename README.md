@@ -82,7 +82,7 @@ Selecting a 2x2 or 3x3 will result in different challenges.
 Select the OLLs, PLLs, and PBLs you want to practice. The website even gives you the recommended algorithm.
 
 <h3>Bot Racing</h3>
-Race the auto-solve bot with your own physical cube! You can adjust the speed of the bot as well.
+Race the auto-solve bot! You have the option to choose a virtual or a physical cube to race with. You can adjust the speed of the bot as well.
 
 
 
@@ -110,6 +110,9 @@ Includes a live opponent perspective during solves, and live progress/time repor
 
 <h3>Group Battle</h3>
 <p>Select from 8+ for everyone to solve. (Everyone solves the same cube). Unlimited Room Capacity - invite a party! Includes live progress/time reports.</p>
+
+<h3>Team Blind</h3>
+<p>A team of 2 players takes turns being blind. Every 15 seconds, the team gets to switch who is blind. Only the blindfolded player can turn the cube.</p>
 
 
 
