@@ -7180,7 +7180,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		quickSolve();
+		// quickSolve();
 		console.log(roundresult);
 	}
 	if(p.keyCode == 9){ //tab
