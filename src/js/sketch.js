@@ -19,6 +19,7 @@ export default function (p) {
 	let CAMZOOM = -170;
 	let alldown;
 	let PICKER;
+	let botestimate;
 	let juststarted = false;
 	let raceid = "";
 	let previouschatid = "";
@@ -1707,14 +1708,13 @@ setInterval(() => {
 		setDisplay("inline", ["giveup"]);
 		juststarted = false;
 	}
-	let estimate = -1;
 	let speedval = MINIMODE == "physical" ? SPEED_SLIDER.value() * 100 : RACE_SLIDER.value() * 100;
 	let delay = MINIMODE == "physical" ? DELAY_SLIDER.value() : RACE_DELAY_SLIDER.value();
 	for (let x in speeddata) {
 		if (speedval - 25 < x) {
-			estimate = speeddata[x];
-			let offset = estimate - speeddata[+x + 25];
-			estimate -= ((speedval % 25) / 25) * offset;
+			botestimate = speeddata[x];
+			let offset = botestimate - speeddata[+x + 25];
+			botestimate -= ((speedval % 25) / 25) * offset;
 			break;
 		}
 	}
@@ -1722,8 +1722,9 @@ setInterval(() => {
 	if (DIM == 100) {
 		avgmoves = 30;
 	}
-	estimate += (avgmoves * estimate) + delay * (avgmoves - 1);
-	getEl("botestimate").innerHTML = "Estimated bot solve time: " + Math.round(estimate * 100)/100.0;
+	botestimate += (avgmoves * botestimate) + delay * (avgmoves - 1);
+	botestimate = Math.round(botestimate * 100)/100.0;
+	getEl("botestimate").innerHTML = "Estimated bot solve time: " + botestimate;
 
 	getEl("r_speed").innerHTML = Math.round(RACE_SLIDER.value() * 100);
 	getEl("r_delay2").innerHTML = RACE_DELAY_SLIDER.value();
@@ -5564,9 +5565,11 @@ function raceResults(winner) {
 		else{
 			document.getElementById("s_INSTRUCT").innerHTML = "You have defeated the bot!!!";
 			document.getElementById("s_instruct").innerHTML = "Do you want to play again?";
-			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
+			document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>"
+				+ "<br>Bot average speed: " + botestimate + "s";
 			document.getElementById("s_RACE").style.display = "block";
 			raceTimes(0);
+			raceHide();
 		}
 	} else if(roundresult[1] < 5){
 		document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
@@ -5580,7 +5583,11 @@ function raceResults(winner) {
 		document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 		document.getElementById("s_RACE").style.display = "block";
 		raceTimes(1);
+		raceHide();
 	}
+}
+function raceHide() {
+	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
 }
 function botConnect(obj) {
 	b_selectdim[obj.get('dim')]();
@@ -7127,7 +7134,7 @@ p.keyPressed = (event) => {
 			custom = 0
 		}
 	}
-	if(p.keyCode == 50 && race < 1) //2 //two
+	if(p.keyCode == 50 && (race < 1 || MINIMODE == "virtual")) //2 //two
 	{
 		if (p.keyIsDown(p.SHIFT) && (getEl("mode3").style.display != "none" || getEl("mode6").style.display != "none")) {
 			timedmode();
@@ -7157,7 +7164,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
+		quickSolve();
 		console.log(roundresult);
 	}
 	if(p.keyCode == 9){ //tab
