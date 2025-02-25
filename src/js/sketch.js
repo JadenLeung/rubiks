@@ -5637,7 +5637,7 @@ function botConnect(obj) {
 	race = 2;
 }
 socket.on("bot_connected", (scramble) => {
-	reSetup();
+	quickSolve();
 	if (MODE != "bot") {
 		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
 		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
