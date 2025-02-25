@@ -1690,6 +1690,11 @@ setInterval(() => {
 			}
 		}
 	}
+	if (MINIMODE == "virtual" && timer.isRunning && timer.inspection && timer.getTime() > -3000 && timer.getTime() < 0) {
+		fadeInText(1, "3 secs");
+		setTimeout(() => {fadeInText(0, "3 secs")}, 400);
+		timer.inspection = false;
+	} 
 	getEl("leftpaint").style.opacity = colorindex == 0 ? 0.3 : 1;
 	getEl("rightpaint").style.opacity = colorindex == 54 ? 0.3 : 1;
 	getEl("uppaint").style.opacity = colorindex == 0 ? 0.3 : 1;
@@ -1722,11 +1727,12 @@ setInterval(() => {
 	}
 	let speedval = MINIMODE == "physical" ? SPEED_SLIDER.value() * 100 : RACE_SLIDER.value() * 100;
 	let delay = MINIMODE == "physical" ? DELAY_SLIDER.value() : RACE_DELAY_SLIDER.value();
+	let estimate;
 	for (let x in speeddata) {
 		if (speedval - 25 < x) {
-			botestimate = speeddata[x];
-			let offset = botestimate - speeddata[+x + 25];
-			botestimate -= ((speedval % 25) / 25) * offset;
+			estimate = speeddata[x];
+			let offset = estimate - speeddata[+x + 25];
+			estimate -= ((speedval % 25) / 25) * offset;
 			break;
 		}
 	}
@@ -1734,14 +1740,21 @@ setInterval(() => {
 	if (DIM == 100) {
 		avgmoves = 30;
 	}
-	botestimate += (avgmoves * botestimate) + delay * (avgmoves - 1);
-	botestimate = Math.round(botestimate * 100)/100.0;
-	getEl("botestimate").innerHTML = "Estimated bot solve time: " + botestimate;
+	estimate += (avgmoves * estimate) + delay * (avgmoves - 1);
+	estimate = Math.round(estimate * 100)/100.0;
+	if (botestimate != estimate && MINIMODE == "virtual") {
+		botestimate = estimate;
+		console.log("bruh ", delay, botestimate, MINIMODE);
+		getEl("botestimate").innerHTML = "Estimated bot solve time: " + botestimate;
+	}
 
 	getEl("r_speed").innerHTML = Math.round(RACE_SLIDER.value() * 100);
 	getEl("r_delay2").innerHTML = RACE_DELAY_SLIDER.value();
 	getEl("race3x3score").style.display = DIM == 50 ? "block" : "none";
 	getEl("race2x2score").style.display = DIM == 100 ? "block" : "none";
+	// if (localStorage.race3x3 == 18.68) {
+		
+	// }
 }, 10)
 //forever
 function reSetup(rot) {
@@ -4809,7 +4822,7 @@ function updateScores() {
 }
 function setScore(mode, total, getlow = true) {
 	const highscores = localStorage[mode];
-	console.log("In setscore ", mode, total, localStorage[mode], !highscores);
+	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE);
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
 	(MODE == "moves" && (total > highscores && !getlow) || (total < highscores && getlow))
@@ -5584,7 +5597,8 @@ function raceResults(winner) {
 			document.getElementById("s_RACE").style.display = "block";
 			raceTimes(0);
 			raceHide();
-			setScore(DIM == 50 ? "race3x3" : "race2x2", botestimate);
+			if (MINIMODE == "virtual")
+				setScore(DIM == 50 ? "race3x3" : "race2x2", botestimate);
 		}
 	} else if(roundresult[1] < 5){
 		document.getElementById("s_INSTRUCT").innerHTML = "Bot Wins!";
@@ -7180,8 +7194,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
-		console.log(roundresult);
+		quickSolve();
+		console.log(botestimate);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
