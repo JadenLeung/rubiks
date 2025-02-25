@@ -5637,7 +5637,7 @@ function botConnect(obj) {
 	race = 2;
 }
 socket.on("bot_connected", (scramble) => {
-	quickSolve();
+	// reSetup();
 	if (MODE != "bot") {
 		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
 		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
@@ -7194,7 +7194,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
+		quickSolve();
 		console.log(botestimate);
 	}
 	if(p.keyCode == 9){ //tab
@@ -9556,13 +9556,13 @@ function multipleCross3(nb) {
 	}
 }
 function multipleCross2(nb) {
-	// if(canMan == true) return;
-	// if(!["normal", "timed", "bot"].includes(MODE) && race == 0)
-	// {
-	// 	flipmode = 0;
-	// 	flipmode2 = 0;
-	// 	return;
-	// }
+	if(canMan == true) return;
+	if(!["normal", "timed", "bot"].includes(MODE) && race == 0)
+	{
+		flipmode = 0;
+		flipmode2 = 0;
+		return;
+	}
 	if (MINIMODE == "physical" && (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block")) return;
 	setLayout();
 	if (nb < arr.length) {
