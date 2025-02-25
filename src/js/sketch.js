@@ -5566,8 +5566,7 @@ function speedRace2(){
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	if (MINIMODE == "virtual") {
 		if (round == 1) {
-			getEl("r_iframe").src = `${window.location.origin}/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&posid=${getID()}
-			&speed=${RACE_SLIDER.value()}&delay=${RACE_DELAY_SLIDER.value()}`;
+			getEl("r_iframe").src = `${window.location.origin}/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&speed=${RACE_SLIDER.value()}&delay=${RACE_DELAY_SLIDER.value()}`;
 		} else {
 			socket.emit("bot_shuffle", socket.id, DIM);
 		}
@@ -5620,9 +5619,6 @@ function raceHide() {
 	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
 }
 function botConnect(obj) {
-	TOPWHITE.selected("Green");
-	topWhite();
-	console.log("BRUH", TOPWHITE.value());
 	b_selectdim[obj.get('dim')]();
 	fullScreen(true);
 	var elements = document.getElementsByClassName('normal');
@@ -7375,7 +7371,7 @@ p.keyPressed = (event) => {
 			break;
 			case 192: //`
 			if (p.keyIsDown(p.SHIFT)) {
-				(MODE == "normal" || MODE == "timed")  && solveCube();
+				(MODE == "normal" || MODE == "timed" || MODE == "bot")  && solveCube();
 			} else if(["normal", "cube", "timed", "account", "login", "compete"].includes(MODE)) {
 				shuffleCube();
 			} else if (["moves", "speed"].includes(MODE) && getEl("switcher").style.display == "block") {
