@@ -1743,7 +1743,7 @@ setInterval(() => {
 	}
 	estimate += (avgmoves * estimate) + delay * (avgmoves - 1);
 	estimate = Math.round(estimate * 100)/100.0;
-	if (botestimate != estimate && MINIMODE == "virtual") {
+	if (botestimate != estimate && ["virtual", "physical"].includes(MINIMODE)) {
 		botestimate = estimate;
 		console.log("bruh ", delay, botestimate, MINIMODE);
 		getEl("botestimate").innerHTML = "Estimated bot solve time: " + botestimate;
@@ -5620,6 +5620,9 @@ function raceHide() {
 	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
 }
 function botConnect(obj) {
+	TOPWHITE.selected("Green");
+	topWhite();
+	console.log("BRUH", TOPWHITE.value());
 	b_selectdim[obj.get('dim')]();
 	fullScreen(true);
 	var elements = document.getElementsByClassName('normal');
@@ -7195,6 +7198,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
+		// quickSolve();
 		console.log(botestimate);
 	}
 	if(p.keyCode == 9){ //tab
@@ -8066,8 +8070,8 @@ function notation(move, timed){
 	undo.push(move);
 	setLayout();
 	const moveMap = getMove(MAXX, CUBYESIZE, SIZE)
-	console.log("TRYNA ANIMATE", move)
 	if (moveMap.hasOwnProperty(move)) {
+		console.log("TRYNA ANIMATE", move)
 		animate(moveMap[move][0], moveMap[move][1], moveMap[move][2], timed);
 		return;
 	}
@@ -9556,13 +9560,13 @@ function multipleCross3(nb) {
 	}
 }
 function multipleCross2(nb) {
-	if(canMan == true) return;
-	if(!["normal", "timed", "bot"].includes(MODE) && race == 0)
-	{
-		flipmode = 0;
-		flipmode2 = 0;
-		return;
-	}
+	// if(canMan == true) return;
+	// if(!["normal", "timed", "bot"].includes(MODE) && race == 0)
+	// {
+	// 	flipmode = 0;
+	// 	flipmode2 = 0;
+	// 	return;
+	// }
 	if (MINIMODE == "physical" && (document.getElementById("s_RACE2").style.display == "block" || document.getElementById("s_RACE").style.display == "block")) return;
 	setLayout();
 	if (nb < arr.length) {
@@ -9570,6 +9574,7 @@ function multipleCross2(nb) {
 		moves++;
 		notation(arr[nb]);
 		console.log(nb);
+		// return;
 		waitForCondition(multipleCross2.bind(null, nb + 1), "solving");
 	}
 	else
