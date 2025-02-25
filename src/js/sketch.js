@@ -61,6 +61,7 @@ export default function (p) {
 	let BORDER_SLIDER;
 	let SIZE_SLIDER2;
 	let GAP_SLIDER;
+	let STARTBLIND;
 	let saveao5data = {length: -1, session: -1};
 	let SPEED_SLIDER;
 	let DELAY_SLIDER, RACE_SLIDER, RACE_DELAY_SLIDER;
@@ -1100,7 +1101,7 @@ p.setup = () => {
 	const M_34 = p.createButton('3 to 5 Movers');
 	setButton(M_34, "m_34", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', m_34.bind(null, 0));
 
-	const M_4 = p.createButton('Endless (Medium)');
+	const M_4 = p.createButton('Endless');
 	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
@@ -1184,7 +1185,7 @@ p.setup = () => {
 	const STARTDCHAL2 = p.createButton('Start Daily 2x2');
 	setButton(STARTDCHAL2, "cd2_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', () => {dailychallenge(2)});
 
-	const STARTBLIND = p.createButton('Start Blind');
+	STARTBLIND = p.createButton('Blind 3x3');
 	setButton(STARTBLIND, "b_regular", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); blindmode()});
 
 	const STARTBLIND2 = p.createButton('Blind Marathon');
@@ -1752,8 +1753,7 @@ setInterval(() => {
 	getEl("r_delay2").innerHTML = RACE_DELAY_SLIDER.value();
 	getEl("race3x3score").style.display = DIM == 50 ? "block" : "none";
 	getEl("race2x2score").style.display = DIM == 100 ? "block" : "none";
-	// if (localStorage.race3x3 == 18.68) {
-		
+	STARTBLIND.html(DIM == 50 ? "Blind 3x3" : "Blind 2x2");
 	// }
 }, 10)
 //forever
@@ -4773,42 +4773,43 @@ function reCam()
 function updateScores() {
 	let modes = ["easy", "medium", "oll", "pll"];
 	let display = {easy: "Easy", medium: "Medium", oll: "OLL", pll: "PLL"};
+	let cube = DIM == 50 ? "3x3 " : "2x2 ";
 	if (DIM == 50) {
 		// speedmode scores
 		modes.forEach((mode) => {
 			const score = localStorage[mode];
 			if (score != null && score != -1) {
-				document.getElementById("s_" + mode + "score").innerHTML = display[mode] +  ": " + score;
+				document.getElementById("s_" + mode + "score").innerHTML = cube + display[mode] + ": " + score;
 			} else {
-				document.getElementById("s_" + mode + "score").innerHTML = display[mode] +  ": " + "N/A";
+				document.getElementById("s_" + mode + "score").innerHTML = cube + display[mode] +  ": " + "N/A";
 			}
 		})
 		document.getElementById("s_pllscore").style.display = "block";
 	} else {
 		if (localStorage["easy2"] != null  && localStorage["easy2"] != -1) {
-			document.getElementById("s_easyscore").innerHTML = "Easy: " + localStorage["easy2"];
+			document.getElementById("s_easyscore").innerHTML = cube + "Easy: " + localStorage["easy2"];
 		} else {
-			document.getElementById("s_easyscore").innerHTML = "Easy: N/A";
+			document.getElementById("s_easyscore").innerHTML = cube + "Easy: N/A";
 		}
 
 		if (localStorage["oll2"] != null  && localStorage["oll2"] != -1) {
-			document.getElementById("s_mediumscore").innerHTML = "OLL: " + localStorage["oll2"];
+			document.getElementById("s_mediumscore").innerHTML = cube + "OLL: " + localStorage["oll2"];
 		} else {
-			document.getElementById("s_mediumscore").innerHTML = "OLL: N/A";
+			document.getElementById("s_mediumscore").innerHTML = cube + "OLL: N/A";
 		}
 
 		if (localStorage["pbl2"] != null && localStorage["pbl2"] != -1) {
-			document.getElementById("s_ollscore").innerHTML = "PBL: " + localStorage["pbl2"];
+			document.getElementById("s_ollscore").innerHTML = cube + "PBL: " + localStorage["pbl2"];
 		} else {
-			document.getElementById("s_ollscore").innerHTML = "PBL: N/A";
+			document.getElementById("s_ollscore").innerHTML = cube + "PBL: N/A";
 		}
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	display = {m_easy: "3-5 Movers", m_medium: "Medium", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
+	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
-			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "Virtual Race 2x2",
-			race3x3: "Virtual Race 3x3", marathon4: "Cuboid Marathon"};
+			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
+			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon"};
 	Object.keys(display).forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
