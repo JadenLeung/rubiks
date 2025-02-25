@@ -5637,7 +5637,12 @@ function botConnect(obj) {
 	race = 2;
 }
 socket.on("bot_connected", (scramble) => {
-	// reSetup();
+	realtop = TOPWHITE.value()[0].toLowerCase();
+	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+	quickSolve();
+	if (MODE == "bot") {
+		reSetup();
+	}
 	if (MODE != "bot") {
 		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
 		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
@@ -7194,7 +7199,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		quickSolve();
+		// quickSolve();
 		console.log(botestimate);
 	}
 	if(p.keyCode == 9){ //tab
