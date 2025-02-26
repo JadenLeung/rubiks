@@ -3588,10 +3588,11 @@ function enterLobby(data, r) {
 	compete_type = data.data.type;
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("block", ["waitingroom"]);
+	setDisplay(data.data.leader == socket.id ? "inline" : "none", ["editcompete"]);
 	console.log("Refreshed")
 	room = r;
 	getEl("waitingroomid").innerHTML = "Joined room " + room;
-	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "block" : "none", ["startmatch"]);
+	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id && getEl("creating_match").style.display == "none" ? "block" : "none", ["startmatch"]);
 	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "none" : "block", ["cantmatch"]);
 	getEl("cantmatch").innerHTML = 
 			`${data.data.leader != socket.id ? "Waiting for host to start match." : "Waiting for opponent."}`
@@ -3638,10 +3639,13 @@ function enterLobby(data, r) {
 	}
 	getEl("competerules").innerHTML = str;
 }
-function createMatch() {
-	setDisplay("none", ["lobby", "round_length"]);
+function createMatch(newmatch = true) {
+	setDisplay("none", ["lobby", "waitingroom", "startmatch"]);
 	setDisplay("block", ["creating_match"]);
-	compete_type = "";
+	if (newmatch) {
+		setDisplay("none", ["round_length"]);
+		compete_type = "";
+	}
 }
 
 function finishMatch() {
@@ -3653,9 +3657,15 @@ function finishMatch() {
 	}
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
-	getEl("waitingroomid").innerHTML = "Attempting to Create Room";
-	socket.emit("create-room", {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
-		visibility: getEl("private").checked ? "private" : "public", orpos : allcubies}, localStorage.username);
+	if (room == 0) {
+		getEl("waitingroomid").innerHTML = "Attempting to Create Room";
+		socket.emit("create-room", {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
+			visibility: getEl("private").checked ? "private" : "public", orpos : allcubies}, localStorage.username);
+	} else {
+		getEl("waitingroomid").innerHTML = "Attempting to Edit Room";
+		socket.emit("edit-room", room, {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
+			visibility: getEl("private").checked ? "private" : "public", orpos : allcubies});
+	}
 }
 
 function joinRoom(room = getEl("join_input").value) {
@@ -7200,7 +7210,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(botestimate);
+		// console.log(room, getEl("startmatch").style.display);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7560,18 +7570,19 @@ function multiple(nb, timed, use = "default") {
 			}
 			if(timer.isRunning && MODE != "moves")
 			{
+				console.log("MOVING HERE");
 				moves++;
 			}
 			else if(MODE == "moves")
 			{
-				if(undo[undo.length-2] == bad)
-				{
+				if(undo[undo.length-2] == bad) {
 					undo.pop();
 					undo.pop();
 					moves--;
+				} else {
+					if (!["x", "y", "z"].includes(arr[nb][0]))
+						moves++;
 				}
-				else
-					moves++;
 			}
 		}
 		console.log("RIGHT BEFORE", use)
@@ -11330,6 +11341,11 @@ getEl("competelink").addEventListener("click", function(event) {
 	setTimeout(() => {
         getEl("competelink").innerHTML = `<i class="bi bi-link"></i>`;
     }, 1000);
+});
+
+getEl("editcompete").addEventListener("click", function(event) {
+    event.preventDefault();
+	createMatch(false);
 });
 
 const competitions = {
