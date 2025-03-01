@@ -7210,7 +7210,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		// console.log(room, getEl("startmatch").style.display);
+		console.log(SPEED, shufflespeed);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7596,14 +7596,14 @@ function multiple(nb, timed, use = "default") {
 			return;
 		}
 		canMan = true;
-		if (use == "scramble" || use == "flexdo") {
+		if (["realscramble", "scramble", "flexdo"].includes(use)) {
 			if (use == "scramble") {
 				undo = [];
 				redo = [];
 			}
 			shufflespeed = 5;
 			canMan = true;
-			if(race > 1 && MINIMODE == "physical"){
+			if(race > 0 && MINIMODE == "physical"){
 				canMan = false;
 			}
 		} else if (comstep > 0) {
