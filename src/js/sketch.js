@@ -3304,7 +3304,7 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
-		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate"]);
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3637,6 +3637,12 @@ function enterLobby(data, r) {
 			str += `Round ${x + 1}): ${cube[0]}<br>`
 		})
 	}
+	if (data.data.type == "teamblind") {
+		getEl("blinddesc").style.display = "block";
+		getEl("blinddesc").innerHTML = `${socket.id == competedata.userids[competedata.data.startblind] ? "You will start blindfolded." : "You will start with vision."}`;
+	} else {
+		getEl("blinddesc").style.display = "none";
+	}
 	getEl("competerules").innerHTML = str;
 }
 function createMatch(newmatch = true) {
@@ -3657,14 +3663,15 @@ function finishMatch() {
 	}
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
+	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
+		visibility: getEl("private").checked ? "private" : "public", orpos : allcubies, 
+		startblind: getEl("startblind1").checked ? 0 : 1};
 	if (room == 0) {
 		getEl("waitingroomid").innerHTML = "Attempting to Create Room";
-		socket.emit("create-room", {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
-			visibility: getEl("private").checked ? "private" : "public", orpos : allcubies}, localStorage.username);
+		socket.emit("create-room", senddata, localStorage.username);
 	} else {
 		getEl("waitingroomid").innerHTML = "Attempting to Edit Room";
-		socket.emit("edit-room", room, {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
-			visibility: getEl("private").checked ? "private" : "public", orpos : allcubies});
+		socket.emit("edit-room", room, senddata);
 	}
 }
 
@@ -7450,7 +7457,7 @@ p.keyPressed = (event) => {
 			if (p.keyIsDown(p.SHIFT)) {
 				cubemode();
 			} else {
-				if (getEl("type3").style.display == "block") {
+				if (getEl("type3").style.display == "block" && !timer.isRunning) {
 					if (DIM2 == 50) {
 						changeTwo();
 					} else {
