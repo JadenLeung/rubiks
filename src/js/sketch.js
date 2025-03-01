@@ -1726,8 +1726,8 @@ setInterval(() => {
 		setDisplay("inline", ["giveup"]);
 		juststarted = false;
 	}
-	let speedval = MINIMODE == "physical" ? SPEED_SLIDER.value() * 100 : RACE_SLIDER.value() * 100;
-	let delay = MINIMODE == "physical" ? DELAY_SLIDER.value() : RACE_DELAY_SLIDER.value();
+	let speedval = RACE_SLIDER.value() * 100;
+	let delay = RACE_DELAY_SLIDER.value();
 	let estimate;
 	for (let x in speeddata) {
 		if (speedval - 25 < x) {
@@ -5543,13 +5543,8 @@ function speedRace(type){
 	document.getElementById("s_RACE3").innerHTML = "";
 	getEl("r_INSTRUCT").innerHTML = `It's you versus the bot, first to 5. <br>
 		${type == "physical" ? "You will be racing the bot using a <b>Physical</b> Rubik's cube." : ""}`;
-	if (type == "virtual") {
-		setDisplay("block", ["r_sliders"]);
-		setDisplay("none", ["slider_div", "speed", "delaywhole"]);
-	} else {
-		setDisplay("none", ["r_sliders", "r_physical"]);
-		setDisplay("inline", ["slider_div", "speed"]);
-	}
+	setDisplay("block", ["r_sliders"]);
+	setDisplay("none", ["slider_div", "speed", "delaywhole"]);
 	modeData("race");
 	canMan = true;
 }
@@ -6992,9 +6987,11 @@ function animateRotate(axis, dir) {
 				CUBE[i].dir = dir;
 				CUBE[i].anim_axis = axis;
 				if(shufflespeed < 5)
-				CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
+					CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
+				else if (MINIMODE == "physical")
+					CUBE[i].anim_angle = CUBE[i].dir * (RACE_SLIDER.value())
 				else
-				CUBE[i].anim_angle = CUBE[i].dir * SPEED;
+					CUBE[i].anim_angle = CUBE[i].dir * SPEED;
 			}
 		}
 	}
@@ -7065,9 +7062,11 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 				CUBE[i].dir = dir;
 				CUBE[i].anim_axis = axis;
 				if(shufflespeed < 5)
-				CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
+					CUBE[i].anim_angle = CUBE[i].dir * shufflespeed;
+				else if (MINIMODE == "physical")
+					CUBE[i].anim_angle = CUBE[i].dir * (RACE_SLIDER.value())
 				else
-				CUBE[i].anim_angle = CUBE[i].dir * SPEED;
+					CUBE[i].anim_angle = CUBE[i].dir * SPEED;
 			}
 		}
 	}
@@ -7210,7 +7209,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(SPEED, shufflespeed);
+		console.log(SPEED, RACE_SLIDER.value());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7618,10 +7617,14 @@ function waitForCondition(callback, use = "default") {
 	}
     if (!isAnimating()) {
 		console.log(use);
-		if (["solving", "testalg"].includes(use) && DELAY > 0) {
+		let delay = DELAY;
+		if (MINIMODE == "physical") {
+			delay = RACE_DELAY_SLIDER.value();
+		}
+		if (["solving", "testalg"].includes(use) && delay > 0) {
 			setTimeout(function() {
 				callback();
-			}, DELAY * 1000); 
+			}, delay * 1000); 
 		} else {
 			callback();
 		}
