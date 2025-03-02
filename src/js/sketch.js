@@ -1174,7 +1174,7 @@ p.setup = () => {
 	setButton(READYBOT, "readybot", 'btn btn-success', 'font-size:25px;', speedRace2.bind(null, 0));
 
 	const RACE2 = p.createButton('Continue');
-	setButton(RACE2, "s_RACE2", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', speedRace2.bind(null, 0));
+	setButton(RACE2, "s_RACE2", 'btn btn-success', 'font-size: 25px;', speedRace2.bind(null, 0));
 	
 	const STARTCHAL = p.createButton('Start Weekly');
 	setButton(STARTCHAL, "c_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #42ff58; border-color: black;', startchallenge);
@@ -4840,10 +4840,10 @@ function updateScores() {
 }
 function setScore(mode, total, getlow = true) {
 	const highscores = localStorage[mode];
-	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE);
+	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
-	(MODE == "moves" && (total > highscores && !getlow) || (total < highscores && getlow))
+	(MODE == "moves" && ((total > highscores && !getlow) || (total < highscores && getlow)))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
@@ -7603,7 +7603,7 @@ function multiple(nb, timed, use = "default") {
 		}
 		canMan = true;
 		if (["realscramble", "scramble", "flexdo"].includes(use)) {
-			if (use == "scramble") {
+			if (use == "scramble" || use == "realscramble") {
 				undo = [];
 				redo = [];
 			}
