@@ -1572,6 +1572,7 @@ setInterval(() => {
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
 			}
+			getEl("giveup").style.display = "none";
 			canMan = false;
 		} else if (timer.isRunning && timer.inspection == 2 && timer.getTime() > 0) {
 			timer.stop();
@@ -1713,7 +1714,7 @@ setInterval(() => {
 				getEl("competeswitch").style.display = "block";
 		}
 	}
-	if (comstep > 0 && competedata.stage != "ingame") {
+	if (comstep > 0 && (competedata.stage != "ingame")) {
 		getEl("giveup").style.display = "none";
 	}
 	SWITCHER.html(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
@@ -1754,6 +1755,9 @@ setInterval(() => {
 	getEl("race3x3score").style.display = DIM == 50 ? "block" : "none";
 	getEl("race2x2score").style.display = DIM == 100 ? "block" : "none";
 	STARTBLIND.html(DIM == 50 ? "Blind 3x3" : "Blind 2x2");
+	if (timer.isRunning) {
+		getEl("continuematch").style.display = "none";
+	}
 	// }
 }, 10)
 //forever
@@ -2365,7 +2369,6 @@ function stopMoving(){
 }
 function giveUp()
 {
-
 	if (MINIMODE == "virtual") {
 		socket.emit("race_win", socket.id, 1)
 	} else if (MINIMODE == "physical") {
@@ -3726,7 +3729,9 @@ function startRound(data, scramble) {
 		INPUT.attribute('disabled', true);
 		competeTimes(data);
 		isShuffling = true;
-		quickSolve(data.data.orpos);
+		if (data.data.type == "teamblind") {
+			quickSolve(data.data.orpos);
+		}
 		if (scramble) {
 			changeArr(scramble);
 			multiple2("scramble");
@@ -3736,7 +3741,7 @@ function startRound(data, scramble) {
 		competeprogress = 0;
 		canMan = false;
 		waitStopTurning(data.data.type != "teamblind");
-	}, 50);
+	}, 500);
 }
 
 socket.on("update-data", (data) => competeTimes(data));
@@ -3893,7 +3898,9 @@ function competeSolved(data) {
 
 function continueMatch() {
 	setDisplay("none", ["continuematch"]);
-	setDisplay("inline", ["giveup"]);
+	if (getEl("giveup").style.display == "none") {
+
+	}
 	if (competedata.round < competedata.data.dims.length - 1) {
 		console.log("emitting")
 		socket.emit("next-round", room);
@@ -4525,12 +4532,18 @@ function halfScreen(isfull) {
 	fullscreen = isfull;
 	resized();
 }
-async function fadeInText(o, text, color = "red", el = "dnf") {
+async function fadeInText(o, text, color = "red", el = "dnf", time = 600) {
 	const dnfElement = document.getElementById(el);
 	dnfElement.style.display='block';
 	dnfElement.innerHTML = text;
 	dnfElement.style.color = color;
 	dnfElement.style.opacity = o;
+
+	if (o === 0) {
+        setTimeout(() => {
+            dnfElement.style.display = 'none'; // Hide after fade out
+        }, time); // Match timeout with fade duration
+    }
 }
 
 document.getElementById("account").onclick = accountmode;
