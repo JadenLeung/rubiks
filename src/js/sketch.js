@@ -10923,6 +10923,11 @@ socket.on("sending-message", (message, id, names, image) => {
 })
 
 socket.on("joined_room", (room, id, name, image) => {
+	if (id == socket.id) {
+		b_selectdim[competedata.data.dims[0]]();
+		setDisplay("none", ["keymap"]);
+		setDisplay("inline", ["shuffle_div", "reset_div"]);
+	}
 	sendMessage("joined", {room : room, id : id, name : name}, image)
 })
 
