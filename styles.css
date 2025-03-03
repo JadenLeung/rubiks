@@ -184,6 +184,14 @@ button:hover {
     text-align: right;
     z-index:2;
 }
+#practice_container {
+    position: absolute;
+    top: 9%;
+    right: 1%;
+    font-size: 30px;
+    text-align: right;
+    z-index:2;
+}
 #outermoves {
     position: absolute;
     top: 9%;

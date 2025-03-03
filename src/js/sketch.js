@@ -5,8 +5,8 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
-// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-const socket = io("http://localhost:3000");
+const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
+// const socket = io("http://localhost:3000");
 // const socket = io("wss://api.virtual-cube.net:8433/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -139,7 +139,7 @@ export default function (p) {
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
-		BANDAGE_SLOT, CUSTOMSHIFT;
+		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
@@ -207,7 +207,7 @@ export default function (p) {
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
-		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "Double Turns"), 
+		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "3x3x2"), 
 		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
@@ -656,6 +656,17 @@ p.setup = () => {
 	SCRAM.option("Gearcube II");
 	SCRAM.option("Last Layer");
 	SCRAM.option("Pattern");
+
+	PRACTICE_SEL = p.createSelect();
+	PRACTICE_SEL.parent("practice_select");
+	Object.keys(b_selectdim).forEach((o) => {
+		PRACTICE_SEL.option(o);
+	})
+	PRACTICE_SEL.changed(() => {
+		bandaged = [];
+		b_selectdim[PRACTICE_SEL.value()]();
+		getEl("keymap").style.display = "none";
+	})
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
 	for(let i = 0; i < colors2.length; i++)
@@ -3307,7 +3318,7 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
-		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc"]);
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3696,7 +3707,7 @@ function competeAgain() {
 
 socket.on("started-match", (data, scramble) => {
 	MODE = "competing";
-	setDisplay("none", ["waitingroom", "startmatch"]);
+	setDisplay("none", ["waitingroom", "startmatch", "practice_container"]);
 	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time", "giveup"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
@@ -10924,6 +10935,8 @@ socket.on("sending-message", (message, id, names, image) => {
 
 socket.on("joined_room", (room, id, name, image) => {
 	if (id == socket.id) {
+		getEl("practice_container").style.display = "block";
+		PRACTICE_SEL.selected(competedata.data.dims[0][0]);
 		b_selectdim[competedata.data.dims[0][0]]();
 		setDisplay("none", ["keymap"]);
 		setDisplay("inline", ["shuffle_div", "reset_div"]);
