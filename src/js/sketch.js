@@ -1573,6 +1573,9 @@ setInterval(() => {
 			setTimeout(() => {fadeInText(0, "3 secs")}, 400);
 			cstep = 1.5;
 		}
+	} else if (getEl("practice_container").style.display == "block" && isSolved()) {
+		if (timer.isRunning && timer.getTime() > secs)
+			timer.stop();
 	} else if (comstep > 1 && comstep % 2 == 0) {
 		if (isSolved()) {
 			comstep++;
@@ -10939,7 +10942,7 @@ socket.on("joined_room", (room, id, name, image) => {
 		PRACTICE_SEL.selected(competedata.data.dims[0][0]);
 		b_selectdim[competedata.data.dims[0][0]]();
 		setDisplay("none", ["keymap"]);
-		setDisplay("inline", ["shuffle_div", "reset_div"]);
+		setDisplay("inline", ["shuffle_div", "reset_div", "outertime"]);
 	}
 	sendMessage("joined", {room : room, id : id, name : name}, image)
 })
