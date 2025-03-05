@@ -3361,7 +3361,8 @@ function regular(nocustom){
 	m_34step = 0;
 	m_4step = 0;
 	bstep = 0;
-	getEl("r_iframe").src = "";
+	roundresult = []
+	getEl("r_iframe").src = "about:blank";
 	juststarted = false;
 	isShuffling = false;
 	ma_data.type = "";
@@ -3748,6 +3749,9 @@ function startRound(data, scramble) {
 	else
 		b_selectdim[data.data.dims[data.round][1]]();
 	setTimeout(() => {
+		if (MODE != "competing") {
+			return;
+		}
 		INPUT.attribute('disabled', true);
 		competeTimes(data);
 		isShuffling = true;
@@ -3807,9 +3811,6 @@ function competeTimes(data, end = false) {
 				str += ", progress: " + strarr[i][1] + "%";
 			}
 			str += ", time: " + (strarr[i][2] >= DNF ? "DNF" : strarr[i][2]) + "s";
-			// if (rank == 1 && end) {
-			// 	str += " 🔥";
-			// }
 			if (strarr[i][0] == socket.id) {
 				str += `</b>`;
 			}
@@ -5592,7 +5593,7 @@ function speedRace(type){
 }
 function speedRace2(){
 	canMan = true;
-	race = 2;
+	timer.stop();
 	timer.reset();
 	quickSolve();
 	if (MINIMODE == "physical") {
@@ -5621,11 +5622,13 @@ function speedRace2(){
 	canMan = false;
 }
 function raceWinner(winner) {
-	getEl("giveup").style.display = "none";
-	round++;
-	roundresult[winner]++;
-	roundresult.push([Math.round(timer.getTime() / 10)/100.0, winner]);
-	raceResults(winner);
+	if (race > 0) {
+		getEl("giveup").style.display = "none";
+		round++;
+		roundresult[winner]++;
+		roundresult.push([Math.round(timer.getTime() / 10)/100.0, winner]);
+		raceResults(winner);
+	}
 }
 function raceResults(winner) {
 	if (winner == 0) {
@@ -7179,7 +7182,7 @@ p.keyPressed = (event) => {
 			return;
 		}
 		if(document.getElementById("s_instruct").innerHTML.includes("In one game of"))
-		regular();
+			regular();
 		if(MODE == "moves") {
 			if (getEl("blind").style.display == "block") {
 				regular();
@@ -7635,6 +7638,9 @@ function multiple(nb, timed, use = "default") {
 		if (use == "realscramble" && isSolved() && ["speed", "moves"].includes(MODE)) {
 			shuffleCube(true);
 			return;
+		}
+		if (race == 1) {
+			race = 2;
 		}
 		canMan = true;
 		if (["realscramble", "scramble", "flexdo"].includes(use)) {
@@ -11052,7 +11058,9 @@ function isRectangle(cubies) {
 			corners++;
 		}
 	})
-	return corners == 4;
+	let numsquished = +(minx == maxx) + (miny == maxy) + (minz == maxz)
+	console.log("DIMS IS ", numsquished)
+	return corners == 4 || numsquished;
 }
 function uniform(dir) {
 	let base = 0;
