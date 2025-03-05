@@ -7635,7 +7635,7 @@ function multiple(nb, timed, use = "default") {
 	else
 	{
 		shuffling = false;
-		if (use == "realscramble" && isSolved() && ["speed", "moves"].includes(MODE)) {
+		if (use == "realscramble" && isSolved() && ![50, 100].includes(DIM)) {
 			shuffleCube(true);
 			return;
 		}
