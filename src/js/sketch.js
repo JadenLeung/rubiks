@@ -5569,7 +5569,7 @@ function speedRace(type){
 	round = 1;
 	roundresult = [0, 0];
 	showSpeed();
-	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par"]); 
+	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par", "r_physical"]); 
 	setDisplay("block", ["readybot", "delaywhole", "race_instruct_div", "botestimate"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct"])
 
