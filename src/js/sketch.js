@@ -535,9 +535,15 @@ p.setup = () => {
 
 		RACE_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
 		RACE_SLIDER.parent("r_slider");
+		if (localStorage.racespeed) {
+			RACE_SLIDER.value(localStorage.racespeed);
+		}
 
 		RACE_DELAY_SLIDER = p.createSlider(0, 4, 0, 0.1);
 		RACE_DELAY_SLIDER.parent("r_delay");
+		if (localStorage.racedelay) {
+			RACE_DELAY_SLIDER.value(localStorage.racedelay);
+		}
 		
 
 		setWidth();
@@ -1369,6 +1375,8 @@ setInterval(() => {
 	localStorage.hollow = HOLLOW.checked();
 	localStorage.border_width = BORDER_SLIDER.value();
 	localStorage.audioon = audioon;
+	localStorage.racespeed = RACE_SLIDER.value();
+	localStorage.racedelay = RACE_DELAY_SLIDER.value();
 	if (localStorage.c_today == 0) localStorage.c_today = "DNF";
 	if (localStorage.c_today2 == 0) localStorage.c_today2 = "DNF";
 	if (!localStorage.username) 
