@@ -3681,7 +3681,7 @@ function enterLobby(data, r) {
 				}
 				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[1]}`;
 				if (data.data.shufflearr.length > 0) {
-					str += `, Turning: ${data.data.shufflearr[x][1]}<br>&ensp;`;
+					str += `, Turning: ${data.data.shufflearr[x][1]}&ensp;`;
 				}
 				str += "<br>";
 			} else {
@@ -3691,7 +3691,7 @@ function enterLobby(data, r) {
 				}
 				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1]}</b>`;
 				if (data.data.shufflearr.length > 0) {
-					str += `, Turning: ${data.data.shufflearr[x][1]}<br>&ensp;`;
+					str += `, Turning: ${data.data.shufflearr[x][1]}&ensp;`;
 				}
 				str += "<br>";
 			}
@@ -4048,7 +4048,7 @@ function continueMatch() {
 }
 
 function competeSettings(num = compete_type) {
-	if (num == "1v1" && compete_type == "group" && competedata.userids.length > 2) {
+	if (num == "1v1" && compete_type == "group" && competedata.userids && competedata.userids.length > 2) {
 		alert("Cannot turn group compete into 1v1 match.");
 		return;
 	}
