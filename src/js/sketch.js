@@ -4,6 +4,7 @@ import Cuby from './cuby.js';
 import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
+import {DIMS_OBJ} from '../data/dims.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3000");
@@ -24,6 +25,7 @@ export default function (p) {
 	let raceid = "";
 	let previouschatid = "";
 	let room = 0;
+	let compete_cube = "";
 	let compete_type = "";
 	let compete_alltimes = [];
 	let fullscreen = false;
@@ -139,7 +141,7 @@ export default function (p) {
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
-		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL;
+		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
@@ -673,6 +675,12 @@ p.setup = () => {
 		b_selectdim[PRACTICE_SEL.value()]();
 		getEl("keymap").style.display = "none";
 	})
+	
+	COMPETE_ADVANCED = p.createCheckbox();
+	COMPETE_ADVANCED.parent("compete_advanced");
+	COMPETE_ADVANCED.changed(() => {
+        competeSettings();
+    });
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
 	for(let i = 0; i < colors2.length; i++)
@@ -3329,7 +3337,7 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
-		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container"]);
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3366,7 +3374,7 @@ function regular(nocustom){
 	juststarted = false;
 	isShuffling = false;
 	ma_data.type = "";
-	previouschatid = ""
+	compete_cube = previouschatid = ""
 	pracmode = "none";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	socket.emit("leave-room", room);
@@ -3611,6 +3619,9 @@ socket.on("room_change", rooms => {
 })
 
 function enterLobby(data, r) {
+	if (getEl("creating_match").style.display != "none") {
+		return;
+	}
 	compete_type = data.data.type;
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("block", ["waitingroom"]);
@@ -3622,7 +3633,19 @@ function enterLobby(data, r) {
 	setDisplay((data.userids.length > 1 || data.data.type == "group") && data.data.leader == socket.id ? "none" : "block", ["cantmatch"]);
 	getEl("cantmatch").innerHTML = 
 			`${data.data.leader != socket.id ? "Waiting for host to start match." : "Waiting for opponent."}`
+
 	competedata = data;
+	let cubenum = 1
+	if (competedata.data.type != "1v1" || socket.id == competedata.data.leader) {
+		cubenum = 0;
+	}
+	if (compete_cube != competedata.data.dims[0]) {
+		PRACTICE_SEL.selected(competedata.data.dims[0][cubenum]);
+		b_selectdim[competedata.data.dims[0][cubenum]]();
+		compete_cube = competedata.data.dims[0];
+		getEl("keymap").style.display = "none";
+	}
+
 	let str = ""
 	data.userids.forEach((id, x) => {
 		str += (x + 1) + ") "
@@ -3648,19 +3671,38 @@ function enterLobby(data, r) {
 	if (data.data.type == "1v1") {
 		data.data.dims.forEach((cube, x) => {
 			str += `Round ${x + 1})`
+			if (data.data.shufflearr.length > 0) {
+				str += `<br>&ensp;`
+			}
 			if (data.data.leader == socket.id) {
 				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0]}</b>, `;
+				if (data.data.shufflearr.length > 0) {
+					str += `Turning: ${data.data.shufflearr[x][0]}<br>&ensp;`;
+				}
 				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[1]}`;
+				if (data.data.shufflearr.length > 0) {
+					str += `, Turning: ${data.data.shufflearr[x][1]}<br>&ensp;`;
+				}
 				str += "<br>";
 			} else {
 				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[0]}, `;
+				if (data.data.shufflearr.length > 0) {
+					str += `Turning: ${data.data.shufflearr[x][0]}<br>&ensp;`;
+				}
 				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1]}</b>`;
+				if (data.data.shufflearr.length > 0) {
+					str += `, Turning: ${data.data.shufflearr[x][1]}<br>&ensp;`;
+				}
 				str += "<br>";
 			}
 		})
 	} else {
 		data.data.dims.forEach((cube, x) => {
-			str += `Round ${x + 1}): ${cube[0]}<br>`
+			str += `Round ${x + 1}): ${cube[0]}`
+			if (data.data.shufflearr.length > 0) {
+				str += `, Turning: ${data.data.shufflearr[x]}`;
+			}
+			str += "<br>";
 		})
 	}
 	if (data.data.type == "teamblind") {
@@ -3682,6 +3724,11 @@ function createMatch(newmatch = true) {
 
 function finishMatch() {
 	let dimarr = competeDims();
+	let shufflearr = false;
+	if (COMPETE_ADVANCED.checked()) {
+		shufflearr = dimarr.filter((_, index) => index % 2 != 0);
+		dimarr = dimarr.filter((_, index) => index % 2 == 0);
+	}
 	let numrounds = getEl("compete_rounds").value;
 	if (getEl("compete_rounds").value < 1 || isNaN(numrounds)) {
 		alert("Please enter an integer greater than 1");
@@ -3689,7 +3736,7 @@ function finishMatch() {
 	}
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
-	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id,
+	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id, shufflearr: shufflearr,
 		visibility: getEl("private").checked ? "private" : "public", orpos : allcubies, 
 		startblind: getEl("startblind1").checked ? 0 : 1};
 	if (room == 0) {
@@ -3720,7 +3767,7 @@ function competeAgain() {
 socket.on("started-match", (data, scramble) => {
 	MODE = "competing";
 	setDisplay("none", ["waitingroom", "startmatch", "practice_container"]);
-	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time", "giveup"]);
+	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
@@ -3737,18 +3784,31 @@ socket.on("next-match", (data, scramble) => startRound(data, scramble))
 
 function startRound(data, scramble) {
 	setDisplay("none", ["continuematch", "waitingmatch"])
-	setDisplay("inline", ["giveup"]);
+	getEl("input").disabled = true;
 	getEl("ss_container").src = "";
 	canMan = true;
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
 	competedata = data;
-	if (data.data.type != "1v1" || data.data.leader == socket.id)
+	let shufflemap = {"Normal" : "Normal", "3x3x2" : "3x3x2", "Double" : "Double Turns", "Gear" : "Gearcube"};
+	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		b_selectdim[data.data.dims[data.round][0]]();
-	else
+		if (data.data.shufflearr.length > 0) {
+			if (competedata.data.type == "1v1" && shufflemap[data.data.shufflearr[data.round][0]] != "Default")
+				INPUT.selected(shufflemap[data.data.shufflearr[data.round][0]]);
+			else if (shufflemap[data.data.shufflearr[data.round]] != "Default")
+			    INPUT.selected(shufflemap[data.data.shufflearr[data.round]]);
+		}
+	} else {
 		b_selectdim[data.data.dims[data.round][1]]();
+		if (data.data.shufflearr.length > 0 && shufflemap[data.data.shufflearr[data.round][1]] != "Default") {
+			INPUT.selected(shufflemap[data.data.shufflearr[data.round][1]]);
+		}
+	}
+	SCRAM.selected(INPUT.value());
 	setTimeout(() => {
+		setDisplay("block", ["input"]);
 		if (MODE != "competing") {
 			return;
 		}
@@ -3986,22 +4046,28 @@ function continueMatch() {
 	
 	}
 }
+
 function competeSettings(num = compete_type) {
+	if (num == "1v1" && compete_type == "group" && competedata.userids.length > 2) {
+		alert("Cannot turn group compete into 1v1 match.");
+		return;
+	}
     compete_type = num;
     getEl("com_1v1_div").style.display = num == "1v1" ? "block" : "none";
     getEl("com_group_div").style.display = num == "group" ? "block" : "none";
-	getEl("com_teamblind_div").style.display = num == "teamblind" ? "block" : "none";
-	console.log(num);
+    getEl("com_teamblind_div").style.display = num == "teamblind" ? "block" : "none";
+    setDisplay(num != "teamblind" ? "block" : "none", ["advanced_container"]);
+    console.log(num);
+
     COMPETE_1V1.style("backgroundColor", num == "1v1" ? "#00488F" : "");
     COMPETE_GROUP.style("backgroundColor", num == "group" ? "#00488F" : "");
-	COMPETE_TEAMBLIND.style("backgroundColor", num == "teamblind" ? "#00488F" : "");
+    COMPETE_TEAMBLIND.style("backgroundColor", num == "teamblind" ? "#00488F" : "");
+
     getEl("finish_match").style.display = "block";
-	getEl("match_description").innerHTML = competeText();
-	if (["1v1", "group"].includes(num)) {
-		getEl("round_length").style.display = "block";
-	} else {
-		getEl("round_length").style.display = "none";
-	}
+    getEl("match_description").innerHTML = competeText();
+    
+    getEl("round_length").style.display = ["1v1", "group"].includes(num) ? "block" : "none";
+
     let container = document.getElementById(num == "1v1" ? "1v1_container" : "group_container");
     container.innerHTML = "";
     container.style.display = "block";
@@ -4014,59 +4080,92 @@ function competeSettings(num = compete_type) {
     };
 
     const flexRow = { display: "flex", width: "400px", gap: "10px", alignItems: "center", marginBottom: "10px" };
+    const columnStyle = { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
 
     let rows = [];
 
     if (num == "1v1") {
         let headerRow = createEl("div", "", flexRow);
         headerRow.append(
-            createEl("span", "", { width: "80px" }), 
-            createEl("span", "You", { flex: "1", textAlign: "left" }), 
+            createEl("span", "", { width: "80px" }),
+            createEl("span", "You", { flex: "1", textAlign: "left" }),
             createEl("span", "Opponent", { flex: "1", textAlign: "left" }),
             createEl("span", "", { width: "120px" }) // Extra column
         );
         container.appendChild(headerRow);
     }
 
-	const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "2x2x3", "2x2x4", "2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "Xmas 2x2", "Xmas 3x3", "Sandwich"];
+    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "2x2x3", "2x2x4", "2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "Xmas 2x2", "Xmas 3x3", "Sandwich"];
+    const optionarr = ["Default", "3x3x2", "Double", "Gear"]; // Example options
+
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
-        let label = createEl("span", `Round ${i + 1}`, { width: "80px" });
-        let select1 = createEl("select", "", { flex: "1" });
-       	alldims.forEach(text => select1.appendChild(createEl("option", text)));
-        row.append(label, select1);
-        
-        let select2 = null;
+        let label = createEl("span", `Round ${i + 1}  ${COMPETE_ADVANCED.checked() ? "Turning:" : ""}`, { width: "80px" });
+
+        // Player 1 Container
+        let cubeContainer = createEl("div", "", columnStyle);
+        let select1 = createEl("select", "", { width: "100%" });
+        alldims.forEach(text => select1.appendChild(createEl("option", text)));
+
+		let optionSelect1;
+		optionSelect1 = createEl("select", "", { width: "100%" });
+		optionarr.forEach(text => optionSelect1.appendChild(createEl("option", text)));
+
+		if (COMPETE_ADVANCED.checked()) {
+			cubeContainer.append(select1, optionSelect1);
+		} else {
+			cubeContainer.append(select1);
+		}
+        row.append(label, cubeContainer);
+
+        let select2 = null, optionSelect2 = null;
         if (num == "1v1") {
-            select2 = createEl("select", "", { flex: "1" });
+            let cubeContainer2 = createEl("div", "", columnStyle);
+            select2 = createEl("select", "", { width: "100%" });
             alldims.forEach(text => select2.appendChild(createEl("option", text)));
-            row.append(select2);
+
+            optionSelect2 = createEl("select", "", { width: "100%" });
+            optionarr.forEach(text => optionSelect2.appendChild(createEl("option", text)));
+			if (COMPETE_ADVANCED.checked()) {
+            	cubeContainer2.append(select2, optionSelect2);
+			} else {
+				cubeContainer2.append(select2);
+			}
+            row.append(cubeContainer2);
         }
-        
+
         let extraColumn = createEl("span", "", { width: "120px" });
         if (i === 0) {
             let applyButton = document.createElement("button");
             applyButton.textContent = "Apply row to all";
             applyButton.classList.add("btn", "btn-secondary");
-			applyButton.style.fontSize = "10px";
-			applyButton.style.paddingLeft = "6px";
-			applyButton.style.paddingRight = "6px";
+            applyButton.style.fontSize = "10px";
+            applyButton.style.paddingLeft = "6px";
+            applyButton.style.paddingRight = "6px";
             applyButton.onclick = () => {
                 for (let j = 1; j < rows.length; j++) {
                     rows[j].select1.value = rows[0].select1.value;
+                    rows[j].optionSelect1.value = rows[0].optionSelect1.value;
                     if (num == "1v1" && rows[j].select2) {
                         rows[j].select2.value = rows[0].select2.value;
+                        rows[j].optionSelect2.value = rows[0].optionSelect2.value;
                     }
                 }
             };
             extraColumn.appendChild(applyButton);
         }
         row.append(extraColumn);
-        
+
         container.appendChild(row);
-        rows.push({ select1, select2 });
+		
+		if (COMPETE_ADVANCED.checked()) {
+			rows.push({ select1, optionSelect1, select2, optionSelect2 });
+		} else {
+			rows.push({ select1, select2 });
+		}
     }
 }
+
 
 function displayPublicRooms() {
     let container = document.getElementById("public_rooms");  
@@ -4163,8 +4262,20 @@ function getSelectedValues(containerId, rows, cols) {
 function competeDims() {
 	let a = []
 	if (compete_type == "teamblind") a = [[TEAMBLIND_SEL.value()]]
-	else if (compete_type == "1v1") a = getSelectedValues("1v1_container", getEl("compete_rounds").value, 2);
-	else a = getSelectedValues("group_container", getEl("compete_rounds").value, 1);
+	else if (compete_type == "1v1") {
+		a = getSelectedValues("1v1_container", 
+		getEl("compete_rounds").value * (COMPETE_ADVANCED.checked() + 1), 2);
+		let b = [];
+		if (COMPETE_ADVANCED.checked()) {
+			for (let i = 0; i < a.length; i += 2) {
+				b.push([a[i][0], a[i+1][0]]);
+				b.push([a[i][1], a[i+1][1]]);
+			}
+			a = b;
+		}
+	} else a = getSelectedValues("group_container", getEl("compete_rounds").value *
+			(COMPETE_ADVANCED.checked() + 1), 1);
+
 	return a;
 }
 
@@ -4376,6 +4487,7 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		isShuffling = false;
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
+			setDisplay("inline", ["giveup"]);
 			comstep++;
 			competeScreenshot();
 			setDisplay(competedata.data.type == "1v1" ? "block" : "none", ["ss_container"]);
@@ -7254,7 +7366,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(SPEED, RACE_SLIDER.value());
+		console.log(SCRAM.value());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7635,7 +7747,7 @@ function multiple(nb, timed, use = "default") {
 	else
 	{
 		shuffling = false;
-		if (use == "realscramble" && isSolved() && ![50, 100].includes(DIM)) {
+		if (isSolved() && use == "realscramble" && (![50, 100].includes(DIM) || MODE == "competing")) {
 			shuffleCube(true);
 			return;
 		}
@@ -10953,8 +11065,6 @@ socket.on("sending-message", (message, id, names, image) => {
 socket.on("joined_room", (room, id, name, image) => {
 	if (id == socket.id) {
 		getEl("practice_container").style.display = "block";
-		PRACTICE_SEL.selected(competedata.data.dims[0][0]);
-		b_selectdim[competedata.data.dims[0][0]]();
 		setDisplay("none", ["keymap"]);
 		setDisplay("inline", ["shuffle_div", "reset_div", "outertime"]);
 	}
@@ -11326,7 +11436,7 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-    speedmode();
+    competemode();
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {

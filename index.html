@@ -40,7 +40,7 @@
 		</div>
 		<button class = "btn btn-sm login bi bi-people" style = "background-color: orange;"id = "compete">&nbsp;Multiplayer Games</button>
 		<button class = "btn btn-warning btn-sm login bi bi-stopwatch" id = "challenge">&nbsp;Weekly Challenges</button>
-		<li style = "float:right;" id = "bannercube"><a style = "color:white">Virtual racing added! Go race the autosolver.</a></li>
+		<li style = "float:right;" id = "bannercube"><a style = "color:white">Turn restrictions added in Multiplayer Battle</a></li>
 		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
 	<div class="row">
@@ -503,8 +503,11 @@
 						<input type="radio" id="startblind2" name="startblind" style = "display: inline">
 						<label for="startblind2" style = "display: inline">Teammate</label>
 					</div> 
-
 				</div>
+				<p style = "margin-top: 20px;" id = "advanced_container">
+					<label for="compete_advanced">Turn restrictions: </label>
+					<span id="compete_advanced"></span>
+				</p>
 				<p id = "finish_match" style = "margin-top: 40px;"></p>
 			</div>
 			<div id = "waitingroom" style = "user-select: text;">
