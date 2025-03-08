@@ -2553,12 +2553,13 @@ function bandageZero(){
 }
 function changeZero()
 {
-	SEL.selected("blue");
-	SEL2.selected("orange");
-	SEL3.selected("white");
-	SEL4.selected("red");
-	SEL5.selected("green");
-	SEL6.selected("yellow");
+	const colormap = {"g" : "green", "b" : "blue", "r" : "red", "y" : "yellow", "w" : "white", "m" : "magenta", "k" : "black"}
+	SEL.selected(colormap[topColor()]);
+	SEL2.selected(colormap[allcubies[12][3]]);
+	SEL3.selected(colormap[allcubies[16][0]]);
+	SEL4.selected(colormap[opposite[allcubies[12][3]]]);
+	SEL5.selected(colormap[opposite[topColor()]]);
+	SEL6.selected("white");
 	for(let i = 0; i < 27; i++)
 	{
 		CHECK[i].remove();
@@ -3177,6 +3178,14 @@ function Custom2(){
 }
 function Custom()
 {
+	const colormap = {"g" : "green", "b" : "blue", "r" : "red", "y" : "yellow", "w" : "white", "o" : "orange", "m" : "magenta", "k" : "black"}
+	SEL.selected(colormap[topColor()]);
+	SEL2.selected(colormap[allcubies[12][3]]);
+	SEL3.selected(colormap[allcubies[16][0]]);
+	SEL4.selected(colormap[opposite[allcubies[12][3]]]);
+	SEL5.selected(colormap[opposite[topColor()]]);
+	SEL6.selected(colormap[opposite[allcubies[16][0]]]);
+	console.log(colormap[opposite[allcubies[16][0]]],opposite[allcubies[16][0]])
 	custom = 1;
 	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("cube").style.display = "none";
@@ -3350,7 +3359,8 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
-		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container"]);
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container",
+		"deleteban"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -7395,9 +7405,27 @@ p.keyPressed = (event) => {
 		}
 		return;
 	}
+	if (p.keyCode == 219) { //[
+		if (MODE == "cube" && custom == 0) {
+			changeMod(-1);
+		}
+		if (getEl("deleteban").style.display != "none") {
+			leftBan();
+		}
+		return;
+	}
+	if (p.keyCode == 221) { //]
+		if (MODE == "cube" && custom == 0) {
+			changeMod(1);
+		}
+		if (getEl("deleteban").style.display != "none") {
+			rightBan();
+		}
+		return;
+	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(compete_shufflearr);
+		console.log(getEl("leftban").style.display);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
