@@ -28,6 +28,7 @@ export default function (p) {
 	let compete_cube = "";
 	let compete_type = "";
 	let compete_dims = [];
+	let compete_shufflearr = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
 	const speeddata = {
@@ -1794,6 +1795,9 @@ setInterval(() => {
 	compete_dims = competeDims();
 	if (COMPETE_ADVANCED.checked()) {
 		compete_dims = compete_dims.filter((_, index) => index % 2 == 0);
+		compete_shufflearr = competeDims().filter((_, index) => index % 2 == 1)
+	} else {
+		compete_shufflearr = [];
 	}
 	// }
 }, 10)
@@ -4087,7 +4091,7 @@ function competeSettings(num = compete_type) {
         return el;
     };
 
-    const flexRow = { display: "flex", width: "400px", gap: "10px", alignItems: "center", marginBottom: "10px" };
+    const flexRow = { display: "flex", width: num == "1v1" ? "450px" : "350px", gap: "10px", alignItems: "center", marginBottom: "10px" };
     const columnStyle = { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
 
     let rows = [];
@@ -4121,6 +4125,9 @@ function competeSettings(num = compete_type) {
 		let optionSelect1;
 		optionSelect1 = createEl("select", "", { width: "100%" });
 		optionarr.forEach(text => optionSelect1.appendChild(createEl("option", text)));
+		if (compete_shufflearr.length > 0 && compete_shufflearr[i] && compete_shufflearr[i][0]) {
+			optionSelect1.value = compete_shufflearr[i][0];
+		}
 
 		if (COMPETE_ADVANCED.checked()) {
 			cubeContainer.append(select1, optionSelect1);
@@ -4134,9 +4141,15 @@ function competeSettings(num = compete_type) {
             let cubeContainer2 = createEl("div", "", columnStyle);
             select2 = createEl("select", "", { width: "100%" });
             alldims.forEach(text => select2.appendChild(createEl("option", text)));
+			if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][1]) {
+				select2.value = compete_dims[i][1];
+			}
 
             optionSelect2 = createEl("select", "", { width: "100%" });
             optionarr.forEach(text => optionSelect2.appendChild(createEl("option", text)));
+			if (compete_shufflearr.length > 0 && compete_shufflearr[i] && compete_shufflearr[i][1]) {
+				optionSelect2.value = compete_shufflearr[i][1];
+			}
 			if (COMPETE_ADVANCED.checked()) {
             	cubeContainer2.append(select2, optionSelect2);
 			} else {
@@ -7382,7 +7395,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log((compete_dims));
+		console.log(compete_shufflearr);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
