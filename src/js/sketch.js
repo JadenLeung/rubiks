@@ -27,6 +27,7 @@ export default function (p) {
 	let room = 0;
 	let compete_cube = "";
 	let compete_type = "";
+	let compete_dims = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
 	const speeddata = {
@@ -85,6 +86,7 @@ export default function (p) {
 	let custom = 0;
 	let peeks = 0;
 	let inp;
+	let numshuffle = 0;
 	let MODE = "normal";
 	let MINIMODE = "normal";
 	let INPUT, SESSION;
@@ -1596,9 +1598,10 @@ setInterval(() => {
 		if (isSolved()) {
 			comstep++;
 			timer.stop();
-			if(ao5 == 0) ao5 = [Math.round(timer.getTime() / 10)/100.0];
-			else ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			socket.emit("solved", room, Math.round(timer.getTime() / 10)/100.0);
+			let time = timer.getTime() < 0 ? 0 : Math.round(timer.getTime() / 10)/100.0 == 0;
+			if(ao5 == 0) ao5 = [time];
+			else ao5.push(time);
+			socket.emit("solved", room, time);
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
 			}
@@ -1787,6 +1790,10 @@ setInterval(() => {
 	STARTBLIND.html(DIM == 50 ? "Blind 3x3" : "Blind 2x2");
 	if (timer.isRunning) {
 		getEl("continuematch").style.display = "none";
+	}
+	compete_dims = competeDims();
+	if (COMPETE_ADVANCED.checked()) {
+		compete_dims = compete_dims.filter((_, index) => index % 2 == 0);
 	}
 	// }
 }, 10)
@@ -3624,7 +3631,8 @@ function enterLobby(data, r) {
 	}
 	compete_type = data.data.type;
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
-	setDisplay("block", ["waitingroom"]);
+	setDisplay("inline", ["outertime"]);
+	setDisplay("block", ["waitingroom", "practice_container"]);
 	setDisplay(data.data.leader == socket.id ? "inline" : "none", ["editcompete"]);
 	console.log("Refreshed")
 	room = r;
@@ -3714,7 +3722,7 @@ function enterLobby(data, r) {
 	getEl("competerules").innerHTML = str;
 }
 function createMatch(newmatch = true) {
-	setDisplay("none", ["lobby", "waitingroom", "startmatch"]);
+	setDisplay("none", ["lobby", "waitingroom", "startmatch", "outertime", "practice_container"]);
 	setDisplay("block", ["creating_match"]);
 	if (newmatch) {
 		setDisplay("none", ["round_length"]);
@@ -3783,7 +3791,7 @@ socket.on("started-match", (data, scramble) => {
 socket.on("next-match", (data, scramble) => startRound(data, scramble))
 
 function startRound(data, scramble) {
-	setDisplay("none", ["continuematch", "waitingmatch"])
+	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div"])
 	getEl("input").disabled = true;
 	getEl("ss_container").src = "";
 	canMan = true;
@@ -4106,6 +4114,9 @@ function competeSettings(num = compete_type) {
         let cubeContainer = createEl("div", "", columnStyle);
         let select1 = createEl("select", "", { width: "100%" });
         alldims.forEach(text => select1.appendChild(createEl("option", text)));
+	    if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][0]) {
+			select1.value = compete_dims[i][0];
+		}
 
 		let optionSelect1;
 		optionSelect1 = createEl("select", "", { width: "100%" });
@@ -4273,8 +4284,10 @@ function competeDims() {
 			}
 			a = b;
 		}
-	} else a = getSelectedValues("group_container", getEl("compete_rounds").value *
+	} else if (compete_type == "group") {
+		a = getSelectedValues("group_container", getEl("compete_rounds").value *
 			(COMPETE_ADVANCED.checked() + 1), 1);
+	}
 
 	return a;
 }
@@ -6610,6 +6623,9 @@ function shufflePossible(len, total2, prev){
 }
 function shuffleCube(override = false) { 
 	if((canMan == false || customb == 1) && !override) return;
+	if (!override) {
+		numshuffle = 0;
+	}
 	if(bandaged.length > 0){
 		if (DIM == 8)
 			shufflePossible(60, "", "  ");
@@ -7366,7 +7382,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(SCRAM.value());
+		console.log((compete_dims));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7747,9 +7763,12 @@ function multiple(nb, timed, use = "default") {
 	else
 	{
 		shuffling = false;
-		if (isSolved() && use == "realscramble" && (![50, 100].includes(DIM) || MODE == "competing")) {
+		if (isSolved() && numshuffle < 2 && use.includes("scramble") && (![50, 100].includes(DIM) || MODE == "competing")) {
 			shuffleCube(true);
+			numshuffle++;
 			return;
+		} else {
+			numshuffle = 0;
 		}
 		if (race == 1) {
 			race = 2;
