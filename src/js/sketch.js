@@ -41,7 +41,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let othershuffle = false;
-	let SWITCHTIME = 3;
+	let SWITCHTIME = 15;
 	let isShuffling = false;
 	let otherShuffling = false;
 	let competeprogress = 0;
@@ -1744,8 +1744,10 @@ setInterval(() => {
 	if (comstep > 0 && competedata.stage == "ingame") {
 		socket.emit("progress-update", room, competeprogress, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
 		if (competedata.data.type == "teamblind" && competedata.data.time > competedata.data.startblind + SWITCHTIME) {
-			if (!isSolved())
-				getEl("competeswitch").style.display = "block";
+			console.log("HERE")
+			if (!isSolved()) {
+				setDisplay("block", ["blind2", "competeswitch"])
+			}
 		}
 	}
 	if (comstep > 0 && (competedata.stage != "ingame")) {
