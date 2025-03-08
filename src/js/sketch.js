@@ -5752,13 +5752,16 @@ function speedRace2(){
 	timer.reset();
 	quickSolve();
 	if (MINIMODE == "physical") {
-		shuffling = true;
-		shuffleCube();
-		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
-		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
-			: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
-		juststarted = true;
-		setDisplay("none", ["delaywhole", "speed", "slider_div"]);
+		setTimeout(() => {
+			canMan = true;
+			shuffling = true;
+			shuffleCube();
+			document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
+			document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
+				: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
+			juststarted = true;
+			setDisplay("none", ["delaywhole", "speed", "slider_div"]);
+		}, 200)
 	} else {
 		document.getElementById("s_INSTRUCT").innerHTML = "Connecting to autosolve bot";
 		setDisplay("inline", ["reset2_div", "undo", "redo", "slider_div", "delaywhole", "speed"]);
