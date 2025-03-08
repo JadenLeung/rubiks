@@ -3642,6 +3642,7 @@ socket.on("room_change", rooms => {
 })
 
 function enterLobby(data, r) {
+	topWhite();
 	if (getEl("creating_match").style.display != "none") {
 		return;
 	}
