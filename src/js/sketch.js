@@ -4466,6 +4466,10 @@ function startMarathon(type) {
 	} else if (type == "bandage") {
 		ma_data.cubes = ["Cube Bandage", "Slice Bandage", "Bandaged 2x2", "Bandaged 3x3x2", "Pillars", "Triple Quad", "Z Perm", "T Perm"];
 	}
+
+	if (type == "blind") {
+		setDisplay("block", ["peek_container"]);
+	}
 	mastep = 0;
 	shapemarathon();
 }
