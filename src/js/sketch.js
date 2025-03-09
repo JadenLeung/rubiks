@@ -220,6 +220,7 @@ export default function (p) {
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
 		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
 		"Sandwich" : change17.bind(null, 0), "Jank 2x2" : change10,
+		"4x4 Plus Cube" : switchSize.bind(null, 4, "4x4plus"),
 		"Cube Bandage" : change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]),
 		"Slice Bandage" : change11.bind(null, 7, [[3,4,5,6,7,8]]),
 		"Bandaged 2x2" : change14.bind(null, 10, [[6,8]]),
@@ -387,6 +388,10 @@ function setWidth() {
 		CAMZOOM = ZOOM3;
 		setDisplay("none", ["audio", "bannercube", "bannerlogin"]);
 		getEl("challenge").innerHTML = "&nbsp;Weekly";
+		getEl("compete").innerHTML = "&nbsp;Co-op";
+		getEl("account").innerHTML = "&nbsp;Create Account";
+		getEl("loaddata").innerHTML = ""
+		getEl("savedata").innerHTML = ""
 		getEl("banner").style.paddingBottom = "10px";
 		getEl("or_instruct4").style.paddingTop = "10px";
 
@@ -394,6 +399,14 @@ function setWidth() {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
 		CAMZOOM = ZOOM3;
+		getEl("banner").style.paddingBottom = "0px";
+		getEl("or_instruct4").style.paddingTop = "0px";
+		setDisplay("inline", ["audio", "bannercube", "bannerlogin"]);
+		getEl("challenge").innerHTML = "&nbsp;Weekly Challenges";
+		getEl("compete").innerHTML = "&nbsp;Multiplayer Battle";
+		getEl("account").innerHTML = "&nbsp;Create an Account";
+		getEl("loaddata").innerHTML = "&nbsp;Load Data";
+		getEl("savedata").innerHTML = "&nbsp;Save Data";
 	}
 	// var isSafari = false; //window.safari !== undefined || isIpad(); //safari
 	if (change[0] != ZOOM2 && change[1] != ZOOM3) {
@@ -4123,7 +4136,9 @@ function competeSettings(num = compete_type) {
         container.appendChild(headerRow);
     }
 
-    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "2x2x3", "2x2x4", "2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "Xmas 2x2", "Xmas 3x3", "Sandwich"];
+    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
+		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
+		"Sandwich", "Bandaged 2x2"];
     const optionarr = ["Default", "3x3x2", "Double", "Gear"]; // Example options
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
@@ -4137,6 +4152,10 @@ function competeSettings(num = compete_type) {
 	    if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][0]) {
 			select1.value = compete_dims[i][0];
 		}
+		select1.addEventListener("change", (event) => {
+			b_selectdim[select1.value]();
+			getEl("keymap").style.display = "none";
+		});
 
 		let optionSelect1;
 		optionSelect1 = createEl("select", "", { width: "100%" });
@@ -7436,7 +7455,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(getEl("leftban").style.display);
+		console.log(modnum);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8076,6 +8095,10 @@ function refreshButtons()
 		document.getElementById("or_instruct5").innerHTML = "Bandaged Mods";
 	else 
 		document.getElementById("or_instruct5").innerHTML = "Big Cubes";
+
+	getEl("shapemods").style.display = modnum == 0 ? "block" : "none";
+	getEl("bandagemods").style.display = modnum == 1 ? "block" : "none";
+	getEl("bigcubes").style.display = modnum == 2 ? "block" : "none";
 	
 	const elements = [
 		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
