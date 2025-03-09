@@ -394,7 +394,6 @@ function setWidth() {
 		getEl("savedata").innerHTML = ""
 		getEl("banner").style.paddingBottom = "10px";
 		getEl("or_instruct4").style.paddingTop = "10px";
-
 	} else {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
@@ -1817,7 +1816,7 @@ setInterval(() => {
 		compete_shufflearr = [];
 	}
 	getEl("practice_instruct").style.display = isthin ? "none" : "block";
-	PRACTICE_SEL.style('width', isthin ? "100px" : "");
+	PRACTICE_SEL.style('width', isthin ? "125px" : "");
 
 }, 10)
 //forever
