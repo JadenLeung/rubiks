@@ -400,7 +400,6 @@ function setWidth() {
 		ZOOM2 = -25;
 		CAMZOOM = ZOOM3;
 		getEl("banner").style.paddingBottom = "0px";
-		getEl("or_instruct4").style.paddingTop = "0px";
 		setDisplay("inline", ["audio", "bannercube", "bannerlogin"]);
 		getEl("challenge").innerHTML = "&nbsp;Weekly Challenges";
 		getEl("compete").innerHTML = "&nbsp;Multiplayer Battle";
@@ -1817,7 +1816,9 @@ setInterval(() => {
 	} else {
 		compete_shufflearr = [];
 	}
-	// }
+	getEl("practice_instruct").style.display = isthin ? "none" : "block";
+	PRACTICE_SEL.style('width', isthin ? "100px" : "");
+
 }, 10)
 //forever
 function reSetup(rot) {
@@ -3680,7 +3681,8 @@ function enterLobby(data, r) {
 	if (competedata.data.type != "1v1" || socket.id == competedata.data.leader) {
 		cubenum = 0;
 	}
-	if (compete_cube != competedata.data.dims[0]) {
+	if (Array.isArray(competedata.data.dims) && competedata.data.dims[0]
+		&& compete_cube != competedata.data.dims[0] && competedata.data.dims[0][cubenum]) {
 		PRACTICE_SEL.selected(competedata.data.dims[0][cubenum]);
 		b_selectdim[competedata.data.dims[0][cubenum]]();
 		compete_cube = competedata.data.dims[0];
@@ -11560,7 +11562,7 @@ document.onkeydown = function(event) {
 			speedRace2();
 		} else if (getEl("startmatch").style.display == "block") {
 			startMatch();
-		} else if (getEl("creating_match").style.display == "block") {
+		} else if (getEl("finish_match").style.display == "block") {
 			finishMatch();
 		} else if (getEl("continuematch").style.display == "block") {
 			continueMatch();
