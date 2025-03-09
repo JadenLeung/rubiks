@@ -71,7 +71,7 @@ export default function (p) {
 	let DELAY_SLIDER, RACE_SLIDER, RACE_DELAY_SLIDER;
 	let TWOBYTWO;
 	let TEAMBLIND_SEL;
-	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR;
+	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -149,7 +149,7 @@ export default function (p) {
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR, THREEBYTHREEBYFIVE,
-		ONEBYFOURBYFOUR;
+		ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -214,6 +214,7 @@ export default function (p) {
 		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "3x3x2"), 
 		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
+		"1x5x5" : switchSize.bind(null, 5, "1x5x5", "1x5x5", "3x3x2"),
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
@@ -596,10 +597,12 @@ p.setup = () => {
 	FOURBYFOUR = p.createButton('4x4');
 	FIVEBYFIVE = p.createButton('5x5');
 	ONEBYFOURBYFOUR = p.createButton('1x1x4');
+	ONEBYFIVEBYFIVE = p.createButton('1x5x5');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	TWOBYTHREEBYFOUR = p.createButton('2x3x4');
 	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
+	FOURPLUS = p.createButton();
 	LASAGNA = p.createButton('Lasagna Cube');
 	refreshButtons();
 
@@ -8073,41 +8076,18 @@ function refreshButtons()
 		document.getElementById("or_instruct5").innerHTML = "Bandaged Mods";
 	else 
 		document.getElementById("or_instruct5").innerHTML = "Big Cubes";
-	SPEEDMODE.remove();
-	REGULAR.remove();
-	TIMEDMODE.remove();
-	MOVESMODE.remove();
-	IDMODE.remove();
-	SETTINGS.remove();
-	VOLUME.remove();
-	SPEEDMODE2.remove();
-	REGULAR2.remove();
-	TIMEDMODE2.remove();
-	MOVESMODE2.remove();
-	ONEBYTHREE.remove();
-	SANDWICH.remove();
-	FOURBYFOUR.remove();
-	FIVEBYFIVE.remove();
-	ONEBYFOURBYFOUR.remove();
-	TWOBYTWOBYFOUR.remove();
-	TWOBYTHREEBYFOUR.remove();
-	THREEBYTHREEBYFIVE.remove();
-	THREEBYTHREEBYFOUR.remove();
-	LASAGNA.remove();
-	CUBE3.remove();
-	CUBE4.remove();
-	CUBE5.remove();
-	CUBE6.remove();
-	CUBE7.remove();
-	CUBE8.remove();
-	CUBE9.remove();
-	CUBE10.remove();
-	CUBE11.remove();
-	CUBE12.remove();
-	CUBE13.remove();
-	CUBE14.remove();
-	CUBE15.remove();
-	CUBE16.remove();
+	
+	const elements = [
+		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
+		SPEEDMODE2, REGULAR2, TIMEDMODE2, MOVESMODE2, ONEBYTHREE, SANDWICH,
+		FOURBYFOUR, FIVEBYFIVE, ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE, TWOBYTWOBYFOUR,
+		TWOBYTHREEBYFOUR, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
+		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
+		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS
+		];
+		
+		elements.forEach(el => el.remove());
+		  
 
 	let d = isthin? 1.5 : 1;
 	let d2 = isthin? 2.5 : 1;
@@ -8250,6 +8230,9 @@ function refreshButtons()
 		ONEBYFOURBYFOUR = p.createButton('1x4x4');
 		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
+		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
+		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {b_selectdim["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
+
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
@@ -8264,6 +8247,9 @@ function refreshButtons()
 
 		LASAGNA = p.createButton('Earth Cube');
 		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchSize(4, "lasagna"); LASAGNA.style('background-color', "#8ef5ee");});
+
+		FOURPLUS = p.createButton('4x4 Plus Cube');
+		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
 	}
 
 }
