@@ -3825,6 +3825,9 @@ socket.on("started-match", (data, scramble) => {
 socket.on("next-match", (data, scramble) => startRound(data, scramble))
 
 function startRound(data, scramble) {
+	if (MODE != "competing") {
+		return;
+	}
 	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div"])
 	getEl("input").disabled = true;
 	getEl("ss_container").src = "";
@@ -3942,6 +3945,9 @@ function competeTimes(data, end = false) {
 }
 
 function competePoints(data, el = "match_INSTRUCT4") {
+	if (MODE != "competing") {
+		return;
+	}
 	competedata = data;
 	compete_alltimes = [];
 	let strarr = [];
@@ -3986,6 +3992,9 @@ function competePoints(data, el = "match_INSTRUCT4") {
 socket.on("all-solved", data => competeSolved(data));
 
 function competeSolved(data) {
+	if (MODE != "competing") {
+		return;
+	}
 	canMan = false;
 	competedata = data;
 	if (data.data.type == "teamblind") {
@@ -4022,6 +4031,9 @@ function competeSolved(data) {
 }
 
 function continueMatch() {
+	if (MODE != "competing") {
+		return;
+	}
 	setDisplay("none", ["continuematch"]);
 	if (getEl("giveup").style.display == "none") {
 
@@ -11561,7 +11573,7 @@ document.onkeydown = function(event) {
 			speedRace2();
 		} else if (getEl("startmatch").style.display == "block") {
 			startMatch();
-		} else if (getEl("finish_match").style.display == "block") {
+		} else if (getEl("creating_match").style.display == "block" && getEl("finish_match").style.display == "block") {
 			finishMatch();
 		} else if (getEl("continuematch").style.display == "block") {
 			continueMatch();
