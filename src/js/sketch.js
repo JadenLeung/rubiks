@@ -847,6 +847,7 @@ p.setup = () => {
 		} else {
 			setCustomShape(true);
 		}
+		CUSTOMSHIFT.checked(JSON.parse(localStorage.saveshapemod).customshift);
 	} else {
 		setCustomShape();
 	}
@@ -1834,7 +1835,9 @@ setInterval(() => {
 		for (let i = 0; i < size * size * size; i++) {
 			saveshapemod[i] = CHECK[i].checked();
 		}
-		localStorage.saveshapemod = JSON.stringify({checkarr: saveshapemod, size: SEL7.value(), colors: [SEL.value(), SEL2.value(), SEL3.value(), SEL4.value(), SEL5.value(), SEL6.value()]});
+		localStorage.saveshapemod = JSON.stringify({checkarr: saveshapemod, size: SEL7.value(), 
+			colors: [SEL.value(), SEL2.value(), SEL3.value(), SEL4.value(), SEL5.value(), SEL6.value()],
+			customshift : CUSTOMSHIFT.checked()});
 	}
 }, 10)
 //forever
