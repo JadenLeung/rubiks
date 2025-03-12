@@ -838,11 +838,15 @@ p.setup = () => {
 	SEL7.selected('3x3');
 	SEL7.changed(() => {b_selectdim[SEL7.value()](); change9(true)});
 
-	if (localStorage.saveshapemod && JSON.parse(localStorage.saveshapemod).size[0] != 2) {
+	if (localStorage.saveshapemod) {
 		saveshapemod = JSON.parse(localStorage.saveshapemod).checkarr;
 		let size = JSON.parse(localStorage.saveshapemod).size;
 		SEL7.selected(size);
-		setCustomShape(true, +(size[0]));
+		if (size[0] != 2) {
+			setCustomShape(true);
+		} else {
+			setCustomShape(true);
+		}
 	} else {
 		setCustomShape();
 	}
@@ -1826,10 +1830,11 @@ setInterval(() => {
 	PRACTICE_SEL.style('width', isthin ? "125px" : "");
 	if (custom == 1) {
 		saveshapemod = [];
-		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		let size = SEL7.value()[0];
+		for (let i = 0; i < size * size * size; i++) {
 			saveshapemod[i] = CHECK[i].checked();
 		}
-		localStorage.saveshapemod = JSON.stringify({checkarr: saveshapemod, size: SEL7.value()});
+		localStorage.saveshapemod = JSON.stringify({checkarr: saveshapemod, size: SEL7.value(), colors: [SEL.value(), SEL2.value(), SEL3.value(), SEL4.value(), SEL5.value(), SEL6.value()]});
 	}
 }, 10)
 //forever
@@ -2582,13 +2587,14 @@ function bandageZero(){
 }
 function changeZero()
 {
-	const colormap = {"g" : "green", "b" : "blue", "r" : "red", "y" : "yellow", "w" : "white", "m" : "magenta", "k" : "black"}
+	const colormap = {"g" : "green", "b" : "blue", "r" : "red", "y" : "yellow", "w" : "white", "m" : "magenta", "k" : "black", "o" : "orange"}
 	SEL.selected(colormap[topColor()]);
 	SEL2.selected(colormap[allcubies[12][3]]);
 	SEL3.selected(colormap[allcubies[16][0]]);
 	SEL4.selected(colormap[opposite[allcubies[12][3]]]);
 	SEL5.selected(colormap[opposite[topColor()]]);
-	SEL6.selected("white");
+	SEL6.selected(colormap[opposite[allcubies[16][0]]]);
+	console.log(colormap[opposite[allcubies[16][0]]])
 	for(let i = 0; i < 27; i++)
 	{
 		CHECK[i].remove();
@@ -2746,7 +2752,7 @@ function rightBan(){
 	viewBandage(true);
 
 }
-function setCustomShape(initial = false, size = SIZE) {
+function setCustomShape(initial = false) {
 	// Remove old checkboxes
 	for (let i = 0; i < CHECK.length; i++) {
 		CHECK[i].remove();
@@ -2754,6 +2760,8 @@ function setCustomShape(initial = false, size = SIZE) {
 	for (let i = 0; i < CHECKALL.length; i++) {
 		CHECKALL[i].remove()
 	}
+
+	let size = SEL7.value()[0];
 
 	// Get parent container
 	const parentElement = document.getElementById("check1");
@@ -2767,7 +2775,6 @@ function setCustomShape(initial = false, size = SIZE) {
 	// Create checkboxes and organize them in rows
 	let row;
 	for (let i = 0; i < totalCheckboxes; i++) {
-		if (DIM3 == 2 && [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25].includes(i)) continue;
 		if (i % checkboxesPerRow === 0) {
 			row = document.createElement("div");
 			row.classList.add("checkbox-row");
@@ -2776,6 +2783,7 @@ function setCustomShape(initial = false, size = SIZE) {
 		const checkboxContainer = document.createElement("div");
 		checkboxContainer.classList.add("checkbox-container");
 		CHECK[i] = p.createCheckbox('', true);
+		console.log("HERE");
 		CHECK[i].parent(checkboxContainer); 
 		if (initial && saveshapemod && saveshapemod.length > 0) {
 			CHECK[i].checked(saveshapemod[i]);
@@ -2783,7 +2791,7 @@ function setCustomShape(initial = false, size = SIZE) {
 		row.appendChild(checkboxContainer);
 		const style = ((i % (size * size)) < size && i > size) ? "padding-right: 3px; padding-top: 15px;" : "padding-right: 3px;";
 		CHECK[i].style(style);
-		let layer = DIM3 != 2 ? (Math.floor(i / (size * size)) + 1) : i < 9 ? 1 : 2;
+		let layer = Math.floor(i / (size * size)) + 1;
 		let checkall = false;
 		if ((i % (size * size) == size - 1)) {
 			CHECKALL[layer - 1] = p.createCheckbox(" Layer " + layer, true);
@@ -2798,7 +2806,7 @@ function setCustomShape(initial = false, size = SIZE) {
 			})
 		}
 
-		if (DIM3 != 2 && i == size * size - 1) {
+		if (size != 2 && i == size * size - 1) {
 			let button = p.createButton("Apply Layer 1 to all");
             button.parent(row);
             setButton(button, row, 'btn btn-info', `text-align:center; font-size: 10px; margin-left: 30px; float: right;`, () => {
@@ -2839,13 +2847,13 @@ function change9(bigchange = false)
 		setCustomShape();
 	}
 	let checked = [];
-	for(let i = 0; i < SIZE * SIZE * SIZE; i++)
+	let size = SEL7.value()[0];
+	for(let i = 0; i < size * size * size; i++)
 	{
 		if(!CHECK[i].checked())
 			checked.push(i);
 	}
-	if(DIM3 == 2)
-		checked.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
+	console.log("CHCKED IS ", checked)
 	DIM[6] = checked; 
 	DIM[7] = DIM3;
 	rotation = CAM.getRotation();
@@ -3211,14 +3219,24 @@ function Custom2(){
 }
 function Custom()
 {
-	const colormap = {"g" : "green", "b" : "blue", "r" : "red", "y" : "yellow", "w" : "white", "o" : "orange", "m" : "magenta", "k" : "black"}
-	SEL.selected(colormap[topColor()]);
-	SEL2.selected(colormap[allcubies[12][3]]);
-	SEL3.selected(colormap[allcubies[16][0]]);
-	SEL4.selected(colormap[opposite[allcubies[12][3]]]);
-	SEL5.selected(colormap[opposite[topColor()]]);
-	SEL6.selected(colormap[opposite[allcubies[16][0]]]);
-	console.log(colormap[opposite[allcubies[16][0]]],opposite[allcubies[16][0]])
+	if (!localStorage.saveshapemod) {
+		const colormap = {"g" : "green", "b" : "blue", "r" : "red", "y" : "yellow", "w" : "white", "o" : "orange", "m" : "magenta", "k" : "black"}
+		SEL.selected(colormap[topColor()]);
+		SEL2.selected(colormap[allcubies[12][3]]);
+		SEL3.selected(colormap[allcubies[16][0]]);
+		SEL4.selected(colormap[opposite[allcubies[12][3]]]);
+		SEL5.selected(colormap[opposite[topColor()]]);
+		SEL6.selected(colormap[opposite[allcubies[16][0]]]);
+		console.log(colormap[opposite[allcubies[16][0]]],opposite[allcubies[16][0]])
+	} else {
+		let colors = JSON.parse(localStorage.saveshapemod).colors;
+		SEL.selected(colors[0]);
+		SEL2.selected(colors[1]);
+		SEL3.selected(colors[2]);
+		SEL4.selected(colors[3]);
+		SEL5.selected(colors[4]);
+		SEL6.selected(colors[5]);
+	}
 	custom = 1;
 	document.getElementById("allmodes").style.display = "none";
 	document.getElementById("cube").style.display = "none";
@@ -7483,7 +7501,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(saveshapemod);
+		b_selectdim[SEL7.value()]();
+		console.log(saveshapemod, CHECK);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

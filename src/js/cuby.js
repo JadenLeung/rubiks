@@ -523,10 +523,17 @@ export default class Cuby {
     let arr = [];
     if(Array.isArray(this.cubysize) && this.cubysize[0] != "adding")
     {
-      arr = this.cubysize[6];
+      for (let i = 0; i < this.cubysize[6].length; i++) {
+        let toadd = this.cubysize[6][i];
+        if (this.special[6] == 100) {
+          toadd = {0 : 0, 1 : 2, 2 : 6, 3 : 8, 4 : 18, 5: 20, 6: 24, 7: 26}[toadd];
+        }
+        arr[i] = toadd;
+      }
     }
-    else if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10)
-      arr = [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25];
+
+    if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || this.special[6] == 100)
+      arr.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
     else if(this.cubysize == 1)
       arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
     else if(this.cubysize == 2 || this.special[6] == 2)
