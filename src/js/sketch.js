@@ -3836,19 +3836,18 @@ function startRound(data, scramble) {
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
 	competedata = data;
-	let shufflemap = {"Normal" : "Normal", "3x3x2" : "3x3x2", "Double" : "Double Turns", "Gear" : "Gearcube"};
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		b_selectdim[data.data.dims[data.round][0]]();
 		if (data.data.shufflearr.length > 0) {
-			if (competedata.data.type == "1v1" && shufflemap[data.data.shufflearr[data.round][0]] != "Default")
-				INPUT.selected(shufflemap[data.data.shufflearr[data.round][0]]);
-			else if (shufflemap[data.data.shufflearr[data.round]] != "Default")
-			    INPUT.selected(shufflemap[data.data.shufflearr[data.round]]);
+			if (competedata.data.type == "1v1" && data.data.shufflearr[data.round][0] != "Default")
+				INPUT.selected(data.data.shufflearr[data.round][0]);
+			else if (data.data.shufflearr[data.round] != "Default")
+			    INPUT.selected(data.data.shufflearr[data.round]);
 		}
 	} else {
 		b_selectdim[data.data.dims[data.round][1]]();
-		if (data.data.shufflearr.length > 0 && shufflemap[data.data.shufflearr[data.round][1]] != "Default") {
-			INPUT.selected(shufflemap[data.data.shufflearr[data.round][1]]);
+		if (data.data.shufflearr.length > 0 && data.data.shufflearr[data.round][1] != "Default") {
+			INPUT.selected(data.data.shufflearr[data.round][1]);
 		}
 	}
 	SCRAM.selected(INPUT.value());
@@ -4152,7 +4151,7 @@ function competeSettings(num = compete_type) {
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
 		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
 		"Sandwich", "Bandaged 2x2"];
-    const optionarr = ["Default", "3x3x2", "Double", "Gear"]; // Example options
+    const optionarr = ["Default", "3x3x2", "Double Turns", "Gearcube"]; // Example options
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
@@ -7467,8 +7466,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
-		console.log(modnum);
+		console.log(isSolved());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7601,7 +7599,7 @@ p.keyPressed = (event) => {
 					arr.unshift(toGearCube(arr[0]));
 				}
 			}
-			if(INPUT.value() == "Gearcube II") {
+			if(INPUT.value() == "Gearcube II" && bad4.includes(p.keyCode)) {
 				if (arr[0].includes("w")) {
 					arr[0] = arr[0].replace(/w/g, "");
 				}
@@ -7610,8 +7608,6 @@ p.keyPressed = (event) => {
 					arr = []
 				} else {
 					arr.push(arr[0]);
-					console.log(arr[0][0])
-					console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
 					arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
 				}
 			}
@@ -11366,6 +11362,12 @@ function isSolved()
 					return false;
 				}
 			}
+			top = compare.top[0];
+			bottom = compare.bottom[0];
+			back = compare.back[0];
+			front = compare.front[0];
+			right = compare.right[0];
+			left = compare.left[0];
         }
 		return true;
 	}
