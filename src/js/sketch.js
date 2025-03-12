@@ -7504,7 +7504,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		b_selectdim[SEL7.value()]();
+		// b_selectdim[SEL7.value()]();
 		console.log(saveshapemod, CHECK);
 	}
 	if(p.keyCode == 9){ //tab
