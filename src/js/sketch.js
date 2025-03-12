@@ -25,6 +25,7 @@ export default function (p) {
 	let raceid = "";
 	let previouschatid = "";
 	let room = 0;
+	let saveshapemod = [];
 	let compete_cube = "";
 	let compete_type = "";
 	let compete_dims = [];
@@ -776,9 +777,6 @@ p.setup = () => {
 	INPUT2[17].mousePressed(inputPressed.bind(null, INPUT2[17].value()));
 	INPUT2[18].mousePressed(() => {flexDo(Undo, undo)});
 	INPUT2[19].mousePressed(() => {flexDo(Redo, redo)});
-	
-
-	setCustomShape();
 
 	const colors = [
 		{ name: 'Red', className: 'red', c: "#da1a18"},
@@ -839,6 +837,15 @@ p.setup = () => {
 	SEL7.parent("select8")
 	SEL7.selected('3x3');
 	SEL7.changed(() => {b_selectdim[SEL7.value()](); change9(true)});
+
+	if (localStorage.saveshapemod && JSON.parse(localStorage.saveshapemod).size[0] != 2) {
+		saveshapemod = JSON.parse(localStorage.saveshapemod).checkarr;
+		let size = JSON.parse(localStorage.saveshapemod).size;
+		SEL7.selected(size);
+		setCustomShape(true, +(size[0]));
+	} else {
+		setCustomShape();
+	}
 
 	BANDAGE_SELECT = p.createSelect();
 	BANDAGE_SELECT.option("3x3");
@@ -1817,7 +1824,13 @@ setInterval(() => {
 	}
 	getEl("practice_instruct").style.display = isthin ? "none" : "block";
 	PRACTICE_SEL.style('width', isthin ? "125px" : "");
-
+	if (custom == 1) {
+		saveshapemod = [];
+		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+			saveshapemod[i] = CHECK[i].checked();
+		}
+		localStorage.saveshapemod = JSON.stringify({checkarr: saveshapemod, size: SEL7.value()});
+	}
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2733,7 +2746,7 @@ function rightBan(){
 	viewBandage(true);
 
 }
-function setCustomShape() {
+function setCustomShape(initial = false, size = SIZE) {
 	// Remove old checkboxes
 	for (let i = 0; i < CHECK.length; i++) {
 		CHECK[i].remove();
@@ -2744,8 +2757,9 @@ function setCustomShape() {
 
 	// Get parent container
 	const parentElement = document.getElementById("check1");
-	const checkboxesPerRow = SIZE;
-	const totalCheckboxes = SIZE * SIZE * SIZE;
+	const checkboxesPerRow = size;
+	const totalCheckboxes = size * size * size;
+	console.log("TOTAL", totalCheckboxes, size)
 
 	// Clear existing content
 	parentElement.innerHTML = "";
@@ -2763,30 +2777,33 @@ function setCustomShape() {
 		checkboxContainer.classList.add("checkbox-container");
 		CHECK[i] = p.createCheckbox('', true);
 		CHECK[i].parent(checkboxContainer); 
+		if (initial && saveshapemod && saveshapemod.length > 0) {
+			CHECK[i].checked(saveshapemod[i]);
+		}
 		row.appendChild(checkboxContainer);
-		const style = ((i % (SIZE * SIZE)) < SIZE && i > SIZE) ? "padding-right: 3px; padding-top: 15px;" : "padding-right: 3px;";
+		const style = ((i % (size * size)) < size && i > size) ? "padding-right: 3px; padding-top: 15px;" : "padding-right: 3px;";
 		CHECK[i].style(style);
-		let layer = DIM3 != 2 ? (Math.floor(i / (SIZE * SIZE)) + 1) : i < 9 ? 1 : 2;
+		let layer = DIM3 != 2 ? (Math.floor(i / (size * size)) + 1) : i < 9 ? 1 : 2;
 		let checkall = false;
-		if ((i % (SIZE * SIZE) == SIZE - 1)) {
+		if ((i % (size * size) == size - 1)) {
 			CHECKALL[layer - 1] = p.createCheckbox(" Layer " + layer, true);
 			CHECKALL[layer - 1].parent(row);
 			CHECKALL[layer - 1].style(style + "padding-left: 30px; line-height: 0;");
 			CHECKALL[layer - 1].changed(() => {
-				let start = Math.floor(i / SIZE / SIZE) * SIZE * SIZE;
-				for (let j = start; j < start + SIZE * SIZE; ++j) {
+				let start = Math.floor(i / size / size) * size * size;
+				for (let j = start; j < start + size * size; ++j) {
 					CHECK[j].checked(CHECKALL[layer - 1].checked());
 					change9();
 				}
 			})
 		}
 
-		if (DIM3 != 2 && i == SIZE * SIZE - 1) {
+		if (DIM3 != 2 && i == size * size - 1) {
 			let button = p.createButton("Apply Layer 1 to all");
             button.parent(row);
             setButton(button, row, 'btn btn-info', `text-align:center; font-size: 10px; margin-left: 30px; float: right;`, () => {
-				for (let j = SIZE * SIZE; j < SIZE * SIZE * SIZE; ++j) {
-                    CHECK[j].checked(CHECK[j - SIZE * SIZE].checked());
+				for (let j = size * size; j < size * size * size; ++j) {
+                    CHECK[j].checked(CHECK[j - size * size].checked());
 					change9();
                 }
 				// change9();
@@ -2796,8 +2813,8 @@ function setCustomShape() {
 
 		CHECK[i].changed(() => {
 			CHECKALL[layer - 1].checked(false);
-			let start = Math.floor(i / SIZE / SIZE) * SIZE * SIZE;
-			for (let j = start; j < start + SIZE * SIZE; ++j) {
+			let start = Math.floor(i / size / size) * size * size;
+			for (let j = start; j < start + size * size; ++j) {
 				if (CHECK[j].checked()) {
 					CHECKALL[layer - 1].checked(true);
 				}
@@ -7466,7 +7483,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isSolved());
+		console.log(saveshapemod);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
