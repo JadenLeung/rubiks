@@ -3092,6 +3092,15 @@ function randomBandage(){
 		[BANDAGE_SLOT.value()]: bandaged, 
 		slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
 	  };
+	if (!bandaged3[BANDAGE_SELECT.value()]) {
+		bandaged3[BANDAGE_SELECT.value()] = {
+			[BANDAGE_SLOT.value()]: bandaged, 
+			slot: BANDAGE_SLOT.value(), ...bandaged3[BANDAGE_SELECT.value()]
+		};
+	} else {
+		bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()] = bandaged;
+		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
+	}
 	bandaged2 = [];
 	ban9();
 	b_selectdim[BANDAGE_SELECT.value()]();
@@ -7300,7 +7309,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 			if(total > 0 && total < bandaged[i].length)
 				cuthrough = true;
 		}
-		if (cuthrough && !(DIM == 50 && SIZE > 3)) {
+		if (cuthrough && SIZE <= 4) {
 			undo.pop();
 			if(timer.isRunning)
 				moves--;
