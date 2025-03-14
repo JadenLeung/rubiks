@@ -150,7 +150,7 @@ export default function (p) {
 	let SCRAM;
 	let INPUT2 = [];
 	let CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11, CUBE12, CUBE14, CUBE15, CUBE16, TWOBYTWOBYFOUR, THREEBYTHREEBYFIVE,
-		ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE;
+		ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE, ONEBYTWOBYTWO, ONEBYTWOBYTHREE;
 	let bandaged = [];
 	let darkmode = false;
 	let colororder = ["", "r", "o", "y", "g", "b", "w"];
@@ -213,6 +213,7 @@ export default function (p) {
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
+		"1x2x2" : switchSize.bind(null, 5, "1x2x2", "1x2x2", "3x3x2"),
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "3x3x2"), 
 		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
 		"1x5x5" : switchSize.bind(null, 5, "1x5x5", "1x5x5", "3x3x2"),
@@ -608,7 +609,7 @@ p.setup = () => {
 	CUBE16 = p.createButton('Bandaged 3x3x2');
 	FOURBYFOUR = p.createButton('4x4');
 	FIVEBYFIVE = p.createButton('5x5');
-	ONEBYFOURBYFOUR = p.createButton('1x1x4');
+	ONEBYFOURBYFOUR = p.createButton('1x4x4');
 	ONEBYFIVEBYFIVE = p.createButton('1x5x5');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	TWOBYTHREEBYFOUR = p.createButton('2x3x4');
@@ -616,6 +617,8 @@ p.setup = () => {
 	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
 	FOURPLUS = p.createButton();
 	LASAGNA = p.createButton('Lasagna Cube');
+	ONEBYTWOBYTWO = p.createButton('1x2x2');
+	ONEBYTWOBYTHREE = p.createButton('1x2x3');
 	refreshButtons();
 
 
@@ -2733,7 +2736,7 @@ function change20(dim, b){
 	CUBE16.style('background-color', "#8ef5ee");
 }
 function changeMod(dx){
-	modnum = (modnum + dx + 3) % 3;
+	modnum = (modnum + dx + 4) % 4;
 	document.getElementById("custom").style.display = modnum == 0 ? "block" : "none"; 
 	document.getElementById("customb").style.display = modnum == 1 ? "block" : "none"; 
 	refreshButtons();
@@ -4150,6 +4153,7 @@ function continueMatch() {
 }
 
 function competeSettings(num = compete_type) {
+	setDisplay("inline", ["undo", "redo", "shuffle_div"]);
 	if (num == "1v1" && compete_type == "group" && competedata.userids && competedata.userids.length > 2) {
 		alert("Cannot turn group compete into 1v1 match.");
 		return;
@@ -5056,7 +5060,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+	ZOOMADD = DIM == "1x2x2" ? 20 : DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
 				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -6809,7 +6813,7 @@ function shuffleCube(override = false) {
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4 || (SIZE == 4 && custom == 1)) s = 45;
 	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
-	if (["1x2x3"].includes(DIM)) s = 10;
+	if (shownCubies().length < 15) s = 10;
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -8148,16 +8152,14 @@ function Redo()
 }
 function refreshButtons()
 {
-	if(modnum == 0)
-		document.getElementById("or_instruct5").innerHTML = "Shape Mods";
-	else if(modnum == 1)
-		document.getElementById("or_instruct5").innerHTML = "Bandaged Mods";
-	else 
-		document.getElementById("or_instruct5").innerHTML = "Big Cubes";
+	const mods = ["Shape Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies"];
+	document.getElementById("or_instruct5").innerHTML = mods[modnum];
+
 
 	getEl("shapemods").style.display = modnum == 0 ? "block" : "none";
 	getEl("bandagemods").style.display = modnum == 1 ? "block" : "none";
 	getEl("bigcubes").style.display = modnum == 2 ? "block" : "none";
+	getEl("babycubes").style.display = modnum == 3 ? "block" : "none";
 	
 	const elements = [
 		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
@@ -8165,7 +8167,8 @@ function refreshButtons()
 		FOURBYFOUR, FIVEBYFIVE, ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE, TWOBYTWOBYFOUR,
 		TWOBYTHREEBYFOUR, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
-		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS
+		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
+		ONEBYTWOBYTHREE
 		];
 		
 		elements.forEach(el => el.remove());
@@ -8302,18 +8305,12 @@ function refreshButtons()
 
 		CUBE16 = p.createButton('Bandaged 3x3x2');
 		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
-	} else {
+	} else if (modnum == 2) {
 		FOURBYFOUR = p.createButton('4x4');
 		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchSize(4); FOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		FIVEBYFIVE = p.createButton('5x5');
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
-
-		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
-
-		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
-		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {b_selectdim["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
@@ -8332,6 +8329,18 @@ function refreshButtons()
 
 		FOURPLUS = p.createButton('4x4 Plus Cube');
 		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
+	} else if (modnum == 3) {
+		ONEBYTWOBYTWO = p.createButton('1x2x2');
+		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {b_selectdim["1x2x2"](); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
+
+		ONEBYTWOBYTHREE = p.createButton('1x2x3');
+		setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {b_selectdim["1x2x3"](); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
+
+		ONEBYFOURBYFOUR = p.createButton('1x4x4');
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+
+		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
+		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {b_selectdim["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -11580,7 +11589,8 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-    competemode();
+	modnum = 3;
+    cubemode();
 });
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
