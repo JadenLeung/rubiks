@@ -4206,9 +4206,9 @@ function competeSettings(num = compete_type) {
         container.appendChild(headerRow);
     }
 
-    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
-		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
-		"Sandwich", "Bandaged 2x2"];
+    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
+		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
+		"Sandwich 2x2", "Sandwich", "Sandwich 4x4", "Bandaged 2x2"];
     const optionarr = ["Default", "3x3x2", "Double Turns", "Gearcube"]; // Example options
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
