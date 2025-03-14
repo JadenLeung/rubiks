@@ -11387,7 +11387,7 @@ function isSolved()
 			}
 		}
 		return false;
-	} else if ("sandwich2x2".includes(DIM)) {
+	} else if (["sandwich2x2"].includes(DIM)) {
 		for(let i = 0; i < 6; i+=2){
 			let a = layout[i][0][0][0], b = layout[i][0][2][0];
 			let c = layout[i][2][0][0], d = layout[i][2][2][0];
