@@ -3044,19 +3044,19 @@ function cancelBandage(){
 function allBandaged(){
 	let possible = [];
 	let allbandaged = bandaged.flat();
-	console.log("allbandaged is", allbandaged);
 	let cubies = getOuterCubes();
-	for(let j = 0; j < cubies.length; j++){
-		if(!allbandaged.includes(j) && cubies.includes(j)) possible.push(j);
-	}
+	cubies.forEach((cuby) => {
+		if(!allbandaged.includes(cuby)) possible.push(cuby);
+	})
+	console.log("possible is", possible, "cubies is ", cubies);
 	return possible;
 }
 function randomBandage(){
 	// BANDAGE_SELECT.value("3x3");
 	// changeThree();
 	let numB = parseInt(Math.random()*SIZE)+2;
-	if (special[6] == 2) numB = parseInt(Math.random()*2)+1;
-	if (special[6] == 15) numB = 1;
+	if (shownCubies().length < 27) numB = parseInt(Math.random()*2)+1;
+	if (shownCubies().length < 15) numB = 1;
 	let possible = [];
 	let possible2 = [];
 	bandaged = [];
@@ -3071,6 +3071,7 @@ function randomBandage(){
 		let sizeB = parseInt(Math.random()*size)+2;
 		let rnd = p.random(possible);
 		bandaged[i] = [rnd];
+		console.log("Possible", possible);
 		for(let j = 1; j < sizeB; j++){
 			possible = allBandaged();
 			for(let k = 0; k < possible.length; k++){ //loops through non bandaged selected cubies
@@ -7505,7 +7506,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// b_selectdim[SEL7.value()]();
-		console.log(saveshapemod, CHECK);
+		console.log(bandaged);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
