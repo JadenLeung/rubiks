@@ -1625,10 +1625,11 @@ setInterval(() => {
 		if (isSolved()) {
 			comstep++;
 			timer.stop();
-			let time = timer.getTime() < 0 ? 0 : Math.round(timer.getTime() / 10)/100.0 == 0;
+			let time = timer.getTime() < 0 ? 0 : Math.round(timer.getTime() / 10)/100.0;
 			if(ao5 == 0) ao5 = [time];
 			else ao5.push(time);
-			socket.emit("solved", room, time);
+			console.log("time is ", time, timer.getTime());
+			socket.emit("solved", room, time, timer.getTime());
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
 			}
@@ -4255,10 +4256,12 @@ function competeSettings(num = compete_type) {
             applyButton.onclick = () => {
                 for (let j = 1; j < rows.length; j++) {
                     rows[j].select1.value = rows[0].select1.value;
-                    rows[j].optionSelect1.value = rows[0].optionSelect1.value;
+					if (COMPETE_ADVANCED.checked())
+						rows[j].optionSelect1.value = rows[0].optionSelect1.value;
                     if (num == "1v1" && rows[j].select2) {
                         rows[j].select2.value = rows[0].select2.value;
-                        rows[j].optionSelect2.value = rows[0].optionSelect2.value;
+						if (COMPETE_ADVANCED.checked())
+							rows[j].optionSelect2.value = rows[0].optionSelect2.value;
                     }
                 }
             };
@@ -7505,8 +7508,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// b_selectdim[SEL7.value()]();
-		console.log(bandaged);
+		// quickSolve();
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7688,7 +7690,6 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case 32: //space
-			console.log(DIM, DIM2, isSolved(), mastep, mapBandaged());
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
