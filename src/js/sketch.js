@@ -48,7 +48,7 @@ export default function (p) {
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
-	const NOMOUSE = [13, "lasagna"];
+	const NOMOUSE = [13, "lasagna", "sandwich2x2"];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	let pracalgs = [];
 	let trackthin = null; // false means thin
@@ -72,7 +72,7 @@ export default function (p) {
 	let DELAY_SLIDER, RACE_SLIDER, RACE_DELAY_SLIDER;
 	let TWOBYTWO;
 	let TEAMBLIND_SEL;
-	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS;
+	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS, SANDWICH2, PLUSLITE;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -212,7 +212,7 @@ export default function (p) {
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
 	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
-		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5), "Plus Cube" : changeSix,
+		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5),
 		"1x2x2" : switchSize.bind(null, 5, "1x2x2", "1x2x2", "3x3x2"),
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "3x3x2"), 
 		"1x4x4" : switchSize.bind(null, 5, "1x4x4", "1x4x4", "3x3x2"),
@@ -221,7 +221,10 @@ export default function (p) {
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
 		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
+		"Sandwich 2x2": switchSize.bind(null, 3, "sandwich2x2", 100, "Normal", 2),
 		"Sandwich" : change17.bind(null, 0), "Jank 2x2" : change10,
+		"Plus Lite": switchSize.bind(null, 3, "pluslite"),
+		"Plus Cube" : changeSix,
 		"4x4 Plus Cube" : switchSize.bind(null, 4, "4x4plus"),
 		"Cube Bandage" : change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]),
 		"Slice Bandage" : change11.bind(null, 7, [[3,4,5,6,7,8]]),
@@ -619,6 +622,8 @@ p.setup = () => {
 	LASAGNA = p.createButton('Lasagna Cube');
 	ONEBYTWOBYTWO = p.createButton('1x2x2');
 	ONEBYTWOBYTHREE = p.createButton('1x2x3');
+	SANDWICH2 = p.createButton('Sandwich 2x2');
+	PLUSLITE = p.createButton('Plus Lite');
 	refreshButtons();
 
 
@@ -2711,11 +2716,11 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
-function switchSize(s, d = 50, d2 = 50, input = "Normal") {
+function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3) {
 	DIM2 = d2;
 	DIM = d;
-	DIM3 = 3;
-	DIM4 = 3;
+	DIM3 = d3;
+	DIM4 = d3;
 	changeCam(3)
 	INPUT.value(input);
 	SCRAM.value(input);
@@ -6813,7 +6818,7 @@ function shuffleCube(override = false) {
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4 || (SIZE == 4 && custom == 1)) s = 45;
 	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
-	if (shownCubies().length < 15) s = 10;
+	if (shownCubies().length < 15 && custom == 0) s = 10;
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -7521,7 +7526,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
+		console.log(isSolved());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7899,7 +7904,7 @@ function multiple(nb, timed, use = "default") {
 	else
 	{
 		shuffling = false;
-		if (isSolved() && numshuffle < 2 && use.includes("scramble") && (![50, 100].includes(DIM) || MODE == "competing")) {
+		if (isSolved() && numshuffle < 2 && use.includes("scramble") && ((["1x2x3", "1x2x2", "sandwich2x2"].includes(DIM)) || MODE == "competing")) {
 			shuffleCube(true);
 			numshuffle++;
 			return;
@@ -8168,7 +8173,7 @@ function refreshButtons()
 		TWOBYTHREEBYFOUR, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
-		ONEBYTWOBYTHREE
+		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE
 		];
 		
 		elements.forEach(el => el.remove());
@@ -8341,6 +8346,12 @@ function refreshButtons()
 
 		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
 		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {b_selectdim["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
+
+		SANDWICH2 = p.createButton('Sandwich 2x2');
+		setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {b_selectdim["Sandwich 2x2"](); SANDWICH2.style('background-color', "#8ef5ee");});
+
+		PLUSLITE = p.createButton('Plus Lite');
+		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {b_selectdim["Plus Lite"](); PLUSLITE.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -11372,6 +11383,15 @@ function isSolved()
 				}
 			}
 			if(same){
+				return true;
+			}
+		}
+		return false;
+	} else if ("sandwich2x2".includes(DIM)) {
+		for(let i = 0; i < 6; i+=2){
+			let a = layout[i][0][0][0], b = layout[i][0][2][0];
+			let c = layout[i][2][0][0], d = layout[i][2][2][0];
+			if(a == b && b == c && c == d ){
 				return true;
 			}
 		}
