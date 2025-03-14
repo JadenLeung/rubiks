@@ -72,7 +72,8 @@ export default function (p) {
 	let DELAY_SLIDER, RACE_SLIDER, RACE_DELAY_SLIDER;
 	let TWOBYTWO;
 	let TEAMBLIND_SEL;
-	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS, SANDWICH2, PLUSLITE;
+	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS, SANDWICH2, PLUSLITE,
+		PLUS3x3x2;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -224,6 +225,7 @@ export default function (p) {
 		"Sandwich 2x2": switchSize.bind(null, 3, "sandwich2x2", 100, "Normal", 2),
 		"Sandwich" : change17.bind(null, 0), "Jank 2x2" : change10,
 		"Plus Lite": switchSize.bind(null, 3, "pluslite"),
+		"3x3x2 Plus Cube": switchSize.bind(null, 3, "plus3x3x2", 2, "3x3x2"),
 		"Plus Cube" : changeSix,
 		"4x4 Plus Cube" : switchSize.bind(null, 4, "4x4plus"),
 		"Cube Bandage" : change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]),
@@ -624,6 +626,7 @@ p.setup = () => {
 	ONEBYTWOBYTHREE = p.createButton('1x2x3');
 	SANDWICH2 = p.createButton('Sandwich 2x2');
 	PLUSLITE = p.createButton('Plus Lite');
+	PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
 	refreshButtons();
 
 
@@ -8173,7 +8176,7 @@ function refreshButtons()
 		TWOBYTHREEBYFOUR, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
-		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE
+		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2
 		];
 		
 		elements.forEach(el => el.remove());
@@ -8352,6 +8355,9 @@ function refreshButtons()
 
 		PLUSLITE = p.createButton('Plus Lite');
 		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {b_selectdim["Plus Lite"](); PLUSLITE.style('background-color', "#8ef5ee");});
+
+		PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
+		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x2 Plus Cube"](); PLUS3x3x2.style('background-color', "#8ef5ee");});
 	}
 
 }
