@@ -3816,6 +3816,7 @@ function enterLobby(data, r) {
 		getEl("blinddesc").innerHTML = `${socket.id == competedata.userids[competedata.data.startblind] ? "You will start blindfolded." : "You will start with vision."}`;
 	} else {
 		getEl("blinddesc").style.display = "none";
+		str += `<h6 style = "margin-top:20px">Inspection: ${data.data.inspection ? "15 seconds" : "None"}</h6>`;
 	}
 	getEl("competerules").innerHTML = str;
 }
