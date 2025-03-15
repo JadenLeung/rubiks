@@ -1668,10 +1668,10 @@ setInterval(() => {
 	}
 	if(MODE != "cube")
 	{
-		if(DIM == 50)
-			DIM4 = 3;
-		else
+		if(DIM2 == 100)
 			DIM4 = 2;
+		else
+			DIM4 = 3;
 	}
 	else{
 		if(Array.isArray(DIM) && DIM[0] != "adding")
@@ -1879,10 +1879,10 @@ function reSetup(rot) {
 
 	if(MODE != "cube")
 	{
-		if(DIM == 50)
-			DIM4 = 3;
-		else
+		if(DIM2 == 100)
 			DIM4 = 2;
+		else
+			DIM4 = 3;
 	}
 	else{
 		if(Array.isArray(DIM) && DIM[0] != "adding")
@@ -6829,12 +6829,15 @@ function shuffleCube(override = false) {
 		quickSolve();
 		possible = ["E", "D", "B"];
 	}
+	console.log("s iISs", s)
 	if(DIM4 == 2)
 		s = 10;
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4 || (SIZE == 4 && custom == 1)) s = 45;
 	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
+	console.log("S is", s)
 	if (shownCubies().length < 15 && custom == 0) s = 10;
+	console.log("s is", s)
 	for(let i = 0; i < s; i++)
 	{
 		let mid = Math.floor(SIZE / 2);
@@ -7542,7 +7545,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata.data);
+		console.log(DIM, DIM2, DIM3, DIM4);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
