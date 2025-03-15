@@ -146,7 +146,7 @@ export default function (p) {
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
-		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED;
+		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
 	let INPUT2 = [];
@@ -710,6 +710,10 @@ p.setup = () => {
 	COMPETE_ADVANCED.changed(() => {
         competeSettings();
     });
+
+	COMPETE_INSPECTION = p.createCheckbox();
+	COMPETE_INSPECTION.parent("compete_inspection");
+	COMPETE_INSPECTION.checked(true);
 
 	let colors2 = ["blue", "white", "red", "green", "yellow", "orange", "black", "magenta"];
 	for(let i = 0; i < colors2.length; i++)
@@ -3840,7 +3844,7 @@ function finishMatch() {
 	setDisplay("block", ["waitingroom"]);
 	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id, shufflearr: shufflearr,
 		visibility: getEl("private").checked ? "private" : "public", orpos : allcubies, 
-		startblind: getEl("startblind1").checked ? 0 : 1};
+		startblind: getEl("startblind1").checked ? 0 : 1, inspection: COMPETE_INSPECTION.checked()};
 	if (room == 0) {
 		getEl("waitingroomid").innerHTML = "Attempting to Create Room";
 		socket.emit("create-room", senddata, localStorage.username);
@@ -3931,7 +3935,11 @@ function startRound(data, scramble) {
 		}
 		competeprogress = 0;
 		canMan = false;
-		waitStopTurning(data.data.type != "teamblind");
+		if (!data.data.inspection && data.data.type != "teamblind") {
+			waitStopTurning(false, "wtev", true)
+		} else {
+			waitStopTurning(data.data.type != "teamblind");
+		}
 	}, 500);
 }
 
@@ -4211,7 +4219,7 @@ function competeSettings(num = compete_type) {
     }
 
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
-		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
+		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
 		"Sandwich 2x2", "Sandwich", "Sandwich 4x4", "Bandaged 2x2"];
     const optionarr = ["Default", "3x3x2", "Double Turns", "Gearcube"]; // Example options
 
@@ -4616,7 +4624,7 @@ function shapemarathon() {
 		setScore(map[ma_data.type], score, true);
 	}
 }
-function waitStopTurning(timed = true, mode = "wtev") {
+function waitStopTurning(timed = true, mode = "wtev", start = false) {
 	const interval = setInterval(() => {
 	console.log("canMan?" + canMan)
 	  if (canMan) {
@@ -4624,6 +4632,9 @@ function waitStopTurning(timed = true, mode = "wtev") {
 		if (timed) {
 			timer.setTime(-15000, true); // Set the timer to -15000
 			timer.start(true);      // Start the timer
+		}
+		if (start) {
+			timer.start();
 		}
 		isShuffling = false;
 		if (bstep == 1) bstep = 2;
@@ -7530,7 +7541,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isSolved());
+		console.log(competedata.data);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

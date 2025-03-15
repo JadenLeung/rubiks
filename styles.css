@@ -196,6 +196,10 @@ button:hover {
     display: inline-flex;
     align-items: center;
 }
+#compete_inspection {
+    display: inline-flex;
+    align-items: center;
+}
 #outermoves {
     position: absolute;
     top: 9%;
