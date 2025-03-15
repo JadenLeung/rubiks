@@ -2928,7 +2928,7 @@ function setInput() {
 		document.getElementById("undo").style.display = "inline";
 		document.getElementById("redo").style.display = "inline";
 		document.getElementById("input2").style.display = "none";
-		if ((MODE == "cube" && !mouseAllowed() && custom == 0) || custom == 1 && !canMouse()) {
+		if ((!mouseAllowed() && custom == 0) || custom == 1 && !canMouse()) {
 			document.getElementById("input2").style.display = "block";
 		}
 		if (SHUFFLE_BTN) SHUFFLE_BTN.html('<i class="bi bi-shuffle"></i>');
@@ -3912,6 +3912,7 @@ function startRound(data, scramble) {
 	}
 	SCRAM.selected(INPUT.value());
 	setTimeout(() => {
+		changeInput();
 		setDisplay("block", ["input"]);
 		if (MODE != "competing") {
 			return;
