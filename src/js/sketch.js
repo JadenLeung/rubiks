@@ -708,7 +708,7 @@ p.setup = () => {
 	PRACTICE_SEL.changed(() => {
 		bandaged = [];
 		b_selectdim[PRACTICE_SEL.value()]();
-		getEl("keymap").style.display = "none";
+		setDisplay("none", ["keymap", "input2"])
 	})
 	
 	COMPETE_ADVANCED = p.createCheckbox();
@@ -4200,8 +4200,8 @@ function continueMatch() {
 		console.log("emitting")
 		socket.emit("next-round", room);
 	} else {
-		setDisplay("none", ["in_match", "keymap"]);
-		setDisplay("none", ["in_match", "keymap"]);
+		setDisplay("none", ["in_match", "keymap", "input2"]);
+		setDisplay("none", ["in_match", "keymap", "input2"]);
 		SCRAM.value("Normal");
 		var elements = document.getElementsByClassName('normal');
 		for (var i = 0; i < elements.length; i++) {
@@ -4441,10 +4441,9 @@ function competeSelectButtons() {
 
 function finishCompeteSelect(dim) {
 	focused_select.value = dim;
-	setDisplay("none", ["compete_select"]);
 	setDisplay("block", ["creating_match"]);
 	b_selectdim[dim]();
-	getEl("keymap").style.display = "none";
+	setDisplay("none", ["compete_select", "keymap", "input2"]);
 }
 
 function displayPublicRooms() {
@@ -4682,7 +4681,7 @@ function blindmode() {
 		shuffleCube();
 		waitStopTurning(false);
 	} else if (bstep == 3) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed"]);
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "input2"]);
 		setDisplay("block", ["b_win", "b_start","m_high"]);
 		getEl("b_win").innerHTML = "You did it! You solved the cube in " + peeks + " peek" + (peeks == 1 ? "." : "s. <br> Play again?");
 		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks);
@@ -4751,7 +4750,7 @@ function shapemarathon() {
 
 	}
 	if (mastep / 2 == ma_data.cubes.length) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par"]);
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2"]);
 		setDisplay("block", ["m_high"]);
 		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
@@ -5984,7 +5983,7 @@ function speedRace(type){
 	round = 1;
 	roundresult = [0, 0];
 	showSpeed();
-	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par", "r_physical"]); 
+	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par", "r_physical", "input2"]); 
 	setDisplay("block", ["readybot", "delaywhole", "race_instruct_div", "botestimate"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct"])
 
@@ -11386,7 +11385,7 @@ socket.on("sending-message", (message, id, names, image) => {
 socket.on("joined_room", (room, id, name, image, stage) => {
 	if (id == socket.id && stage == "lobby") {
 		getEl("practice_container").style.display = "block";
-		setDisplay("none", ["keymap"]);
+		setDisplay("none", ["keymap", "input2"]);
 		setDisplay("inline", ["shuffle_div", "reset_div", "outertime"]);
 	}
 	sendMessage("joined", {room : room, id : id, name : name}, image)
