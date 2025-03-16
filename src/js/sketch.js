@@ -229,6 +229,7 @@ export default function (p) {
 		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
 		"Sandwich 2x2": switchSize.bind(null, 3, "sandwich2x2", 100, "Normal", 2),
 		"Sandwich" : change17.bind(null, 0), "Jank 2x2" : change10,
+		"Earth Cube": switchSize.bind(null, 4, "lasagna"),
 		"Plus Lite": switchSize.bind(null, 3, "pluslite"),
 		"3x3x2 Plus Cube": switchSize.bind(null, 3, "plus3x3x2", 2, "3x3x2"),
 		"Plus Cube" : changeSix,
@@ -952,6 +953,10 @@ p.setup = () => {
 			bandaged = [];
 			b_selectdim[dim]();
 			getEl("keymap").style.display = 'none';
+			getEl("compete_difficulty").innerHTML = `Difficulty: ${DIMS_OBJ[dim].difficulty}/5`;
+		});
+		btn.mouseOut(() => {
+			getEl("compete_difficulty").innerHTML = ``;
 		});
 
 		competedim_buttons.push(btn);
@@ -4293,7 +4298,7 @@ function competeSettings(num = compete_type) {
 
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
 		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
-		"Sandwich 2x2", "Sandwich", "Sandwich 4x4", "Bandaged 2x2"];
+		"Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2"];
     const optionarr = ["Default", "3x3x2", "Double Turns", "Gearcube"]; // Example options
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
@@ -4408,10 +4413,12 @@ function competeSelectButtons() {
 		b.style("backgroundColor", i == compete_modnum ? "#00488F" : "");
 	})
 	let selected = cubetypenames[compete_modnum];
-	let i = 0;
+	let i = 0; 
 	competedim_buttons.forEach((b) => {
-		b.style('display', DIMS_OBJ[b.html()].type.includes(selected) || selected == "All" ? "block" : "none");
-		if (DIMS_OBJ[b.html()].type.includes(selected) || selected == "All") {
+		let shown = ((DIMS_OBJ[b.html()].type.includes(selected) || 
+			selected == "All")) && b.html().includes(getEl("compete_search").value);
+		b.style('display', shown ? "block" : "none");
+		if (shown) {
 			b.parent(`compete_col${i % 3 + 1}`);
 			++i;
 		}
@@ -8470,7 +8477,7 @@ function refreshButtons()
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		LASAGNA = p.createButton('Earth Cube');
-		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchSize(4, "lasagna"); LASAGNA.style('background-color', "#8ef5ee");});
+		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {b_selectdim("Earth Cube"); LASAGNA.style('background-color', "#8ef5ee");});
 
 		FOURPLUS = p.createButton('4x4 Plus Cube');
 		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
@@ -11859,6 +11866,9 @@ Object.entries(competitions).forEach(([id, text]) => {
     });
 });
   
+getEl("compete_search").oninput = () => {
+	competeSelectButtons();
+}
 
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
