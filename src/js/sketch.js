@@ -1415,7 +1415,6 @@ setInterval(() => {
 		updateSession();
 	}
 	//local
-	// alert("here2")
 	localStorage.saveao5 = JSON.stringify(savetimes);
 	localStorage.session = session;
 	if (MODE != "bot")
@@ -1855,6 +1854,12 @@ setInterval(() => {
 			colors: [SEL.value(), SEL2.value(), SEL3.value(), SEL4.value(), SEL5.value(), SEL6.value()],
 			customshift : CUSTOMSHIFT.checked()});
 	}
+	if (timer.getTime() > 999999 && MODE == "competing") {
+		// timer.stop();
+		// timer.reset();
+		// timer.setTime(-15000, true);
+		// timer.start();
+	}
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2123,7 +2128,6 @@ function IDtoReal(id){
 
 	return a;
 	//[front,back,right,left,bottom,top]
-	//alert(allcubies);
 }
 function escapeHtml(unsafe) {
     return unsafe
@@ -3716,6 +3720,36 @@ socket.on("refresh_rooms", (data, r) => {
 	}
 });
 
+socket.on("joined_late", (data, r) => {
+	if (MODE == "compete") {
+		saveao5 = [ao5, mo5, scrambles, movesarr];
+		ao5 = [];
+		mo5 = [];
+		scrambles = [];
+		movesarr = [];
+		MODE = "competing";
+		competedata = data;
+		room = r;
+		console.log("I am joined");
+		getEl("in_match").style.display = "block";
+		setDisplay("none", ["lobby", "practice_container"]);
+		setDisplay("inline", ["slider_div", "speed"]);
+		setDisplay("block", ["outertime"]);
+		timer.reset();
+		timer.stop();
+		changeInput();
+		canMan = false;
+		if (data.stage == "ingame") {
+			comstep = 2;
+			giveUp();
+		} else {
+			comstep = 3;
+			competeSolved(data);
+
+		}
+	}
+})
+
 socket.on("room_change", rooms => {
 	competerooms = rooms;
 	displayPublicRooms();
@@ -3984,7 +4018,7 @@ function competeTimes(data, end = false) {
 			if (!end) {
 				str += ", progress: " + strarr[i][1] + "%";
 			}
-			str += ", time: " + (strarr[i][2] >= DNF ? "DNF" : strarr[i][2]) + "s";
+			str += ", time: " + (strarr[i][2] >= DNF ? "DNF" : (strarr[i][2] + "s"));
 			if (strarr[i][0] == socket.id) {
 				str += `</b>`;
 			}
@@ -4157,7 +4191,7 @@ function continueMatch() {
 			
 			competedata.solvedarr.forEach((timeobj, i) => {
 				let timeStyle = minarr[i] == timeobj[arr[1]] ? "color: green;" : "";
-				str += `<td style="text-align: center; white-space: nowrap; padding: 0 10px;"><span style="${timeStyle}">${timeobj[arr[1]]}</span></td>`;
+				str += `<td style="text-align: center; white-space: nowrap; padding: 0 10px;"><span style="${timeStyle}">${timeobj[arr[1]] ?? "-"}</span></td>`;
 			});
 			str += `</tr>`;
 		});
@@ -4395,7 +4429,8 @@ function getSelectedValues(containerId, rows, cols) {
     for (let i = 0; i < rows; i++) {
         let rowData = [];
         for (let j = 0; j < cols; j++) {
-            rowData.push(selects[i * cols + j].value);
+			if (selects[i * cols + j])
+				rowData.push(selects[i * cols + j].value);
         }
         result.push(rowData);
     }
@@ -4404,6 +4439,9 @@ function getSelectedValues(containerId, rows, cols) {
 }
 
 function competeDims() {
+	if (!getEl("compete_rounds")) {
+		return;
+	}
 	let a = []
 	if (compete_type == "teamblind") a = [[TEAMBLIND_SEL.value()]]
 	else if (compete_type == "1v1") {
@@ -4642,6 +4680,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 		if (comstep > 0 && comstep % 2 == 1) {
 			setDisplay("inline", ["giveup"]);
 			comstep++;
+			console.log("adding 1", canMan, comstep);
 			competeScreenshot();
 			setDisplay(competedata.data.type == "1v1" ? "block" : "none", ["ss_container"]);
 			let word = "Go!"
@@ -7545,7 +7584,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(DIM, DIM2, DIM3, DIM4);
+		console.log(competedata, comstep, socket.id);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11242,8 +11281,8 @@ socket.on("sending-message", (message, id, names, image) => {
 	sendMessage("person", message, id, names, image)
 })
 
-socket.on("joined_room", (room, id, name, image) => {
-	if (id == socket.id) {
+socket.on("joined_room", (room, id, name, image, stage) => {
+	if (id == socket.id && stage == "lobby") {
 		getEl("practice_container").style.display = "block";
 		setDisplay("none", ["keymap"]);
 		setDisplay("inline", ["shuffle_div", "reset_div", "outertime"]);
