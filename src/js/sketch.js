@@ -25,6 +25,9 @@ export default function (p) {
 	let raceid = "";
 	let previouschatid = "";
 	let room = 0;
+	let competesel_buttons = [];
+	let competedim_buttons = [];
+	let compete_modnum = 0;
 	let saveshapemod = [];
 	let compete_cube = "";
 	let compete_type = "";
@@ -41,7 +44,9 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let focused_select;
 	let othershuffle = false;
+	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
 	let SWITCHTIME = 15;
 	let isShuffling = false;
 	let otherShuffling = false;
@@ -925,6 +930,33 @@ p.setup = () => {
 	
 	INPUT.changed(changeInput.bind(null, 0));
 
+	competesel_buttons = [];
+
+    for (let i = 0; i < cubetypenames.length; i++) {
+        let btn = p.createButton(cubetypenames[i]);
+        setButton(btn, "select_container", 'btn btn-primary', 'display: inline-block; margin-left: 5px;', () => {
+			compete_modnum = i;
+			competeSelectButtons();
+		});
+
+        competesel_buttons.push(btn);
+    }
+
+	Object.keys(DIMS_OBJ).forEach((dim, i) => {
+		let btn = p.createButton(dim);
+		setButton(btn, `compete_col${i % 3 + 1}`, 'btn btn-info', 
+			'display: block; margin-top: 5px; font-size: 15px; width: 140px;', () => {
+			finishCompeteSelect(dim);
+		});
+		btn.mouseOver(() => {
+			bandaged = [];
+			b_selectdim[dim]();
+			getEl("keymap").style.display = 'none';
+		});
+
+		competedim_buttons.push(btn);
+	})
+
 	const hotkeys = [
 		["Esc", "Reset"],
 		["⇧ Esc", "Restart"],
@@ -1004,6 +1036,12 @@ p.setup = () => {
 
 	const COMPETEBACK = p.createButton('Back');
 	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
+
+	const COMPETESELBACK = p.createButton('Cancel');
+	setButton(COMPETESELBACK, "competesel_back", 'btn btn-danger', 'font-size:20px;', () => {
+		setDisplay("none", ["compete_select"]);
+		setDisplay("block", ["creating_match"]);
+	});
 
 	const HOTKEYBACK = p.createButton('Back');
 	setButton(HOTKEYBACK, "hotkeyback", 'btn btn-light', 'font-size:20px; border-color: black;', settingsmode.bind(null, 0));
@@ -3444,7 +3482,7 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container",
-		"deleteban"]);
+		"deleteban", "compete_select"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -4265,14 +4303,13 @@ function competeSettings(num = compete_type) {
         // Player 1 Container
         let cubeContainer = createEl("div", "", columnStyle);
         let select1 = createEl("select", "", { width: "100%" });
+		select1.onmousedown = (event) => {
+			event.preventDefault(); // Prevents the dropdown from opening
+		};
         alldims.forEach(text => select1.appendChild(createEl("option", text)));
 	    if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][0]) {
 			select1.value = compete_dims[i][0];
 		}
-		select1.addEventListener("change", (event) => {
-			b_selectdim[select1.value]();
-			getEl("keymap").style.display = "none";
-		});
 
 		let optionSelect1;
 		optionSelect1 = createEl("select", "", { width: "100%" });
@@ -4280,6 +4317,13 @@ function competeSettings(num = compete_type) {
 		if (compete_shufflearr.length > 0 && compete_shufflearr[i] && compete_shufflearr[i][0]) {
 			optionSelect1.value = compete_shufflearr[i][0];
 		}
+
+		select1.addEventListener("click", () => {
+			setDisplay("none", ["creating_match"]);
+			setDisplay("block", ["compete_select"]);
+			competeSelect(i, select1, num == "1v1" ? "your " : "");
+		});
+		
 
 		if (COMPETE_ADVANCED.checked()) {
 			cubeContainer.append(select1, optionSelect1);
@@ -4296,6 +4340,15 @@ function competeSettings(num = compete_type) {
 			if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][1]) {
 				select2.value = compete_dims[i][1];
 			}
+
+			select2.addEventListener("click", () => {
+				setDisplay("none", ["creating_match"]);
+				setDisplay("block", ["compete_select"]);
+				competeSelect(i, select2, "opponent ");
+			});
+			select2.onmousedown = (event) => {
+				event.preventDefault(); // Prevents the dropdown from opening
+			};
 
             optionSelect2 = createEl("select", "", { width: "100%" });
             optionarr.forEach(text => optionSelect2.appendChild(createEl("option", text)));
@@ -4344,6 +4397,35 @@ function competeSettings(num = compete_type) {
     }
 }
 
+function competeSelect(round, select, text) {
+	getEl("compete_select_title").innerHTML = `Select ${text}cube for round ` + (round + 1);
+	competeSelectButtons();
+	focused_select = select;
+}
+
+function competeSelectButtons() {
+	competesel_buttons.forEach((b, i) => {
+		b.style("backgroundColor", i == compete_modnum ? "#00488F" : "");
+	})
+	let selected = cubetypenames[compete_modnum];
+	let i = 0;
+	competedim_buttons.forEach((b) => {
+		b.style('display', DIMS_OBJ[b.html()].type.includes(selected) || selected == "All" ? "block" : "none");
+		if (DIMS_OBJ[b.html()].type.includes(selected) || selected == "All") {
+			b.parent(`compete_col${i % 3 + 1}`);
+			++i;
+		}
+	});
+
+}
+
+function finishCompeteSelect(dim) {
+	focused_select.value = dim;
+	setDisplay("none", ["compete_select"]);
+	setDisplay("block", ["creating_match"]);
+	b_selectdim[dim]();
+	getEl("keymap").style.display = "none";
+}
 
 function displayPublicRooms() {
     let container = document.getElementById("public_rooms");  
@@ -4439,7 +4521,7 @@ function getSelectedValues(containerId, rows, cols) {
 }
 
 function competeDims() {
-	if (!getEl("compete_rounds")) {
+	if (!getEl("compete_rounds").value) {
 		return;
 	}
 	let a = []

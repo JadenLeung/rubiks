@@ -192,6 +192,8 @@ button:hover {
     text-align: right;
     z-index:2;
 }
+
+
 #compete_advanced {
     display: inline-flex;
     align-items: center;
