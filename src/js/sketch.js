@@ -935,7 +935,7 @@ p.setup = () => {
 
     for (let i = 0; i < cubetypenames.length; i++) {
         let btn = p.createButton(cubetypenames[i]);
-        setButton(btn, "select_container", 'btn btn-primary', 'display: inline-block; margin-left: 5px;', () => {
+        setButton(btn, "select_container", 'btn btn-primary', 'display: inline-block; margin-left: 5px; margin-top: 5px;', () => {
 			compete_modnum = i;
 			competeSelectButtons();
 		});
@@ -945,11 +945,16 @@ p.setup = () => {
 
 	Object.keys(DIMS_OBJ).forEach((dim, i) => {
 		let btn = p.createButton(dim);
-		setButton(btn, `compete_col${i % 3 + 1}`, 'btn btn-info', 
+		const NUM_COLS = isMobile() && isthin ? 2 : 3
+		setButton(btn, `compete_col${i % NUM_COLS + 1}`, 'btn btn-info', 
 			'display: block; margin-top: 5px; font-size: 15px; width: 140px;', () => {
 			finishCompeteSelect(dim);
+			document.getElementById('finish_match').scrollIntoView({ behavior: 'smooth', block: "center" });
 		});
 		btn.mouseOver(() => {
+			if (isMobile()) {
+				return;
+			}
 			bandaged = [];
 			b_selectdim[dim]();
 			getEl("keymap").style.display = 'none';
@@ -1763,7 +1768,7 @@ setInterval(() => {
 	} else if (!isthin){
 		SETTINGS.style("background-color: #8ef4ee; color: " + document.body.style.color);
 	}
-	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
+	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL") && !(MODE.includes("compete") && isthin)) {
 		document.getElementById("cnv_div").style.display = "block";
 		fullScreen(false);
 		reCam();
@@ -3738,6 +3743,9 @@ function competemode() {
 	]);
 	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
+	if (isthin) {
+		setDisplay("none", ["cnv_div", "chat_instruct", "chat-container", "competeinput"]);
+	}
 	getEl("send-btn").style.display = "inline-block"; // To show the button
 
 	SCRAM.value("Normal");
@@ -3806,7 +3814,9 @@ function enterLobby(data, r) {
 	compete_type = data.data.type;
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("inline", ["outertime"]);
-	setDisplay("block", ["waitingroom", "practice_container"]);
+	setDisplay("block", ["cnv_div"]);
+	setDisplay("block", ["waitingroom", "practice_container", "chat_instruct", "chat-container"]);
+	setDisplay("flex", ["competeinput"]);
 	setDisplay(data.data.leader == socket.id ? "inline" : "none", ["editcompete"]);
 	console.log("Refreshed")
 	room = r;
@@ -3971,6 +3981,8 @@ function startRound(data, scramble) {
 		return;
 	}
 	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div"])
+	setDisplay("block", ["cnv_div", "chat-container", "chat_instruct"]);
+	setDisplay("flex", ["competeinput"]);
 	getEl("input").disabled = true;
 	getEl("ss_container").src = "";
 	canMan = true;
@@ -4303,7 +4315,7 @@ function competeSettings(num = compete_type) {
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         let row = createEl("div", "", flexRow);
-        let label = createEl("span", `Round ${i + 1}  ${COMPETE_ADVANCED.checked() ? "Turning:" : ""}`, { width: "80px" });
+        let label = createEl("span", `${isthin ? "R" : "Round "}${i + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Turning:" : ""}`, { width: (isthin ? 20 : 80) + "px" });
 
         // Player 1 Container
         let cubeContainer = createEl("div", "", columnStyle);
@@ -4418,8 +4430,9 @@ function competeSelectButtons() {
 		let shown = ((DIMS_OBJ[b.html()].type.includes(selected) || 
 			selected == "All")) && b.html().includes(getEl("compete_search").value);
 		b.style('display', shown ? "block" : "none");
+		const NUM_COLS = isMobile() && isthin ? 2 : 3
 		if (shown) {
-			b.parent(`compete_col${i % 3 + 1}`);
+			b.parent(`compete_col${i % NUM_COLS + 1}`);
 			++i;
 		}
 	});
