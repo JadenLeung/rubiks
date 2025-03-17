@@ -1691,6 +1691,7 @@ setInterval(() => {
 			if(ao5 == 0) ao5 = [time];
 			else ao5.push(time);
 			console.log("time is ", time, timer.getTime());
+			socket.emit("progress-update", room, 100, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
 			socket.emit("solved", room, time, timer.getTime());
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
