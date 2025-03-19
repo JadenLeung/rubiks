@@ -2431,6 +2431,9 @@ function moveSetup()
 		comstep--;
 		canMan = true;
 		quickSolve();
+		moves = 0;
+		undo = [];
+		redo = [];
 		arr = [];
 		otherShuffling = true;
 		changeArr(competeshuffle);
@@ -4791,6 +4794,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 		isShuffling = false;
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
+			timer.inspection = true;
 			otherShuffling = false;
 			setDisplay("inline", ["giveup", "reset2_div"]);
 			comstep++;
@@ -7699,7 +7703,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata, comstep, socket.id);
+		console.log(timer.inspection);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
