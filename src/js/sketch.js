@@ -1312,13 +1312,16 @@ p.setup = () => {
 	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); startMarathon("blind")});
 
 	const STARTMARATHON = p.createButton('Shape');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:50px; width:120px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:50px; width:80px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
 	
 	const STARTMARATHON2 = p.createButton('Bandage');
-	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:50px; width:120px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:50px; width:100px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
 
 	const STARTMARATHON3 = p.createButton('Cuboid');
-	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', 'height:50px; width:120px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("cuboid")});
+	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', 'height:50px; width:100px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("cuboid")});
+
+	const STARTMARATHON4 = p.createButton('Baby');
+	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', 'height:50px; width:80px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("baby")});
 
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
@@ -2443,7 +2446,7 @@ function moveSetup()
 		waitStopTurning(false);
 		return;
 	}
-	if (mastep > 0 && (nosavesetupdim.includes(DIM) || ma_data.type == "cuboid")) {
+	if (mastep > 0 && (nosavesetupdim.includes(DIM) || ["cuboid", "baby"].includes(ma_data.type))) {
 		undoSetup();
 		return;
 	}
@@ -4727,11 +4730,13 @@ function startMarathon(type) {
 	reSetup();
 	ma_data.type = type;
 	if (type == "cuboid") {
-		ma_data.cubes = ["1x2x3", "1x4x4", "2x2x4", "2x3x4", "3x3x4", "3x3x5"];
+		ma_data.cubes = ["2x2x4", "2x3x4", "3x3x4", "3x3x5", "4x4 Plus Cube"];
 	} else if (type == "shape" || type == "blind") {
 		ma_data.cubes = ["3x3x2", "2x2x3", "1x3x3", "Jank 2x2", "Plus Cube", "Xmas 3x3", "Xmas 2x2", "Sandwich"];
 	} else if (type == "bandage") {
 		ma_data.cubes = ["Cube Bandage", "Slice Bandage", "Bandaged 2x2", "Bandaged 3x3x2", "Pillars", "Triple Quad", "Z Perm", "T Perm"];
+	} else if (type == "baby") {
+		ma_data.cubes = ["1x2x2", "1x2x3", "Plus Lite", "3x3x2 Plus Cube", "Snake Eyes", "1x4x4", "1x5x5"];
 	}
 
 	if (type == "blind") {
@@ -4781,7 +4786,7 @@ function shapemarathon() {
 		} else {
 			setDisplay("block", ["ma_buttons"]);
 		}
-		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4"};
+		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5"};
 		setScore(map[ma_data.type], score, true);
 	}
 }
@@ -4818,7 +4823,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 			}
 		}
 		console.log("CHANGING COMPSTEP", comstep);
-		if (getEl("marathon2").style.display == "block" && (["shape", "bandage", "blind", "cuboid"].includes(mode))) mastep++;
+		if (getEl("marathon2").style.display == "block" && (["shape", "bandage", "blind", "cuboid", "baby"].includes(mode))) mastep++;
 		if (!nosavesetupdim.includes(DIM) && comstep == 0 && mode != "cuboid") {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -5290,7 +5295,7 @@ function updateScores() {
 	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
-			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon"};
+			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon"};
 	Object.keys(display).forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -5860,6 +5865,7 @@ async function saveData(username, password, method, al) {
 		race2x2: localStorage.race2x2 ?? -1, 
 		race3x3: localStorage.race3x3 ?? -1,
 		marathon4: localStorage.marathon4 ?? -1,
+		marathon5: localStorage.marathon5 ?? -1,
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
@@ -5905,7 +5911,7 @@ async function loadData(times) {
 	console.log("Userdata is ", userdata[index]);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
-			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4"];
+			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5"];
 		params.forEach((param) => {
 			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[index][param]))
 				localStorage[param] = userdata[index][param];
@@ -8089,7 +8095,7 @@ function multiple(nb, timed, use = "default") {
 	else
 	{
 		shuffling = false;
-		if (isSolved() && numshuffle < 2 && use.includes("scramble") && ((["1x2x3", "1x2x2", "sandwich2x2"].includes(DIM)) || MODE == "competing")) {
+		if (isSolved() && numshuffle < 5 && use.includes("scramble") && ((["1x2x3", "1x2x2", "sandwich2x2"].includes(DIM)) || MODE == "competing")) {
 			shuffleCube(true);
 			numshuffle++;
 			return;
