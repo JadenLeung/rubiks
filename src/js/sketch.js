@@ -79,7 +79,7 @@ export default function (p) {
 	let TWOBYTWO;
 	let TEAMBLIND_SEL;
 	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS, SANDWICH2, PLUSLITE,
-		PLUS3x3x2;
+		PLUS3x3x2, SNAKE_EYE;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -239,6 +239,7 @@ export default function (p) {
 		"Slice Bandage" : change11.bind(null, 7, [[3,4,5,6,7,8]]),
 		"Bandaged 2x2" : change14.bind(null, 10, [[6,8]]),
 		"Bandaged 3x3x2" : change20.bind(null, 16, [[0,1], [24,25]]),
+		"Snake Eyes" : switchSize.bind(null, 3, "snake_eye", 50, "Middle Slices", 3, [[6, 15, 24, 8, 17, 26, 11, 2, 20, 0, 9, 18]]),
 		"Pillars" : change12.bind(null, 8, [[0,3,6], [2,5,8]]),
 		"Triple Quad" :change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]),
 		"Z Perm" : 	change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]),
@@ -634,6 +635,7 @@ p.setup = () => {
 	SANDWICH2 = p.createButton('Sandwich 2x2');
 	PLUSLITE = p.createButton('Plus Lite');
 	PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
+	SNAKE_EYE = p.createButton('Snake Eyes');
 	refreshButtons();
 
 
@@ -1756,7 +1758,7 @@ setInterval(() => {
 	}
 	if(MODE == "cube" && (!mouseAllowed() || (custom == 1 && !canMouse()))) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
-	if(MODE == "cube" && modnum != 1)bandaged = [];
+	if(MODE == "cube" && modnum != 1 && DIM != "snake_eye") bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
 	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
 		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
@@ -2683,10 +2685,7 @@ function changeZero()
 	SEL5.selected(colormap[opposite[topColor()]]);
 	SEL6.selected(colormap[opposite[allcubies[16][0]]]);
 	console.log(colormap[opposite[allcubies[16][0]]])
-	for(let i = 0; i < 27; i++)
-	{
-		CHECK[i].remove();
-	}
+	CHECK.forEach(c => c.checked(true));
 	change9(true);
 }
 function changeFour(){
@@ -2783,6 +2782,11 @@ function change18(dim, b){
 	changeBan(dim, b)
 	CUBE14.style('background-color', "#8ef5ee");
 }
+
+function change21(dim, b) {
+	changeBan(dim, b)
+	SNAKE_EYE.style('background-color', "#8ef5ee");
+}
 function change19(){
 	DIM = 15;
 	DIM2 = 15;
@@ -2792,18 +2796,20 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
-function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3) {
+function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3, b = []) {
 	DIM2 = d2;
 	DIM = d;
 	DIM3 = d3;
 	DIM4 = d3;
 	changeCam(3)
-	INPUT.value(input);
+	INPUT.value(input == "Middle Slices" ? "Normal" : input);
 	SCRAM.value(input);
 	SIZE = s;
 	MAXX = (SIZE - 1) * 25;
+	bandaged = b
 	reSetup();
 	refreshButtons();
+	console.log("bandaged is ", bandaged)
 }
 function change20(dim, b){
 	changeFive();
@@ -7495,7 +7501,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 			if(total > 0 && total < bandaged[i].length)
 				cuthrough = true;
 		}
-		if (cuthrough && SIZE <= 4) {
+		if (cuthrough && SIZE <= 3) {
 			undo.pop();
 			if(timer.isRunning)
 				moves--;
@@ -7703,7 +7709,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(timer.inspection);
+		console.log(bandaged);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8353,7 +8359,7 @@ function refreshButtons()
 		TWOBYTHREEBYFOUR, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
-		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2
+		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE
 		];
 		
 		elements.forEach(el => el.remove());
@@ -8510,7 +8516,7 @@ function refreshButtons()
 		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		LASAGNA = p.createButton('Earth Cube');
-		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {b_selectdim("Earth Cube"); LASAGNA.style('background-color', "#8ef5ee");});
+		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {b_selectdim["Earth Cube"](); LASAGNA.style('background-color', "#8ef5ee");});
 
 		FOURPLUS = p.createButton('4x4 Plus Cube');
 		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
@@ -8535,6 +8541,9 @@ function refreshButtons()
 
 		PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
 		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x2 Plus Cube"](); PLUS3x3x2.style('background-color', "#8ef5ee");});
+
+		SNAKE_EYE = p.createButton('Snake Eyes');
+		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {b_selectdim["Snake Eyes"]();});
 	}
 
 }
