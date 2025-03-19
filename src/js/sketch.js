@@ -24,6 +24,7 @@ export default function (p) {
 	let juststarted = false;
 	let raceid = "";
 	let previouschatid = "";
+	let competeshuffle = "";
 	let room = 0;
 	let competesel_buttons = [];
 	let competedim_buttons = [];
@@ -1696,7 +1697,7 @@ setInterval(() => {
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
 			}
-			getEl("giveup").style.display = "none";
+			setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 			canMan = false;
 		} else if (timer.isRunning && timer.inspection == 2 && timer.getTime() > 0) {
 			timer.stop();
@@ -1841,7 +1842,7 @@ setInterval(() => {
 		}
 	}
 	if (comstep > 0 && (competedata.stage != "ingame")) {
-		getEl("giveup").style.display = "none";
+		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 	}
 	SWITCHER.html(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
 	if (MINIMODE == "virtual" && timer.getTime() > 0 && juststarted) {
@@ -2425,6 +2426,18 @@ function undoSetup() {
 function moveSetup()
 {
 	if ((mastep > 0 || cstep > 0) && timer.getTime() <= 0) return;
+	if (comstep > 0) {
+		setDisplay("none", ["reset2_div", "giveup"])
+		comstep--;
+		canMan = true;
+		quickSolve();
+		arr = [];
+		otherShuffling = true;
+		changeArr(competeshuffle);
+		multiple2("compete");
+		waitStopTurning(false);
+		return;
+	}
 	if (mastep > 0 && (nosavesetupdim.includes(DIM) || ma_data.type == "cuboid")) {
 		undoSetup();
 		return;
@@ -2537,7 +2550,7 @@ function giveUp()
 		fadeInText(1, "DNF");
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
 		canMan = false;
-		getEl("giveup").style.display = "none";
+		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 		if (competedata.data.type == "teamblind")
 			socket.emit("giveup_blind", room);
 	} else if(m_4step > 0 && m_4step % 2 == 1) {
@@ -3814,7 +3827,7 @@ function enterLobby(data, r) {
 	}
 	compete_type = data.data.type;
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
-	setDisplay("inline", ["outertime"]);
+	setDisplay("inline", ["outertime", "reset_div"]);
 	setDisplay("block", ["cnv_div"]);
 	setDisplay("block", ["waitingroom", "practice_container", "chat_instruct", "chat-container"]);
 	setDisplay("flex", ["competeinput"]);
@@ -3981,7 +3994,7 @@ function startRound(data, scramble) {
 	if (MODE != "competing") {
 		return;
 	}
-	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div"])
+	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div", "reset_div"])
 	setDisplay("block", ["cnv_div", "chat-container", "chat_instruct"]);
 	setDisplay("flex", ["competeinput"]);
 	getEl("input").disabled = true;
@@ -4019,6 +4032,7 @@ function startRound(data, scramble) {
 			quickSolve(data.data.orpos);
 		}
 		if (scramble) {
+			competeshuffle = scramble;
 			changeArr(scramble);
 			multiple2("scramble");
 		} else {
@@ -4176,7 +4190,7 @@ function competeSolved(data) {
 		getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 		getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
 		getEl("ss_container").style.display = "none";
-		setDisplay("none", ["giveup"]);
+		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 		competeTimes(data, true);
 		competePoints(data);
 	}
@@ -4194,9 +4208,6 @@ function continueMatch() {
 		return;
 	}
 	setDisplay("none", ["continuematch"]);
-	if (getEl("giveup").style.display == "none") {
-
-	}
 	if (competedata.round < competedata.data.dims.length - 1) {
 		console.log("emitting")
 		socket.emit("next-round", room);
@@ -4261,7 +4272,7 @@ function continueMatch() {
 }
 
 function competeSettings(num = compete_type) {
-	setDisplay("inline", ["undo", "redo", "shuffle_div"]);
+	setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div"]);
 	if (num == "1v1" && compete_type == "group" && competedata.userids && competedata.userids.length > 2) {
 		alert("Cannot turn group compete into 1v1 match.");
 		return;
@@ -4780,7 +4791,8 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 		isShuffling = false;
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
-			setDisplay("inline", ["giveup"]);
+			otherShuffling = false;
+			setDisplay("inline", ["giveup", "reset2_div"]);
 			comstep++;
 			console.log("adding 1", canMan, comstep);
 			competeScreenshot();
@@ -7052,6 +7064,7 @@ function shuffleCube(override = false) {
 	}
 	if(SCRAM.value() != "Last Layer")
 	document.getElementById("scramble").innerHTML = total;
+	competeshuffle = total;
 	multiple2("realscramble");
 }
 function downloadAll()
@@ -7855,7 +7868,9 @@ p.keyPressed = (event) => {
 					quickSolve();
 			}
 			if(MODE == "speed" && getEl("s_high").style.display == "none" && getEl("s_prac2").style.display == "none")
-			speedSetup();
+				speedSetup();
+			if(MODE == "competing" && getEl("reset2_div").style.display == "inline")
+				moveSetup();
 			
 			break;
 			case 192: //`
@@ -8201,6 +8216,7 @@ function undoTillRotate(arr) {
 }
 function flexDo(foo, arr, shift = false) {
 	if (arr.length == 0) return;
+	if (!canMan) return;
 	console.log(INPUT.value());
 	if (shift) {
 		funcMult(foo, undoTillRotate(arr));
