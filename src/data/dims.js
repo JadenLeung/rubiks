@@ -24,6 +24,8 @@ export const DIMS_OBJ = {
     "Sandwich 2x2" : {type: ["Baby"], difficulty: 1},
     "Sandwich" : {type: ["Shape"], difficulty: 2},
     "Earth Cube" : {type: ["Big"], difficulty: 3},
-    "Bandaged 2x2" : {type: ["NxN"], difficulty: 2},
     "Snake Eyes" : {type: ["NxN", "Baby"], difficulty: 1.5},
+    "Bandaged 2x2" : {type: ["NxN"], difficulty: 2},
+    "Cube Bandage" : {type: ["NxN"], difficulty: 3},
+    "Slice Bandage" : {type: ["NxN"], difficulty: 3},
 };

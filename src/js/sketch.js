@@ -1050,6 +1050,9 @@ p.setup = () => {
 	const COMPETEBACK = p.createButton('Back');
 	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
 
+	const COMPETERESTORE = p.createButton('Restore Defaults');
+	setButton(COMPETERESTORE, "competerestore", 'btn btn-light', 'font-size:20px; border-color: black;', () => {});
+
 	const COMPETESELBACK = p.createButton('Cancel');
 	setButton(COMPETESELBACK, "competesel_back", 'btn btn-danger', 'font-size:20px;', () => {
 		setDisplay("none", ["compete_select"]);
@@ -3518,7 +3521,7 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container",
-		"deleteban", "compete_select"]);
+		"deleteban", "compete_select", "competerestore"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -4015,6 +4018,8 @@ function startRound(data, scramble) {
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
+	bandaged = [];
+	reSetup();
 	competedata = data;
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		b_selectdim[data.data.dims[data.round][0]]();
@@ -4284,7 +4289,7 @@ function continueMatch() {
 }
 
 function competeSettings(num = compete_type) {
-	setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div"]);
+	setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div", "competerestore"]);
 	if (num == "1v1" && compete_type == "group" && competedata.userids && competedata.userids.length > 2) {
 		alert("Cannot turn group compete into 1v1 match.");
 		return;
@@ -4334,7 +4339,7 @@ function competeSettings(num = compete_type) {
 
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
 		"2x3x4", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
-		"Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes"];
+		"Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
     const optionarr = ["Default", "3x3x2", "Double Turns", "Gearcube"]; // Example options
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
@@ -4424,6 +4429,19 @@ function competeSettings(num = compete_type) {
                     }
                 }
             };
+			getEl("competerestore").onclick = () => {
+				for (let j = 0; j < rows.length; j++) {
+                    rows[j].select1.value = "3x3";
+					if (COMPETE_ADVANCED.checked())
+						rows[j].optionSelect1.value = "Default";
+                    if (num == "1v1" && rows[j].select2) {
+                        rows[j].select2.value = "3x3";
+						if (COMPETE_ADVANCED.checked())
+							rows[j].optionSelect2.value = "Default";
+                    }
+					TEAMBLIND_SEL.selected("3x3");
+                }
+			}
             extraColumn.appendChild(applyButton);
         }
         row.append(extraColumn);
