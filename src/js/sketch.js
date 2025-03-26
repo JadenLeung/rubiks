@@ -13,7 +13,7 @@ const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsit
 export default function (p) {
 	const CUBYESIZE = 50;
 	const DEBUG = false;
-	let week = sinceNov3('w') % weeklyscrambles.length;
+	let week = sinceNov3('w') % 20;
 	let bruh = 0;
 	let CAM;
 	let CAM_PICKER;
@@ -192,12 +192,10 @@ export default function (p) {
 	let scrambles = [];
 	let savesetup = [];
 	let savebandage = [];
-	let song = "CcDdEFfGgAaB";
 	let savedark = [];
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
-	// const nosavesetupdim = [1, 2, 15, 6];
-	const nosavesetupdim = [1,6, ""];
+	const savesetupdim = [50, 100, 2, 15, 1, 3, 5, 4, 13, 14, 7, 10, 2, 8, 9, 11, 12, "snake_eye"]
 	let session = 0;
 	let savetimes = Array.from({ length: 5 }, () => ({ao5: [], mo5: [], movesarr: [], scrambles: []}));
 	let isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
@@ -2449,7 +2447,7 @@ function moveSetup()
 		waitStopTurning(false);
 		return;
 	}
-	if (mastep > 0 && (nosavesetupdim.includes(DIM) || ["cuboid", "baby"].includes(ma_data.type))) {
+	if ((cstep > 0 || mastep > 0) && (!savesetupdim.includes(DIM) || SIZE > 3 || ["cuboid", "baby"].includes(ma_data.type))) {
 		undoSetup();
 		return;
 	}
@@ -4842,7 +4840,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 		}
 		console.log("CHANGING COMPSTEP", comstep);
 		if (getEl("marathon2").style.display == "block" && (["shape", "bandage", "blind", "cuboid", "baby"].includes(mode))) mastep++;
-		if (!nosavesetupdim.includes(DIM) && comstep == 0 && mode != "cuboid") {
+		if ((savesetupdim.includes(DIM) && SIZE == 3) && comstep == 0 && mode != "cuboid") {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
 				special[2] = savesetup;
@@ -4893,10 +4891,7 @@ function appendToTable(hotkeys, id, step, padding = "5px") {
 }
 
 function startchallenge() {
-	const cubemap = {3 : 50, 2: 100, 4 : 2, 5 : 15};
-	DIM2 = cubemap[weeklyscrambles[week].cube];
-	DIM = DIM2;
-	changeCam(weeklyscrambles[week].cube);
+	b_selectdim[weeklyscrambles[week].cube]();
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
 		bandaged = weeklyscrambles[week].bandaged;
 	}
@@ -4907,19 +4902,23 @@ function startchallenge() {
 	timer.stop();
 	timer.reset();
 	MODE = "weekly";
-	timer.setTime(-15000, true);
-	timer.start(true);
-	savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].scramble)));
-	special[2] = savesetup;
-	quickSolve();
+	if (weeklyscrambles[week].pos) {
+		timer.setTime(-15000, true);
+		timer.start(true);
+		savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].pos)));
+		special[2] = savesetup;
+		quickSolve();
+	} else {
+		changeArr(weeklyscrambles[week].scramble);
+		multiple2("scramble");
+		waitStopTurning(true);
+	}
 	setInput();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
-	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
+	setDisplay("inline", ["undo", "redo", "reset2_div",  "speed", "slider_div", "outertime"]);
 	setDisplay("block", ["input"]);
-	if ([2,15].includes(DIM2)) {
-		INPUT.value("3x3x2");
-		SCRAM.value("3x3x2");
+	if (INPUT.selected() != "Normal") {
 		INPUT.attribute('disabled', true);
 	}
 }
@@ -7733,7 +7732,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(bandaged);
+		console.log(week);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8567,7 +8566,7 @@ function refreshButtons()
 		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x2 Plus Cube"](); PLUS3x3x2.style('background-color', "#8ef5ee");});
 
 		SNAKE_EYE = p.createButton('Snake Eyes');
-		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {b_selectdim["Snake Eyes"]();});
+		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {b_selectdim["Snake Eyes"]();  SNAKE_EYE.style('background-color', "#8ef5ee");});
 	}
 
 }
