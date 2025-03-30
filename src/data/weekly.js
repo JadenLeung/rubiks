@@ -1,7 +1,7 @@
 export const weeklyscrambles = 
 [
     {cube: "3x3", pos: "5ÐÎuÔQr 1reK(J4 5laówYn 4dV"},
-    {cube: "2x2x4", scramble: "R2 Rw2 Fw2 Rw2 Dw2 F2 L2 Lw2 D2 Dw2 Fw2 U2 Dw' Rw2 Uw2 Fw' R2 Fw2 Uw R2 Bw2 L D' Uw' Rw2 B2 Fw2 F D Dw Rw' U' Bw' Rw B2 L Lw Bw2 Dw2 L D2 Rw2 Fw Rw Dw2"},
+    {cube: "2x2x4", scramble: "Lw2 Bw2 L2 F2 Lw2 B2 Dw' B2 Rw2 U2 Bw2 B2 Rw2 Bw2 Lw2 D Uw2 B Uw2 Rw Fw D' L' Dw' D B R Lw L2 U Fw2 U L' Fw2 Uw2 F L Uw2 R2 B' R Dw U L2 F'"},
     {cube: "3x3", pos: "5F4ÒDâ@ 5ètläìÈ 5sbÐ4wó 1ë9"},
     {cube: "1x4x4", scramble: "R2 U' L2 Dw2 Rw2 B2 Fw2 D' B2 Bw2 F2 Rw2 Uw2 R2 F2 U Rw2 U' Fw2 L2 Fw2 U2 R2 B2 R2 Fw2 Dw2 U2 Rw2 B2"},
     {cube: "3x3", pos: "3jØtý#Z 3iæþÛrá 1ÈOi#Éî 4äÍ", bandaged: [[7, 8], [24, 25], [0, 1], [19, 20]]},
