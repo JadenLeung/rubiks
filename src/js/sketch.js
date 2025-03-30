@@ -4684,6 +4684,7 @@ function dailychallenge(cube) {
 	if (localStorage.cdate2 == sinceNov3('d') && cube == 3) return;
 	DIM2 = cube == 3 ? 50 : 100;
 	DIM = DIM2;
+	SIZE = 3;
 	reSetup();
 	shuffleCube();
 	timer.stop();
