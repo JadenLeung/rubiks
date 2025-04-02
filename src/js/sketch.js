@@ -7,7 +7,7 @@ import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3000");
+// const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
 // const socket = io("wss://api.virtual-cube.net:3003/");
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
@@ -375,6 +375,10 @@ class Timer {
 		}
 		
 		return this.overallTime;
+	}
+
+	roundedTime() {
+		return Math.round(this.getTime() / 10)/100.0
 	}
 }
 function isMobile() {  //phone computer
@@ -1442,6 +1446,12 @@ p.setup = () => {
 
 setInterval(() => {
 	timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
+	if (MODE == "competing" && competedata.data.type == "teamblind") {
+		timeInSeconds = blindTime() ?? 0;
+		if (competedata.stage == "results") {
+			timeInSeconds = competedata.data.time;
+		}
+	}
 	document.getElementById('time').innerText = timeInSeconds;
 	document.getElementById('moves').innerText = moves + (window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? " m" : " moves");
 	document.getElementById('speed').innerText = Math.round(SPEED*100);
@@ -1700,9 +1710,11 @@ setInterval(() => {
 			else ao5.push(time);
 			console.log("time is ", time, timer.getTime());
 			socket.emit("progress-update", room, 100, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
-			socket.emit("solved", room, time, timer.getTime());
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
+				socket.emit("solved", room, time, blindTime());
+			} else {
+				socket.emit("solved", room, time, timer.getTime());
 			}
 			setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 			canMan = false;
@@ -1839,15 +1851,6 @@ setInterval(() => {
 		bandaged3[BANDAGE_SELECT.value()] = {}; // Ensure it's an object
 	  }
 	setDisplay(SIZE > 3 ? "block" : "none", ["customshift"]);
-	if (comstep > 0 && competedata.stage == "ingame") {
-		socket.emit("progress-update", room, competeprogress, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
-		if (competedata.data.type == "teamblind" && competedata.data.time > competedata.data.startblind + SWITCHTIME) {
-			console.log("HERE")
-			if (!isSolved()) {
-				setDisplay("block", ["blind2", "competeswitch"])
-			}
-		}
-	}
 	if (comstep > 0 && (competedata.stage != "ingame")) {
 		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 	}
@@ -1916,6 +1919,17 @@ setInterval(() => {
 		// timer.reset();
 		// timer.setTime(-15000, true);
 		// timer.start();
+	}
+	if (MODE == "competing" && competedata.stage == "ingame") {
+		competeTimes(competedata);
+	} 
+	if (comstep > 0 && competedata.stage == "ingame") {
+		console.log(blindTime(), competedata.data.startblind + SWITCHTIME)
+		if (competedata.data.type == "teamblind" && blindTime() > competedata.data.startblind + SWITCHTIME) {
+			if (!isSolved()) {
+				setDisplay("block", ["blind2", "competeswitch"])
+			}
+		}
 	}
 }, 10)
 //forever
@@ -3785,6 +3799,18 @@ function competemode() {
 	socket.emit("get-rooms");
 }
 
+function progressUpdate(time = 0) {
+	if (comstep > 0 && competedata.stage == "ingame") {
+		console.log("uploading", isSolved() || timer.getTime() == 0 ? timer.roundedTime() : timer.startTime + (timer.getTime() < 0 ? 15000 : 0))
+		socket.emit("progress-update", room, competeprogress, competedata.data.type == "teamblind" ? (time ? time : competedata.data.time) : isSolved() ? timer.roundedTime() : timer.startTime + (timer.getTime() < 0 ? 15000 : 0), isShuffling ? false : getID());
+		if (competedata.data.type == "teamblind" && competedata.data.time > competedata.data.startblind + SWITCHTIME) {
+			console.log("HERE")
+			if (!isSolved()) {
+				setDisplay("block", ["blind2", "competeswitch"])
+			}
+		}
+	}
+}
 
 socket.on("connect", () => {
 	console.log("Youre are connected with id: ", socket.id)
@@ -4034,6 +4060,7 @@ function startRound(data, scramble) {
 			INPUT.selected(data.data.shufflearr[data.round][1]);
 		}
 	}
+	progressUpdate();
 	SCRAM.selected(INPUT.value());
 	setTimeout(() => {
 		changeInput();
@@ -4056,6 +4083,7 @@ function startRound(data, scramble) {
 		}
 		competeprogress = 0;
 		canMan = false;
+		progressUpdate();
 		if (!data.data.inspection && data.data.type != "teamblind") {
 			waitStopTurning(false, "wtev", true)
 		} else {
@@ -4064,7 +4092,26 @@ function startRound(data, scramble) {
 	}, 500);
 }
 
-socket.on("update-data", (data) => competeTimes(data));
+socket.on("update-data", (data) => {competedata = data;});
+
+function blindTime() {
+	if (competedata.data.time == "DNF") {
+		return "DNF";
+	}
+	if (Math.abs(Date.now() - competedata.data.time) < competedata.data.time) {
+		return Math.round((Date.now() - competedata.data.time) / 10)/100.0;
+	}
+}
+
+function cTime(id) {
+	if (competedata.solved[id]) {
+		return competedata.solved[id];
+	}
+	if (Math.abs(Date.now() - competedata.times[id]) < competedata.times[id]) {
+		return Math.round((Date.now() - competedata.times[id]) / 10)/100.0;
+	}
+	return competedata.times[id];
+}
 
 function competeTimes(data, end = false) {
 	if (MODE != "competing" || (competedata.data.type == "teamblind" && moves > 0 && !timer.isRunning)) {
@@ -4074,7 +4121,7 @@ function competeTimes(data, end = false) {
 	if (["1v1", "group"].includes(competedata.data.type)) {
 		let strarr = [];
 		data.userids.forEach((id) => {
-			if (!data.solved[id]) strarr.push([id, data.progress[id] ?? 0, data.times[id] ?? 0])
+			if (!data.solved[id]) strarr.push([id, data.progress[id] ?? 0, cTime(id) ?? 0])
 			else strarr.push([id, data.progress[id] ?? 0, data.solved[id]])
 		});
 		strarr.sort((a, b) => {
@@ -4115,8 +4162,8 @@ function competeTimes(data, end = false) {
 	} else if (["teamblind"].includes(data.data.type)) {
 		// console.log(data, data.data, data.data.blinded, socket.id)
 		getEl("compete_group_container").style.display = "block";
-		getEl("compete_group_container").innerHTML = "<b style = 'font-size: 20px;'>" + (data.data.blinded == socket.id ? (data.data.time == 0 ? "You will start blindfolded 🕶️" : `You are blindfolded 🕶️`) : `You have vision 👁️`) + "</b> <br>";
-		getEl("compete_group_container").innerHTML += data.data.blinded == socket.id ? (data.data.time == 0 ? "<span style = 'color:green'>Turning enabled, blinding will start after first turn</span>" : "<span style = 'color:green'>Turning enabled</span>")
+		getEl("compete_group_container").innerHTML = "<b style = 'font-size: 20px;'>" + (data.data.blinded == socket.id ? (blindTime() == 0 ? "You will start blindfolded 🕶️" : `You are blindfolded 🕶️`) : `You have vision 👁️`) + "</b> <br>";
+		getEl("compete_group_container").innerHTML += data.data.blinded == socket.id ? (blindTime() == 0 ? "<span style = 'color:green'>Turning enabled, blinding will start after first turn</span>" : "<span style = 'color:green'>Turning enabled</span>")
 				: `<span style = 'color:red'>Turning disabled, only opponent ${timer.getTime() == 0 ? "(blinded after first turn)" : "(blinded)"} can turn.</span>`;
 		getEl("match_TITLE").innerHTML = ""
 		getEl("match_INSTRUCT").innerHTML = getEl("match_INSTRUCT2").innerHTML = "";
@@ -4124,9 +4171,6 @@ function competeTimes(data, end = false) {
 			console.log(data.data.posid, data.data.startblind);
 			if (!isShuffling && data.data.posid) {
 				quickSolve(IDtoReal(IDtoLayout(decode(data.data.posid))))
-			}
-			if (data.data.time > 0) {
-				timer.start();
 			}
 		}
 		getEl("times_par").style.display = "none";
@@ -4190,12 +4234,13 @@ function competeSolved(data) {
 		toggleOverlay(false);
 		getEl("competeswitch").style.display = "none";
 		getEl("compete_group_container").style.display = "none";
-		getEl("match_INSTRUCT2").innerHTML = "Time: " + data.data.time;
-		if (data.data.time == "DNF") {
+		let blindtime = data.data.time;
+		getEl("match_INSTRUCT2").innerHTML = "Time: " + blindtime;
+		if (blindTime() == "DNF") {
 			ao5 = ["DNF"];
 		}
 		timer.stop();
-		if (data.data.time != "DNF") {
+		if (blindTime() != "DNF") {
 			getEl("match_TITLE").innerHTML = "You solved the cube!!!";
 			getEl("match_INSTRUCT").innerHTML = "Teamwork makes the dream work :D";
 		} else {
@@ -4610,7 +4655,7 @@ function switchBlindfold() {
 	if (competedata.data.blinded == socket.id) {
 		blinded = getOp();
 	}
-	socket.emit("switch_blindfold", room, blinded);
+	socket.emit("switch_blindfold", room, blinded, blindTime());
 	toggleBlindfold(blinded == socket.id);
 }
 
@@ -4621,9 +4666,6 @@ socket.on("switched-blindfold", (data) => {
 
 function toggleBlindfold(blinded) {
 	getEl("competeswitch").style.display = "none";
-	console.log("TIME IS ", competedata.data.time)
-	timer.start();
-	timer.setTime(competedata.data.time * 1000);
 	if (blinded) {
 		toggleOverlay(true);
 		canMan = true;
@@ -4823,6 +4865,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 		isShuffling = false;
 		if (bstep == 1) bstep = 2;
 		if (comstep > 0 && comstep % 2 == 1) {
+			progressUpdate();
 			timer.inspection = true;
 			otherShuffling = false;
 			setDisplay("inline", ["giveup", "reset2_div"]);
@@ -7734,7 +7777,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(week);
+		// quickSolve();
+		// console.log(timer.startTime);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8136,7 +8180,12 @@ function multiple(nb, timed, use = "default") {
 				canMan = false;
 			}
 		} else if (comstep > 0) {
-			competeprogress = Math.max(competeprogress, getProgress());
+			if (competedata.data.type == "teamblind") {
+				progressUpdate(moves < 2 ? Date.now() : false);
+			} else if (getProgress() > competeprogress) {
+				competeprogress = getProgress();
+				progressUpdate();
+			}
 			competeScreenshot();
 		}
 	}
