@@ -49,7 +49,7 @@ export default function (p) {
 	let focused_select;
 	let othershuffle = false;
 	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
-	let SWITCHTIME = 3;
+	let SWITCHTIME = 15;
 	let isShuffling = false;
 	let otherShuffling = false;
 	let competeprogress = 0;
