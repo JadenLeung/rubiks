@@ -49,7 +49,7 @@ export default function (p) {
 	let focused_select;
 	let othershuffle = false;
 	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
-	let SWITCHTIME = 15;
+	let SWITCHTIME = 3;
 	let isShuffling = false;
 	let otherShuffling = false;
 	let competeprogress = 0;
@@ -3803,12 +3803,6 @@ function progressUpdate(time = 0) {
 	if (comstep > 0 && competedata.stage == "ingame") {
 		console.log("uploading", isSolved() || timer.getTime() == 0 ? timer.roundedTime() : timer.startTime + (timer.getTime() < 0 ? 15000 : 0))
 		socket.emit("progress-update", room, competeprogress, competedata.data.type == "teamblind" ? (time ? time : competedata.data.time) : isSolved() ? timer.roundedTime() : timer.startTime + (timer.getTime() < 0 ? 15000 : 0), isShuffling ? false : getID());
-		if (competedata.data.type == "teamblind" && competedata.data.time > competedata.data.startblind + SWITCHTIME) {
-			console.log("HERE")
-			if (!isSolved()) {
-				setDisplay("block", ["blind2", "competeswitch"])
-			}
-		}
 	}
 }
 
@@ -8181,7 +8175,7 @@ function multiple(nb, timed, use = "default") {
 			}
 		} else if (comstep > 0) {
 			if (competedata.data.type == "teamblind") {
-				progressUpdate(moves < 2 ? Date.now() : false);
+				progressUpdate(competedata.data.time == 0 ? Date.now() : false);
 			} else if (getProgress() > competeprogress) {
 				competeprogress = getProgress();
 				progressUpdate();
