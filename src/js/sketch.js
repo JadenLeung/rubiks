@@ -4317,7 +4317,7 @@ function continueMatch() {
 			str += `<tr><td style="text-align: center; white-space: nowrap; padding: 0 10px;"><span style="${nameStyle}">${arr[0]}) ${competedata.names[arr[1]]}</span></td>`;
 			
 			competedata.solvedarr.forEach((timeobj, i) => {
-				let timeStyle = minarr[i] == timeobj[arr[1]] ? "color: green;" : "";
+				let timeStyle = minarr[i] == timeobj[arr[1]] &&  timeobj[arr[1]] != "DNF" ? "color: green;" : "";
 				str += `<td style="text-align: center; white-space: nowrap; padding: 0 10px;"><span style="${timeStyle}">${timeobj[arr[1]] ?? "-"}</span></td>`;
 			});
 			str += `</tr>`;
@@ -7777,7 +7777,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		// console.log(timer.startTime);
+		console.log(competedata);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
