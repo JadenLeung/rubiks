@@ -4650,7 +4650,7 @@ function switchBlindfold() {
 		blinded = getOp();
 	}
 	socket.emit("switch_blindfold", room, blinded, blindTime());
-	toggleBlindfold(blinded == socket.id);
+	// toggleBlindfold(blinded == socket.id);
 }
 
 socket.on("switched-blindfold", (data) => {
