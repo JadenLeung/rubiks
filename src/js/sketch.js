@@ -4131,13 +4131,19 @@ function competeTimes(data, end = false) {
 			if (b[0] == socket.id) copyb--;
 			return copya - copyb;
 		});
+		for (let i = 0; i < strarr.length; ++i) {
+			if (strarr[i][2] == "DNF") {
+				strarr[i][2] = DNF;
+			}
+		}
 		let str = "";
 		let rank = 1;
+		console.log(strarr)
 		for (let i = 0; i < strarr.length; ++i) {
 			if (strarr[i][0] == socket.id) {
 				str += COMPETE_YOU;
 			}
-			if (i == 0 || strarr[i][2] != strarr[i - 1][2]) {
+			if (i == 0 || (strarr[i][2] != strarr[i - 1][2] || (strarr[i][1] != strarr[i - 1][1] && !end))) {
 				rank = (i + 1);
 			}
 			str += `${rank}) `;
@@ -4145,7 +4151,7 @@ function competeTimes(data, end = false) {
 			if (!end) {
 				str += ", progress: " + strarr[i][1] + "%";
 			}
-			str += ", time: " + (strarr[i][2] >= DNF ? "DNF" : (strarr[i][2] + "s"));
+			str += ", time: " + (strarr[i][2] >= DNF || strarr[i][2] == "DNF" ? "DNF" : (strarr[i][2] + "s"));
 			if (strarr[i][0] == socket.id) {
 				str += `</b>`;
 			}
