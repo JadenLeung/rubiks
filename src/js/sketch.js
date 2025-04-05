@@ -11458,8 +11458,14 @@ function sendMessage(type, message, id, names, image) {;
 		str += `<i style="font-size: 12px;">${escapeHTML(message.id == socket.id ? "You" : message.name)} left room ${escapeHTML(message.room)}</i><br>`;
 		previouschatid = "";
 	}
+	let shouldscroll = false
+	if (getEl("allmessages").scrollTop == getEl("allmessages").scrollHeight) {
+		shouldscroll = true
+	}
 	getEl("allmessages").innerHTML += str;
-	
+	if (shouldscroll) {
+		getEl("allmessages").scrollTop = getEl("allmessages").scrollHeight;
+	}
 }
 
 document.getElementById("message-input").addEventListener("paste", function(event) {
