@@ -2458,7 +2458,7 @@ function moveSetup()
 		otherShuffling = true;
 		changeArr(competeshuffle);
 		multiple2("compete");
-		waitStopTurning(false);
+		waitStopTurning(false, "compete");
 		return;
 	}
 	if ((cstep > 0 || mastep > 0) && (!savesetupdim.includes(DIM) || SIZE > 3 || ["cuboid", "baby"].includes(ma_data.type))) {
@@ -4863,6 +4863,10 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 		}
 		isShuffling = false;
 		if (bstep == 1) bstep = 2;
+		if (mode == "compete") {
+			undo = [];
+			redo = [];
+		}
 		if (comstep > 0 && comstep % 2 == 1) {
 			progressUpdate();
 			timer.inspection = true;
