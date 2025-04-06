@@ -991,7 +991,7 @@ p.setup = () => {
 		["Tab", "Toggle fullscreen"],
 		["⇧ Tab", "Toggle halfscreen"],
 		["Space", "Stop Time"],
-		["", ""],
+		["Enter", "Wide Move"],
 		["1", "Quit"],
 		["⇧ 1", "Home"],
 		["2", "Max/Min turn speed"],
@@ -7865,16 +7865,11 @@ p.keyPressed = (event) => {
 	if(canMan == true)
 	{
 		setLayout();
-		//console.log("here");
 		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89 1000 1001 90 191 59";
-		// let bad2 = "188 190 65 186 80 81 77 85 86 82 78 66 84 89 59";
 		let bad3 = "88c";
 		if(DIM == 100)
 			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81 1000 1001";
-		// if(bad2.includes(p.keyCode) && (DIM == 100 || DIM == 5) && p.keyCode > 9) return;
 		if(bad3.includes(p.keyCode) && p.keyCode > 9 || p.keyCode == 18) return;
-		let cubies = shownCubies();
-		let onedown = false;
 		alldown = false;
 		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
 		
@@ -7907,6 +7902,20 @@ p.keyPressed = (event) => {
 
 		if (keyMoveMap[p.keyCode]) {
 			arr = [keyMoveMap[p.keyCode]];
+
+			if (p.keyIsDown(p.ENTER)) {
+				if (arr[0].includes("w")) {
+					if (arr[0].includes("'"))
+						arr[0] = arr[0][0].toLowerCase() + "'";
+					else
+						arr[0] = arr[0][0].toLowerCase();
+				} else {
+					if (arr[0].includes("'"))
+						arr[0] = arr[0][0] + "w'";
+					else
+						arr[0] = arr[0][0] + "w";
+				}
+			}
 			if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || 
 			(INPUT.value() == "Double Turns" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))
 			|| (p.keyIsDown(p.SHIFT) && ([37,38,39,40].includes(p.keyCode) || ([1000, 1001].includes(p.keyCode) && KEYBOARD.value() == "Default")))) {
