@@ -10309,6 +10309,7 @@ function darkMode(){
 		darkmode = false;
 		// reSetup();
 	}
+	getEl("outertime").style.color = document.body.style.color;
 }
 function greenLayer(){
 	for(let i = 0; i < 6; i++)
