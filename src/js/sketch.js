@@ -991,7 +991,7 @@ p.setup = () => {
 		["Tab", "Toggle fullscreen"],
 		["⇧ Tab", "Toggle halfscreen"],
 		["Space", "Stop Time"],
-		["Enter", "Wide Move"],
+		["Enter", "Slice Move"],
 		["1", "Quit"],
 		["⇧ 1", "Home"],
 		["2", "Max/Min turn speed"],
@@ -7904,16 +7904,16 @@ p.keyPressed = (event) => {
 			arr = [keyMoveMap[p.keyCode]];
 
 			if (p.keyIsDown(p.ENTER)) {
-				if (arr[0].includes("w")) {
-					if (arr[0].includes("'"))
-						arr[0] = arr[0][0].toLowerCase() + "'";
-					else
-						arr[0] = arr[0][0].toLowerCase();
-				} else {
+				if (arr[0].includes("M") || arr[0].includes("S") || arr[0].includes("E")) {
 					if (arr[0].includes("'"))
 						arr[0] = arr[0][0] + "w'";
 					else
 						arr[0] = arr[0][0] + "w";
+				} else {
+					if (arr[0].includes("'"))
+						arr[0] = arr[0][0].toLowerCase() + "'";
+					else
+						arr[0] = arr[0][0].toLowerCase();
 				}
 			}
 			if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || 
