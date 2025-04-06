@@ -8063,6 +8063,10 @@ function adjustMove(move) {
 			console.log("Illegal!");
 			return false;
 		}
+		if (["M", "S", "E"].includes(move[0]) && move.includes("w") && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0]) && DIM == "2x3x4") {
+			console.log("Illegal2!");
+			return false;
+		}
 		if ("lfrbud".includes(move[0]) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
 			move = move[0].toUpperCase() + move.slice(1);
 			console.log("changedmove ", move)
