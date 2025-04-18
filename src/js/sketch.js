@@ -7831,7 +7831,9 @@ p.keyPressed = (event) => {
 			let func = null;
 			if (cstep > 0) {
 				challengemode();
-				startchallenge();
+				setTimeout(() => {
+					startchallenge();
+				}, weeklyscrambles[week].pos ? 0 : 200);
 			}
 		}
 	} else if (p.keyCode == 27 && MODE == "finishpaint") {
