@@ -11536,9 +11536,14 @@ $(document).on("keypress", "#test_alg_div", function(e){ //enter
 		testAlg();
 	}
 });
-$(document).on("keypress", "#join_input", function(e){ //enter
+$(document).on("keypress", "#test_alg_div", function(e){ //enter
 	if(e.which == 13){
-		joinRoom();
+		testAlg();
+	}
+});
+$(document).on("keypress", "#timegone4", function(e){ //enter
+	if(e.which == 13){
+		removeSpecificTime();
 	}
 });
 $(document).on("keypress", "#password", function(e){
