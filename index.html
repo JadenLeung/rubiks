@@ -42,7 +42,7 @@
 		</div>
 		<button class = "btn btn-sm login bi bi-people" style = "background-color: orange;"id = "compete">&nbsp;Multiplayer Games</button>
 		<button class = "btn btn-warning btn-sm login bi bi-stopwatch" id = "challenge">&nbsp;Weekly Challenges</button>
-		<li style = "float:right;" id = "bannercube"><a style = "color:white">The Virtual Cube</a></li>
+		<li style = "float:right;" id = "bannercube"><a style = "color:white">Added Suggestions Mode</a></li>
 		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
 	</ul>
 	<div class="row">
@@ -60,7 +60,9 @@
 				<p style = "text-align:center; display: inline; padding-top: 5px;" id = "type6"><b>Scramble:</b></p>
 			</div>
 			<p id = "or_instruct" style = "font-size:20px; text-align:center; padding-left:0px; padding-top:20px;"><b>How this Works:</b></p>
-			<p id = "or_instruct2" style = "font-size:12px; margin: 0px;">Drag the mouse on a cube layer <b>across a solid black line</b> to rotate it. You can also use the keyboard. <a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a></p>
+			<p id = "or_instruct2" style = "font-size:12px; margin: 0px;">Drag the mouse on a cube layer <b>across a solid black line</b> to rotate it. You can also use the keyboard.
+				<a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a>
+				<a id = "suggest" href="#">Suggest a Feature</a></p>
 			<p id = "or_instruct4" style = "font-size:20px; text-align:center; padding-left:0px; padding-top: 20px;"><b>Select Modes:</b></p>
 			<div class = "buttoncontainer">	
 				<p id="mode" class = "button buttonitems" style = "text-align:center; margin-top: 0px; margin-bottom: 5px; display:inline;"></p>
@@ -303,6 +305,14 @@
 				<p style = "font-size:15px; text-align:left;">Use the arrow keys to step back/forward</p>
 				<p style = "font-size:15px; text-align:left;">Press shift along with an arrow key to leap back/forward</p>
 				<p id = "finishpaint"></p>
+			</div>
+			<div id="suggest_container">
+				<p style = "font-size:20px; text-align:left; padding-top:15px; text-align: left"><b id = "suggest_title">Suggest a Feature</b></p>
+				<span id="suggest_input" type="text"></span>
+				<button class = "btn btn-success btn-sm" id = "suggest_submit">
+					Submit
+				</button>
+				<p id = "suggest_text">Submitting</p>
 			</div>
 			<div id="loginform">
 				<div id = "l_form">

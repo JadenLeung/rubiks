@@ -269,6 +269,11 @@ button:hover {
     line-height: 0;
 }
 
+#suggest_submit {
+    margin-top: 5px;
+    pointer-events: auto;
+}
+
 @media screen and (max-width: 1199px) {
     .buttoncontainer {
         display: flex;

@@ -93,6 +93,22 @@ export async function getUsers() {
     return true;
   }
 
+  export async function putSuggestion(data, method) {
+    console.log("Attemping to upload");
+    await fetch("https://elephant4.azurewebsites.net/api/suggestions", {
+		method: method,
+		body: JSON.stringify([data]),
+		headers: {
+		  "Content-type": "application/json; charset=UTF-8"
+		}
+	  }).then((response) => {
+        console.log(response);
+    }).catch((err) => {
+      console.log("Error " + err);
+    });
+    return true;
+  }
+
   export async function printUsers() {
     const users = await getUsers();
     if (users != null) {

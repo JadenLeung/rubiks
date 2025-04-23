@@ -5,7 +5,7 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
-import {modeData, getUsers, printUsers, putUsers, matchPassword} from "./backend.js";
+import {modeData, getUsers, printUsers, putUsers, matchPassword, putSuggestion} from "./backend.js";
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -91,6 +91,7 @@ export default function (p) {
 	let ROTX = 2.8
 	let ROTY = 7;
 	let ROTZ = 2;
+	let SUGGESTION;
 	let ZOOM3 = -170;
 	let ZOOM2 = -25;
 	let CHECK = [];
@@ -1348,6 +1349,11 @@ p.setup = () => {
 
 	inp = p.createInput('');
 	inp.parent("test_alg_input");
+
+	SUGGESTION = p.createInput('');
+	SUGGESTION.parent("suggest_input");
+	SUGGESTION.style("width: 300px;")
+	SUGGESTION.attribute('maxlength', '50');
 	
 	const GO_BTN = p.createButton('Go!');
 	setButton(GO_BTN, 'test_alg_button', 'btn btn-success', 'height: 30px; width: 40px; display: flex; padding: 0;', testAlg.bind(null, 0));
@@ -3539,8 +3545,8 @@ function regular(nocustom){
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
-		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container",
-		"deleteban", "compete_select", "competerestore"]);
+		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
+		"deleteban", "compete_select", "competerestore", "suggest_text"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -5072,6 +5078,55 @@ async function fadeInText(o, text, color = "red", el = "dnf", time = 600) {
             dnfElement.style.display = 'none'; // Hide after fade out
         }, time); // Match timeout with fade duration
     }
+}
+
+function suggestMode() {
+	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
+	{
+		ao5 = [];
+		mo5 = [];
+		movesarr = [];
+		scrambles = [];
+	}
+	regular(true);
+	DIM = DIM2;
+	MODE = "suggestions";
+	reSetup();
+
+	refreshButtons();
+	document.getElementById("l_title").innerHTML = "Create an Account";
+	document.getElementById("l_forgot").innerText = "Have an account?";
+	document.getElementById("l_link").innerText = "Log in";
+	setDisplay("none", ["test_alg_div", "timeselect"]);
+	setDisplay("block", ["loginform", "suggest_container", "suggest_submit"]);
+	setDisplay("inline", ["suggest_input"])
+	
+	var elements = document.getElementsByClassName('normal');
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.display='none';
+	}
+	getEl('suggest_input').focus()
+}
+
+async function submitSuggestion() {
+	if (SUGGESTION.value() == "") {
+		return;
+	}
+	const data = {
+		username: localStorage.username,
+		suggestion: SUGGESTION.value()
+	}
+	SUGGESTION.value("");
+	setDisplay("block", ["suggest_text"]);
+	setDisplay("none", ["suggest_submit", "suggest_input"]);
+	getEl("suggest_text").innerHTML = "Submitting";
+	await repeatUntilSuccess(() => putSuggestion(data, "POST"));
+	getEl("suggest_text").innerHTML = "Submitted suggestion.";
+	setTimeout(() => {
+		if (MODE == "suggestions") {
+			regular();
+		}
+	}, 1500);
 }
 
 document.getElementById("account").onclick = accountmode;
@@ -7722,6 +7777,7 @@ p.keyPressed = (event) => {
 			}
 			return;
 		} 
+		if(MODE == "suggestions") {regular(); return;}
 		if(MODE == "paint") {idmode(); return;}
 		if(MODE == "competing") {competemode(); return;}
 		if(MODE == "finishpaint") {paintmode(); return;}
@@ -11555,6 +11611,10 @@ $(document).on("keypress", "#message-input", function(e){
 	if (e.which == 13)
 		document.getElementById('send-btn').click();
 });
+$(document).on("keypress", "#suggest_input", function(e){
+	if (e.which == 13)
+		submitSuggestion();
+});
 
 getEl("send-btn").onclick = () => {
 	if (getEl("message-input").value == "/c") {
@@ -11912,8 +11972,21 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-    movesmode();
+    suggestMode();
 });
+
+document.getElementById("suggest").addEventListener("click", function(event) {
+    event.preventDefault();
+    suggestMode();
+});
+
+getEl("suggest_submit").addEventListener("click", async function(event) {
+    event.preventDefault();
+	submitSuggestion();
+});
+
+
+
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
 		if (event.key === "r" || event.key === "R") paintit("red");
