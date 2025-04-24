@@ -8069,7 +8069,8 @@ p.keyPressed = (event) => {
 			} else {
 				if(localStorage.username == "signedout")
 					break;
-				loadData();
+				if (MODE == "normal" && !timer.isRunning)
+					loadData();
 			}
 			break;
 			case 48: //0
@@ -8088,7 +8089,8 @@ p.keyPressed = (event) => {
 			} else {
 				if(localStorage.username == "signedout")
 					break;
-				saveData();
+				if (MODE == "normal" && !timer.isRunning)
+					saveData();
 			}
 			break;
 			case 189: //-
