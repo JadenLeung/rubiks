@@ -7943,7 +7943,7 @@ p.keyPressed = (event) => {
 			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
 		else if(setup[2] == -MAXX || setup[2] == MAXX) //left
 			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65,90,191,59];
-		else bad5 = [188,190,81,80,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
+		else bad5 = [188,190,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
 			
 		let bad6 = [190,188,65,186,80,81,59];
 		const keyMoveMap = {
@@ -8069,8 +8069,7 @@ p.keyPressed = (event) => {
 			} else {
 				if(localStorage.username == "signedout")
 					break;
-				if (MODE == "normal" && !timer.isRunning)
-					loadData();
+				loadData();
 			}
 			break;
 			case 48: //0
@@ -8089,8 +8088,7 @@ p.keyPressed = (event) => {
 			} else {
 				if(localStorage.username == "signedout")
 					break;
-				if (MODE == "normal" && !timer.isRunning)
-					saveData();
+				saveData();
 			}
 			break;
 			case 189: //-
