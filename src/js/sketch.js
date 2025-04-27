@@ -86,7 +86,7 @@ export default function (p) {
 	let TWOBYTWO;
 	let TEAMBLIND_SEL;
 	let THREEBYTHREE, FOURBYFOUR, FIVEBYFIVE, LASAGNA, THREEBYTHREEBYFOUR, TWOBYTHREEBYFOUR, FOURPLUS, SANDWICH2, PLUSLITE,
-		PLUS3x3x2, SNAKE_EYE;
+		PLUS3x3x2, SNAKE_EYE, TWOBYTHREEBYFIVE;
 	let NBYN;
 	let ROTX = 2.8
 	let ROTY = 7;
@@ -232,6 +232,7 @@ export default function (p) {
 		"1x5x5" : switchSize.bind(null, 5, "1x5x5", "1x5x5", "3x3x2"),
 		"2x2x4" : switchSize.bind(null, 4, "2x2x4", "2x2x4"),
 		"2x3x4" : switchSize.bind(null, 5, "2x3x4", "3x2x4", "3x3x2"), 
+		"2x3x5" : switchSize.bind(null, 5, "2x3x5", "2x3x5", "3x3x2"), 
 		"3x3x4" : switchSize.bind(null, 5, "3x3x4", "4x3x3", "3x3x2"), 
 		"3x3x5" : switchSize.bind(null, 5, "3x3x5", "5x3x3"),
 		"Sandwich 2x2": switchSize.bind(null, 3, "sandwich2x2", 100, "Normal", 2),
@@ -636,6 +637,7 @@ p.setup = () => {
 	ONEBYFIVEBYFIVE = p.createButton('1x5x5');
 	TWOBYTWOBYFOUR = p.createButton('2x2x4');
 	TWOBYTHREEBYFOUR = p.createButton('2x3x4');
+	TWOBYTHREEBYFIVE = p.createButton('2x3x5');
 	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
 	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
 	FOURPLUS = p.createButton();
@@ -5376,7 +5378,7 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "1x2x2" ? 20 : DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+	ZOOMADD = DIM == "1x2x2" ? 20 : DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" || DIM == "2x3x5" ? 120 : DIM == "2x2x4" ? 50 :
 				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -8132,7 +8134,7 @@ function shownCubies() {
 	return cubies;
 }
 function adjustMove(move) {
-	if (["2x2x4", "3x3x5", "2x3x4"].includes(DIM) || custom == 1 && CUSTOMSHIFT.checked() && SIZE > 3) {
+	if (["2x2x4", "3x3x5", "2x3x4", "2x3x5"].includes(DIM) || custom == 1 && CUSTOMSHIFT.checked() && SIZE > 3) {
 		if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
 			console.log("Illegal!");
 			return false;
@@ -8511,7 +8513,7 @@ function refreshButtons()
 		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
 		SPEEDMODE2, REGULAR2, TIMEDMODE2, MOVESMODE2, ONEBYTHREE, SANDWICH,
 		FOURBYFOUR, FIVEBYFIVE, ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE, TWOBYTWOBYFOUR,
-		TWOBYTHREEBYFOUR, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
+		TWOBYTHREEBYFOUR, TWOBYTHREEBYFIVE, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
 		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE
@@ -8663,6 +8665,9 @@ function refreshButtons()
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
 		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+
+		TWOBYTHREEBYFIVE = p.createButton('2x3x5');
+		setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x5"](); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
 		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
@@ -11972,7 +11977,10 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-    suggestMode();
+	modnum = 2;
+    cubemode();
+	b_selectdim["2x3x5"]();
+	TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {

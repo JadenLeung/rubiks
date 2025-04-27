@@ -74,8 +74,8 @@ export default class Cuby {
       this.right = this.colors.green;
       this.back = this.colors.red;
     }
-    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4", "1x5x5", "4x4plus", "1x2x2", "pluslite"].includes(size) ||
-        ["3x2x4", "4x3x3", "1x3x2", "5x3x3", "2x2x4"].includes(this.special[6])) { // rainbow
+    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4", "2x3x5", "1x5x5", "4x4plus", "1x2x2", "pluslite"].includes(size) ||
+        ["3x2x4", "4x3x3", "1x3x2", "5x3x3", "2x2x4", "2x3x5"].includes(this.special[6])) { // rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -569,7 +569,7 @@ export default class Cuby {
           }
         }
       }
-    } else if(["3x2x4", "1x3x2", "5x3x3", "1x5x5", "1x2x2"].includes(this.special[6])) {
+    } else if(["3x2x4", "1x3x2", "5x3x3", "1x5x5", "1x2x2", "2x3x5"].includes(this.special[6])) {
       arr = [];
       for (let x = 0; x < SIZE; x++) {
         for (let y = 0; y < SIZE; y++) {
@@ -663,7 +663,7 @@ export default class Cuby {
   }
   
 
-  if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6]) && this.cubysize[0] != "adding") {
+  if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6]) && this.cubysize[0] != "adding") {
     let c1 = this.custom[4][5];
     let c2 = this.custom[22][4];
     let c3 = this.custom[14][2];
