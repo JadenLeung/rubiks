@@ -7179,7 +7179,7 @@ function shuffleCube(override = false) {
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
 			} else if(doubly || ((SCRAM.value() == "3x3x2" 
-			|| ((["2x2x4", "3x3x5", "2x3x4"].includes(DIM) || (custom == 1 && SIZE > 3 && CUSTOMSHIFT.checked())) && i < 15))
+			|| ((["2x2x4", "3x3x5", "2x3x4", "2x3x5"].includes(DIM) || (custom == 1 && SIZE > 3 && CUSTOMSHIFT.checked())) && i < 15))
 			 &&  bad5.includes(rnd[0])))
 			{
 				console.log("HEREEEE")
