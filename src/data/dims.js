@@ -11,6 +11,7 @@ export const DIMS_OBJ = {
     "2x2x3" : {type: ["Cuboid"], difficulty: 2},
     "2x2x4" : {type: ["Big", "Cuboid"], difficulty: 3},
     "2x3x4" : {type: ["Big", "Cuboid"], difficulty: 3.5},
+    "2x3x5" : {type: ["Big", "Cuboid"], difficulty: 3.5},
     "3x3x2" : {type: ["Cuboid"], difficulty: 2.5},
     "3x3x4" : {type: ["Big", "Cuboid"], difficulty: 4},
     "3x3x5" : {type: ["Big", "Cuboid"], difficulty: 4.5},
