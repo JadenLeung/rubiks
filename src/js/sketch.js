@@ -8139,7 +8139,7 @@ function adjustMove(move) {
 			console.log("Illegal!");
 			return false;
 		}
-		if (["M", "S", "E"].includes(move[0]) && move.includes("w") && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0]) && DIM == "2x3x4") {
+		if (["M", "S", "E"].includes(move[0]) && move.includes("w") && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0]) && (DIM == "2x3x4" || DIM == "2x3x5")) {
 			console.log("Illegal2!");
 			return false;
 		}
