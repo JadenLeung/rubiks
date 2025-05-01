@@ -11977,10 +11977,10 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-	modnum = 2;
-    cubemode();
-	b_selectdim["2x3x5"]();
-	TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");
+	// modnum = 2;
+    // cubemode();
+	// b_selectdim["2x3x5"]();
+	// TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {
