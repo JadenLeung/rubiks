@@ -5083,6 +5083,7 @@ async function fadeInText(o, text, color = "red", el = "dnf", time = 600) {
 }
 
 function suggestMode() {
+	modeData("suggest");
 	if(MODE != "normal" && MODE != "cube" && MODE != "timed")
 	{
 		ao5 = [];
