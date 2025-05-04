@@ -2889,17 +2889,12 @@ function setCustomShape(initial = false) {
 	}
 
 	let size = SEL7.value()[0];
-
-	// Get parent container
 	const parentElement = document.getElementById("check1");
 	const checkboxesPerRow = size;
 	const totalCheckboxes = size * size * size;
 	console.log("TOTAL", totalCheckboxes, size)
 
-	// Clear existing content
 	parentElement.innerHTML = "";
-
-	// Create checkboxes and organize them in rows
 	let row;
 	for (let i = 0; i < totalCheckboxes; i++) {
 		if (i % checkboxesPerRow === 0) {
@@ -4174,7 +4169,6 @@ function competeTimes(data, end = false) {
 		getEl("match_INSTRUCT2").innerHTML = str;
 		getEl("match_TITLE").innerHTML = `Round ${data.round + 1}`;
 	} else if (["teamblind"].includes(data.data.type)) {
-		// console.log(data, data.data, data.data.blinded, socket.id)
 		getEl("compete_group_container").style.display = "block";
 		getEl("compete_group_container").innerHTML = "<b style = 'font-size: 20px;'>" + (data.data.blinded == socket.id ? (blindTime() == 0 ? "You will start blindfolded 🕶️" : `You are blindfolded 🕶️`) : `You have vision 👁️`) + "</b> <br>";
 		getEl("compete_group_container").innerHTML += data.data.blinded == socket.id ? (blindTime() == 0 ? "<span style = 'color:green'>Turning enabled, blinding will start after first turn</span>" : "<span style = 'color:green'>Turning enabled</span>")
@@ -4670,7 +4664,6 @@ function switchBlindfold() {
 		blinded = getOp();
 	}
 	socket.emit("switch_blindfold", room, blinded, blindTime());
-	// toggleBlindfold(blinded == socket.id);
 }
 
 socket.on("switched-blindfold", (data) => {
