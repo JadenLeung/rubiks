@@ -5415,7 +5415,8 @@ function updateScores() {
 		document.getElementById("s_pllscore").style.display = "none";
 	}
 	// movesmode scores
-	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (week+1) +  "", c_day2: "Daily 2x2 all time"
+	const doneweeks = 20;
+	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (week+1+doneweeks) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
 			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon"};
