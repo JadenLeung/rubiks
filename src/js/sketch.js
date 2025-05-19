@@ -7841,7 +7841,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(competedata);
+		console.log(isSolved());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11801,6 +11801,7 @@ function isSolved()
 					continue;
 				}
 				if (compare[dir][0] != compare[dir][1]) {
+					console.log(compare)
 					return false;
 				}
 			}
