@@ -19,6 +19,6 @@
     "H": ["M2 U M2 U2 M2 U M2", "M2 U M2 U2 M2 U M2"],
     "Ua": ["M2 U M U2 M' U M2", "M2 U' M U2 M' U' M2"],
     "Ub": ["M2 U' M U2 M' U' M2", "M2 U M U2 M' U M2"],
-    "Z": ["M' U M2 U M2 U M' U2 M2", "M' U M2 U M2 U M' U2 M2"]
+    "Z": ["M' U' M2 U' M2 U' M' U2 M2", "M' U M2 U M2 U M' U2 M2"]
   }
   

@@ -5818,16 +5818,23 @@ function practicePLL() {
 		let str = "";
 		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? obj2 : pbls;
 		arr = [];
-		changeArr(tempobj[rnd][1])
+		changeArr(InverseAll(tempobj[rnd][0]))
 		str = tempobj[rnd][0];
 		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>" + str + "</p>";
 		getEl("s_image").src = `images/${pracmode == "OLL" ? "OLL" : DIM == 50 ? "PLL" : "PBL"}/${rnd}.png`;
 		setDisplay("block", ["s_image"]);
 		shufflespeed = 2;
-		let rnd2 = Math.floor(Math.random()*4);
-		for(let i = 0; i < rnd2; i++)
-		{
-			arr.push("U");
+		if (getEl("pllcheckbox").checked) {
+			let rnd2 = Math.floor(Math.random()*4);
+			for(let i = 0; i < rnd2; i++)
+			{
+				arr.push("U");
+			}
+			rnd2 = Math.floor(Math.random()*4);
+			for(let i = 0; i < rnd2; i++)
+			{
+				arr.push("y");
+			}
 		}
 		multipleEasy(0, 6);
 	}
@@ -5875,8 +5882,7 @@ function speedPLL()
 		setDisplay("block", ["s_image"]);
 		shufflespeed = 2;
 		let rnd2 = Math.floor(Math.random()*4);
-		for(let i = 0; i < rnd2; i++)
-		{
+		for(let i = 0; i < rnd2; i++) {
 			arr.push("U");
 		}
 		multipleEasy(0, 2);
@@ -7841,6 +7847,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
+		console.log(InverseAll("R U R' U'"))
 		console.log(isSolved());
 	}
 	if(p.keyCode == 9){ //tab
@@ -10448,6 +10455,13 @@ function Inverse(bad){
 	}
 	return bad;
 }
+function InverseAll(str) {
+	let newarr = []
+	str.split(' ').forEach((c) => {
+		newarr.push(Inverse(c))
+	})
+	return newarr.reverse().join(" ");
+}
 function crossColor(){
 	setLayout();
 	let totalmax = 0;
@@ -11801,7 +11815,7 @@ function isSolved()
 					continue;
 				}
 				if (compare[dir][0] != compare[dir][1]) {
-					console.log(compare)
+					// console.log(compare)
 					return false;
 				}
 			}

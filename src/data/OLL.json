@@ -56,10 +56,10 @@
 "56": ["r' U' r U' R' U R U' R' U R r' U r", "Rw' U' Rw R' U' R U R' U' R U Rw' U Rw "],
 "57": ["R U R' U' M' U R U' r'", "Rw U R' U' M U R U' R' "],
 "h": ["R2 U2 R U2 R2", "R2 U2 R U2 R2"],
-"pi": ["F R U R' U' R U R' U' F'", "F R U R' U' R U R' U' F'"],
+"pi": ["F R U R' U' R U R' U' F'", "F U R U' R' U R U' R' F'"],
 "antisune": ["R U2 R' U' R U' R'", "R U R' U R U2 R'"],
 "sune": ["R U R' U R U2 R'", "R U2 R' U' R U' R'"],
 "l": ["F R' F' R U R U' R'", "R U R' U' R' F R F'"],
 "t": ["R U R' U' R' F R F'", "F R' F' R U R U' R'"],
-"u": ["F R U R' U' F'", "F R U R' U' F'"]
+"u": ["F R U R' U' F'", "F U R U' R' F'"]
 }
