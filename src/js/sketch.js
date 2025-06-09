@@ -3543,7 +3543,7 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
-		"deleteban", "compete_select", "competerestore", "suggest_text"]);
+		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -5811,7 +5811,7 @@ function practicePLL() {
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Suggested Algorithm";
 		showSpeed();
-		setDisplay("block", ["moves_par", "outermoves"]);
+		setDisplay("block", ["moves_par", "outermoves", "practiceskip"]);
 		timer.stop();
 		timer.reset();
 		let rnd = p.random(pracalgs);
@@ -12071,6 +12071,12 @@ document.getElementById('account').addEventListener('click', function() {
 document.getElementById('login').addEventListener('click', function() {
 	document.getElementById('l_forgot').scrollIntoView({ behavior: 'smooth' });
 });
+
+getEl("practiceskip").addEventListener('click', function() {
+	pllpracstep = 2;
+	practicePLL();
+});
+
 getEl("competelink").addEventListener("click", function(event) {
     event.preventDefault();
 	navigator.clipboard.writeText(`${window.location.host}/?room=${room}`);
