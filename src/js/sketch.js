@@ -5032,7 +5032,7 @@ function toggleOverlay(show, p = true) {
 function fullScreen(isfull) {
 	if (document.getElementById("cnv_div").style.display == "none") return;
 	if (isfull) {
-		document.getElementById("cnv_div").className = "col-xl-12 noselect";
+		document.getElementById("cnv_div").className = "col-12 noselect";
 		document.getElementById("right").style.display = "none";
 		document.getElementById("left").style.display = "none";
 		FULLSCREEN.class("bi bi-fullscreen-exit");
@@ -11322,11 +11322,10 @@ function resized(){
 	let cnv_div = document.getElementById("cnv_div");
     setWidth(); // Ensure UI elements are adjusted
     const isMobile = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
-    const WINDOW = isMobile ? 0.6 : 0.9;
     const width = DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth;
-    const height = window.innerHeight * WINDOW;
-    p.resizeCanvas(width, height, p.WEBGL);
-    PICKER.buffer.resizeCanvas(width, height);
+    p.resizeCanvas(width, isMobile ? 400 : window.innerHeight * 0.9, p.WEBGL);
+    // PICKER.buffer.resizeCanvas(width, height * 3);
+	console.log("here")
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	if (MODE == "normal") {
 		if (ismid) {
