@@ -409,8 +409,10 @@ function setWidth() {
 	document.getElementById("audio").style.display = 'block';
 	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches) //phone computer
 	{
-		ZOOM3 = -250;
-		ZOOM2 = -100;
+		if (isMobile()) {
+			ZOOM3 = -240;
+			ZOOM2 = -100;
+		}
 		CAMZOOM = ZOOM3;
 		setDisplay("none", ["audio", "bannercube", "bannerlogin"]);
 		getEl("challenge").innerHTML = "&nbsp;Weekly";
@@ -1826,8 +1828,8 @@ setInterval(() => {
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 	VOLUME.style("background-color: transparent; color: " + document.body.style.color);
-	ALIGN.position(30,window.innerHeight-145);
-	FULLSCREEN.position(cnv_div.offsetWidth-55,window.innerHeight-145);
+	ALIGN.position(30,fullscreen ? window.innerHeight - 100: window.innerHeight - 145);
+	FULLSCREEN.position(cnv_div.offsetWidth-55,fullscreen ? window.innerHeight - 100: window.innerHeight - 145);
 	special[5] = bandaged;
 	setSpecial();
 	if (isthin) getEl("delaywhole").style.display = "none";
@@ -1984,7 +1986,7 @@ function reSetup(rot) {
 	}
 	CAM.zoom(CAMZOOM + ZOOMADD);
 
-	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches)
+	if(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches && isMobile())
 	{
 		ROTX = 3;
 		ROTY = 6;
@@ -5035,11 +5037,13 @@ function fullScreen(isfull) {
 		document.getElementById("cnv_div").className = "col-12 noselect";
 		document.getElementById("right").style.display = "none";
 		document.getElementById("left").style.display = "none";
+		setDisplay("none", ["banner"]);
 		FULLSCREEN.class("bi bi-fullscreen-exit");
 	} else {
 		document.getElementById("cnv_div").className = "col-xl-6 noselect";
 		document.getElementById("left").style.display = "block";
 		document.getElementById("right").style.display = "block";
+		setDisplay("block", ["banner"]);
 		FULLSCREEN.class("bi bi-arrows-fullscreen");
 	}
 	fullscreen = isfull;
@@ -5050,11 +5054,13 @@ function halfScreen(isfull) {
 		document.getElementById("cnv_div").className = "col-xl-8 noselect";
 		document.getElementById("right").className = "col-xl-4 noselect";
 		document.getElementById("left").style.display = "none";
+		setDisplay("none", ["banner"]);
 		FULLSCREEN.class("bi bi-fullscreen-exit");
 	} else {
 		document.getElementById("cnv_div").className = "col-xl-6 noselect";
 		document.getElementById("left").className = "col-xl-2 noselect";
 		document.getElementById("right").className = "col-xl-4 noselect";
+		setDisplay("block", ["banner"]);
 		setDisplay("block", ["right", "left"])
 		FULLSCREEN.class("bi bi-arrows-fullscreen");
 	}
@@ -8549,7 +8555,7 @@ function refreshButtons()
 	if (!isthin)
 		SETTINGS.position(cnv_div.offsetWidth-60,5);
 	else
-		SETTINGS.position(cnv_div.offsetWidth-80,5);
+		SETTINGS.position(cnv_div.offsetWidth-55,10);
 
 	if (FULLSCREEN) {
 		if (!ismid) {
@@ -11321,9 +11327,8 @@ p.windowResized = resized;
 function resized(){
 	let cnv_div = document.getElementById("cnv_div");
     setWidth(); // Ensure UI elements are adjusted
-    const isMobile = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
     const width = DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth;
-    p.resizeCanvas(width, isMobile ? 400 : window.innerHeight * 0.9, p.WEBGL);
+    p.resizeCanvas(width, isthin ? (isMobile() ? 400 : 500) : window.innerHeight * (fullscreen ? 1 : 0.9), p.WEBGL);
     // PICKER.buffer.resizeCanvas(width, height * 3);
 	console.log("here")
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
