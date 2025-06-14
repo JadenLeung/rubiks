@@ -11328,7 +11328,7 @@ function resized(){
 	let cnv_div = document.getElementById("cnv_div");
     setWidth(); // Ensure UI elements are adjusted
     const width = DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth;
-    p.resizeCanvas(width, isthin ? (isMobile() ? 400 : 500) : window.innerHeight * (fullscreen ? 1 : 0.9), p.WEBGL);
+    p.resizeCanvas(width, isthin ? (isMobile() ? 400 : 550) : window.innerHeight * (fullscreen ? 1 : 0.9), p.WEBGL);
     // PICKER.buffer.resizeCanvas(width, height * 3);
 	console.log("here")
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
