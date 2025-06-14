@@ -5050,6 +5050,7 @@ function fullScreen(isfull) {
 	resized();
 }
 function halfScreen(isfull) {
+	if (document.getElementById("cnv_div").style.display == "none") return;
 	if (isfull) {
 		document.getElementById("cnv_div").className = "col-xl-8 noselect";
 		document.getElementById("right").className = "col-xl-4 noselect";
