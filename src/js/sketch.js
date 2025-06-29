@@ -8011,6 +8011,7 @@ p.keyPressed = (event) => {
 					arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
 				}
 			}
+			redo = []
 		} else switch (p.keyCode) {	
 			case 8: 
 			if (p.keyIsDown(p.SHIFT))
@@ -12213,7 +12214,7 @@ But theres really more to growing
 Than to keep the crows from crowing
 If you want to keep the garden the green
 
-I chase off the logs get outta here
+I chase gophers off the logs get outta here
 And the wave to all the frogs hi guys
 But theres really more to growing
 Than to keep the crows from crowing
@@ -12267,7 +12268,7 @@ Just think about this song and how the moo juice gets to you
 
 9:05
 Mr Sunshine give us your rays
-You're the one who brightens our days
+You're the one that brightens our days
 Without your warmth there'll be no tommorow
 Instead of smiling we'll cry tears of sorrow
 
