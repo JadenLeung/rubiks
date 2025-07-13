@@ -223,6 +223,11 @@ button:hover {
     top: 3%;
     left: 5%;
 }
+#s_RACE2 {
+    position: absolute;
+    top: 10%;
+    right: 1%;
+}
 #cnvbuttons {
     position: absolute;
     top: 1%;

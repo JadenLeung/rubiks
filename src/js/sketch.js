@@ -6253,6 +6253,8 @@ function botConnect(obj) {
 	socket.emit("bot_connect", obj.get('id'), DIM);
 	raceid = obj.get('id');
 	MODE = "bot";
+	SIZE_SLIDER2.value(100)
+	sliderUpdate2();
 	const s = obj.get('speed');
 	SPEED_SLIDER.value(s);
 	SPEED = s;
@@ -6270,7 +6272,7 @@ socket.on("bot_connected", (scramble) => {
 	if (MODE != "bot") {
 		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
 		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
-				: "The bot starts solving when you make your first turn. Winner gets a point, first to 5 wins!";
+				: "Winner gets a point, first to 5 wins!";
 		getEl("r_iframe").style.display = "block";
 	}
 	console.log("TRYNA SCRAMBLE", scramble)

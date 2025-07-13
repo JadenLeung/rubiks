@@ -241,6 +241,7 @@
 			</div>
 			<p id = "settings" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
 			<p id = "switcher" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
+			<p style = "display: block; padding-top:10px;" id = "s_RACE2"></p>
 			<p id = "audio" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
 			<p id = "fullscreen" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px; z-index:2"></p>
 			<p id = "align" class = "button" style = "text-align:center; margin-top: 0px; margin-bottom: 0px;"></p>
@@ -634,9 +635,17 @@
 			</div>
 			<button class = "btn btn-primary" style = "font-size: 30px; width: 100px; margin-top: 20px" id = "practiceskip">Skip</button>
 			<p id = "s_difficulty" class = "noselect"></p>
-			<div id="r_physical" style="position: relative;" height="300px">
+			<div id="r_physical" style="position: relative; margin-bottom: -20px;" height="300px">
 				<h6>Autosolve POV:</h6>
-				<iframe id="r_iframe" width="100%" height="300px" style="border: none;" tabindex="-1"></iframe>
+				<div style="width: 80%; height: 400px; overflow: hidden; position: relative;">
+				<iframe
+					id="r_iframe"
+					width="100%"
+					height="500px"
+					style="border: none; display: block; transform: scale(0.8); transform-origin: top left; position: relative; top: -50px;"
+					tabindex="-1"
+				></iframe>
+				</div>
 				<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent;"></div>
 			</div>
 			<p id = "botestimate" style = "margin-top: 20px">Estimated bot time: </p>
@@ -741,13 +750,12 @@
 				<h5 id = "s_bottitle">Bot Racing</h5>
 				<p>Race the autosolve bot.</p>
 			</div>
+			<p style = "display: block; padding-top:0px;" id = "s_RACE3"></p>
 			<div id = "s_RACE">
 				<p style = "display: inline;" id = "s_VIRTUALRACE"></p>
 				<p style = "display: inline;" id = "s_PHYSICALRACE"></p>
 			</div>
-			<p style = "display: block; padding-top:10px;" id = "s_RACE2"></p>
-			<p style = "display: block; padding-top:10px;" id = "s_RACE3"></p>
-			<div id = "s_high" style = "padding-top: 10px">
+			<div id = "s_high" style = "padding-top: 20px">
 				<h5>Your Best Scores</h5>
 				<p id = "s_easyscore" class = "skinnyscore">Easy: N/A</p>
 				<p id = "s_mediumscore" class = "skinnyscore">Medium: N/A</p>
