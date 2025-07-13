@@ -16,7 +16,7 @@ export const weeklyscrambles =
     {cube: "3x3", pos: "1eÙÿ2Nî 17Ùøeço 54MÎ3ôS 1ë9"},
     {cube: "Cube Bandage", pos: "5DgvÛoã 2zI&Iéù 3{ZwEH6 1ë9"},
     {cube: "3x3", pos: "3LÎ)D98 6uÎH1#è 2U0yàzK 1ë9"},
-    {cube: "1x5x5", pos: "L2 Bw2 R2 B2 D Uw U2 Fw2 F2 Rw2 R2 D2 Lw2 Fw2 Lw2 Uw' Lw2 Fw2 F2 Lw2 D2 Bw2 Dw2 Fw2 D R2 U Rw2 U2 F2 Lw2 U2 Fw2 Uw L2 Fw2 R2 Dw2 Fw2 Dw2 B2 Fw2 R2 D F2"},
+    {cube: "1x5x5", scramble: "L2 Bw2 R2 B2 D Uw U2 Fw2 F2 Rw2 R2 D2 Lw2 Fw2 Lw2 Uw' Lw2 Fw2 F2 Lw2 D2 Bw2 Dw2 Fw2 D R2 U Rw2 U2 F2 Lw2 U2 Fw2 Uw L2 Fw2 R2 Dw2 Fw2 Dw2 B2 Fw2 R2 D F2"},
     {cube: "2x2", pos: "4äêìdÈÈ 4QéàßÝE 2NæI5vÎ 1ë9"},
     {cube: "2x2x3", pos: "1zwx}ÚÜ 3fçkÙ#% 4IqEHöc 1ë9"},
     {cube: "3x3", pos: "5tÓçüõw 4!ÖU3!å 5ÙÎ$×ëË 1ë9"},
