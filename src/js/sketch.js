@@ -4149,7 +4149,6 @@ function competeTimes(data, end = false) {
 		}
 		let str = "";
 		let rank = 1;
-		console.log(strarr)
 		for (let i = 0; i < strarr.length; ++i) {
 			if (strarr[i][0] == socket.id) {
 				str += COMPETE_YOU;
@@ -7855,9 +7854,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
-		console.log(InverseAll("R U R' U'"))
-		console.log(isSolved());
+		console.log(p.canvas.toDataURL('image/jpeg', 0.01));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11984,7 +11981,7 @@ function competeScreenshot() {
 	if (competedata.data.type != "1v1") {
 		return;
 	}
-	let str = p.canvas.toDataURL('image/jpeg');
+	let str = p.canvas.toDataURL('image/jpeg', 0.15);
 	console.log("room is ", room);
 	socket.emit("send-screenshot", str, getOp());
 }
