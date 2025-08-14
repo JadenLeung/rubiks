@@ -12100,7 +12100,7 @@ const competitions = {
     "1v1": "Get 1 point for being the fastest to solve the cube each round. 2 players required.",
     group: "Get 1 point for being the fastest to solve the cube each round. No restrictions on player count.",
     teamblind: `A team of 2 players take turns being blind. 
-        After ${SWITCHTIME} seconds, the team can switch who is blinded, and must wait another ${SWITCHTIME} seconds for the next switch. <i>Only the blindfolded player can turn the cube.</i> Mouse turning recommended.`
+        After ${SWITCHTIME} seconds, the team can switch who is blinded, and must wait another ${SWITCHTIME} seconds for the next switch. <i>Only the blindfolded player can turn the cube.</i> Keyboard turning recommended.`
 };
 
 function competeText() {
