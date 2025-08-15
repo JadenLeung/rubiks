@@ -4406,7 +4406,7 @@ function competeSettings(num = compete_type) {
 			event.preventDefault(); // Prevents the dropdown from opening
 		};
         alldims.forEach(text => select1.appendChild(createEl("option", text)));
-	    if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][0]) {
+	    if (Array.isArray(compete_dims) && compete_dims.length > 0 && compete_dims[i] && compete_dims[i][0]) {
 			select1.value = compete_dims[i][0];
 		}
 
@@ -4436,7 +4436,7 @@ function competeSettings(num = compete_type) {
             let cubeContainer2 = createEl("div", "", columnStyle);
             select2 = createEl("select", "", { width: "100%" });
             alldims.forEach(text => select2.appendChild(createEl("option", text)));
-			if (compete_dims.length > 0 && compete_dims[i] && compete_dims[i][1]) {
+			if (Array.isArray(compete_dims) && compete_dims.length > 0 && compete_dims[i] && compete_dims[i][1]) {
 				select2.value = compete_dims[i][1];
 			}
 
@@ -11930,6 +11930,7 @@ getEl("compete_rounds").addEventListener("input", function () {
     if (this.value != "" && this.value <= 0 || isNaN(this.value)) {
         this.value = 1;
     }
+	competeSettings();
 	competeSettings();
 });
 function arrowPaint(dir) {
