@@ -3033,11 +3033,11 @@ function changeRandom()
 	change9();
 }
 function setInput() {
-	if(('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches || isIpad()) { //button
+	document.getElementById("undo").style.display = "inline";
+	document.getElementById("redo").style.display = "inline";
+	if (('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0) && !matchMedia('(pointer:fine)').matches) { //button
 		document.getElementById("keymap").style.display = "none";
 		document.getElementById("test_alg_div").style.display = "none";
-		document.getElementById("undo").style.display = "inline";
-		document.getElementById("redo").style.display = "inline";
 		document.getElementById("input2").style.display = "none";
 		if ((!mouseAllowed() && custom == 0) || custom == 1 && !canMouse()) {
 			document.getElementById("input2").style.display = "block";
@@ -3046,14 +3046,11 @@ function setInput() {
 		if (UNDO) UNDO.html('<i class="bi bi-arrow-90deg-left"></i>');
 		if (REDO) REDO.html('<i class="bi bi-arrow-90deg-right"></i>');
 
-	}
-	else{
+	} else{
 		document.getElementById("keymap").style.display = "table";
 		if(MODE == "normal" || MODE == "timed" || MODE == "cube")
 			document.getElementById("test_alg_div").style.display = "block";
 		document.getElementById("input2").style.display = "none";
-		document.getElementById("undo").style.display = "inline";
-		document.getElementById("redo").style.display = "inline";
 	}
 }
 function updateSession() {
