@@ -903,18 +903,7 @@ p.setup = () => {
 	// BANDAGE_SELECT.option("Xmas 3x3");
 	BANDAGE_SELECT.parent("bandage_select")
 	BANDAGE_SELECT.selected('3x3');
-	BANDAGE_SELECT.changed(() => {
-		bandaged = [];
-		if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
-			BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
-		} else {
-			BANDAGE_SLOT.selected(1)
-		}
-		if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
-			bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
-		}
-		b_selectdim[BANDAGE_SELECT.value()]();
-	});
+	BANDAGE_SELECT.changed(setBandage);
 
 	BANDAGE_SLOT = p.createSelect();
 	for (let i = 1; i <= 5; i++) {
@@ -2500,6 +2489,19 @@ function moveSetup()
 	redo = [];
 	
 }
+
+function setBandage() {
+	b_selectdim[BANDAGE_SELECT.value()]();
+	bandaged = [];
+	if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
+		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
+	} else {
+		BANDAGE_SLOT.selected(1)
+	}
+	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
+		bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
+	}
+}
 function Hint()
 {
 	if(document.getElementById("s_instruct").innerHTML.includes("The first move is a"))
@@ -3152,6 +3154,7 @@ function doneBandage(){
 		addBandage(false);
 	} else {
 		b_selectdim[BANDAGE_SELECT.value()]();
+		setBandage();
 		if (SMOOTHBANDAGE.checked()) {
 			smoothBandage();
 		}
@@ -7854,7 +7857,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(p.canvas.toDataURL('image/jpeg', 0.01));
+		console.log(bandaged, bandaged2, bandaged3);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
