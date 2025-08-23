@@ -7763,7 +7763,7 @@ p.keyPressed = (event) => {
 			getEl("outertime").style.color = "green";
 		}
 	}
-	if(p.keyCode == 49) { //1 //one
+	if(p.key == "1") { //1 //one
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
 			return;
@@ -7995,21 +7995,20 @@ p.keyPressed = (event) => {
 				}
 			}
 			redo = []
-		} else switch (p.keyCode) {	
-			case 8: 
+		} else switch (p.key.toLowerCase()) {	
+			case "backspace": 
 			if (p.keyIsDown(p.SHIFT))
 				flexDo(Undo, undo, true);
 			else
 				flexDo(Undo, undo);
 			break;
-			case 61:
-			case 187: //equals
+			case "=":
 			if (p.keyIsDown(p.SHIFT))
 				flexDo(Redo, redo, true);
 			else
 				flexDo(Redo, redo);
 			break;
-			case 27: //escape
+			case "escape": //escape
 			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
 			reSetup();
 			if((MODE == "moves" || cstep > 0)) {
@@ -8024,7 +8023,7 @@ p.keyPressed = (event) => {
 				moveSetup();
 			
 			break;
-			case 192: //`
+			case "`": //`
 			if (p.keyIsDown(p.SHIFT)) {
 				(MODE == "normal" || MODE == "timed" || MODE == "bot")  && solveCube();
 			} else if(["normal", "cube", "timed", "account", "login", "compete"].includes(MODE)) {
@@ -8033,7 +8032,7 @@ p.keyPressed = (event) => {
 				shuffleCube();
 			}
 			break;
-			case 32: //space
+			case " ": //space
 			if(MODE == "cube" || MODE == "normal" || MODE == "timed")
 			{
 				stopTime();
@@ -8044,20 +8043,20 @@ p.keyPressed = (event) => {
 				str += Inverse(undo[i]) + " ";
 			}
 			break;
-			case 13: //enter
+			case "enter": //enter
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
 			console.log("erger");
 			break;
-			case 56: //8
+			case "8": //8
 			if (p.keyIsDown(p.SHIFT)) {
 				removeAllTimes();
 			} else {
 				removeTime();
 			}
 			break;
-			case 57: //9
+			case "9": //9
 			if (p.keyIsDown(p.SHIFT)) {
 				if (SIZE > 3 && DIM != 50) break;
 				if(["normal", "timed", "cube"].includes(MODE)) {iddefault(); successSQL("Default ID Saved");}
@@ -8067,7 +8066,7 @@ p.keyPressed = (event) => {
 				loadData();
 			}
 			break;
-			case 48: //0
+			case "0": //0
 			if (p.keyIsDown(p.SHIFT)) {
 				if (!["normal", "timed", "cube","finishpaint"].includes(MODE)) {
 					regular();
@@ -8086,7 +8085,7 @@ p.keyPressed = (event) => {
 				saveData();
 			}
 			break;
-			case 189: //-
+			case "-": //-
 			if (p.keyIsDown(p.SHIFT)) {
 				cubemode();
 			} else {
