@@ -5,6 +5,7 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
+import { keymappings } from '../data/keymap.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword, putSuggestion} from "./backend.js";
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
@@ -7730,14 +7731,7 @@ p.keyPressed = (event) => {
 		return;
 	}	
 	if(inspect == true) return;  
-	console.log("keyCode is: " + p.keyCode);  
-	let needsnew = [53,54,81,84,89,80,65,186,88,67,66,78,188,190,59];
-	let newkey = {
-		53: 190, 54: 190, 81: 1000, 84: 38, 89: 38, 80: 1001, 65: 39, 186: 37, 88: 188, 67: 84, 66: 40, 78: 40, 188: 89, 190: 188, 59: 37
-	}
-	if(KEYBOARD.value() == "Default"){
-		if(needsnew.includes(p.keyCode)) p.keyCode = newkey[p.keyCode];
-	}
+	console.log("keyCode is: " + p.keyCode, " key is " + p.key.toLowerCase());  
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 > 0 && MINIMODE == "physical"){ //racedetect
 		raceDetect();
 		return;
@@ -7949,20 +7943,11 @@ p.keyPressed = (event) => {
 			bad5 = ['U','D','F','B','E','S','u','d','f','b'];
 		else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 			
-		const keyMoveMap = {
-			37: "y", 39: "y'", 40: "x'", 38: "x",
-			1000: "z'", 1001: "z", 76: "D'", 83: "D",
-			74: "U", 70: "U'", 72: "F", 71: "F'",
-			79: "B'", 87: "B", 75: "R'", 73: "R",
-			68: "L", 69: "L'", 188: "M'", 190: "M",
-			65: "E", 186: "E'", 59: "E'", 80: "S",
-			81: "S'", 77: "Rw'", 85: "Rw", 86: "Lw",
-			82: "Lw'", 78: "Fw", 66: "Fw'", 84: "Uw'",
-			89: "Uw", 90: "Dw", 191: "Dw'"
-		};
+		let keyMoveMap = keymappings[KEYBOARD.value()];
 
-		if (keyMoveMap[p.keyCode]) {
-			arr = [keyMoveMap[p.keyCode]];
+
+		if (keyMoveMap[p.key.toLowerCase()]) {
+			arr = [keyMoveMap[p.key.toLowerCase()]];
 
 			if (p.keyIsDown(p.ENTER)) {
 				if (arr[0].includes("M") || arr[0].includes("S") || arr[0].includes("E")) {
@@ -8104,7 +8089,7 @@ p.keyPressed = (event) => {
 			}
 			break;
 		}
-		if (keyMoveMap[p.keyCode] && arr.length > 0 && !isAnimating()) {
+		if (keyMoveMap[p.key.toLowerCase()] && arr.length > 0 && !isAnimating()) {
 			multiple(0, true);
 		}
 	}
