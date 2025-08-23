@@ -7994,7 +7994,7 @@ p.keyPressed = (event) => {
 			else
 				flexDo(Undo, undo);
 			break;
-			case "=":
+			case "+": case "=":
 			if (p.keyIsDown(p.SHIFT))
 				flexDo(Redo, redo, true);
 			else
@@ -8015,7 +8015,7 @@ p.keyPressed = (event) => {
 				moveSetup();
 			
 			break;
-			case "`": //`
+			case "~": case "`": //`
 			if (p.keyIsDown(p.SHIFT)) {
 				(MODE == "normal" || MODE == "timed" || MODE == "bot")  && solveCube();
 			} else if(["normal", "cube", "timed", "account", "login", "compete"].includes(MODE)) {
@@ -8041,14 +8041,14 @@ p.keyPressed = (event) => {
 			.then((obj) => (setPLL(obj)));*/
 			console.log("erger");
 			break;
-			case "8": //8
+			case "*": case "8": //8
 			if (p.keyIsDown(p.SHIFT)) {
 				removeAllTimes();
 			} else {
 				removeTime();
 			}
 			break;
-			case "9": //9
+			case "(": case "9": //9
 			if (p.keyIsDown(p.SHIFT)) {
 				if (SIZE > 3 && DIM != 50) break;
 				if(["normal", "timed", "cube"].includes(MODE)) {iddefault(); successSQL("Default ID Saved");}
@@ -8061,7 +8061,7 @@ p.keyPressed = (event) => {
 				}
 			}
 			break;
-			case "0": //0
+			case ")": case "0": //0
 			if (p.keyIsDown(p.SHIFT)) {
 				if (!["normal", "timed", "cube","finishpaint"].includes(MODE)) {
 					regular();
@@ -8080,7 +8080,7 @@ p.keyPressed = (event) => {
 				saveData();
 			}
 			break;
-			case "-": //-
+			case "_": case "-": //-
 			if (p.keyIsDown(p.SHIFT)) {
 				cubemode();
 			} else {
