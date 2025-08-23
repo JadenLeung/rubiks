@@ -55,19 +55,72 @@ img{
 .row{
     max-width:100%;
 }
-#keymap td {
-  width: 35px;         /* set your desired cell width */
-  text-align: center;
-}
-sub{
-    font-weight: bold;
-}
-sub + sup {
-  margin-left: 0.3em;  /* space between sub and sup */
+#keymap {
+  border-collapse: separate;
+  border-spacing: 6px;         /* spacing between keys */
+  margin: 1rem auto;
 }
 
+#keymap td {
+  width: 35px;                 /* a bit bigger */
+  height: 35px;
+  text-align: center;
+  vertical-align: middle;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#keymap td:hover {
+  background: #eef4ff;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+}
+
+#keymap {
+    color: #0b196f;
+}
+
+#keymap td:active {
+  background: #dbe8ff;
+  transform: translateY(0);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+#keymap td {
+  /* ... your existing styles ... */
+  position: relative; /* allow for pseudo-elements or stacking if needed */
+}
+
+#keymap th {
+  border: 0px;
+}
+
+#keymap td sup,
+#keymap td sub {
+  display: block;
+}
+
+#keymap td sup {
+  font-size: 0.7em;
+  opacity: 0.8;
+  margin-bottom: 0.5em;  /* add space BELOW sup */
+}
+
+#keymap td sub {
+  font-weight: bold;
+  font-size: 0.8em;
+  margin-top: 0.5em;     /* add space ABOVE sub */
+}
+
+/* Remove horizontal spacing between stacked sup/sub */
+sub + sup,
 sup + sub {
-  margin-left: 0.3em;  /* space between sup and sub */
+  margin-left: 0;  /* stacked vertically now */
 }
 
 
