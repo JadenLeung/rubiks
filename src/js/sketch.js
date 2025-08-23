@@ -7933,29 +7933,22 @@ p.keyPressed = (event) => {
 	if(canMan == true)
 	{
 		setLayout();
-		let include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 188 190 65 186 86 82 78 66 77 85 80 81 84 89 1000 1001 90 191 59";
-		let bad3 = "88c";
-		if(DIM == 100)
-			include = "37 39 40 38 76 83 74 70 72 71 79 87 75 73 68 69 80 81 1000 1001";
-		if(bad3.includes(p.keyCode) && p.keyCode > 9 || p.keyCode == 18) return;
 		alldown = false;
-		let bad4 = [83,76,70,74,69,68,73,75,71,72,87,79,65,186,188,190,81,80,85,77,82,86,89,84,78,66,90,191,59]; //no rotations
 		
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 			if (CUBE[i].animating()) {
 				return;
 			}
 		}
-		let bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80] //for 3x3x2
 		let mid = mids[SIZE];
 		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
+		let bad5 = [];
 		if(setup[0] == -MAXX || setup[0] == MAXX) //top
-			bad5 = [69,68,71,72,73,75,87,79,85,77,82,86,66,78,188,190,81,80];
+			bad5 = ['L','R','F','B','S','M','l','r','f','b'];
 		else if(setup[2] == -MAXX || setup[2] == MAXX) //left
-			bad5 = [71,72,87,79,66,78,81,80,70,74,76,83,89,84,186,65,90,191,59];
-		else bad5 = [188,190,70,74,76,83,89,84,73,75,69,68,85,77,82,86,186,65,90,191,59]; // front
+			bad5 = ['U','D','F','B','E','S','u','d','f','b'];
+		else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 			
-		let bad6 = [190,188,65,186,80,81,59];
 		const keyMoveMap = {
 			37: "y", 39: "y'", 40: "x'", 38: "x",
 			1000: "z'", 1001: "z", 76: "D'", 83: "D",
@@ -7984,29 +7977,24 @@ p.keyPressed = (event) => {
 						arr[0] = arr[0][0].toLowerCase();
 				}
 			}
-			if((!INPUT.value().includes("Gearcube") && p.keyIsDown(p.SHIFT) && bad4.includes(p.keyCode)) || 
-			(INPUT.value() == "Double Turns" && bad4.includes(p.keyCode)) || (INPUT.value() == "3x3x2" && bad5.includes(p.keyCode))
-			|| (p.keyIsDown(p.SHIFT) && ([37,38,39,40].includes(p.keyCode) || ([1000, 1001].includes(p.keyCode) && KEYBOARD.value() == "Default")))) {
+			if((p.keyIsDown(p.SHIFT) && INPUT.value() == "Normal") || INPUT.value() == "Double Turns")
 				arr.push(arr[0]);
-			} else if(INPUT.value() == "Gearcube") {
-				if (arr[0].includes("w")) {
-					arr[0] = arr[0].replace(/w/g, "");
-				}
+			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
+				arr.push(arr[0]);
+			if(INPUT.value() == "Gearcube") {
 				if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
 					arr = [];
 				} else {
 					arr.unshift(toGearCube(arr[0]));
 				}
 			}
-			if(INPUT.value() == "Gearcube II" && bad4.includes(p.keyCode)) {
-				if (arr[0].includes("w")) {
-					arr[0] = arr[0].replace(/w/g, "");
-				}
-
+			if(INPUT.value() == "Gearcube II") {
 				if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
 					arr = []
 				} else {
 					arr.push(arr[0]);
+					console.log(arr[0][0])
+					console.log(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"))
 					arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
 				}
 			}
