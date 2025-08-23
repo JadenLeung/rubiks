@@ -11992,9 +11992,39 @@ getEl("suggest_submit").addEventListener("click", async function(event) {
     event.preventDefault();
 	submitSuggestion();
 });
+document.getElementById('keymap').addEventListener('click', function(event) {
+  let cell = event.target.closest('td');
+	const special = { 
+		"←": "ArrowLeft",
+		"→": "ArrowRight",
+		"↑": "ArrowUp",
+		"↓": "ArrowDown",
+		"Space": " ",       // p5.js expects key = " "
+		"Esc": "Escape",
+		"Bspace": "Backspace",
+		"~": "`",
+	}
+  if (cell && this.contains(cell)) {
+    const key = cell.querySelector("sup")?.textContent.trim() || "";
+    if (key) {
+      // Dispatch keydown event
+      const keydownEvent = new KeyboardEvent('keydown', {
+        key: special[key] ?? key,
+        bubbles: true
+      });
+      document.dispatchEvent(keydownEvent);
 
-
-
+      // Dispatch keyup event (short delay to mimic real keypress)
+      setTimeout(() => {
+        const keyupEvent = new KeyboardEvent('keyup', {
+          key: special[key] ?? key,
+          bubbles: true
+        });
+        document.dispatchEvent(keyupEvent);
+      }, 10); // 10ms delay
+    }
+  }
+});
 document.addEventListener("keydown", (event) => { //paint hotkey
 	if (MODE == "paint" && (!activeKeys || (activeKeys.size < 2 || (p.keyIsDown(p.SHIFT) && activeKeys.size < 3)))) {
 		if (event.key === "r" || event.key === "R") paintit("red");
