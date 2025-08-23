@@ -55,9 +55,23 @@ img{
 .row{
     max-width:100%;
 }
+#keymap td {
+  width: 35px;         /* set your desired cell width */
+  text-align: center;
+}
 sub{
     font-weight: bold;
 }
+sub + sup {
+  margin-left: 0.3em;  /* space between sub and sup */
+}
+
+sup + sub {
+  margin-left: 0.3em;  /* space between sup and sub */
+}
+
+
+
 button{
     touch-action: manipulation;
 }

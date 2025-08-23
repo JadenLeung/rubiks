@@ -2124,23 +2124,34 @@ function rotateIt(){
 	CAM.rotateY(-p.PI / ROTY);
 	CAM.rotateZ(-p.PI / ROTZ);
 }
+function generateKeyMap(letters) {
+	let str = "";
+	letters.split("").forEach((letter) => {
+		str += `<td><sup>${keymappings[KEYBOARD.value()][letter] ? letter.toUpperCase() : ""}</sup><sub>${formatWide(keymappings[KEYBOARD.value()][letter] ?? "")}</sub></td>`;
+	})
+	return str;
+}
+function formatWide(move) {
+	if (move.includes("w")) {
+		move = [...move].filter((c) => {
+			return c != "w";
+		}).join("").toLowerCase();
+	}
+	return move;
+}
 function changeKeys(){
 	if(KEYBOARD.value() == "Default"){
 		document.getElementById("changekeys5").innerHTML = "<td colspan = '2'><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = '2'><sup>Esc</sup><sub>reset</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '3'><sup>Bspace</sup><sub>undo</sub></td></tr>";
 		document.getElementById("changekeys0").innerHTML = "<td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td>"
-		document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>z'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>x</sub></td><td><sup>Y</sup> <sub>x</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>z</sub></td>"
-		document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>y'</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>y</sub></td>";
-		document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub>M'</sub></td><td><sup>C</sup> <sub>u'</sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>x'</sub></td><td><sup>N</sup> <sub>x'</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>u</sub></td><td><sup>.</sup> <sub>M'</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
-		document.getElementById("changekeys4").innerHTML = "<td colspan = '3'><sup>Shift</sup> <sub>x2 move</sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
 	}
 	else{
 		document.getElementById("changekeys5").innerHTML = "<td colspan = '2'><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = '2'><sup>Esc</sup><sub>reset</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '3'><sup>Bspace</sup><sub>undo</sub></td></tr>";
 		document.getElementById("changekeys0").innerHTML = ""
-		document.getElementById("changekeys1").innerHTML = "<td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td>"
-		document.getElementById("changekeys2").innerHTML = "<td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td>";
-		document.getElementById("changekeys3").innerHTML = "<td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td>";
-		document.getElementById("changekeys4").innerHTML = "<td colspan = '3'><sup>Shift</sup> <sub>x2 move</sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
 	}
+	document.getElementById("changekeys1").innerHTML = generateKeyMap("qwertyuiop");
+	document.getElementById("changekeys2").innerHTML = generateKeyMap("asdfghjkl;");
+	document.getElementById("changekeys3").innerHTML = generateKeyMap("zxcvbnm,./");
+	document.getElementById("changekeys4").innerHTML = "<td colspan = '3'><sup>Shift</sup> <sub>x2 move</sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
 }
 function decode(num){
 	//6BAPpVI 3iÐqtUì 4oìz÷óÐ
