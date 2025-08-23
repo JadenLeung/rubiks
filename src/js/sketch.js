@@ -2127,17 +2127,9 @@ function rotateIt(){
 function generateKeyMap(letters) {
 	let str = "";
 	letters.split("").forEach((letter) => {
-		str += `<td><sup>${keymappings[KEYBOARD.value()][letter] ? letter.toUpperCase() : ""}</sup><sub>${formatWide(keymappings[KEYBOARD.value()][letter] ?? "")}</sub></td>`;
+		str += `<td><sup>${keymappings[KEYBOARD.value()][letter] ? letter.toUpperCase() : ""}</sup><sub>${keymappings[KEYBOARD.value()][letter] ?? ""}</sub></td>`;
 	})
 	return str;
-}
-function formatWide(move) {
-	if (move.includes("w")) {
-		move = [...move].filter((c) => {
-			return c != "w";
-		}).join("").toLowerCase();
-	}
-	return move;
 }
 function changeKeys(){
 	if(KEYBOARD.value() == "Default"){
@@ -8063,7 +8055,10 @@ p.keyPressed = (event) => {
 			} else {
 				if(localStorage.username == "signedout")
 					break;
-				loadData();
+
+				if (window.confirm("Are you sure you want to load data? This may overwrite existing scores/settings.")) {
+					loadData();
+				}
 			}
 			break;
 			case "0": //0
