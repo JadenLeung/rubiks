@@ -2133,12 +2133,10 @@ function generateKeyMap(letters) {
 }
 function changeKeys(){
 	if(KEYBOARD.value() == "Default"){
-		document.getElementById("changekeys5").innerHTML = "<td colspan = '2'><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = '2'><sup>Esc</sup><sub>reset</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '3'><sup>Bspace</sup><sub>undo</sub></td></tr>";
-		document.getElementById("changekeys0").innerHTML = "<td><sup></sup><sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td>"
+		document.getElementById("changekeys5").innerHTML = "<td><sup>esc</sup><sub>reset</sub></td><td colspan = '2'><sup>~</sup><sub>scramble</sub></td><td><sup>1</sup><sub>quit</sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '2'><sup>Bspace</sup><sub>undo</sub></td></tr>"
 	}
 	else{
-		document.getElementById("changekeys5").innerHTML = "<td colspan = '2'><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = '2'><sup>Esc</sup><sub>reset</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '3'><sup>Bspace</sup><sub>undo</sub></td></tr>";
-		document.getElementById("changekeys0").innerHTML = ""
+		document.getElementById("changekeys5").innerHTML = "<td><sup>esc</sup><sub>reset</sub></td><td colspan = '2'><sup>~</sup><sub>scramble</sub></td><td><sup>1</sup><sub>quit</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '2'><sup>Bspace</sup><sub>undo</sub></td></tr>";
 	}
 	document.getElementById("changekeys1").innerHTML = generateKeyMap("qwertyuiop");
 	document.getElementById("changekeys2").innerHTML = generateKeyMap("asdfghjkl;");
@@ -11994,7 +11992,7 @@ document.getElementById('keymap').addEventListener('click', function(event) {
 		"↑": "ArrowUp",
 		"↓": "ArrowDown",
 		"Space": " ",       // p5.js expects key = " "
-		"Esc": "Escape",
+		"esc": "Escape",
 		"Bspace": "Backspace",
 		"~": "`",
 	}
