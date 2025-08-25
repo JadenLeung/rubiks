@@ -461,12 +461,17 @@
 				</div>
 				<div style = "margin-top: 10px;">
 					<p style = "display: inline;">Editing keyboard:</p>
-					<select name="keyboards" id="keyboards" style = "display: inline;">
+					<select name="keyboards" id="keyboards">
 						<option value="Custom1">Custom1</option>
 						<option value="Custom2">Custom2</option>
 						<option value="Custom3">Custom3</option>
 					</select>
 				</div>
+				<label style = "display: inline;" >
+					Shift:
+					<input type="checkbox" id = "keyboardcheck">
+				</label>
+				<i id = "keyboardtitle2" style = "display: inline;">(Blank means x2 move multiplier)</i>
 			</div>
 			<table style="padding:2px; border:0px solid black;" class = "normal noselect" id = "keymap" >
 				<tr id = "changekeys5"><td colspan = "2"><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = "2"><sup>Esc</sup><sub>reset</sub></td><td colspan = "2"><sup>=</sup><sub>redo</sub></td><td colspan = "3"><sup>Bspace</sup><sub>undo</sub></td></tr>

@@ -1196,6 +1196,7 @@ p.setup = () => {
 	const MODKEY = 6;
 	const keymoves = ["B", "F", "L", "R", "F", "U"];
 	setButton(p.createButton("Cancel"), "keyboardmoves", 'btn btn-danger', `margin: 2px; width: 80px;`, () => editKey("Cancel"));
+	setButton(p.createButton("Set Blank"), "keyboardmoves", 'btn btn-info', `margin: 2px; width: 100px;`, () => editKey(""));
 	document.getElementById("keyboardmoves").appendChild(document.createElement("br"));
 	keymoves.forEach((keymove, i) => {
 		const modified = [keymove, keymove + "'", keymove + "w", keymove + "w'", keymove.toLowerCase(), keymove.toLowerCase() + "'"]
@@ -2168,7 +2169,11 @@ function generateKeyMap(letters) {
 	const value = MODE == "keyboard" ? getEl("keyboards").value : KEYBOARD.value() ?? "";
 	let str = "";
 	letters.split("").forEach((letter) => {
-		str += `<td><sup>${keymappings[value].unshifted[letter] ? letter.toUpperCase() : ""}</sup><sub>${keymappings[value].unshifted[letter] ?? ""}</sub></td>`;
+		if (MODE == "keyboard" && getEl("keyboardcheck").checked) {
+			str += `<td><sup>${keymappings[value].unshifted.hasOwnProperty(letter) ? "⇧" + letter.toUpperCase() : ""}</sup><sub>${keymappings[value].shifted[letter] ?? ""}</sub></td>`;
+		} else {
+			str += `<td><sup>${keymappings[value].unshifted.hasOwnProperty(letter) ? letter.toUpperCase() : ""}</sup><sub>${keymappings[value].unshifted[letter] ?? ""}</sub></td>`;
+		}
 	})
 	return str;
 }
@@ -3587,7 +3592,7 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
-		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2"]);
+		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -5245,14 +5250,15 @@ function keyboardmode() {
 }
 function editKey(newmove) {
 	if (newmove != "Cancel") {
-		keymappings[getEl("keyboards").value].unshifted[keyselected.toLowerCase()] = newmove;
+		keymappings[getEl("keyboards").value][getEl("keyboardcheck").checked ? "shifted" : "unshifted"][keyselected.toLowerCase()] = newmove;
+		console.log(keymappings[getEl("keyboards").value])
 	}
 	setDisplay("none", ["keyboardmoves"]);
 	changeKeys();
 	getEl("keyboardtext").innerHTML = "Click on a key to map it to a move";
 }
 function keyboardDefault(keyboard) {
-	keymappings[getEl("keyboards").value] = keymappings[keyboard];
+	keymappings[getEl("keyboards").value] = structuredClone(constkeymappings[keyboard]);
 	editKey("Cancel");
 	getEl("keyboardtext").innerHTML = "Click on a key to map it to a move";
 
@@ -8017,7 +8023,7 @@ p.keyPressed = (event) => {
 
 
 		if (keyMoveMap.unshifted[p.key.toLowerCase()] || keyMoveMap.shifted[p.key.toLowerCase()]) {
-			arr = p.keyIsDown(p.SHIFT) && keyMoveMap.shifted[p.key.toLowerCase()] ? [keyMoveMap.shifted[p.key.toLowerCase()]] : [keyMoveMap.unshifted[p.key.toLowerCase()]];
+			p.keyIsDown(p.SHIFT) && keyMoveMap.shifted[p.key.toLowerCase()] ? changeArr(keyMoveMap.shifted[p.key.toLowerCase()]) : changeArr(keyMoveMap.unshifted[p.key.toLowerCase()]);
 			console.log(arr)
 
 			if (p.keyIsDown(p.ENTER)) {
@@ -8086,7 +8092,7 @@ p.keyPressed = (event) => {
 			case "~": case "`": //`
 			if (p.keyIsDown(p.SHIFT)) {
 				(MODE == "normal" || MODE == "timed" || MODE == "bot")  && solveCube();
-			} else if(["normal", "cube", "timed", "account", "login", "compete"].includes(MODE)) {
+			} else if(["normal", "cube", "timed", "account", "login", "compete", "keyboard"].includes(MODE)) {
 				shuffleCube();
 			} else if (["moves", "speed"].includes(MODE) && getEl("switcher").style.display == "block") {
 				shuffleCube();
@@ -12086,7 +12092,7 @@ document.getElementById('keymap').addEventListener('click', function(event) {
 				document.dispatchEvent(keyupEvent);
 			}, 10); // 10ms delay
 		} else {
-			keyselected = key;
+			keyselected = getEl("keyboardcheck").checked ? key.substring(1) : key;
 			getEl("keyboardtext").innerHTML = "Select move for key: <b>" + key + "</b>";
 			setDisplay("block", ["keyboardmoves"])
 			console.log("pressed");
@@ -12211,6 +12217,11 @@ Object.entries(competitions).forEach(([id, text]) => {
 getEl("compete_search").oninput = () => {
 	competeSelectButtons();
 }
+
+getEl("keyboardcheck").addEventListener('change', () => {
+	getEl("keyboardtitle2").style.display = getEl("keyboardcheck").checked ? "inline" : "none";
+  changeKeys();
+});
 
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
