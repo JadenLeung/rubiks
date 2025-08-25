@@ -5398,6 +5398,7 @@ function setSettings(obj) {
 	HOLLOW.checked(obj.hollow == 1);
 	let d = obj.background;
 	localStorage.background = d;
+	localStorage.keymappings = obj.keymappings;
 	if (obj.bandaged3 && obj.bandaged3 != "null") {
 		localStorage.bandaged3 = obj.bandaged3;
 		bandaged3 = JSON.parse(localStorage.bandaged3);
@@ -6077,6 +6078,7 @@ async function saveData(username, password, method, al) {
 		race3x3: localStorage.race3x3 ?? -1,
 		marathon4: localStorage.marathon4 ?? -1,
 		marathon5: localStorage.marathon5 ?? -1,
+		keymappings: localStorage.keymappings,
 	};
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
