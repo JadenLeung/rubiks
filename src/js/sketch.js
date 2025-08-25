@@ -5,7 +5,7 @@ import {weeklyscrambles} from '../data/weekly.js'
 import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
-import { keymappings } from '../data/keymap.js';
+import { constkeymappings } from '../data/keymap.js';
 import {modeData, getUsers, printUsers, putUsers, matchPassword, putSuggestion} from "./backend.js";
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
@@ -24,6 +24,7 @@ export default function (p) {
 	let week = sinceNov3('w') % 20;
 	let bruh = 0;
 	let CAM;
+	let keymappings = constkeymappings;
 	let CAM_PICKER;
 	let CAMZOOM = -170;
 	let alldown;
@@ -202,6 +203,7 @@ export default function (p) {
 	let savesetup = [];
 	let savebandage = [];
 	let savedark = [];
+	let keyselected = "";
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
 	const savesetupdim = [50, 100, 2, 15, 1, 3, 5, 4, 13, 14, 7, 10, 2, 8, 9, 11, 12, "snake_eye"]
@@ -1049,7 +1051,7 @@ p.setup = () => {
 	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', () => {MODE == "finishpaint" ? paintmode() : MODE.includes("paint") ? idmode() : regular()});
 
 	const SETTINGSBACK = p.createButton('Back');
-	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:20px; border-color: black;', regular.bind(null, 0));
+	setButton(SETTINGSBACK, "settingsback", 'btn btn-light', 'font-size:15px; border-color: black;', regular.bind(null, 0));
 
 	const COMPETEBACK = p.createButton('Back');
 	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
@@ -1066,6 +1068,15 @@ p.setup = () => {
 	const HOTKEYBACK = p.createButton('Back');
 	setButton(HOTKEYBACK, "hotkeyback", 'btn btn-light', 'font-size:20px; border-color: black;', settingsmode.bind(null, 0));
 
+	const KEYBOARDBACK = p.createButton('Back');
+	setButton(KEYBOARDBACK, "keyboardback", 'btn btn-light', 'font-size:15px; border-color: black;', settingsmode.bind(null, 0));
+
+	const KEYBOARDDEFAULT = p.createButton('Restore to Default');
+	setButton(KEYBOARDDEFAULT, "keyboarddefault", 'btn btn-light', 'font-size:15px; border-color: black;', () => keyboardDefault("Default"));
+
+	const KEYBOARDDEFAULT2 = p.createButton('Restore to Alt Keyboard');
+	setButton(KEYBOARDDEFAULT2, "keyboarddefault", 'btn btn-light', 'margin-left: 5px; font-size:15px; border-color: black;', () => keyboardDefault("Alt Keyboard"));
+
 	const CHALLENGEBACK = p.createButton('Return to Challenges');
 	setButton(CHALLENGEBACK, "challengeback", 'btn btn-light', 'font-size:20px; border-color: black;', challengemode.bind(null, 0));
 
@@ -1073,10 +1084,13 @@ p.setup = () => {
 	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', iddefault);
 
 	const SETTINGSDEFAULT = p.createButton('Restore defaults');
-	setButton(SETTINGSDEFAULT, "settingsdefault", 'btn btn-light', 'font-size:20px; border-color: black;', settingsDefault.bind(null, 0));
+	setButton(SETTINGSDEFAULT, "settingsdefault", 'btn btn-light', 'font-size:15px; border-color: black;', settingsDefault.bind(null, 0));
 
-	const SETTINGSHOTKEY = p.createButton('View Hotkeys');
-	setButton(SETTINGSHOTKEY, "settingshotkey", 'btn btn-light', 'font-size:20px; border-color: black;', hotkeymode);
+	const SETTINGSHOTKEY = p.createButton('Hotkeys');
+	setButton(SETTINGSHOTKEY, "settingshotkey", 'btn btn-light', 'font-size:15px; border-color: black;', hotkeymode);
+
+	const SETTINGSKEYBOARD = p.createButton('Keyboard');
+	setButton(SETTINGSKEYBOARD, "settingskeyboard", 'btn btn-light', 'font-size:15px; border-color: black;', keyboardmode);
 
 	const DEFAULT = p.createButton('Restore');
 	setButton(DEFAULT, "select7", 'btn btn-light', 'font-size:15px; border-color: black;', changeZero.bind(null, 0));
@@ -1159,6 +1173,9 @@ p.setup = () => {
 	KEYBOARD.parent("keyboard");
 	KEYBOARD.option("Default");
 	KEYBOARD.option("Alt Keyboard");
+	KEYBOARD.option("Custom1");
+	KEYBOARD.option("Custom2");
+	KEYBOARD.option("Custom3");
 	changeKeys();
 	KEYBOARD.changed(() => {
 		changeKeys();
@@ -1168,10 +1185,32 @@ p.setup = () => {
 		KEYBOARD.value(localStorage.keyboard);
 		changeKeys();
 	}
+	if(localStorage.keymappings) {
+		keymappings = JSON.parse(localStorage.keymappings);
+		changeKeys();
+	}
 	if(localStorage.bandaged3) {
 		bandaged3 = JSON.parse(localStorage.bandaged3);
 	}
 
+	const MODKEY = 6;
+	const keymoves = ["B", "F", "L", "R", "F", "U"];
+	setButton(p.createButton("Cancel"), "keyboardmoves", 'btn btn-danger', `margin: 2px; width: 80px;`, () => editKey("Cancel"));
+	document.getElementById("keyboardmoves").appendChild(document.createElement("br"));
+	keymoves.forEach((keymove, i) => {
+		const modified = [keymove, keymove + "'", keymove + "w", keymove + "w'", keymove.toLowerCase(), keymove.toLowerCase() + "'"]
+		modified.forEach((m) => {
+			setButton(p.createButton(m), "keyboardmoves", 'btn btn-info', `margin: 2px; width: 50px;`, () => editKey(m));
+		})
+		document.getElementById("keyboardmoves").appendChild(document.createElement("br"));
+	})
+	const moremoves = ["M", "M'", "Mw", "Mw'", "E", "E'", "Ew", "Ew'", "S", "S'", "Sw", "Sw'", "x", "x'", "y", "y'", "z", "z'"];
+	moremoves.forEach((m, i) => {
+		setButton(p.createButton(m), "keyboardmoves", 'btn btn-info', `margin: 2px; width: 50px;`, () => editKey(m));
+		if (i % MODKEY == MODKEY - 1) {
+			document.getElementById("keyboardmoves").appendChild(document.createElement("br"));
+		}
+	})
 	
 	TOPPLL = p.createSelect(); 
 	TOPPLL.parent("toppll");
@@ -1494,6 +1533,7 @@ setInterval(() => {
 	localStorage.topwhite = TOPWHITE.value();
 	localStorage.toppll = TOPPLL.value();
 	localStorage.keyboard = KEYBOARD.value();
+	localStorage.keymappings = JSON.stringify(keymappings);
 	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color ) + " " + special[4];
 	localStorage.hollow = HOLLOW.checked();
 	localStorage.border_width = BORDER_SLIDER.value();
@@ -2125,23 +2165,23 @@ function rotateIt(){
 	CAM.rotateZ(-p.PI / ROTZ);
 }
 function generateKeyMap(letters) {
+	const value = MODE == "keyboard" ? getEl("keyboards").value : KEYBOARD.value() ?? "";
 	let str = "";
 	letters.split("").forEach((letter) => {
-		str += `<td><sup>${keymappings[KEYBOARD.value()][letter] ? letter.toUpperCase() : ""}</sup><sub>${keymappings[KEYBOARD.value()][letter] ?? ""}</sub></td>`;
+		str += `<td><sup>${keymappings[value].unshifted[letter] ? letter.toUpperCase() : ""}</sup><sub>${keymappings[value].unshifted[letter] ?? ""}</sub></td>`;
 	})
 	return str;
 }
 function changeKeys(){
-	if(KEYBOARD.value() == "Default"){
-		document.getElementById("changekeys5").innerHTML = "<td><sup>esc</sup><sub>reset</sub></td><td colspan = '2'><sup>~</sup><sub>scramble</sub></td><td><sup>1</sup><sub>quit</sub></td><td><sup>5</sup> <sub>M</sub></td><td><sup>6</sup> <sub>M</sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '2'><sup>Bspace</sup><sub>undo</sub></td></tr>"
-	}
-	else{
-		document.getElementById("changekeys5").innerHTML = "<td><sup>esc</sup><sub>reset</sub></td><td colspan = '2'><sup>~</sup><sub>scramble</sub></td><td><sup>1</sup><sub>quit</sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '2'><sup>Bspace</sup><sub>undo</sub></td></tr>";
-	}
+	document.getElementById("changekeys5").innerHTML = `<td><sup>esc</sup><sub>reset</sub></td><td colspan = '2'><sup>~</sup><sub>scramble</sub></td><td><sup>1</sup><sub>quit</sub></td>${generateKeyMap("56")}<td colspan = '2'><sup>=</sup><sub>redo</sub></td><td colspan = '2'><sup>Bspace</sup><sub>undo</sub></td></tr>`;
 	document.getElementById("changekeys1").innerHTML = generateKeyMap("qwertyuiop");
 	document.getElementById("changekeys2").innerHTML = generateKeyMap("asdfghjkl;");
 	document.getElementById("changekeys3").innerHTML = generateKeyMap("zxcvbnm,./");
 	document.getElementById("changekeys4").innerHTML = "<td colspan = '3'><sup>Shift</sup> <sub>x2 move</sub></td><td colspan = '3'><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td>";
+	if (MODE == "keyboard") {
+		document.getElementById("changekeys5").innerHTML = `<td><sup></sup><sub></sub></td><td colspan = '2'><sup></sup><sub></sub></td><td><sup></sup><sub></sub></td>${generateKeyMap("56")}<td colspan = '2'><sup></sup><sub></sub></td><td colspan = '2'><sup></sup><sub></sub></td></tr>`;
+		document.getElementById("changekeys4").innerHTML = "";
+	}
 }
 function decode(num){
 	//6BAPpVI 3iÐqtUì 4oìz÷óÐ
@@ -3547,7 +3587,7 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
-		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip"]);
+		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3567,6 +3607,7 @@ function regular(nocustom){
 	changeInput();
 	changeCam();
 	setInput();
+	changeKeys();
 	SCRAM.value("Normal");
 	easystep = 0;
 	medstep = 0;
@@ -5193,6 +5234,30 @@ function hotkeymode() {
 	setDisplay("none", ["settings1"]);
 	setDisplay("block", ["hotkey1"]);
 }
+function keyboardmode() {
+	MODE = "keyboard";
+	keyselected = "";
+	getEl("keyboardtext").innerHTML = "Click on a key to map it to a move";
+	changeKeys();
+	setDisplay("none", ["settings1", "keyboardmoves"]);
+	setDisplay("block", ["keyboard1", "keyboard2"]);
+	setDisplay("table", ["keymap"]);
+}
+function editKey(newmove) {
+	if (newmove != "Cancel") {
+		keymappings[getEl("keyboards").value].unshifted[keyselected.toLowerCase()] = newmove;
+	}
+	setDisplay("none", ["keyboardmoves"]);
+	changeKeys();
+	getEl("keyboardtext").innerHTML = "Click on a key to map it to a move";
+}
+function keyboardDefault(keyboard) {
+	keymappings[getEl("keyboards").value] = keymappings[keyboard];
+	editKey("Cancel");
+	getEl("keyboardtext").innerHTML = "Click on a key to map it to a move";
+
+	changeKeys();
+}
 function settingsmode()
 {
 	if(document.getElementById("settings1").style.display == "block"){
@@ -5200,6 +5265,7 @@ function settingsmode()
 		return;
 	}
 	DIM = DIM2;
+	MODE = "normal";
 	reSetup();
 	stopMoving();
 	fullScreen(false);
@@ -5207,7 +5273,8 @@ function settingsmode()
 	refreshButtons();
 	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
-	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", "timeselect", "ID1"]);
+	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", 
+		"timeselect", "ID1", "keyboard1", "keyboard2"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
@@ -7753,7 +7820,7 @@ p.keyPressed = (event) => {
 			getEl("outertime").style.color = "green";
 		}
 	}
-	if(p.key == "1") { //1 //one
+	if(p.key == "1" || p.key == "!") { //1 //one
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
 			return;
@@ -7785,6 +7852,7 @@ p.keyPressed = (event) => {
 		} 
 		if(MODE == "suggestions") {regular(); return;}
 		if(MODE == "paint") {idmode(); return;}
+		if(MODE == "keyboard") {settingsmode(); return;}
 		if(MODE == "competing") {competemode(); return;}
 		if(MODE == "finishpaint") {paintmode(); return;}
 		if(MODE == "timed" || MODE == "challenge" || (MODE == "cube" && custom == 0) || document.getElementById("test_alg_span").innerHTML == "Paste ID here:" || MODE == "compete")
@@ -7849,7 +7917,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(bandaged, bandaged2, bandaged3);
+		console.log(keymappings[getEl("keyboards").value].unshifted["g"]);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -7944,11 +8012,13 @@ p.keyPressed = (event) => {
 			bad5 = ['U','D','F','B','E','S','u','d','f','b'];
 		else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 			
-		let keyMoveMap = keymappings[KEYBOARD.value()];
+		const value = MODE == "keyboard" ? getEl("keyboards").value : KEYBOARD.value() ?? "";
+		let keyMoveMap = keymappings[value];
 
 
-		if (keyMoveMap[p.key.toLowerCase()]) {
-			arr = [keyMoveMap[p.key.toLowerCase()]];
+		if (keyMoveMap.unshifted[p.key.toLowerCase()] || keyMoveMap.shifted[p.key.toLowerCase()]) {
+			arr = p.keyIsDown(p.SHIFT) && keyMoveMap.shifted[p.key.toLowerCase()] ? [keyMoveMap.shifted[p.key.toLowerCase()]] : [keyMoveMap.unshifted[p.key.toLowerCase()]];
+			console.log(arr)
 
 			if (p.keyIsDown(p.ENTER)) {
 				if (arr[0].includes("M") || arr[0].includes("S") || arr[0].includes("E")) {
@@ -7963,7 +8033,7 @@ p.keyPressed = (event) => {
 						arr[0] = arr[0][0].toLowerCase();
 				}
 			}
-			if((p.keyIsDown(p.SHIFT) && INPUT.value() == "Normal") || INPUT.value() == "Double Turns")
+			if((p.keyIsDown(p.SHIFT) && INPUT.value() == "Normal" && !keyMoveMap.shifted[p.key.toLowerCase()]) || INPUT.value() == "Double Turns")
 				arr.push(arr[0]);
 			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 				arr.push(arr[0]);
@@ -7999,7 +8069,7 @@ p.keyPressed = (event) => {
 				flexDo(Redo, redo);
 			break;
 			case "escape": //escape
-			if(MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0)) 
+			if (MODE == "normal" || MODE == "timed" || MODE == "cube" || MODE == "account" || MODE == "login" || (MODE == "challenge" && cstep == 0) || MODE == "keyboard") 
 			reSetup();
 			if((MODE == "moves" || cstep > 0)) {
 				if(m_34step > 0 || m_4step > 0 || cstep > 0 || bstep > 0 || mastep > 0) 
@@ -8092,7 +8162,7 @@ p.keyPressed = (event) => {
 			}
 			break;
 		}
-		if (keyMoveMap[p.key.toLowerCase()] && arr.length > 0 && !isAnimating()) {
+		if ((keyMoveMap.shifted[p.key.toLowerCase()] || keyMoveMap.unshifted[p.key.toLowerCase()]) && arr.length > 0 && !isAnimating()) {
 			multiple(0, true);
 		}
 	}
@@ -11999,21 +12069,28 @@ document.getElementById('keymap').addEventListener('click', function(event) {
   if (cell && this.contains(cell)) {
     const key = cell.querySelector("sup")?.textContent.trim() || "";
     if (key) {
-      // Dispatch keydown event
-      const keydownEvent = new KeyboardEvent('keydown', {
-        key: special[key] ?? key,
-        bubbles: true
-      });
-      document.dispatchEvent(keydownEvent);
+		if (MODE != "keyboard") {
+			// Dispatch keydown event
+			const keydownEvent = new KeyboardEvent('keydown', {
+				key: special[key] ?? key,
+				bubbles: true
+			});
+			document.dispatchEvent(keydownEvent);
 
-      // Dispatch keyup event (short delay to mimic real keypress)
-      setTimeout(() => {
-        const keyupEvent = new KeyboardEvent('keyup', {
-          key: special[key] ?? key,
-          bubbles: true
-        });
-        document.dispatchEvent(keyupEvent);
-      }, 10); // 10ms delay
+			// Dispatch keyup event (short delay to mimic real keypress)
+			setTimeout(() => {
+				const keyupEvent = new KeyboardEvent('keyup', {
+				key: special[key] ?? key,
+				bubbles: true
+				});
+				document.dispatchEvent(keyupEvent);
+			}, 10); // 10ms delay
+		} else {
+			keyselected = key;
+			getEl("keyboardtext").innerHTML = "Select move for key: <b>" + key + "</b>";
+			setDisplay("block", ["keyboardmoves"])
+			console.log("pressed");
+		}
     }
   }
 });
@@ -12101,6 +12178,10 @@ getEl("competelink").addEventListener("click", function(event) {
 getEl("editcompete").addEventListener("click", function(event) {
     event.preventDefault();
 	createMatch(false);
+});
+
+getEl("keyboards").addEventListener("change", function() {
+  changeKeys();
 });
 
 const competitions = {
