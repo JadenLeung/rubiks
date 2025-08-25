@@ -5398,7 +5398,7 @@ function setSettings(obj) {
 	HOLLOW.checked(obj.hollow == 1);
 	let d = obj.background;
 	localStorage.background = d;
-	localStorage.keymappings = obj.keymappings;
+	keymappings = JSON.parse(obj.keymappings);
 	if (obj.bandaged3 && obj.bandaged3 != "null") {
 		localStorage.bandaged3 = obj.bandaged3;
 		bandaged3 = JSON.parse(localStorage.bandaged3);
