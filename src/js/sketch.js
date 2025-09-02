@@ -8023,7 +8023,8 @@ p.keyPressed = (event) => {
 		const value = MODE == "keyboard" ? getEl("keyboards").value : KEYBOARD.value() ?? "";
 		let keyMoveMap = keymappings[value];
 
-
+		const more = {":": ";", "<":",", ">":"."};
+		if (more[p.key]) p.key = more[p.key]
 		if (keyMoveMap.unshifted[p.key.toLowerCase()] || keyMoveMap.shifted[p.key.toLowerCase()]) {
 			p.keyIsDown(p.SHIFT) && keyMoveMap.shifted[p.key.toLowerCase()] ? changeArr(keyMoveMap.shifted[p.key.toLowerCase()]) : changeArr(keyMoveMap.unshifted[p.key.toLowerCase()]);
 			console.log(arr)
@@ -12047,6 +12048,8 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
+	settingsmode();
+	keyboardmode();
 	// modnum = 2;
     // cubemode();
 	// b_selectdim["2x3x5"]();
@@ -12258,7 +12261,7 @@ Mo50 virtual
 64.48
 Mo50 virtual 2x2: 34.34, 33.08, 29.84, 28.26
 Jaden WR 4x4: 139.71 123.59 116.96
-Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3
+Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3, 9.72
 
 3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01 4.86
 3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06
@@ -12282,10 +12285,9 @@ Sand	8.28	1
 
 */
 
-//BELOW 51 MOVES
-// D R' B' L2 F D2 F2 L2 U2 F' U B' U B2 D2 (50)
-// F2 R2 D R2 D' F2 L2 D2 B R U' L U2 F2 L' (50)
+//BELOW 50 MOVES
 //  2)se$ÞG 17Þn6i~ 5HK8løå  (48)
+// L D2 D' L R R D2 U2 B2 F2 U2 L2 F' B' L' L B' R2 (48)
 // F2 R' D' B2 L' F D' L2 B R2 U2 R' D L' D2 F' L2 B (48)
 // F2 U2 R2 D F2 L B' L' B R2 U F' D L F2 U2 B D2 (47)
 // F2 U' L2 D2 R2 F2 R' F U' B' D' R U B2 R D' B2 R (47)
@@ -12304,6 +12306,9 @@ Sand	8.28	1
 // L' B2 L' R U D L2 U' F' U2 F L' U' B D2 L' (was 52, 69)
 // L D F' L' R U' F' B F L' B2 U' D' R' F' D L' B2 (was 48, 71)
 // R' F2 D U2 F2 D' R L2 U R B2 U L U' R' (was 41, 56)
+
+//WORLD RECORD ME SOLVE SCRAMBLES
+// L D2 D' L R R D2 U2 B2 F2 U2 L2 F' B' L' L B' R2 (9.72)
 //WORLD RECORD SCRAMBLES 2x2
 //L' R B L' D L R' U F' B L R' F U L F' B' F R2 (4)
 /*
