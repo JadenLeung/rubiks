@@ -6,7 +6,7 @@ import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
 import { constkeymappings } from '../data/keymap.js';
-import {modeData, getUsers, printUsers, putUsers, matchPassword, putSuggestion} from "./backend.js";
+import {modeData, getUserData, printUsers, putUsers, hasUser, putSuggestion} from "./backend.js";
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -6109,41 +6109,35 @@ async function loadData(times) {
 	if (document.getElementById("logindesc").innerHTML == "") {
 		document.getElementById("logindesc").innerHTML = "Loading data...";
 	}
-	const userdata = await repeatUntilSuccess(() => getUsers());
-	let index = 0;
-	if (!userdata[0]) {
+	const userdata = await repeatUntilSuccess(() => getUserData(localStorage.username));
+	if (!userdata) {
 		alert("Load failed, please try again");
 		document.getElementById("logindesc").innerHTML = "";
 		return;
 	}
-	userdata.forEach((obj, i) => {
-		if (localStorage.username == obj.username) {
-			index = i;
-		}
-	});
-	console.log("Userdata is ", userdata[index]);
+	console.log("Userdata is ", userdata);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
 			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5"];
 		params.forEach((param) => {
-			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[index][param]))
-				localStorage[param] = userdata[index][param];
+			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
+				localStorage[param] = userdata[param];
 		})
 		params = ["m_easy", "m_medium"];
 		params.forEach((param) => {
-			console.log(userdata[index][param], localStorage[param], (localStorage[param] < userdata[index][param]))
-			if (userdata[index][param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] < +userdata[index][param])) {
-				localStorage[param] = userdata[index][param];
+			console.log(userdata[param], localStorage[param], (localStorage[param] < userdata[param]))
+			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] < +userdata[param])) {
+				localStorage[param] = userdata[param];
 			}
 		})
 		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3", "c_day_bweek", "c_day2_bweek"];
 		params.forEach((param) => {
-				localStorage[param] = userdata[index][param];
+				localStorage[param] = userdata[param];
 		})
 	}
 	successSQL("Loaded data");
 	updateScores();
-	setSettings(userdata[index]);
+	setSettings(userdata);
 }
 document.getElementById("signout").onclick = () => {
 	document.getElementById("l_message").innerHTML = "";
@@ -6162,9 +6156,9 @@ async function submitLogin() {
 		return;
 	}
 	document.getElementById("l_message").innerHTML = "Attemping to log in...";
-	const success = await repeatUntilSuccess(() => matchPassword(username, password));
+	const response = await repeatUntilSuccess(() => hasUser(username, password));
 	document.getElementById('password').value = '';
-	if (!success) {
+	if (!response.user || !response.password) {
 		alert("Incorrect credentials");
 		document.getElementById("l_message").innerHTML = "";
 		return;
@@ -6189,19 +6183,9 @@ async function submitAccount() {
 	}
 	document.getElementById("l_message").innerHTML = "Attemping to create account...";
 	//const userdata = await repeatUntilSuccess(() => getUsers());
-	const userdata = await getUsers();
-	console.log("UserData", userdata);
-
-	let matches = false;
-	
-	userdata.forEach((obj) => {
-		if (obj.username == username) {
-			document.getElementById("l_message").innerHTML = "";
-			matches = true;
-		}
-	})
-
-	if (matches) {
+	const match = await hasUser(username, password);
+	console.log("Match", match);
+	if (match.user) {
 		alert("This username is taken.")
 		return;
 	}

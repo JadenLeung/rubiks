@@ -1,4 +1,6 @@
 let visited = {};
+const rootURL = "https://elephant4.azurewebsites.net";
+// const rootURL = "http://localhost:3002";
 
 export async function getIP() {
 	try {
@@ -28,7 +30,7 @@ export async function modeData(mode) {
     }
     const TIME = getDate();
 	// console.log("IP is", IP, "TIME is", TIME);
-	fetch("https://elephant4.azurewebsites.net/api/history2", {
+	fetch(`${rootURL}/api/history2`, {
 		method: "POST",
 		body: JSON.stringify([{
 		  ipaddr: IP,
@@ -43,8 +45,8 @@ export async function modeData(mode) {
 }
 
 
-export async function getUsers() {
-    const url = "https://elephant4.azurewebsites.net/api/users2";
+export async function getUserData(username) {
+    const url = `${rootURL}/api/users2?username=${username}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -60,8 +62,8 @@ export async function getUsers() {
     }
   }
 
-  export async function matchPassword(username, password) {
-    const url = `https://elephant4.azurewebsites.net/api/users2?username=${username}&password=${password}`;
+  export async function hasUser(username, password) {
+    const url = `${rootURL}/api/hasuser?username=${username}&password=${password}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -79,7 +81,7 @@ export async function getUsers() {
   export async function putUsers(data, method) {
     //data = {waitfor: 0, ...data};
     console.log("Attemping to upload");
-    await fetch("https://elephant4.azurewebsites.net/api/users2", {
+    await fetch(`${rootURL}/api/users2`, {
 		method: method,
 		body: JSON.stringify([data]),
 		headers: {
@@ -95,7 +97,7 @@ export async function getUsers() {
 
   export async function putSuggestion(data, method) {
     console.log("Attemping to upload");
-    await fetch("https://elephant4.azurewebsites.net/api/suggestions", {
+    await fetch(`${rootURL}/api/suggestions`, {
 		method: method,
 		body: JSON.stringify([data]),
 		headers: {
