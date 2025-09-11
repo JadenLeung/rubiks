@@ -6120,15 +6120,15 @@ async function loadData(times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
 			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5"];
 		params.forEach((param) => {
-			// if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
+			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
 				localStorage[param] = userdata[param];
 		})
 		params = ["m_easy", "m_medium"];
 		params.forEach((param) => {
 			console.log(userdata[param], localStorage[param], (localStorage[param] < userdata[param]))
-			// if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] < +userdata[param])) {
+			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] < +userdata[param])) {
 				localStorage[param] = userdata[param];
-			// }
+			}
 		})
 		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3", "c_day_bweek", "c_day2_bweek"];
 		params.forEach((param) => {
