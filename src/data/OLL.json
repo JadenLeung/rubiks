@@ -45,7 +45,7 @@
 "45": ["F R U R' U' F'", "F U R U' R' F' "],
 "46": ["R' U' R' F R F' U R", "R' U' F R' F' R U R "],
 "47": ["R' U' R' F R F' R' F R F' U R", "R' U' F R' F' R F R' F' R U R "],
-"48": ["F R U R' U' R U R' U' F''", "F U R U' R' U R U' R' F' "],
+"48": ["F R U R' U' R U R' U' F'", "F U R U' R' U R U' R' F' "],
 "49": ["r U' r2 U r2 U r2 U' r", "Rw' U Rw Rw U' Rw Rw U' Rw Rw U Rw' "],
 "50": ["r' U r2 U' r2 U' r2 U r'", "Rw U' Rw Rw U Rw Rw U Rw Rw U' Rw "],
 "51": ["F U R U' R' U R U' R' F'", "F R U R' U' R U R' U' F' "],
