@@ -5503,7 +5503,7 @@ function updateScores() {
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
 			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon"};
 	Object.keys(display).forEach((mode) => {
-		const score  = parseFloat(localStorage[mode] || "0");
+		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + JSON.parse(score).score;
 		} else if (!mode.includes("bweek") && score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
@@ -5514,7 +5514,7 @@ function updateScores() {
 	})
 }
 function setScore(mode, total, getlow = true) {
-	const highscores = parseFloat(localStorage[mode] || "0");
+	const highscores = parseFloat(localStorage[mode]);
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
