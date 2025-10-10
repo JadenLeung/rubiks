@@ -1978,6 +1978,9 @@ setInterval(() => {
 			}
 		}
 	}
+	if (isMobile() && isthin) {
+		getEl("inputscram").style.display = "none";
+	}
 }, 10)
 //forever
 function reSetup(rot) {
