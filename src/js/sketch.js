@@ -3721,7 +3721,7 @@ function idmode()
 	modeData("id");
 }
 function sinceNov3(what) {
-	const startDate = new Date('2024-11-03');
+	const startDate = new Date('2025-10-12');
 	const currentDate = new Date();
 	const msDifference = currentDate - startDate;
 	let div = what == "w" ? 1000 * 60 * 60 * 24 * 7 : 1000 * 60 * 60 * 24;
@@ -5010,6 +5010,7 @@ function startchallenge() {
 	timer.stop();
 	timer.reset();
 	MODE = "weekly";
+	console.log("week is", week)
 	if (weeklyscrambles[week].pos) {
 		timer.setTime(-15000, true);
 		timer.start(true);
