@@ -2719,7 +2719,6 @@ function changeTwo(switchstart = true)
 }
 function changeThree(switchstart = true)
 {
-	console.log("Changetree")
 	DIM2 = 50;
 	DIM = 50;
 	SIZE = 3;
@@ -2946,7 +2945,6 @@ function setCustomShape(initial = false) {
 	const parentElement = document.getElementById("check1");
 	const checkboxesPerRow = size;
 	const totalCheckboxes = size * size * size;
-	console.log("TOTAL", totalCheckboxes, size)
 
 	parentElement.innerHTML = "";
 	let row;
@@ -2959,7 +2957,6 @@ function setCustomShape(initial = false) {
 		const checkboxContainer = document.createElement("div");
 		checkboxContainer.classList.add("checkbox-container");
 		CHECK[i] = p.createCheckbox('', true);
-		console.log("HERE");
 		CHECK[i].parent(checkboxContainer); 
 		if (initial && saveshapemod && saveshapemod.length > 0) {
 			CHECK[i].checked(saveshapemod[i]);
@@ -8192,12 +8189,13 @@ function shownCubies() {
 	return cubies;
 }
 function adjustMove(move) {
+	console.log("move is ", move)
 	if (["2x2x4", "3x3x5", "2x3x4", "2x3x5"].includes(DIM) || custom == 1 && CUSTOMSHIFT.checked() && SIZE > 3) {
-		if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
-			console.log("Illegal!");
-			return false;
-		}
-		if (["M", "S", "E"].includes(move[0]) && move.includes("w") && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0]) && (DIM == "2x3x4" || DIM == "2x3x5")) {
+		// if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
+		// 	console.log("Illegal!");
+		// 	return false;
+		// }
+		if (["M", "S", "E"].includes(move[0]) && (move.includes("w") || SIZE % 2 == 0) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
 			console.log("Illegal2!");
 			return false;
 		}
@@ -8293,7 +8291,6 @@ function multiple(nb, timed, use = "default") {
 				}
 			}
 		}
-		console.log("RIGHT BEFORE", use)
 		waitForCondition(multiple.bind(null, nb + 1, timed, use), use);
 	}
 	else
@@ -8402,7 +8399,6 @@ function changeArr(str)
 				break;
 			}
 		}
-		console.log("NUM IS ", num)
 		if (num < 2) num = 1;
 
 		for (let i = 0; i < num; i++) {
@@ -11380,7 +11376,6 @@ function resized(){
     const width = DEBUG ? (p.windowWidth / 2) : cnv_div.offsetWidth;
     p.resizeCanvas(width, isthin ? (isMobile() ? 400 : 550) : window.innerHeight * (fullscreen ? 1 : 0.9), p.WEBGL);
     // PICKER.buffer.resizeCanvas(width, height * 3);
-	console.log("here")
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	if (MODE == "normal") {
 		if (ismid) {
@@ -11732,7 +11727,6 @@ function sideSolved(color)
 	return false;
 }
 function isRectangle(cubies) {
-	console.log("t", CUBE[cubies[0]], cubies);
 	if (cubies.length == 0) {
 		return true;
 	}
@@ -11758,7 +11752,6 @@ function isRectangle(cubies) {
 		}
 	})
 	let numsquished = +(minx == maxx) + (miny == maxy) + (minz == maxz)
-	console.log("DIMS IS ", numsquished)
 	return corners == 4 || numsquished;
 }
 function uniform(dir) {
@@ -11784,7 +11777,6 @@ function uniform(dir) {
 				}
 			}
 		}
-		console.log(numcubies, !isRectangle(cubies), cubies);
 		if (!isRectangle(cubies)) {
 			return false;
 		}
