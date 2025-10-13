@@ -227,7 +227,7 @@ export default function (p) {
 	 };
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
-	const b_selectdim = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
+	const CUBEMAP = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5),
 		"1x2x2" : switchSize.bind(null, 5, "1x2x2", "1x2x2", "3x3x2"),
 		"1x3x3" : changeFour, "1x2x3" : switchSize.bind(null, 5, "1x2x3", "1x3x2", "3x3x2"), 
@@ -722,12 +722,12 @@ p.setup = () => {
 
 	PRACTICE_SEL = p.createSelect();
 	PRACTICE_SEL.parent("practice_select");
-	Object.keys(b_selectdim).forEach((o) => {
+	Object.keys(CUBEMAP).forEach((o) => {
 		PRACTICE_SEL.option(o);
 	})
 	PRACTICE_SEL.changed(() => {
 		bandaged = [];
-		b_selectdim[PRACTICE_SEL.value()]();
+		CUBEMAP[PRACTICE_SEL.value()]();
 		setDisplay("none", ["keymap", "input2"])
 	})
 	
@@ -877,7 +877,7 @@ p.setup = () => {
 	SEL7.option("5x5");
 	SEL7.parent("select8")
 	SEL7.selected('3x3');
-	SEL7.changed(() => {b_selectdim[SEL7.value()](); change9(true)});
+	SEL7.changed(() => {CUBEMAP[SEL7.value()](); change9(true)});
 
 	if (localStorage.saveshapemod) {
 		saveshapemod = JSON.parse(localStorage.saveshapemod).checkarr;
@@ -965,7 +965,7 @@ p.setup = () => {
 				return;
 			}
 			bandaged = [];
-			b_selectdim[dim]();
+			CUBEMAP[dim]();
 			getEl("keymap").style.display = 'none';
 			getEl("compete_difficulty").innerHTML = `Difficulty: ${DIMS_OBJ[dim].difficulty}/5`;
 		});
@@ -2541,7 +2541,7 @@ function moveSetup()
 }
 
 function setBandage() {
-	b_selectdim[BANDAGE_SELECT.value()]();
+	CUBEMAP[BANDAGE_SELECT.value()]();
 	bandaged = [];
 	if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
 		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
@@ -3200,7 +3200,7 @@ function doneBandage(){
 	if (pushing) {
 		addBandage(false);
 	} else {
-		b_selectdim[BANDAGE_SELECT.value()]();
+		CUBEMAP[BANDAGE_SELECT.value()]();
 		setBandage();
 		if (SMOOTHBANDAGE.checked()) {
 			smoothBandage();
@@ -3273,7 +3273,7 @@ function randomBandage(){
 	}
 	bandaged2 = [];
 	ban9();
-	b_selectdim[BANDAGE_SELECT.value()]();
+	CUBEMAP[BANDAGE_SELECT.value()]();
 }
 function smoothBandage(random = false) {
 	let cnt = 0;
@@ -3399,7 +3399,7 @@ function Custom2(){
 	doneBandage();
 	modeData("custombandage");
 	ban9();
-	b_selectdim[BANDAGE_SELECT.value()]();
+	CUBEMAP[BANDAGE_SELECT.value()]();
 }
 function Custom()
 {
@@ -3430,7 +3430,7 @@ function Custom()
 	INPUT.value("Normal");
 	SCRAM.value("Normal");
 	modeData("customshape");
-	b_selectdim[SEL7.value()]();
+	CUBEMAP[SEL7.value()]();
 	change9();
 }
 function Reverse(move)
@@ -3944,7 +3944,7 @@ function enterLobby(data, r) {
 	if (Array.isArray(competedata.data.dims) && competedata.data.dims[0]
 		&& compete_cube != competedata.data.dims[0] && competedata.data.dims[0][cubenum]) {
 		PRACTICE_SEL.selected(competedata.data.dims[0][cubenum]);
-		b_selectdim[competedata.data.dims[0][cubenum]]();
+		CUBEMAP[competedata.data.dims[0][cubenum]]();
 		compete_cube = competedata.data.dims[0];
 		getEl("keymap").style.display = "none";
 	}
@@ -4103,7 +4103,7 @@ function startRound(data, scramble) {
 	reSetup();
 	competedata = data;
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
-		b_selectdim[data.data.dims[data.round][0]]();
+		CUBEMAP[data.data.dims[data.round][0]]();
 		if (data.data.shufflearr.length > 0) {
 			if (competedata.data.type == "1v1" && data.data.shufflearr[data.round][0] != "Default")
 				INPUT.selected(data.data.shufflearr[data.round][0]);
@@ -4111,7 +4111,7 @@ function startRound(data, scramble) {
 			    INPUT.selected(data.data.shufflearr[data.round]);
 		}
 	} else {
-		b_selectdim[data.data.dims[data.round][1]]();
+		CUBEMAP[data.data.dims[data.round][1]]();
 		if (data.data.shufflearr.length > 0 && data.data.shufflearr[data.round][1] != "Default") {
 			INPUT.selected(data.data.shufflearr[data.round][1]);
 		}
@@ -4588,7 +4588,7 @@ function competeSelectButtons() {
 function finishCompeteSelect(dim) {
 	focused_select.value = dim;
 	setDisplay("block", ["creating_match"]);
-	b_selectdim[dim]();
+	CUBEMAP[dim]();
 	setDisplay("none", ["compete_select", "keymap", "input2"]);
 }
 
@@ -4885,7 +4885,7 @@ function shapemarathon() {
 			str +=  "<br>"
 		})
 		getEl("ma_list").innerHTML = str;
-		b_selectdim[ma_data.cubes[mastep / 2]]();
+		CUBEMAP[ma_data.cubes[mastep / 2]]();
 		reSetup();
 		setTimeout(() => {
 			shuffleCube();
@@ -4999,9 +4999,12 @@ function appendToTable(hotkeys, id, step, padding = "5px") {
 }
 
 function startchallenge() {
-	b_selectdim[weeklyscrambles[week].cube]();
+	CUBEMAP[weeklyscrambles[week].cube]();
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
 		bandaged = weeklyscrambles[week].bandaged;
+	}
+	if (weeklyscrambles[week].hasOwnProperty("input")) {
+		INPUT.value(weeklyscrambles[week].input);
 	}
 	savebandage = bandaged;
 	refreshButtons();
@@ -6304,7 +6307,7 @@ function raceHide() {
 	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
 }
 function botConnect(obj) {
-	b_selectdim[obj.get('dim')]();
+	CUBEMAP[obj.get('dim')]();
 	fullScreen(true);
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -7800,6 +7803,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 32){  //space
 		console.log(getOuterCubes());
 		console.log(DIM, DIM2, special, MODE);
+		console.log("bandaged, mapped", bandaged, JSON.stringify(mapBandaged(bandaged)));
 		setLayout();
 		console.log(layout)
 		if (canMan == false && (MODE == "normal" || MODE == "timed")) {
@@ -8004,6 +8008,8 @@ p.keyPressed = (event) => {
 		else if(setup[2] == -MAXX || setup[2] == MAXX) //left
 			bad5 = ['U','D','F','B','E','S','u','d','f','b'];
 		else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
+
+		const rotations = ["x", "x'", "y", "y'", "z", "z'"];
 			
 		const value = MODE == "keyboard" ? getEl("keyboards").value : KEYBOARD.value() ?? "";
 		let keyMoveMap = keymappings[value];
@@ -8027,8 +8033,10 @@ p.keyPressed = (event) => {
 						arr[0] = arr[0][0].toLowerCase();
 				}
 			}
-			if((p.keyIsDown(p.SHIFT) && INPUT.value() == "Normal" && !keyMoveMap.shifted[p.key.toLowerCase()]) || INPUT.value() == "Double Turns")
+			if((p.keyIsDown(p.SHIFT) && INPUT.value() == "Normal" && !keyMoveMap.shifted[p.key.toLowerCase()]) || (INPUT.value() == "Double Turns" && !rotations.includes(arr[0]))) {
+				console.log("HEREERE")
 				arr.push(arr[0]);
+			}
 			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
 				arr.push(arr[0]);
 			if(INPUT.value() == "Gearcube") {
@@ -8105,7 +8113,8 @@ p.keyPressed = (event) => {
 			break;
 			case "*": case "8": //8
 			if (p.keyIsDown(p.SHIFT)) {
-				removeAllTimes();
+				if (confirm("Remove all times?"))
+					removeAllTimes();
 			} else {
 				removeTime();
 			}
@@ -8710,49 +8719,49 @@ function refreshButtons()
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
-		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFIVE = p.createButton('2x3x5');
-		setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["2x3x5"](); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {CUBEMAP["2x3x5"](); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
-		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {CUBEMAP["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		LASAGNA = p.createButton('Earth Cube');
-		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {b_selectdim["Earth Cube"](); LASAGNA.style('background-color', "#8ef5ee");});
+		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {CUBEMAP["Earth Cube"](); LASAGNA.style('background-color', "#8ef5ee");});
 
 		FOURPLUS = p.createButton('4x4 Plus Cube');
 		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
 	} else if (modnum == 3) {
 		ONEBYTWOBYTWO = p.createButton('1x2x2');
-		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {b_selectdim["1x2x2"](); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
+		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x2x2"](); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
 
 		ONEBYTWOBYTHREE = p.createButton('1x2x3');
-		setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {b_selectdim["1x2x3"](); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
+		setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x2x3"](); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
 
 		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {b_selectdim["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
-		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {b_selectdim["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		SANDWICH2 = p.createButton('Sandwich 2x2');
-		setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {b_selectdim["Sandwich 2x2"](); SANDWICH2.style('background-color', "#8ef5ee");});
+		setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {CUBEMAP["Sandwich 2x2"](); SANDWICH2.style('background-color', "#8ef5ee");});
 
 		PLUSLITE = p.createButton('Plus Lite');
-		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {b_selectdim["Plus Lite"](); PLUSLITE.style('background-color', "#8ef5ee");});
+		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {CUBEMAP["Plus Lite"](); PLUSLITE.style('background-color', "#8ef5ee");});
 
 		PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
-		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {b_selectdim["3x3x2 Plus Cube"](); PLUS3x3x2.style('background-color', "#8ef5ee");});
+		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {CUBEMAP["3x3x2 Plus Cube"](); PLUS3x3x2.style('background-color', "#8ef5ee");});
 
 		SNAKE_EYE = p.createButton('Snake Eyes');
-		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {b_selectdim["Snake Eyes"]();  SNAKE_EYE.style('background-color', "#8ef5ee");});
+		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {CUBEMAP["Snake Eyes"]();  SNAKE_EYE.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -12037,7 +12046,7 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
 	keyboardmode();
 	// modnum = 2;
     // cubemode();
-	// b_selectdim["2x3x5"]();
+	// CUBEMAP["2x3x5"]();
 	// TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");
 });
 
