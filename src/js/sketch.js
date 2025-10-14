@@ -8195,15 +8195,15 @@ function adjustMove(move) {
 		// 	console.log("Illegal!");
 		// 	return false;
 		// }
-		if (["M", "S", "E"].includes(move[0]) && (move.includes("w") || SIZE % 2 == 0) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
+		if (["M", "S", "E"].includes(move[0]) && (move.includes("w") || SIZE % 2 == 0) && !uniform(move)) {
 			console.log("Illegal2!");
 			return false;
 		}
-		if ("lfrbud".includes(move[0]) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
+		if ("lfrbud".includes(move[0]) && !uniform(move)) {
 			move = move[0].toUpperCase() + move.slice(1);
 			console.log("changedmove ", move)
 		}
-		if (!(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0]) && !uniform(getMove(MAXX, CUBYESIZE, SIZE)[move][0])) {
+		if (!(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0]) && !uniform(move)) {
 			if (move.includes("'")) move = move[0] + "w'";
 			else move += "w";
 		}
@@ -8221,8 +8221,9 @@ function multiple(nb, timed, use = "default") {
 			multiple(nb + 1, timed, use)
 			return;
 		}
-		if (adjustMove(arr[nb]) !== false) {
-			arr[nb] = adjustMove(arr[nb]);
+		const move = adjustMove(arr[nb])
+		if (move !== false) {
+			arr[nb] = move;
 		} else {
 			multiple(arr.length, timed, use);
 			return;
@@ -11751,25 +11752,29 @@ function isRectangle(cubies) {
 			corners++;
 		}
 	})
-	let numsquished = +(minx == maxx) + (miny == maxy) + (minz == maxz)
-	return corners == 4 || numsquished;
+	// let numsquished = +(minx == maxx) + +(miny == maxy) + +(minz == maxz)
+	return corners == 4;
 }
-function uniform(dir) {
+function uniform(move) {
+	const dir = getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+	const startaxis = getMove(MAXX, CUBYESIZE, SIZE)[move][1][0]
+	const dx = startaxis < 0 ? CUBYESIZE : -CUBYESIZE;
+	console.log("In Uniform", dir, startaxis, dx)
 	let base = 0;
-	for (let x = -MAXX; x <= MAXX; x += CUBYESIZE) {
+	for (let i = 0; i < 2; i++) {
 		let numcubies = 0;
 		let cubies = [];
 		for (let y = -MAXX; y <= MAXX; y += CUBYESIZE) {
 			for (let z = -MAXX; z <= MAXX; z += CUBYESIZE) {
 				let cuby;
 				if (dir == "x") {
-					cuby = getCubyFromPos(x, y, z);
+					cuby = getCubyFromPos(startaxis + i * dx, y, z);
 				}
 				if (dir == "y") {
-					cuby = getCubyFromPos(z, x, y);
+					cuby = getCubyFromPos(z, startaxis + i * dx, y);
 				}
 				if (dir == "z") {
-					cuby = getCubyFromPos(y, z, x);
+					cuby = getCubyFromPos(y, z, startaxis + i * dx);
 				}
 				if (cuby != -1) {
 					numcubies++;
@@ -11785,12 +11790,9 @@ function uniform(dir) {
 		} else if (base != numcubies && numcubies != 0) {
 			return false;
 		}
+		console.log("cubies is", cubies)
 	}
 	return true;
-}
-function isCube() { // only works with no adjustments like the 2x2x3
-	let base = 0;
-	return uniform("x") && uniform("y") && uniform("z");
 }
 function isSolved()
 {
