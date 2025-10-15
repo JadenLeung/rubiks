@@ -957,6 +957,7 @@ p.setup = () => {
 		const NUM_COLS = isMobile() && isthin ? 2 : 3
 		setButton(btn, `compete_col${i % NUM_COLS + 1}`, 'btn btn-info', 
 			'display: block; margin-top: 5px; font-size: 15px; width: 140px;', () => {
+			hideCnvDiv();
 			finishCompeteSelect(dim);
 			document.getElementById('finish_match').scrollIntoView({ behavior: 'smooth', block: "center" });
 		});
@@ -1061,6 +1062,7 @@ p.setup = () => {
 
 	const COMPETESELBACK = p.createButton('Cancel');
 	setButton(COMPETESELBACK, "competesel_back", 'btn btn-danger', 'font-size:20px;', () => {
+		hideCnvDiv();
 		setDisplay("none", ["compete_select"]);
 		setDisplay("block", ["creating_match"]);
 	});
@@ -1466,7 +1468,7 @@ p.setup = () => {
 	COMPETE_1V1 = p.createButton('2 Player');
 	setButton(COMPETE_1V1, "compete_1v1", 'btn btn-primary', 'margin-right: 5px; borderWidth: 0px;', competeSettings.bind(null, "1v1"));
 
-	COMPETE_GROUP = p.createButton('Group Battle');
+	COMPETE_GROUP = p.createButton(isthin ? 'Group' : 'Group Battle');
 	setButton(COMPETE_GROUP, "compete_group", 'btn btn-primary', 'margin-right: 5px; borderWidth: 0px;', competeSettings.bind(null, "group"));
 
 	COMPETE_TEAMBLIND = p.createButton('Team Blind');
@@ -1836,11 +1838,9 @@ setInterval(() => {
 	} else if (!isthin){
 		SETTINGS.style("background-color: #8ef4ee; color: " + document.body.style.color);
 	}
-	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL") && !(MODE.includes("compete") && isthin)) {
-		document.getElementById("cnv_div").style.display = "block";
-		fullScreen(false);
-		reCam();
-		resized();
+	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL") && !(MODE.includes("compete") && isthin) 
+			&& !isShown("creating_match")) {
+		showCnvDiv();
 	} 
 	getEl("peeks").innerHTML = peeks + " peek" + (peeks == 1 ? "" : "s");
 	if (MODE == "speed") SPEEDMODE.style('background-color', '#8ef5ee');
@@ -4017,6 +4017,9 @@ function enterLobby(data, r) {
 function createMatch(newmatch = true) {
 	setDisplay("none", ["lobby", "waitingroom", "startmatch", "outertime", "practice_container"]);
 	setDisplay("block", ["creating_match"]);
+	document.getElementById("cnv_div").style.display = "none";
+	document.getElementById("right").className = "col-xl-10 noselect";
+
 	if (newmatch) {
 		setDisplay("none", ["round_length"]);
 		compete_type = "";
@@ -4466,6 +4469,7 @@ function competeSettings(num = compete_type) {
 		}
 
 		select1.addEventListener("click", () => {
+			showCnvDiv();
 			setDisplay("none", ["creating_match"]);
 			setDisplay("block", ["compete_select"]);
 			competeSelect(i, select1, num == "1v1" ? "your " : "");
@@ -4489,6 +4493,7 @@ function competeSettings(num = compete_type) {
 			}
 
 			select2.addEventListener("click", () => {
+				showCnvDiv();
 				setDisplay("none", ["creating_match"]);
 				setDisplay("block", ["compete_select"]);
 				competeSelect(i, select2, "opponent ");
@@ -5874,8 +5879,6 @@ function selectPLL(mode) {
 		document.getElementById("cnv_div").style.display = "none";
 		document.getElementById("right").className = "col-xl-10 noselect";
 		canMan = false;
-		// document.getElementById("left").style.display = "block";
-		// document.getElementById("right").style.display = "block";
 	}
 }
 function practicePLL() {
@@ -7911,7 +7914,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(keymappings[getEl("keyboards").value].unshifted["g"]);
+		console.log(isShown("creating_match"), isShown("settings_container"));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8481,6 +8484,10 @@ function funcMult(foo, times) {
 }
 function getEl(id) {
 	return document.getElementById(id);
+}
+
+function isShown(element) {
+	return getEl(element).style.display != "none";
 }
 function Undo()
 {
@@ -10948,6 +10955,17 @@ function getColor(color)
 	return "k";
 	if(minpos == 7)
 	return "m"
+}
+function showCnvDiv() {
+	document.getElementById("cnv_div").style.display = "block";
+	document.getElementById("right").className = "col-xl-4 noselect";
+	fullScreen(false);
+	reCam();
+	resized();
+}
+function hideCnvDiv() {
+	document.getElementById("cnv_div").style.display = "none";
+	document.getElementById("right").className = "col-xl-10 noselect";
 }
 function removeAllTimes()
 {

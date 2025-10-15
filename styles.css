@@ -224,6 +224,21 @@ button:hover {
     flex-grow: 1;
     padding: 5px;
 }
+#creating_match {
+    padding-left: 20px;
+}
+#settings_container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+#settings_left {
+    max-width: 33%;
+}
+
+.com_settings_title {
+    margin-bottom: 30px;
+}
 .autoscrollable-wrapper {
     overflow: auto;
     max-height: 100%;
@@ -403,6 +418,18 @@ button:hover {
         display: none;
     }
     .hidethinline {
+        display: none;
+    }
+    #settings_container {
+        flex-direction: column;
+    }
+    #settings_left,
+    #settings_right {
+        max-width: 100%;
+        margin-left: -25px;
+        text-align: left; /* optional, easier to read vertically */
+    }
+    #saysettings {
         display: none;
     }
 }	
