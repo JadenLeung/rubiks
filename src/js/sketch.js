@@ -7,6 +7,7 @@ import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
 import { constkeymappings } from '../data/keymap.js';
 import {modeData, getUserData, printUsers, putUsers, hasUser, putSuggestion} from "./backend.js";
+import { createCustomDialog } from '../components/GameDialog.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -3592,8 +3593,9 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
-		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2"]);
-	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container"]);
+		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2",
+		"custom-dialog", "custom-dialog-backdrop"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -4030,7 +4032,8 @@ function finishMatch() {
 	let dimarr = competeDims();
 	let shufflearr = false;
 	if (COMPETE_ADVANCED.checked()) {
-		shufflearr = dimarr.filter((_, index) => index % 2 != 0);
+		console.log(dimarr.filter((_, index) => index % 2 != 0))
+		shufflearr = dimarr.filter((_, index) => index % 2 !== 0).map(obj => obj.map(jsonString => JSON.parse(jsonString)?.scramble));
 		dimarr = dimarr.filter((_, index) => index % 2 == 0);
 	}
 	let numrounds = getEl("compete_rounds").value;
@@ -4393,173 +4396,176 @@ function continueMatch() {
 }
 
 function competeSettings(num = compete_type) {
-	setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div", "competerestore"]);
-	if (num == "1v1" && compete_type == "group" && competedata.userids && competedata.userids.length > 2) {
-		alert("Cannot turn group compete into 1v1 match.");
-		return;
-	}
+    // --- Initial Setup (largely unchanged) ---
+    setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div", "competerestore"]);
+    if (num === "1v1" && compete_type === "group" && competedata.userids?.length > 2) {
+        alert("Cannot turn group compete into 1v1 match.");
+        return;
+    }
     compete_type = num;
-    getEl("com_1v1_div").style.display = num == "1v1" ? "block" : "none";
-    getEl("com_group_div").style.display = num == "group" ? "block" : "none";
-    getEl("com_teamblind_div").style.display = num == "teamblind" ? "block" : "none";
-    setDisplay(num != "teamblind" ? "block" : "none", ["advanced_container"]);
-    console.log(num);
+    getEl("com_1v1_div").style.display = num === "1v1" ? "block" : "none";
+    getEl("com_group_div").style.display = num === "group" ? "block" : "none";
+    getEl("com_teamblind_div").style.display = num === "teamblind" ? "block" : "none";
+    setDisplay(num !== "teamblind" ? "block" : "none", ["advanced_container"]);
 
-    COMPETE_1V1.style("backgroundColor", num == "1v1" ? "#00488F" : "");
-    COMPETE_GROUP.style("backgroundColor", num == "group" ? "#00488F" : "");
-    COMPETE_TEAMBLIND.style("backgroundColor", num == "teamblind" ? "#00488F" : "");
+    COMPETE_1V1.style("backgroundColor", num === "1v1" ? "#00488F" : "");
+    COMPETE_GROUP.style("backgroundColor", num === "group" ? "#00488F" : "");
+    COMPETE_TEAMBLIND.style("backgroundColor", num === "teamblind" ? "#00488F" : "");
 
     getEl("finish_match").style.display = "block";
     getEl("match_description").innerHTML = competeText();
-    
     getEl("round_length").style.display = ["1v1", "group"].includes(num) ? "block" : "none";
 
-    let container = document.getElementById(num == "1v1" ? "1v1_container" : "group_container");
+    const container = document.getElementById(num === "1v1" ? "1v1_container" : "group_container");
     container.innerHTML = "";
     container.style.display = "block";
 
-    const createEl = (tag, text = "", styles = {}) => {
-        let el = document.createElement(tag);
-        if (text) el.textContent = text;
-        Object.assign(el.style, styles);
-        return el;
-    };
-
-    const flexRow = { display: "flex", width: num == "1v1" ? "450px" : "350px", gap: "10px", alignItems: "center", marginBottom: "10px" };
-    const columnStyle = { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
-
+    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", "2x3x4", "2x3x5", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", "Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
+    const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default" });
+    const defaultShuffleText = "Scramble: Default\nInput: Default";
     let rows = [];
 
-    if (num == "1v1") {
-        let headerRow = createEl("div", "", flexRow);
-        headerRow.append(
-            createEl("span", "", { width: "80px" }),
-            createEl("span", "You", { flex: "1", textAlign: "left" }),
-            createEl("span", "Opponent", { flex: "1", textAlign: "left" }),
-            createEl("span", "", { width: "120px" }) // Extra column
-        );
-        container.appendChild(headerRow);
-    }
+    // --- Helper Function to Create a Player Column ---
+    const createPlayerColumn = (roundIndex, playerIndex, typeLabel) => {
+        // 1. Initialize data
+        if (!compete_shufflearr[roundIndex]) compete_shufflearr[roundIndex] = [];
+        if (!compete_shufflearr[roundIndex][playerIndex] || compete_shufflearr[roundIndex][playerIndex] === "Default") {
+            compete_shufflearr[roundIndex][playerIndex] = defaultShuffleData;
+        }
 
-    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", 
-		"2x3x4", "2x3x5", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", 
-		"Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
-    const optionarr = ["Default", "3x3x2", "Double Turns", "Gearcube"]; // Example options
+        // 2. Create elements
+        const columnStyle = { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
+        const cubeContainer = document.createElement("div");
+        Object.assign(cubeContainer.style, columnStyle);
+        
+        const puzzleSelect = document.createElement("select");
+        puzzleSelect.style.width = "100%";
+        alldims.forEach(text => puzzleSelect.appendChild(new Option(text, text)));
+        puzzleSelect.onmousedown = (e) => e.preventDefault();
+
+        const optionText = document.createElement("p");
+        Object.assign(optionText.style, { fontSize: "13px", margin: "0", padding: "6px 0", whiteSpace: "pre-wrap", wordBreak: "break-word", flex: "1" });
+        
+        const plusBtn = document.createElement("button");
+        plusBtn.textContent = "+";
+        plusBtn.classList.add("btn", "btn-primary");
+        Object.assign(plusBtn.style, { marginLeft: "8px", padding: "2px 8px", fontSize: "14px" });
+        
+        const customContainer = document.createElement("div");
+        Object.assign(customContainer.style, { display: "flex", alignItems: "flex-start", width: "100%", gap: "8px" });
+        customContainer.append(optionText, plusBtn);
+
+        // 3. Set initial values
+        if (Array.isArray(compete_dims) && compete_dims[roundIndex] && compete_dims[roundIndex][playerIndex]) {
+            puzzleSelect.value = compete_dims[roundIndex][playerIndex];
+        }
+        try {
+            const parsed = JSON.parse(compete_shufflearr[roundIndex][playerIndex]);
+            optionText.textContent = `Scramble: ${parsed.scramble}\nInput: ${parsed.input}`;
+        } catch {
+            optionText.textContent = defaultShuffleText;
+        }
+
+        // 4. Add event listeners
+        puzzleSelect.addEventListener("click", () => {
+            showCnvDiv();
+            setDisplay("none", ["creating_match"]);
+            setDisplay("block", ["compete_select"]);
+            competeSelect(roundIndex, puzzleSelect, typeLabel);
+        });
+        plusBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const modal = createCustomDialog((finalValue) => {
+                try {
+                    const parsed = JSON.parse(finalValue);
+                    optionText.textContent = `Scramble: ${parsed.scramble}\nInput: ${parsed.input}`;
+                    compete_shufflearr[roundIndex][playerIndex] = finalValue;
+                } catch (err) { console.error("Invalid JSON:", err); }
+            });
+            modal.style.display = "block";
+        });
+        
+        // 5. Assemble and return
+        cubeContainer.append(puzzleSelect);
+        if (COMPETE_ADVANCED.checked()) {
+            cubeContainer.append(customContainer);
+        }
+        return { container: cubeContainer, puzzleSelect, optionText };
+    };
+
+    // --- Main Loop to Build Rows ---
+    if (num === "1v1") { // Add header for 1v1
+        container.innerHTML = `<div style="display: flex; width: 650px; gap: 10px; margin-bottom: 10px;"><span style="width: 80px;"></span><span style="flex: 1; text-align: left;">You</span><span style="flex: 1; text-align: left;">Opponent</span><span style="width: 120px;"></span></div>`;
+    }
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
-        let row = createEl("div", "", flexRow);
-        let label = createEl("span", `${isthin ? "R" : "Round "}${i + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Turning:" : ""}`, { width: (isthin ? 20 : 80) + "px" });
-
-        // Player 1 Container
-        let cubeContainer = createEl("div", "", columnStyle);
-        let select1 = createEl("select", "", { width: "100%" });
-		select1.onmousedown = (event) => {
-			event.preventDefault(); // Prevents the dropdown from opening
-		};
-        alldims.forEach(text => select1.appendChild(createEl("option", text)));
-	    if (Array.isArray(compete_dims) && compete_dims.length > 0 && compete_dims[i] && compete_dims[i][0]) {
-			select1.value = compete_dims[i][0];
-		}
-
-		let optionSelect1;
-		optionSelect1 = createEl("select", "", { width: "100%" });
-		optionarr.forEach(text => optionSelect1.appendChild(createEl("option", text)));
-		if (compete_shufflearr.length > 0 && compete_shufflearr[i] && compete_shufflearr[i][0]) {
-			optionSelect1.value = compete_shufflearr[i][0];
-		}
-
-		select1.addEventListener("click", () => {
-			showCnvDiv();
-			setDisplay("none", ["creating_match"]);
-			setDisplay("block", ["compete_select"]);
-			competeSelect(i, select1, num == "1v1" ? "your " : "");
-		});
-		
-
-		if (COMPETE_ADVANCED.checked()) {
-			cubeContainer.append(select1, optionSelect1);
-		} else {
-			cubeContainer.append(select1);
-		}
-        row.append(label, cubeContainer);
-
-        let select2 = null, optionSelect2 = null;
-        if (num == "1v1") {
-            let cubeContainer2 = createEl("div", "", columnStyle);
-            select2 = createEl("select", "", { width: "100%" });
-            alldims.forEach(text => select2.appendChild(createEl("option", text)));
-			if (Array.isArray(compete_dims) && compete_dims.length > 0 && compete_dims[i] && compete_dims[i][1]) {
-				select2.value = compete_dims[i][1];
-			}
-
-			select2.addEventListener("click", () => {
-				showCnvDiv();
-				setDisplay("none", ["creating_match"]);
-				setDisplay("block", ["compete_select"]);
-				competeSelect(i, select2, "opponent ");
-			});
-			select2.onmousedown = (event) => {
-				event.preventDefault(); // Prevents the dropdown from opening
-			};
-
-            optionSelect2 = createEl("select", "", { width: "100%" });
-            optionarr.forEach(text => optionSelect2.appendChild(createEl("option", text)));
-			if (compete_shufflearr.length > 0 && compete_shufflearr[i] && compete_shufflearr[i][1]) {
-				optionSelect2.value = compete_shufflearr[i][1];
-			}
-			if (COMPETE_ADVANCED.checked()) {
-            	cubeContainer2.append(select2, optionSelect2);
-			} else {
-				cubeContainer2.append(select2);
-			}
-            row.append(cubeContainer2);
+        const row = document.createElement("div");
+        Object.assign(row.style, { display: "flex", width: num === "1v1" ? "650px" : "450px", gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+        
+        const label = document.createElement("span");
+        label.textContent = `${isthin ? "R" : "Round "}${i + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
+        Object.assign(label.style, { width: (isthin ? 20 : 80) + "px", paddingTop: "5px" });
+        
+        const p1 = createPlayerColumn(i, 0, "your ");
+        let p2 = null;
+        
+        row.append(label, p1.container);
+        if (num === "1v1") {
+            p2 = createPlayerColumn(i, 1, "opponent ");
+            row.append(p2.container);
         }
+        rows.push({ select1: p1.puzzleSelect, optionText1: p1.optionText, select2: p2?.puzzleSelect, optionText2: p2?.optionText });
 
-        let extraColumn = createEl("span", "", { width: "120px" });
-        if (i === 0) {
-            let applyButton = document.createElement("button");
-            applyButton.textContent = "Apply row to all";
-            applyButton.classList.add("btn", "btn-secondary");
-            applyButton.style.fontSize = "10px";
-            applyButton.style.paddingLeft = "6px";
-            applyButton.style.paddingRight = "6px";
-            applyButton.onclick = () => {
-                for (let j = 1; j < rows.length; j++) {
-                    rows[j].select1.value = rows[0].select1.value;
-					if (COMPETE_ADVANCED.checked())
-						rows[j].optionSelect1.value = rows[0].optionSelect1.value;
-                    if (num == "1v1" && rows[j].select2) {
-                        rows[j].select2.value = rows[0].select2.value;
-						if (COMPETE_ADVANCED.checked())
-							rows[j].optionSelect2.value = rows[0].optionSelect2.value;
-                    }
-                }
-            };
-			getEl("competerestore").onclick = () => {
+        // Add "Apply to all" button to the first row
+        const extraColumn = document.createElement("span");
+        extraColumn.style.width = "120px";
+       if (i === 0) {
+			const applyBtn = document.createElement("button");
+			applyBtn.textContent = "Apply row to all";
+			applyBtn.classList.add("btn", "btn-secondary");
+			Object.assign(applyBtn.style, { fontSize: "10px", padding: "0 6px" });
+			applyBtn.onclick = () => {
+				// CHANGE START: Start loop at j = 0 to include the first row
 				for (let j = 0; j < rows.length; j++) {
-                    rows[j].select1.value = "3x3";
-					if (COMPETE_ADVANCED.checked())
-						rows[j].optionSelect1.value = "Default";
-                    if (num == "1v1" && rows[j].select2) {
-                        rows[j].select2.value = "3x3";
-						if (COMPETE_ADVANCED.checked())
-							rows[j].optionSelect2.value = "Default";
-                    }
-					TEAMBLIND_SEL.selected("3x3");
-                }
-			}
-            extraColumn.appendChild(applyButton);
-        }
-        row.append(extraColumn);
-
-        container.appendChild(row);
-		
-		if (COMPETE_ADVANCED.checked()) {
-			rows.push({ select1, optionSelect1, select2, optionSelect2 });
-		} else {
-			rows.push({ select1, select2 });
+				// CHANGE END:
+					rows[j].select1.value = rows[0].select1.value;
+					if (COMPETE_ADVANCED.checked()) {
+						compete_shufflearr[j][0] = compete_shufflearr[0][0];
+						rows[j].optionText1.textContent = rows[0].optionText1.textContent;
+					}
+					if (num === "1v1") {
+						rows[j].select2.value = rows[0].select2.value;
+						if (COMPETE_ADVANCED.checked()) {
+							compete_shufflearr[j][1] = compete_shufflearr[0][1];
+							rows[j].optionText2.textContent = rows[0].optionText2.textContent;
+						}
+					}
+				}
+			};
+			extraColumn.appendChild(applyBtn);
 		}
+        row.appendChild(extraColumn);
+        container.appendChild(row);
     }
+
+    // --- Restore Button Logic ---
+    getEl("competerestore").onclick = () => {
+        for (let j = 0; j < rows.length; j++) {
+            rows[j].select1.value = "3x3";
+            if (COMPETE_ADVANCED.checked()) {
+                compete_shufflearr[j][0] = defaultShuffleData;
+                rows[j].optionText1.textContent = defaultShuffleText;
+            }
+            if (num === "1v1") {
+                rows[j].select2.value = "3x3";
+                if (COMPETE_ADVANCED.checked()) {
+                    compete_shufflearr[j][1] = defaultShuffleData;
+                    rows[j].optionText2.textContent = defaultShuffleText;
+                }
+            }
+        }
+        TEAMBLIND_SEL.selected("3x3");
+    };
 }
 
 function competeSelect(round, select, text) {
@@ -4668,48 +4674,89 @@ function displayPublicRooms() {
         container.innerHTML = "No public rooms found.";
     }
 }
-
-
-function getSelectedValues(containerId, rows, cols) {
-    let container = document.getElementById(containerId);
-    let selects = container.getElementsByTagName("select");
-    let result = [];
-
-    for (let i = 0; i < rows; i++) {
-        let rowData = [];
-        for (let j = 0; j < cols; j++) {
-			if (selects[i * cols + j])
-				rowData.push(selects[i * cols + j].value);
-        }
-        result.push(rowData);
+/**
+ * Gathers the puzzle dimensions and advanced options from the UI.
+ * This function is aware of the custom object used for both players' settings in 1v1 advanced mode.
+ */
+function competeDims() {
+    if (!getEl("compete_rounds").value) {
+        return [];
     }
 
-    return result;
-}
+    let results = [];
+    if (compete_type == "teamblind") {
+        results = [[TEAMBLIND_SEL.value()]];
 
-function competeDims() {
-	if (!getEl("compete_rounds").value) {
-		return;
-	}
-	let a = []
-	if (compete_type == "teamblind") a = [[TEAMBLIND_SEL.value()]]
-	else if (compete_type == "1v1") {
-		a = getSelectedValues("1v1_container", 
-		getEl("compete_rounds").value * (COMPETE_ADVANCED.checked() + 1), 2);
-		let b = [];
-		if (COMPETE_ADVANCED.checked()) {
-			for (let i = 0; i < a.length; i += 2) {
-				b.push([a[i][0], a[i+1][0]]);
-				b.push([a[i][1], a[i+1][1]]);
+    } else if (compete_type == "group") {
+		const container = document.getElementById("group_container");
+		const rows = container.querySelectorAll(":scope > div");
+
+		if (!COMPETE_ADVANCED.checked()) {
+			// Non-advanced: Collect one value per row
+			for (const row of rows) {
+				const select = row.querySelector("select");
+				if (select) {
+					results.push([select.value]);
+				}
 			}
-			a = b;
-		}
-	} else if (compete_type == "group") {
-		a = getSelectedValues("group_container", getEl("compete_rounds").value *
-			(COMPETE_ADVANCED.checked() + 1), 1);
-	}
+		} else {
+			// Advanced: Collect puzzle and option for each row, then interleave them
+			for (let i = 0; i < rows.length; i++) {
+				const row = rows[i];
+				const select = row.querySelector("select");
+				
+				if (select) {
+					const puzzleType = select.value;
+					// Safely get the advanced option, providing a default if it's missing
+					const advancedOption = (compete_shufflearr[i] && compete_shufflearr[i][0])
+						? compete_shufflearr[i][0]
+						: JSON.stringify({ scramble: "Default", input: "Default" });
 
-	return a;
+					// Push the puzzle and option as two separate arrays to create the interleaved structure
+					results.push([puzzleType]);
+					results.push([advancedOption]);
+				}
+			}
+		}
+	} else if (compete_type == "1v1") {
+			const container = document.getElementById("1v1_container");
+        const rows = container.querySelectorAll(":scope > div:not(:first-child)");
+
+        if (!COMPETE_ADVANCED.checked()) {
+            // Non-advanced is simple: two puzzle selects per row.
+            for (const row of rows) {
+                const selects = row.getElementsByTagName("select");
+                if (selects[0] && selects[1]) {
+                    results.push([selects[0].value, selects[1].value]);
+                }
+            }
+        } else {
+            // Advanced mode: two puzzle selects + custom JSON options from the global array.
+            let puzzles = [];
+            let options = [];
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const selects = row.getElementsByTagName("select");
+                
+                const yourPuzzle = selects[0].value;
+                const opponentPuzzle = selects[1].value;
+
+                const yourOption = compete_shufflearr[i][0];
+                const opponentOption = compete_shufflearr[i][1];
+
+                puzzles.push([yourPuzzle, opponentPuzzle]);
+                options.push([yourOption, opponentOption]);
+            }
+
+            // Recreate the original interleaved output format.
+            for (let i = 0; i < puzzles.length; i++) {
+                results.push(puzzles[i]);
+                results.push(options[i]);
+            }
+        }
+    }
+    return results;
 }
 
 function switchBlindfold() {
@@ -5430,7 +5477,10 @@ function setSettings(obj) {
 	if (MODE != "login") regular();
 }
 function setDisplay (display, ids) {
-	ids.forEach(id => document.getElementById(id).style.display = display)
+	ids.forEach(id => {
+		if (getEl(id))
+			document.getElementById(id).style.display = display
+	})
 };
 function setInnerHTML (ids) {
 	 ids.forEach(id => document.getElementById(id).innerHTML = "");
@@ -7914,7 +7964,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isShown("creating_match"), isShown("settings_container"));
+		console.log(compete_dims, compete_shufflearr, competeDims());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
