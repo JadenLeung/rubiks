@@ -73,6 +73,10 @@ export function createCustomDialog(onConfirm) {
         selectB.appendChild(new Option(opt, opt));
     });
 
+    selectA.addEventListener('change', () => {
+        selectB.value = selectA.value;
+    });
+
     // Assign event handlers, ensuring backdrop is hidden on close
     okBtn.onclick = () => {
         const value1 = selectA.value;
