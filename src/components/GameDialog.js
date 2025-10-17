@@ -1,10 +1,17 @@
+import { DIMS_OBJ } from "../data/dims.js";
+
 export function createCustomDialog(onConfirm, cube) {
     let modal = document.getElementById("custom-dialog");
     let backdrop = document.getElementById("custom-dialog-backdrop");
 
     // Define the required static options
-    let inputOptions = ["Default", "3x3x2", "Double Turns", "Gearcube", "Gearcube II"];
-    let scrambleOptions = ["Default", "3x3x2", "Double Turns", "Gearcube"];
+    let inputOptions = ["Default", "3x3x2", "Double Turns"];
+    let scrambleOptions = ["Default", "3x3x2", "Double Turns"];
+
+    if (DIMS_OBJ[cube].type.includes("NxN")) {
+        inputOptions.push("Gearcube");
+        scrambleOptions.push("Gearcube");
+    }
 
     // Create the modal and backdrop only if they don't exist
     if (!modal) {
