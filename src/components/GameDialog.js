@@ -1,9 +1,10 @@
-export function createCustomDialog(onConfirm) {
+export function createCustomDialog(onConfirm, cube) {
     let modal = document.getElementById("custom-dialog");
     let backdrop = document.getElementById("custom-dialog-backdrop");
 
     // Define the required static options
-    const dialogOptions = ["Default", "3x3x2", "Double Turns", "Gearcube"];
+    let inputOptions = ["Default", "3x3x2", "Double Turns", "Gearcube", "Gearcube II"];
+    let scrambleOptions = ["Default", "3x3x2", "Double Turns", "Gearcube"];
 
     // Create the modal and backdrop only if they don't exist
     if (!modal) {
@@ -28,10 +29,10 @@ export function createCustomDialog(onConfirm) {
         // Create all child elements once
         modal.innerHTML = `
             <h4>Select Custom Values</h4>
-            <label for="dialog-select-1" style="display: block; margin-bottom: 5px; font-weight: bold;">Scramble</label>
-            <select id="dialog-select-1" style="width: 100%; margin-bottom: 15px;"></select>
             <label for="dialog-select-2" style="display: block; margin-bottom: 5px; font-weight: bold;">Input</label>
             <select id="dialog-select-2" style="width: 100%; margin-bottom: 20px;"></select>
+            <label for="dialog-select-1" style="display: block; margin-bottom: 5px; font-weight: bold;">Scramble</label>
+            <select id="dialog-select-1" style="width: 100%; margin-bottom: 15px;"></select>
             <div style="display: flex; justify-content: space-between;">
                 <button id="dialog-ok-btn" class="btn btn-primary" style="flex: 1; margin-right: 5px;">OK</button>
                 <button id="dialog-cancel-btn" class="btn btn-secondary" style="flex: 1;">Cancel</button>
@@ -62,25 +63,34 @@ export function createCustomDialog(onConfirm) {
     // Get references to the elements
     const okBtn = document.getElementById("dialog-ok-btn");
     const cancelBtn = document.getElementById("dialog-cancel-btn");
-    const selectA = document.getElementById("dialog-select-1");
-    const selectB = document.getElementById("dialog-select-2");
+    const customScramble = document.getElementById("dialog-select-1");
+    const customInput = document.getElementById("dialog-select-2");
 
     // Populate the select boxes with the required static options
-    selectA.innerHTML = '';
-    selectB.innerHTML = '';
-    dialogOptions.forEach(opt => {
-        selectA.appendChild(new Option(opt, opt));
-        selectB.appendChild(new Option(opt, opt));
+    customScramble.innerHTML = '';
+    customInput.innerHTML = '';
+    inputOptions.forEach(opt => {
+        customScramble.appendChild(new Option(opt, opt));
     });
 
-    selectA.addEventListener('change', () => {
-        selectB.value = selectA.value;
+    scrambleOptions.forEach(opt => {
+        customInput.appendChild(new Option(opt, opt));
+    });
+
+    customInput.addEventListener('change', () => {
+        customScramble.value = customInput.value;
+    });
+
+    customScramble.addEventListener('change', () => {
+        if (customInput.value != customScramble.value) {
+            customInput.value = "Default";
+        }
     });
 
     // Assign event handlers, ensuring backdrop is hidden on close
     okBtn.onclick = () => {
-        const value1 = selectA.value;
-        const value2 = selectB.value;
+        const value1 = customScramble.value;
+        const value2 = customInput.value;
         modal.style.display = "none";
         backdrop.style.display = "none"; // HIDE BACKDROP
         const customobj = {

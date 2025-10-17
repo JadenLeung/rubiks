@@ -3915,6 +3915,21 @@ socket.on("room_change", rooms => {
 	displayPublicRooms();
 })
 
+function capital(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatCustom(customobj) {
+	let strarr = [];
+	Object.keys(customobj).forEach((key, i) => {
+		if (customobj[key] != "Default" && !(key == "scramble" && customobj["input"] != "Default")) {
+			strarr.push(`${capital(key)}: ${customobj[key]}`);
+		}
+	})
+	return strarr.length > 0 ? ", " + strarr.join(", ") : "";
+}
+
 function enterLobby(data, r) {
 	topWhite();
 	if (getEl("creating_match").style.display != "none") {
@@ -3971,38 +3986,37 @@ function enterLobby(data, r) {
 	str = ""
 	str = `<h6 style = "margin-top:20px">Total Rounds: ${data.data.dims.length} </h6>`;
 	if (data.data.type == "1v1") {
+		const OP_NAME = data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent";
 		data.data.dims.forEach((cube, x) => {
-			str += `Round ${x + 1})`
-			if (data.data.shufflearr.length > 0) {
-				str += `<br>&ensp;`
+			str += `${x + 1})`
+			// if (data.data.shufflearr.length > 0) {
+			// 	str += `<br>&ensp;`
+			// }
+			if (data.data.leader == socket.id) {
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0]}</b>`;
+			} else {
+				str += ` ${OP_NAME}: ${cube[0]}`;
+			}
+			if (data.data.customarr.length > 0) {
+				str += `${formatCustom(data.data.customarr[x][0])}<br>&ensp;&ensp;`;
+			} else {
+				str += ","
 			}
 			if (data.data.leader == socket.id) {
-				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0]}</b>, `;
-				if (data.data.shufflearr.length > 0) {
-					str += `Turning: ${data.data.shufflearr[x][0]}<br>&ensp;`;
-				}
-				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[1]}`;
-				if (data.data.shufflearr.length > 0) {
-					str += `, Turning: ${data.data.shufflearr[x][1]}&ensp;`;
-				}
-				str += "<br>";
+				str += ` ${OP_NAME}: ${cube[1]}`;
 			} else {
-				str += ` ${data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent"}: ${cube[0]}, `;
-				if (data.data.shufflearr.length > 0) {
-					str += `Turning: ${data.data.shufflearr[x][0]}<br>&ensp;`;
-				}
 				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1]}</b>`;
-				if (data.data.shufflearr.length > 0) {
-					str += `, Turning: ${data.data.shufflearr[x][1]}&ensp;`;
-				}
-				str += "<br>";
 			}
+			if (data.data.shufflearr.length > 0) {
+				str += `${formatCustom(data.data.customarr[x][1])}&ensp;`;
+			}
+			str += "<br>";
 		})
 	} else {
 		data.data.dims.forEach((cube, x) => {
 			str += `Round ${x + 1}): ${cube[0]}`
 			if (data.data.shufflearr.length > 0) {
-				str += `, Turning: ${data.data.shufflearr[x]}`;
+				str += `${formatCustom(data.data.customarr[x][0])}`;
 			}
 			str += "<br>";
 		})
@@ -4031,9 +4045,10 @@ function createMatch(newmatch = true) {
 function finishMatch() {
 	let dimarr = competeDims();
 	let shufflearr = false;
+	let customarr = false;
 	if (COMPETE_ADVANCED.checked()) {
-		console.log(dimarr.filter((_, index) => index % 2 != 0))
 		shufflearr = dimarr.filter((_, index) => index % 2 !== 0).map(obj => obj.map(jsonString => JSON.parse(jsonString)?.scramble));
+		customarr = dimarr.filter((_, index) => index % 2 !== 0).map(obj => obj.map(jsonString => JSON.parse(jsonString)));
 		dimarr = dimarr.filter((_, index) => index % 2 == 0);
 	}
 	let numrounds = getEl("compete_rounds").value;
@@ -4043,7 +4058,8 @@ function finishMatch() {
 	}
 	setDisplay("none", ["creating_match"]);
 	setDisplay("block", ["waitingroom"]);
-	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, leader: socket.id, shufflearr: shufflearr,
+	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, 
+		leader: socket.id, shufflearr, customarr,
 		visibility: getEl("private").checked ? "private" : "public", orpos : allcubies, 
 		startblind: getEl("startblind1").checked ? 0 : 1, inspection: COMPETE_INSPECTION.checked()};
 	if (room == 0) {
@@ -4107,16 +4123,13 @@ function startRound(data, scramble) {
 	competedata = data;
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		CUBEMAP[data.data.dims[data.round][0]]();
-		if (data.data.shufflearr.length > 0) {
-			if (competedata.data.type == "1v1" && data.data.shufflearr[data.round][0] != "Default")
-				INPUT.selected(data.data.shufflearr[data.round][0]);
-			else if (data.data.shufflearr[data.round] != "Default")
-			    INPUT.selected(data.data.shufflearr[data.round]);
+		if (data.data.customarr && data.data.customarr[data.round][0].input) {
+			INPUT.selected(data.data.customarr[data.round][0].input);
 		}
 	} else {
 		CUBEMAP[data.data.dims[data.round][1]]();
-		if (data.data.shufflearr.length > 0 && data.data.shufflearr[data.round][1] != "Default") {
-			INPUT.selected(data.data.shufflearr[data.round][1]);
+		if (data.data.customarr && data.data.customarr[data.round][1].input) {
+			INPUT.selected(data.data.customarr[data.round][1].input);
 		}
 	}
 	progressUpdate();
@@ -4127,7 +4140,9 @@ function startRound(data, scramble) {
 		if (MODE != "competing") {
 			return;
 		}
-		INPUT.attribute('disabled', true);
+		if (INPUT.value() != "Normal") {
+			INPUT.attribute('disabled', true);
+		}
 		competeTimes(data);
 		isShuffling = true;
 		if (data.data.type == "teamblind") {
@@ -4422,7 +4437,7 @@ function competeSettings(num = compete_type) {
 
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", "2x3x4", "2x3x5", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", "Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
     const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default" });
-    const defaultShuffleText = "Scramble: Default\nInput: Default";
+    const defaultShuffleText = "Input: Default\nScramble: Default";
     let rows = [];
 
     // --- Helper Function to Create a Player Column ---
@@ -4461,7 +4476,7 @@ function competeSettings(num = compete_type) {
         }
         try {
             const parsed = JSON.parse(compete_shufflearr[roundIndex][playerIndex]);
-            optionText.textContent = `Scramble: ${parsed.scramble}\nInput: ${parsed.input}`;
+            optionText.textContent = `Input: ${parsed.input}\nScramble: ${parsed.scramble}`;
         } catch {
             optionText.textContent = defaultShuffleText;
         }
@@ -4478,10 +4493,10 @@ function competeSettings(num = compete_type) {
             const modal = createCustomDialog((finalValue) => {
                 try {
                     const parsed = JSON.parse(finalValue);
-                    optionText.textContent = `Scramble: ${parsed.scramble}\nInput: ${parsed.input}`;
+                    optionText.textContent = `Input: ${parsed.input}\nScramble: ${parsed.scramble}`;
                     compete_shufflearr[roundIndex][playerIndex] = finalValue;
                 } catch (err) { console.error("Invalid JSON:", err); }
-            });
+            }, puzzleSelect.value);
             modal.style.display = "block";
         });
         
@@ -7964,7 +7979,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(compete_dims, compete_shufflearr, competeDims());
+		console.log(competedata)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8537,7 +8552,7 @@ function getEl(id) {
 }
 
 function isShown(element) {
-	return getEl(element).style.display != "none";
+	return getEl(element) && getEl(element).style.display != "none";
 }
 function Undo()
 {
@@ -12204,6 +12219,9 @@ document.onkeydown = function(event) {
 			speedRace2();
 		} else if (getEl("startmatch").style.display == "block") {
 			startMatch();
+		} else if (isShown("custom-dialog")) {
+			const okBtn = getEl("dialog-ok-btn");
+			if (okBtn) okBtn.focus();
 		} else if (getEl("creating_match").style.display == "block" && getEl("finish_match").style.display == "block") {
 			finishMatch();
 		} else if (getEl("continuematch").style.display == "block") {
