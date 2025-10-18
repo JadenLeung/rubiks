@@ -149,7 +149,7 @@ export default function (p) {
 	let special = [false, 0.3, false, 0];
 	let BACKGROUND_COLOR = "#e7e5ff"; //p.color(230,230,230);
 	let arr = [];
-	let obj2 = [];
+	let plls = [];
 	let pbls = [];
 	let olls = [];
 	let CONTINUEMATCH;
@@ -4121,28 +4121,40 @@ function startRound(data, scramble) {
 	bandaged = [];
 	reSetup();
 	competedata = data;
+	let scram_value = "Default";
+	let cube = "";
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
-		CUBEMAP[data.data.dims[data.round][0]]();
-		if (data.data.customarr && data.data.customarr[data.round][0].input) {
-			INPUT.selected(data.data.customarr[data.round][0].input);
+		cube = data.data.dims[data.round][0]
+		if (data.data.customarr) {
+			if (data.data.customarr[data.round][0].input) {
+				INPUT.selected(data.data.customarr[data.round][0].input);
+			}
+			if (data.data.customarr[data.round][0].scramble) {
+				scram_value = data.data.customarr[data.round][0].scramble;
+			}
 		}
 	} else {
-		CUBEMAP[data.data.dims[data.round][1]]();
-		if (data.data.customarr && data.data.customarr[data.round][1].input) {
-			INPUT.selected(data.data.customarr[data.round][1].input);
+		cube = data.data.dims[data.round][1];
+		if (data.data.customarr) {
+			if (data.data.customarr[data.round][1].input) {
+				INPUT.selected(data.data.customarr[data.round][1].input);
+			}
+			if (data.data.customarr[data.round][1].scramble) {
+				scram_value = data.data.customarr[data.round][1].scramble;
+			}
 		}
 	}
+	CUBEMAP[cube]();
 	progressUpdate();
-	SCRAM.selected(INPUT.value());
+	SCRAM.selected(scram_value == "Default" ? DIMS_OBJ[cube].scramble : scram_value);
+	console.log("scram_value is ", scram_value, SCRAM.value())
 	setTimeout(() => {
-		changeInput();
+		setInput();
 		setDisplay("block", ["input"]);
 		if (MODE != "competing") {
 			return;
 		}
-		if (INPUT.value() != "Normal") {
-			INPUT.attribute('disabled', true);
-		}
+		INPUT.attribute('disabled', true);
 		competeTimes(data);
 		isShuffling = true;
 		if (data.data.type == "teamblind") {
@@ -5970,7 +5982,7 @@ function practicePLL() {
 		timer.reset();
 		let rnd = p.random(pracalgs);
 		let str = "";
-		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? obj2 : pbls;
+		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? plls : pbls;
 		arr = [];
 		changeArr(InverseAll(tempobj[rnd][0]))
 		str = tempobj[rnd][0];
@@ -6023,8 +6035,8 @@ function speedPLL()
 		let str = "";
 		if(DIM == 50) 
 		{
-			changeArr(obj2[rnd][1])
-			str = obj2[rnd][0];
+			changeArr(plls[rnd][1])
+			str = plls[rnd][0];
 		}
 		else
 		{
@@ -7105,7 +7117,7 @@ function randomLL()
 	{
 		auf += "U ";
 	}
-	changeArr(obj2[rnd][1] + " " + olls[rnd2][1] + " " + auf);
+	changeArr(InverseAll(plls[rnd][0]) + " " + auf + InverseAll(olls[rnd2][0]));
 	document.getElementById("scramble").innerHTML = (stringArray());
 }
 function shufflePossible(len, total2, prev){
@@ -7348,7 +7360,7 @@ function shuffleCube(override = false) {
 	}
 	if(SCRAM.value() != "Last Layer")
 	document.getElementById("scramble").innerHTML = total;
-	competeshuffle = total;
+	competeshuffle = arr.join(" ");
 	multiple2("realscramble");
 }
 function downloadAll()
@@ -7979,7 +7991,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata)
+		socket.emit("test");
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8237,7 +8249,7 @@ p.keyPressed = (event) => {
 }
 function setPLL(obj)
 {
-	obj2 = obj;
+	plls = obj;
 }
 function setPBL(obj)
 {
@@ -8480,8 +8492,8 @@ function changeArr(str)
 			str = str.substring(1); 
 		}
 	}
-	//console.log(arr);
 }
+
 function changeArr2(str, len)
 {
 	if(arr.length == 0 || len < arr.length)
@@ -11116,7 +11128,7 @@ function testAlg(){
 		else if(inp.value()[0].toLowerCase() == "p")
 		{
 			let shortpll = inp.value().substring(1);
-			changeArr(obj2[shortpll][1])
+			changeArr(plls[shortpll][1])
 		} else if(inp.value()[0].toLowerCase() == "o") {
 			let shortoll = inp.value().substring(1);
 			changeArr(olls[shortoll][1])

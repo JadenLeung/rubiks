@@ -5,12 +5,13 @@ export function createCustomDialog(onConfirm, cube) {
     let backdrop = document.getElementById("custom-dialog-backdrop");
 
     // Define the required static options
-    let inputOptions = ["Default", "3x3x2", "Double Turns"];
     let scrambleOptions = ["Default", "3x3x2", "Double Turns"];
+    let inputOptions = ["Default", "3x3x2", "Double Turns"];
 
     if (DIMS_OBJ[cube].type.includes("NxN")) {
-        inputOptions.push("Gearcube");
         scrambleOptions.push("Gearcube");
+        scrambleOptions.push("Last Layer")
+        inputOptions.push("Gearcube");
     }
 
     // Create the modal and backdrop only if they don't exist
@@ -76,11 +77,11 @@ export function createCustomDialog(onConfirm, cube) {
     // Populate the select boxes with the required static options
     customScramble.innerHTML = '';
     customInput.innerHTML = '';
-    inputOptions.forEach(opt => {
+    scrambleOptions.forEach(opt => {
         customScramble.appendChild(new Option(opt, opt));
     });
 
-    scrambleOptions.forEach(opt => {
+    inputOptions.forEach(opt => {
         customInput.appendChild(new Option(opt, opt));
     });
 
