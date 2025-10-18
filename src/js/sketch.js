@@ -1752,7 +1752,11 @@ setInterval(() => {
 		if (timer.isRunning && timer.getTime() > secs)
 			timer.stop();
 	} else if (comstep > 1 && comstep % 2 == 0) {
-		if (isSolved()) {
+		let solveFunc = isSolved;
+		if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].winCondition == "Solve 1 Side") {
+			solveFunc = () => {return numSolved() >= 1};
+		}
+		if (solveFunc()) {
 			comstep++;
 			timer.stop();
 			let time = timer.getTime() < 0 ? 0 : Math.round(timer.getTime() / 10)/100.0;
@@ -2163,6 +2167,14 @@ function getOuterCubes() {
 		}
 	}
 	return outercubes;
+}
+function getCubiesInSide(sidearr) { 
+	let cubies = getOuterCubes();
+	cubies = cubies.filter((c) => {
+		let cuby = CUBE[c];
+		return findCubyNear(cuby.x + sidearr[0], cuby.y + sidearr[1], cuby.z + sidearr[2], sidearr[0], sidearr[1], sidearr[2]) == -1 ;
+	})
+	return cubies;
 }
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
@@ -3442,6 +3454,7 @@ function getProgress() { // temporary get progress
 	let cubies = getOuterCubes();
 	let sum = 0;
 	let weight = 0;
+	let sidemax = 0;
 	["right", "left", "front", "back", "top", "bottom"].forEach((dir) => {
 		let colormap = {};
 		let den = 0;
@@ -3460,6 +3473,7 @@ function getProgress() { // temporary get progress
 		for (let color in colormap) {
 			max = Math.max(max, colormap[color]);
 		}
+		sidemax = Math.max(sidemax, max / den);
 		let pigeonhole = Math.floor(den / 6) + 1; // Find min # of colors
 		let ratio = (max - pigeonhole) / (den - pigeonhole);
 		if (ratio == 1) {
@@ -3470,6 +3484,9 @@ function getProgress() { // temporary get progress
 			weight ++;
 		}
 	})
+	if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].winCondition == "Solve 1 Side") {
+		return Math.round(sidemax * 100);
+	}
 	return Math.round((sum / weight) * 100);
 }
 function getPos(cubyindex)
@@ -3924,10 +3941,24 @@ function formatCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
 		if (customobj[key] != "Default" && !(key == "scramble" && customobj["input"] != "Default")) {
-			strarr.push(`${capital(key)}: ${customobj[key]}`);
+			if (key == "winCondition") {
+				strarr.push(customobj[key])
+			} else {
+				strarr.push(`${capital(key)}: ${customobj[key]}`);
+			}
 		}
 	})
 	return strarr.length > 0 ? ", " + strarr.join(", ") : "";
+}
+
+function formatSettingsCustom(customobj) {
+	let strarr = [];
+	Object.keys(customobj).forEach((key, i) => {
+		if (customobj[key] != "Default") {
+			strarr.push(`${capital(key)}: ${customobj[key]}`);
+		}
+	})
+	return strarr.length > 0 ? strarr.join("\n") : "";
 }
 
 function enterLobby(data, r) {
@@ -4093,7 +4124,6 @@ socket.on("started-match", (data, scramble) => {
 	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
-	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	saveao5 = [ao5, mo5, scrambles, movesarr];
 	ao5 = [];
 	mo5 = [];
@@ -4175,10 +4205,23 @@ function startRound(data, scramble) {
 		} else {
 			waitStopTurning(data.data.type != "teamblind");
 		}
+		getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
+		console.log(data.data.customarr, competedata.round, playerIndex());
+		if (data.data.customarr && data.data.customarr[competedata.round][playerIndex()].winCondition == "Solve 1 Side") {
+			getEl("match_INSTRUCT").innerHTML = "Solve <b>one side</b>.";
+		}
 	}, 500);
 }
 
 socket.on("update-data", (data) => {competedata = data;});
+
+function playerIndex() {
+	if (competedata.data.type != "1v1" || competedata.data.leader == socket.id) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
 
 function blindTime() {
 	if (competedata.data.time == "DNF") {
@@ -4448,8 +4491,8 @@ function competeSettings(num = compete_type) {
     container.style.display = "block";
 
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", "2x3x4", "2x3x5", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", "Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
-    const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default" });
-    const defaultShuffleText = "Input: Default\nScramble: Default";
+    const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "winCondition": "Default"});
+    const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
     let rows = [];
 
     // --- Helper Function to Create a Player Column ---
@@ -4488,7 +4531,7 @@ function competeSettings(num = compete_type) {
         }
         try {
             const parsed = JSON.parse(compete_shufflearr[roundIndex][playerIndex]);
-            optionText.textContent = `Input: ${parsed.input}\nScramble: ${parsed.scramble}`;
+            optionText.textContent = formatSettingsCustom(parsed);
         } catch {
             optionText.textContent = defaultShuffleText;
         }
@@ -4505,10 +4548,10 @@ function competeSettings(num = compete_type) {
             const modal = createCustomDialog((finalValue) => {
                 try {
                     const parsed = JSON.parse(finalValue);
-                    optionText.textContent = `Input: ${parsed.input}\nScramble: ${parsed.scramble}`;
+                    optionText.textContent = formatSettingsCustom(parsed);
                     compete_shufflearr[roundIndex][playerIndex] = finalValue;
                 } catch (err) { console.error("Invalid JSON:", err); }
-            }, puzzleSelect.value);
+            }, puzzleSelect.value, JSON.parse(compete_shufflearr[roundIndex][playerIndex]));
             modal.style.display = "block";
         });
         
@@ -4581,13 +4624,13 @@ function competeSettings(num = compete_type) {
             rows[j].select1.value = "3x3";
             if (COMPETE_ADVANCED.checked()) {
                 compete_shufflearr[j][0] = defaultShuffleData;
-                rows[j].optionText1.textContent = defaultShuffleText;
+                rows[j].optionText1.textContent = "";
             }
             if (num === "1v1") {
                 rows[j].select2.value = "3x3";
                 if (COMPETE_ADVANCED.checked()) {
                     compete_shufflearr[j][1] = defaultShuffleData;
-                    rows[j].optionText2.textContent = defaultShuffleText;
+                    rows[j].optionText2.textContent = "";
                 }
             }
         }
@@ -7699,7 +7742,9 @@ function startAction() {
 
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
-		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
+		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
+
+		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "dir", oppdirs[getFace(cuby, hoveredColor)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -7991,7 +8036,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		socket.emit("test");
+		console.log(getProgress());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11918,60 +11963,40 @@ function isSolved()
 		return false;
 	} else {
 		let cubies = getOuterCubes();
-		let cuby = cubies[0];
-		let top = getColor(CUBE[cuby].right.levels);
-		let bottom = getColor(CUBE[cuby].left.levels);
-		let back = getColor(CUBE[cuby].bottom.levels);
-		let front = getColor(CUBE[cuby].top.levels);
-		let right = getColor(CUBE[cuby].front.levels);
-		let left = getColor(CUBE[cuby].back.levels);
-		if (custom != 1) {
-			if (top == 'k' || !top) top = opposite[bottom];
-			if (bottom == 'k'|| !bottom) bottom = opposite[top];
-			if (back == 'k'|| !back) back = opposite[front];
-			if (front == 'k'|| !front) front = opposite[back];
-			if (right == 'k'|| !right) right = opposite[left];
-			if (left == 'k'|| !left) left = opposite[right];
-		}
-		if((Array.isArray(DIM) && DIM[0] != "adding" && (DIM4 == 2 || goodsolved))) {
-			if (cubies.length <= 1) return true;
-		}
-		let solved = true;
-		for(let i = 0; i < cubies.length; i++)
-		{
-			let curindex = cubies[i];
-			const compare = {
-				top: [top, getColor(CUBE[curindex].right.levels)],
-				bottom: [bottom, getColor(CUBE[curindex].left.levels)],
-				back: [back, getColor(CUBE[curindex].bottom.levels)],
-                front: [front, getColor(CUBE[curindex].top.levels)],
-                right: [right, getColor(CUBE[curindex].front.levels)],
-                left: [left, getColor(CUBE[curindex].back.levels)],
-			}
-			const neighbors = getNeighborsArr(curindex);
-			const map = {"bottom":0, "top":1, "front":2, "back":3, "right":4, "left":5}
-			for (let dir in compare) {
-				if (custom != 1 && (compare[dir][1] == "k" || !compare[dir][1])) continue;
-				if (neighbors[map[dir]] != -1) continue;
-				if (compare[dir][0] == "k") {
-					compare[dir][0] = compare[dir][1];
-					continue;
-				}
-				if (compare[dir][0] != compare[dir][1]) {
-					// console.log(compare)
-					return false;
-				}
-			}
-			top = compare.top[0];
-			bottom = compare.bottom[0];
-			back = compare.back[0];
-			front = compare.front[0];
-			right = compare.right[0];
-			left = compare.left[0];
-        }
-		return true;
+		if (cubies.length <= 1) return true;
+		return numSolved() == 6;
 	}
 }
+
+function numSolved() {
+	const DIRARR = [
+		{side: "top", sidearr: [0, 1, 0]},
+		{side: "bottom", sidearr: [0, -1, 0]},
+		{side: "front", sidearr: [0, 0, 1]},
+		{side: "back", sidearr: [0, 0, -1]},
+		{side: "left", sidearr: [1, 0, 0]},
+		{side: "right", sidearr: [-1, 0, 0]},
+	];
+	let numsolved = 0;
+	DIRARR.forEach((dirobj) => {
+		const cubies = getCubiesInSide(dirobj.sidearr)
+		let colors = new Set()
+		cubies.forEach(cuby => {
+			colors.add(getColor(CUBE[cuby][dirobj.side].levels))
+		})
+		if (custom != 1) {
+			colors.delete("k");
+		}
+		if (colors.size == 1) {
+			numsolved++;
+		}
+	})
+	return numsolved;
+}
+
+
+
+
 function median(values){  
 
 	values.sort(function(a,b){
