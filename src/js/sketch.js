@@ -12156,8 +12156,7 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-	settingsmode();
-	keyboardmode();
+	competemode();
 	// modnum = 2;
     // cubemode();
 	// CUBEMAP["2x3x5"]();
