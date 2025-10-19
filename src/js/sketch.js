@@ -4698,8 +4698,11 @@ function finishCompeteSelect(dim) {
 		focused_competeobj.select.value = dim;
 		console.log("HERE");
 		if (COMPETE_ADVANCED.checked()) {
-            compete_customarr[focused_competeobj.round][focused_competeobj.player] = defaultShuffleData;
-			focused_competeobj.optionText.textContent = "";
+			let customarrobj = JSON.parse(compete_customarr[focused_competeobj.round][focused_competeobj.player]);
+			if (["Gearcube", "Last Layer"].includes(customarrobj.scramble) && !DIMS_OBJ[dim].type.includes("NxN")) {
+				compete_customarr[focused_competeobj.round][focused_competeobj.player] = defaultShuffleData;
+				focused_competeobj.optionText.textContent = "";
+			}
         }
 	}
 	
