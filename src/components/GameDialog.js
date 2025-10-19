@@ -1,17 +1,15 @@
 import { DIMS_OBJ } from "../data/dims.js";
 
 export function createCustomDialog(onConfirm, cube, original) {
-    console.log("original is ", original)
     let modal = document.getElementById("custom-dialog");
     let backdrop = document.getElementById("custom-dialog-backdrop");
 
     let scrambleOptions = ["Default", "3x3x2", "Double Turns"];
     let inputOptions = ["Default", "3x3x2", "Double Turns"];
-    let winConditionOptions = ["Default", "Solve 1 Side"]; 
+    let winConditionOptions = ["Default", "Solve 1 Side"];
 
     if (DIMS_OBJ[cube].type.includes("NxN")) {
-        scrambleOptions.push("Gearcube");
-        scrambleOptions.push("Last Layer")
+        scrambleOptions.push("Gearcube", "Last Layer");
         inputOptions.push("Gearcube");
     }
 
@@ -36,21 +34,28 @@ export function createCustomDialog(onConfirm, cube, original) {
         modal.innerHTML = `
             <h4>Select Custom Values</h4>
 
-            <label for="dialog-select-2" style="display: block; margin-bottom: 5px; font-weight: bold;">Input</label>
-            <select id="dialog-select-2" style="width: 100%; margin-bottom: 20px;"></select>
-            
-            <label for="dialog-select-1" style="display: block; margin-bottom: 5px; font-weight: bold;">Scramble</label>
-            <select id="dialog-select-1" style="width: 100%; margin-bottom: 15px;"></select>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Input</label>
+                <div id="dialog-buttons-2" class="button-group"></div>
+            </div>
 
-            <label for="dialog-select-3" style="display: block; margin-bottom: 5px; font-weight: bold;">Win Condition</label>
-            <select id="dialog-select-3" style="width: 100%; margin-bottom: 20px;"></select>
-            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Scramble</label>
+                <div id="dialog-buttons-1" class="button-group"></div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Win Condition</label>
+                <div id="dialog-buttons-3" class="button-group"></div>
+            </div>
+
             <div style="display: flex; justify-content: space-between;">
                 <button id="dialog-ok-btn" class="btn btn-primary" style="flex: 1; margin-right: 5px;">OK</button>
                 <button id="dialog-cancel-btn" class="btn btn-secondary" style="flex: 1;">Cancel</button>
             </div>
         `;
         document.body.appendChild(modal);
+
         backdrop = document.createElement("div");
         backdrop.id = "custom-dialog-backdrop";
         Object.assign(backdrop.style, {
@@ -59,72 +64,96 @@ export function createCustomDialog(onConfirm, cube, original) {
             left: "0",
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.7)", 
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
             zIndex: "9998",
             display: "none"
         });
         document.body.appendChild(backdrop);
+
+        // Button styling
+        const style = document.createElement("style");
+        style.textContent = `
+            .button-group button {
+                margin: 3px;
+                padding: 6px 10px;
+                border: 1px solid #ccc;
+                background: #f9f9f9;
+                cursor: pointer;
+                border-radius: 4px;
+            }
+            .button-group button.selected {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     if (!backdrop) backdrop = document.getElementById("custom-dialog-backdrop");
 
-    // Get references to the elements
     const okBtn = document.getElementById("dialog-ok-btn");
     const cancelBtn = document.getElementById("dialog-cancel-btn");
-    const customScramble = document.getElementById("dialog-select-1");
-    customScramble.value = original.scramble;
-    const customInput = document.getElementById("dialog-select-2");
-    customInput.value = original.input;
-    const customWinCondition = document.getElementById("dialog-select-3"); 
-    customWinCondition.value = original.winCondition;
-    
 
-    if (customScramble.children.length === 0) {
-        scrambleOptions.forEach(opt => {
-            customScramble.appendChild(new Option(opt, opt));
+    const scrambleContainer = document.getElementById("dialog-buttons-1");
+    const inputContainer = document.getElementById("dialog-buttons-2");
+    const winConditionContainer = document.getElementById("dialog-buttons-3");
+
+    scrambleContainer.innerHTML = "";
+    inputContainer.innerHTML = "";
+    winConditionContainer.innerHTML = "";
+
+    function makeButtonGroup(container, options, selectedValue, onClick) {
+        options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            if (opt === selectedValue) btn.classList.add("selected");
+
+            btn.onclick = () => {
+                [...container.children].forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+
+                if (onClick) onClick(opt); // pass the clicked value
+            };
+
+            container.appendChild(btn);
         });
     }
 
-    if (customInput.children.length === 0) {
-        inputOptions.forEach(opt => {
-            customInput.appendChild(new Option(opt, opt));
-        });
-    }
-
-    if (customWinCondition.children.length === 0) {
-        winConditionOptions.forEach(opt => {
-            customWinCondition.appendChild(new Option(opt, opt));
-        });
-    }
-
-
-    customInput.addEventListener('change', () => {
-        customScramble.value = customInput.value;
-    });
-
-    customScramble.addEventListener('change', () => {
-        if (customInput.value != customScramble.value) {
-            customInput.value = "Default";
+    // Input buttons
+    makeButtonGroup(inputContainer, inputOptions, original.input, (val) => {
+        // if input changes, set scramble to match
+        const scrambleBtn = [...scrambleContainer.children].find(b => b.textContent === val);
+        if (scrambleBtn) {
+            [...scrambleContainer.children].forEach(b => b.classList.remove("selected"));
+            scrambleBtn.classList.add("selected");
         }
     });
+
+    // Scramble buttons
+    makeButtonGroup(scrambleContainer, scrambleOptions, original.scramble, (val) => {
+        const inputSelected = inputContainer.querySelector(".selected")?.textContent;
+        if (inputSelected !== val) {
+            // reset input to Default if mismatch
+            [...inputContainer.children].forEach(b => b.classList.remove("selected"));
+            const defaultBtn = [...inputContainer.children].find(b => b.textContent === "Default");
+            if (defaultBtn) defaultBtn.classList.add("selected");
+        }
+    });
+
+    // WinCondition buttons
+    makeButtonGroup(winConditionContainer, winConditionOptions, original.winCondition);
 
     okBtn.onclick = () => {
-        const value1 = customScramble.value;
-        const value2 = customInput.value;
-        const value3 = customWinCondition.value; 
-        
+        const value1 = scrambleContainer.querySelector(".selected")?.textContent || "Default";
+        const value2 = inputContainer.querySelector(".selected")?.textContent || "Default";
+        const value3 = winConditionContainer.querySelector(".selected")?.textContent || "Default";
+
         modal.style.display = "none";
-        backdrop.style.display = "none"; // HIDE BACKDROP
-        
-        const customobj = {
-            scramble: value1,
-            input: value2,
-            winCondition: value3 
-        };
-        
-        if (onConfirm) {
-            onConfirm(JSON.stringify(customobj));
-        }
+        backdrop.style.display = "none";
+
+        const customobj = { scramble: value1, input: value2, winCondition: value3 };
+        if (onConfirm) onConfirm(JSON.stringify(customobj));
     };
 
     cancelBtn.onclick = () => {
@@ -133,6 +162,7 @@ export function createCustomDialog(onConfirm, cube, original) {
     };
 
     backdrop.style.display = "block";
+    modal.style.display = "block";
 
     return modal;
 }
