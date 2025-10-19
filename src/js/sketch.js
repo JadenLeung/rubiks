@@ -4150,7 +4150,8 @@ function startRound(data, scramble) {
 	let scram_value = "Default";
 	let cube = "";
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
-		cube = data.data.dims[data.round][0]
+		cube = data.data.dims[data.round][0];
+		CUBEMAP[cube]();
 		if (data.data.customarr) {
 			if (data.data.customarr[data.round][0].input) {
 				INPUT.selected(data.data.customarr[data.round][0].input);
@@ -4161,6 +4162,7 @@ function startRound(data, scramble) {
 		}
 	} else {
 		cube = data.data.dims[data.round][1];
+		CUBEMAP[cube]();
 		if (data.data.customarr) {
 			if (data.data.customarr[data.round][1].input) {
 				INPUT.selected(data.data.customarr[data.round][1].input);
@@ -4170,10 +4172,8 @@ function startRound(data, scramble) {
 			}
 		}
 	}
-	CUBEMAP[cube]();
 	progressUpdate();
 	SCRAM.selected(scram_value == "Default" ? DIMS_OBJ[cube].scramble : scram_value);
-	console.log("scram_value is ", scram_value, SCRAM.value())
 	setTimeout(() => {
 		setInput();
 		setDisplay("block", ["input"]);
@@ -8081,7 +8081,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(compete_dims);
+		console.log(compete_dims, compete_customarr);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
