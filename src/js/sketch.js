@@ -1981,7 +1981,6 @@ setInterval(() => {
 		competeTimes(competedata);
 	} 
 	if (comstep > 0 && competedata.stage == "ingame") {
-		console.log(blindTime(), competedata.data.startblind + SWITCHTIME)
 		if (competedata.data.type == "teamblind" && blindTime() > competedata.data.startblind + SWITCHTIME) {
 			if (!isSolved()) {
 				setDisplay("block", ["blind2", "competeswitch"])
@@ -4181,7 +4180,7 @@ function startRound(data, scramble) {
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		cube = data.data.dims[data.round][0];
 		CUBEMAP[cube]();
-		if (data.data.customarr) {
+		if (data.data.customarr && data.data.customarr.length > 0) {
 			if (data.data.customarr[data.round][0].input) {
 				INPUT.selected(data.data.customarr[data.round][0].input);
 			}
@@ -4251,7 +4250,7 @@ function playerIndex() {
 }
 
 function competeGoal() {
-	if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].goal) {
+	if (competedata.data.customarr && competedata.data.customarr.length > 0 && competedata.data.customarr[competedata.round][playerIndex()].goal) {
 		return competedata.data.customarr[competedata.round][playerIndex()].goal;
 	}
 	return "Default"
@@ -4335,7 +4334,6 @@ function competeTimes(data, end = false) {
 		getEl("match_TITLE").innerHTML = ""
 		getEl("match_INSTRUCT").innerHTML = getEl("match_INSTRUCT2").innerHTML = "";
 		if (data.data.blinded != socket.id) {
-			console.log(data.data.posid, data.data.startblind);
 			if (!isShuffling && data.data.posid) {
 				quickSolve(IDtoReal(IDtoLayout(decode(data.data.posid))))
 			}
@@ -8160,7 +8158,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(computeCubeScore(getCubyFromPos, MAXX, CUBYESIZE));
+		console.log(competedata);
+		console.log(getID());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -8568,13 +8567,7 @@ function multiple(nb, timed, use = "default") {
 				canMan = false;
 			}
 		} else if (comstep > 0) {
-			if (competedata.data.type == "teamblind") {
-				progressUpdate(competedata.data.time == 0 ? Date.now() : false);
-			} else if (getProgress() > competeprogress) {
-				competeprogress = getProgress();
-				progressUpdate();
-			}
-			competeScreenshot();
+			waitForCondition(logProgressUpdate)
 		}
 	}
 }
@@ -8601,6 +8594,18 @@ function waitForCondition(callback, use = "default") {
             waitForCondition(callback, use);
         }, 0); // Check every milliseconds
     }
+}
+
+function logProgressUpdate() {
+	setLayout();
+	if (competedata.data.type == "teamblind") {
+		console.log(getID());
+		progressUpdate(competedata.data.time == 0 ? Date.now() : false);
+	} else if (getProgress() > competeprogress) {
+		competeprogress = getProgress();
+		progressUpdate();
+	}
+	competeScreenshot();
 }
 
 function multiple2(use) {
