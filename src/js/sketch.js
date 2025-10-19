@@ -5028,7 +5028,7 @@ function blindmode() {
 		bstep = 1;
 		setInput();
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
+			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
 		setDisplay("block", ["input", "peeks", "peek_container", "blind2"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
@@ -8062,6 +8062,11 @@ p.keyPressed = (event) => {
 		}
 	}
 	if(p.key == "1" || p.key == "!") { //1 //one
+		if (!["normal", "timed"].includes(MODE) && timer.isRunning) {
+			if (!window.confirm("Are you sure you want to quit?")) {
+				return;
+			}
+		}
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
 			return;
