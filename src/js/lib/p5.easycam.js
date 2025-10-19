@@ -184,12 +184,6 @@ class EasyCam {
       mouseDragRight  : cam.mouseDragZoom  .bind(cam),
       mouseWheelAction: cam.mouseWheelZoom .bind(cam),
 
-      touchmoveSingle : cam.mouseDragRotate.bind(cam),
-      touchmoveMulti  : function(){
-                          cam.mouseDragPan();
-                          cam.mouseDragZoom();
-                        },
-
 
       insideViewport : function(x, y){
         var x0 = cam.viewport[0], x1 = x0 + cam.viewport[2];

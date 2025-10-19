@@ -6056,6 +6056,7 @@ function practicePLL() {
 		let tempobj = pracmode == "OLL" ? olls : DIM == 50 ? plls : pbls;
 		arr = [];
 		changeArr(InverseAll(tempobj[rnd][0]))
+		document.getElementById('cnv_div').scrollIntoView({ behavior: 'smooth' });
 		str = tempobj[rnd][0];
 		document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>" + str + "</p>";
 		getEl("s_image").src = `images/${pracmode == "OLL" ? "OLL" : DIM == 50 ? "PLL" : "PBL"}/${rnd}.png`;
