@@ -55,7 +55,9 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
-	let focused_select;
+	let focused_competeobj = {};
+	const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "winCondition": "Default"});
+    const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
 	let othershuffle = false;
 	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
 	let SWITCHTIME = 15;
@@ -4497,8 +4499,6 @@ function competeSettings(num = compete_type) {
     container.style.display = "block";
 
     const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", "2x3x4", "2x3x5", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", "Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
-    const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "winCondition": "Default"});
-    const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
     let rows = [];
 
     // --- Helper Function to Create a Player Column ---
@@ -4538,6 +4538,7 @@ function competeSettings(num = compete_type) {
         try {
             const parsed = JSON.parse(compete_customarr[roundIndex][playerIndex]);
             optionText.textContent = formatSettingsCustom(parsed);
+			console.log("parsing option text", parsed)
         } catch {
             optionText.textContent = defaultShuffleText;
         }
@@ -4547,7 +4548,7 @@ function competeSettings(num = compete_type) {
             showCnvDiv();
             setDisplay("none", ["creating_match"]);
             setDisplay("block", ["compete_select"]);
-            competeSelect(roundIndex, puzzleSelect, typeLabel);
+            competeSelect(roundIndex, playerIndex, puzzleSelect, typeLabel, optionText);
         });
 		puzzleSelect.addEventListener("change", () => {
 			handleCompeteSettingsChange();
@@ -4653,10 +4654,13 @@ function competeSettings(num = compete_type) {
 	handleCompeteSettingsChange()
 }
 
-function competeSelect(round, select, text) {
+function competeSelect(round, player, select, text, optionText) {
 	getEl("compete_select_title").innerHTML = `Select ${text}cube for round ` + (round + 1);
 	competeSelectButtons();
-	focused_select = select;
+	focused_competeobj.select = select;
+	focused_competeobj.round = round;
+	focused_competeobj.player = player;
+	focused_competeobj.optionText = optionText;
 }
 
 function competeSelectButtons() {
@@ -4690,7 +4694,15 @@ function handleCompeteSettingsChange() {
 }
 
 function finishCompeteSelect(dim) {
-	focused_select.value = dim;
+	if (focused_competeobj.select.value != dim) {
+		focused_competeobj.select.value = dim;
+		console.log("HERE");
+		if (COMPETE_ADVANCED.checked()) {
+            compete_customarr[focused_competeobj.round][focused_competeobj.player] = defaultShuffleData;
+			focused_competeobj.optionText.textContent = "";
+        }
+	}
+	
 	setDisplay("block", ["creating_match"]);
 	CUBEMAP[dim]();
 	handleCompeteSettingsChange();
