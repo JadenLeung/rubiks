@@ -168,11 +168,11 @@ button:hover {
 }
 .fadetext {
     position: absolute;
-    top: 15%;
+    top: 10%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 80px;
+    transform: translate(-50%);
     font-family: 'Orbitron';
+    max-width: 80%; 
     color: red;
     opacity: 0; /* Start fully opaque */
     transition: opacity 0.4s ease-out; /* 1-second fade-out effect */
@@ -431,5 +431,10 @@ button:hover {
     }
     #saysettings {
         display: none;
+    }
+    .fadetext {
+        position: absolute;
+        top: 3%;
+        left: 85%;
     }
 }	

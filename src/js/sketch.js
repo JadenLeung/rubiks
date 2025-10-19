@@ -1266,13 +1266,13 @@ p.setup = () => {
 	setButton(SOLVE, "solve", 'btn btn-success', '', solveCube.bind(null, 0));
 	
 	const EASY = p.createButton('Easy');
-	setButton(EASY, "s_easy", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', easy.bind(null, 0));
+	setButton(EASY, "s_easy", 'btn btn-info', MODEBUTTONSTYLE("#42ff58"), easy.bind(null, 0));
 
 	const M_34 = p.createButton('3 to 5 Movers');
-	setButton(M_34, "m_34", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#42ff58; border-color: black;', m_34.bind(null, 0));
+	setButton(M_34, "m_34", 'btn btn-info', MODEBUTTONSTYLE("#42ff58"), m_34.bind(null, 0));
 
 	const M_4 = p.createButton('Endless');
-	setButton(M_4, "m_4", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color:#ff9ee8; border-color: black;', m_4.bind(null, 0));
+	setButton(M_4, "m_4", 'btn btn-info', MODEBUTTONSTYLE("#ff9ee8"), m_4.bind(null, 0));
 
 	const IDCOPY = p.createButton('Copy');
 	setButton(IDCOPY, "idcopy", 'btn btn-secondary', 'width: 50px; margin-left: 6px; font-size: 13px; padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px;', () => {
@@ -1317,28 +1317,28 @@ p.setup = () => {
 	setButton(FINISHPAINT, 'finishpaint', 'btn btn-success', 'font-size: 20px;', finishpaint);
 	
 	const MED = p.createButton('Medium');
-	setButton(MED, "s_medium", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', medium.bind(null, 0));
+	setButton(MED, "s_medium", 'btn btn-info', MODEBUTTONSTYLE("#ff9ee8"), medium.bind(null, 0));
 
 	OLL = p.createButton('OLL Attack');
-	setButton(OLL, "s_OLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedOLL.bind(null, 0));
+	setButton(OLL, "s_OLL", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), speedOLL.bind(null, 0));
 	
 	PLL = p.createButton('PLL/PBL Attack');
-	setButton(PLL, "s_PLL", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', speedPLL.bind(null, 0));
+	setButton(PLL, "s_PLL", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), speedPLL.bind(null, 0));
 
 	const RACE = p.createButton('Physical Race');
-	setButton(RACE, "s_PHYSICALRACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, "physical"));
+	setButton(RACE, "s_PHYSICALRACE", 'btn btn-info', MODEBUTTONSTYLE("#fc5f53"), speedRace.bind(null, "physical"));
 
 	const VIRTUALRACE = p.createButton('Virtual Race');
-	setButton(VIRTUALRACE, "s_VIRTUALRACE", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #fc5f53; border-color: black;', speedRace.bind(null, "virtual"));
+	setButton(VIRTUALRACE, "s_VIRTUALRACE", 'btn btn-info', MODEBUTTONSTYLE("#fc5f53"), speedRace.bind(null, "virtual"));
 
 	const S_START = p.createButton('Start Practice');
 	setButton(S_START, "s_start", 'btn btn-success', 'font-size:25px;', practicePLL.bind(null, 0));
 
 	PLLPRAC = p.createButton('PLL Practice');
-	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, "PLL"));
+	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), selectPLL.bind(null, "PLL"));
 
 	OLLPRAC = p.createButton('OLL Practice');
-	setButton(OLLPRAC, "s_ollprac", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', selectPLL.bind(null, "OLL"));
+	setButton(OLLPRAC, "s_ollprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), selectPLL.bind(null, "OLL"));
 
 	const READYBOT = p.createButton('Ready');
 	setButton(READYBOT, "readybot", 'btn btn-success', 'font-size:25px;', speedRace2.bind(null, 0));
@@ -1356,10 +1356,10 @@ p.setup = () => {
 	setButton(STARTDCHAL2, "cd2_start", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #ff9ee8; border-color: black;', () => {dailychallenge(2)});
 
 	STARTBLIND = p.createButton('Blind 3x3');
-	setButton(STARTBLIND, "b_regular", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); blindmode()});
+	setButton(STARTBLIND, "b_regular", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); blindmode()});
 
 	const STARTBLIND2 = p.createButton('Blind Marathon');
-	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', 'height:60px; width:180px; text-align:center; font-size:20px; background-color: #FBF35B; border-color: black;', () => {movesmode(); startMarathon("blind")});
+	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); startMarathon("blind")});
 
 	const STARTMARATHON = p.createButton('Shape');
 	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:50px; width:80px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
@@ -1753,7 +1753,7 @@ setInterval(() => {
 			timer.stop();
 	} else if (comstep > 1 && comstep % 2 == 0) {
 		let solveFunc = isSolved;
-		if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].winCondition == "Solve 1 Side") {
+		if (competeWinCondition() == "Solve 1 Side") {
 			solveFunc = () => {return numSolved() >= 1};
 		}
 		if (solveFunc()) {
@@ -3484,7 +3484,7 @@ function getProgress() { // temporary get progress
 			weight ++;
 		}
 	})
-	if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].winCondition == "Solve 1 Side") {
+	if (competeWinCondition() == "Solve 1 Side") {
 		return Math.round(sidemax * 100);
 	}
 	return Math.round((sum / weight) * 100);
@@ -4194,6 +4194,7 @@ function startRound(data, scramble) {
 			competeshuffle = scramble;
 			changeArr(scramble);
 			multiple2("scramble");
+			getEl("scramble").innerHTML = scramble;
 		} else {
 			shuffleCube();
 		}
@@ -4206,8 +4207,7 @@ function startRound(data, scramble) {
 			waitStopTurning(data.data.type != "teamblind");
 		}
 		getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
-		console.log(data.data.customarr, competedata.round, playerIndex());
-		if (data.data.customarr && data.data.customarr[competedata.round][playerIndex()].winCondition == "Solve 1 Side") {
+		if (competeWinCondition() == "Solve 1 Side") {
 			getEl("match_INSTRUCT").innerHTML = "Solve <b>one side</b>.";
 		}
 	}, 500);
@@ -4221,6 +4221,13 @@ function playerIndex() {
 	} else {
 		return 1;
 	}
+}
+
+function competeWinCondition() {
+	if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].winCondition) {
+		return competedata.data.customarr[competedata.round][playerIndex()].winCondition;
+	}
+	return "Default"
 }
 
 function blindTime() {
@@ -4385,6 +4392,7 @@ function competeSolved(data) {
 		getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
 		getEl("ss_container").style.display = "none";
 		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
+		setDisplay("block", ["scramble_par"]);
 		competeTimes(data, true);
 		competePoints(data);
 	}
@@ -4401,7 +4409,7 @@ function continueMatch() {
 	if (MODE != "competing") {
 		return;
 	}
-	setDisplay("none", ["continuematch"]);
+	setDisplay("none", ["continuematch", "scramble_par"]);
 	if (competedata.round < competedata.data.dims.length - 1) {
 		console.log("emitting")
 		socket.emit("next-round", room);
@@ -5028,10 +5036,19 @@ function shapemarathon() {
 		setScore(map[ma_data.type], score, true);
 	}
 }
+
+function isBot() {
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	return urlParams.get('race') == "true";
+}
 function waitStopTurning(timed = true, mode = "wtev", start = false) {
 	const interval = setInterval(() => {
 	console.log("canMan?" + canMan)
 	  if (canMan) {
+		if (!isBot() && MODE != "competing") {
+			launchGoMessage();
+		}
 		clearInterval(interval); // Stop the interval when the cube stops animating
 		if (timed) {
 			timer.setTime(-15000, true); // Set the timer to -15000
@@ -5055,17 +5072,18 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 			console.log("adding 1", canMan, comstep);
 			competeScreenshot();
 			setDisplay(competedata.data.type == "1v1" ? "block" : "none", ["ss_container"]);
-			let word = "Go!"
+			let fontSize = 40;
+			let word = competeWinCondition() == "Solve 1 Side" ? "Solve 1 Side!" : "Solve the cube!";
 			if (competedata.data.type == "teamblind") {
 				word = (competedata.data.blinded == socket.id) ? "🕶️" : "👁️";
+				fontSize = 80;
 			}
-			fadeInText(1, word, "green", "go!");
-			setTimeout(() => {fadeInText(0, word, "green", "go!")}, 600);
+			fadeInText(1, word, "green", "go!", 600, fontSize);
+			setTimeout(() => {fadeInText(0, word, "green", "go!", 600, fontSize)}, 1000);
 			if (competedata.data.type == "teamblind") {
 				canMan = competedata.data.blinded == socket.id;
 			}
 		}
-		console.log("CHANGING COMPSTEP", comstep);
 		if (getEl("marathon2").style.display == "block" && (["shape", "bandage", "blind", "cuboid", "baby"].includes(mode))) mastep++;
 		if ((savesetupdim.includes(DIM) && SIZE == 3) && comstep == 0 && mode != "cuboid") {
 			const interval2 = setInterval(() => {
@@ -5117,6 +5135,11 @@ function appendToTable(hotkeys, id, step, padding = "5px") {
     }
 }
 
+function launchGoMessage() {
+	fadeInText(1, "Solve the cube!", "green", "go!", 600, 40);
+	setTimeout(() => {fadeInText(0, "Solve the cube!", "green", "go!", 600, 40)}, 1000);
+}
+
 function startchallenge() {
 	CUBEMAP[weeklyscrambles[week].cube]();
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
@@ -5139,6 +5162,7 @@ function startchallenge() {
 		savesetup = IDtoReal(IDtoLayout(decode(weeklyscrambles[week].pos)));
 		special[2] = savesetup;
 		quickSolve();
+		launchGoMessage();
 	} else {
 		changeArr(weeklyscrambles[week].scramble);
 		multiple2("scramble");
@@ -5241,12 +5265,16 @@ function halfScreen(isfull) {
 	fullscreen = isfull;
 	resized();
 }
-async function fadeInText(o, text, color = "red", el = "dnf", time = 600) {
+async function fadeInText(o, text, color = "red", el = "dnf", time = 600, fontSize = 80) {
 	const dnfElement = document.getElementById(el);
 	dnfElement.style.display='block';
 	dnfElement.innerHTML = text;
 	dnfElement.style.color = color;
 	dnfElement.style.opacity = o;
+	if (isthin) {
+		fontSize /= 2;
+	}
+	dnfElement.style.fontSize = `${fontSize}px`;
 
 	if (o === 0) {
         setTimeout(() => {
@@ -12133,6 +12161,9 @@ function arrowPaint(dir) {
 	}
 }
 
+function MODEBUTTONSTYLE(bgColor) {
+	return `height:60px; width:${isthin ? 155 : 180}px; text-align:center; font-size:20px; background-color: ${bgColor}; border-color: black;`
+}
 function getOp() {
 	let opponent = "";
 	competedata.userids.forEach(id => {
