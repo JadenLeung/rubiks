@@ -3044,6 +3044,19 @@ function change9(bigchange = false)
 		if(!CHECK[i].checked())
 			checked.push(i);
 	}
+	for (let layer = 0; layer < size; layer++) {
+		let start = layer * size * size;
+		let end = (layer + 1) * size * size;
+		let onechecked = false;
+		for (let j = start; j < end; ++j) {
+			console.log("234", start, end, j, layer)
+			if (CHECK[j].checked())
+				onechecked = true;
+		}
+		if (!onechecked) {
+			CHECKALL[layer].checked(false);
+		}
+	}
 	console.log("CHCKED IS ", checked)
 	DIM[6] = checked; 
 	DIM[7] = DIM3;
@@ -11956,10 +11969,11 @@ function sideSolved(color)
 	return false;
 }
 
-function numCorners(cubies) {
+function isRectangle(cubies) { // assume flat line
 	if (cubies.length == 0) {
-		return 0;
+		return true;
 	}
+
 	let minx = CUBE[cubies[0]].x;
 	let maxx = CUBE[cubies[0]].x;
 	let miny = CUBE[cubies[0]].y;
@@ -11981,14 +11995,11 @@ function numCorners(cubies) {
 			corners++;
 		}
 	})
-	return corners;
-}
-function isRectangle(cubies) {
-	if (cubies.length == 0) {
+	let dimension = (+(maxx != minx) + +(maxy != miny) + +(maxz != minz))
+	if (dimension == 1) {
 		return true;
 	}
-
-	return numCorners(cubies) == 4;
+	return corners == 4;
 }
 function uniform(move) {
 	const dir = getMove(MAXX, CUBYESIZE, SIZE)[move][0];
@@ -12016,6 +12027,7 @@ function uniform(move) {
 				}
 			}
 		}
+		console.log("HERE", cubies, isRectangle(cubies))
 		if (!isRectangle(cubies)) {
 			return false;
 		}
