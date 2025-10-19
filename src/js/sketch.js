@@ -5111,7 +5111,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 	const interval = setInterval(() => {
 	console.log("canMan?" + canMan)
 	  if (canMan) {
-		if (!isBot() && MODE != "competing") {
+		if (!isBot() && MODE != "competing" && !isSolved()) {
 			launchGoMessage();
 		}
 		clearInterval(interval); // Stop the interval when the cube stops animating
