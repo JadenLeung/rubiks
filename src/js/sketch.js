@@ -4607,9 +4607,32 @@ function competeSettings(num = compete_type) {
     };
 
     // --- Main Loop to Build Rows ---
-    if (num === "1v1") { // Add header for 1v1
-        container.innerHTML = `<div style="display: flex; width: 650px; gap: 10px; margin-bottom: 10px;"><span style="width: 80px;"></span><span style="flex: 1; text-align: left;">You</span><span style="flex: 1; text-align: left;">Opponent</span><span style="width: 120px;"></span></div>`;
-    }
+    if (num === "1v1") { 
+		container.innerHTML = `
+		<div style="display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;">
+			<span style="width: 80px;"></span>
+			<span style="flex: 1; text-align: left; display: flex; align-items: center; gap: 4px;">
+				You
+				<button id="apply_col_btn" class="btn btn-secondary" style="font-size: 10px; padding: 1px 6px; margin-left: 5px;">Apply column >></button>
+			</span>
+			<span style="flex: 1; text-align: left;">Opponent</span>
+			<span style="width: 120px;"></span>
+		</div>`;
+
+		const applyColBtn = document.getElementById("apply_col_btn");
+		applyColBtn.onclick = () => {
+			for (let j = 0; j < rows.length; j++) {
+				if (rows[j].select2) { // ensure opponent column exists
+					rows[j].select2.value = rows[j].select1.value; // copy "You" to "Opponent"
+					if (COMPETE_ADVANCED.checked()) {
+						compete_customarr[j][1] = compete_customarr[j][0]; // copy custom settings
+						rows[j].optionText2.textContent = rows[j].optionText1.textContent;
+					}
+				}
+			}
+			handleCompeteSettingsChange();
+		};
+	}
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         const row = document.createElement("div");
