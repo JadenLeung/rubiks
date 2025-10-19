@@ -1919,6 +1919,9 @@ setInterval(() => {
 		setDisplay("inline", ["giveup"]);
 		juststarted = false;
 	}
+	if (MODE == "competing" && timer.getTime() > 0 && timer.isRunning && isthin && !isShown("giveup")) {
+		setDisplay("inline", ["giveup", "reset2_div"]);
+	}
 	let speedval = RACE_SLIDER.value() * 100;
 	let delay = RACE_DELAY_SLIDER.value();
 	let estimate;
@@ -5083,7 +5086,9 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 			progressUpdate();
 			timer.inspection = true;
 			otherShuffling = false;
-			setDisplay("inline", ["giveup", "reset2_div"]);
+			if (!isthin) {
+				setDisplay("inline", ["reset2_div", "giveup"]);
+			}
 			comstep++;
 			console.log("adding 1", canMan, comstep);
 			competeScreenshot();
