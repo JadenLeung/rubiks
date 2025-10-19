@@ -1,16 +1,21 @@
 import { DIMS_OBJ } from "../data/dims.js";
 
-export function createCustomDialog(onConfirm, cube, original) {
+export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
+    console.log(is1v1mode)
     let modal = document.getElementById("custom-dialog");
     let backdrop = document.getElementById("custom-dialog-backdrop");
 
     let scrambleOptions = ["Default", "3x3x2", "Double Turns"];
     let inputOptions = ["Default", "3x3x2", "Double Turns"];
-    let winConditionOptions = ["Default", "Solve 1 Side"];
+    let goalOptions = ["Default", "Solve 1 Side"];
 
     if (DIMS_OBJ[cube].type.includes("NxN")) {
         scrambleOptions.push("Gearcube", "Last Layer");
         inputOptions.push("Gearcube");
+    }
+
+    if (DIMS_OBJ[cube].type.includes("Shapeshift")) {
+        goalOptions.push("Make Cubic Shape");
     }
 
     if (!modal) {
@@ -28,7 +33,8 @@ export function createCustomDialog(onConfirm, cube, original) {
             zIndex: "9999",
             display: "none",
             minWidth: "300px",
-            textAlign: "center"
+            textAlign: "center",
+            color: "black",
         });
 
         modal.innerHTML = `
@@ -50,7 +56,8 @@ export function createCustomDialog(onConfirm, cube, original) {
             </div>
 
             <div style="display: flex; justify-content: space-between;">
-                <button id="dialog-ok-btn" class="btn btn-primary" style="flex: 1; margin-right: 5px;">OK</button>
+                <button id="dialog-ok-btn" class="btn btn-primary" style="flex: 1; margin-right: 5px;">Apply</button>
+                <button id="dialog-applyall-btn" class="btn btn-primary" style="flex: 1; margin-right: 5px;">Apply to both players</button>
                 <button id="dialog-cancel-btn" class="btn btn-secondary" style="flex: 1;">Cancel</button>
             </div>
         `;
@@ -93,15 +100,17 @@ export function createCustomDialog(onConfirm, cube, original) {
     if (!backdrop) backdrop = document.getElementById("custom-dialog-backdrop");
 
     const okBtn = document.getElementById("dialog-ok-btn");
+    let applyAllBtn = document.getElementById("dialog-applyall-btn");;
+    applyAllBtn.style.display = is1v1mode ? "block" : "none";
     const cancelBtn = document.getElementById("dialog-cancel-btn");
 
     const scrambleContainer = document.getElementById("dialog-buttons-1");
     const inputContainer = document.getElementById("dialog-buttons-2");
-    const winConditionContainer = document.getElementById("dialog-buttons-3");
+    const goalContainer = document.getElementById("dialog-buttons-3");
 
     scrambleContainer.innerHTML = "";
     inputContainer.innerHTML = "";
-    winConditionContainer.innerHTML = "";
+    goalContainer.innerHTML = "";
 
     function makeButtonGroup(container, options, selectedValue, onClick) {
         options.forEach(opt => {
@@ -141,20 +150,25 @@ export function createCustomDialog(onConfirm, cube, original) {
         }
     });
 
-    // WinCondition buttons
-    makeButtonGroup(winConditionContainer, winConditionOptions, original.winCondition);
+    makeButtonGroup(goalContainer, goalOptions, original.goal);
 
-    okBtn.onclick = () => {
+    function confirm(applyOpponent) {
         const value1 = scrambleContainer.querySelector(".selected")?.textContent || "Default";
         const value2 = inputContainer.querySelector(".selected")?.textContent || "Default";
-        const value3 = winConditionContainer.querySelector(".selected")?.textContent || "Default";
+        const value3 = goalContainer.querySelector(".selected")?.textContent || "Default";
 
         modal.style.display = "none";
         backdrop.style.display = "none";
 
-        const customobj = { scramble: value1, input: value2, winCondition: value3 };
-        if (onConfirm) onConfirm(JSON.stringify(customobj));
+        const customobj = { scramble: value1, input: value2, goal: value3 };
+        if (onConfirm) onConfirm(JSON.stringify(customobj), applyOpponent);
     };
+
+    okBtn.onclick = () => confirm(false);
+    if (applyAllBtn)  applyAllBtn.onclick = () => confirm(true);
+
+
+
 
     cancelBtn.onclick = () => {
         modal.style.display = "none";

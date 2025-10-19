@@ -8,6 +8,7 @@ import {DIMS_OBJ} from '../data/dims.js';
 import { constkeymappings } from '../data/keymap.js';
 import {modeData, getUserData, printUsers, putUsers, hasUser, putSuggestion} from "./backend.js";
 import { createCustomDialog } from '../components/GameDialog.js';
+import { computeCubeScore } from '../components/computeCubeScore.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -56,7 +57,7 @@ export default function (p) {
 	let DIM3 = 3;
 	let DIM4 = 3;
 	let focused_competeobj = {};
-	const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "winCondition": "Default"});
+	const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "goal": "Default"});
     const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
 	let othershuffle = false;
 	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
@@ -1758,8 +1759,11 @@ setInterval(() => {
 			timer.stop();
 	} else if (comstep > 1 && comstep % 2 == 0) {
 		let solveFunc = isSolved;
-		if (competeWinCondition() == "Solve 1 Side") {
+		if (competeGoal() == "Solve 1 Side") {
 			solveFunc = () => {return numSolved() >= 1};
+		}
+		if (competeGoal() == "Make Cubic Shape") {
+			solveFunc = isCube;
 		}
 		if (solveFunc()) {
 			comstep++;
@@ -3452,6 +3456,9 @@ function Reverse(move)
 }
 
 function getProgress() { // temporary get progress
+	if (competeGoal() == "Make Cubic Shape") {
+		return computeCubeScore(getCubyFromPos, MAXX, CUBYESIZE).adjustedScore;
+	}
 	let cubies = getOuterCubes();
 	let sum = 0;
 	let weight = 0;
@@ -3485,7 +3492,7 @@ function getProgress() { // temporary get progress
 			weight ++;
 		}
 	})
-	if (competeWinCondition() == "Solve 1 Side") {
+	if (competeGoal() == "Solve 1 Side") {
 		return Math.round(sidemax * 100);
 	}
 	return Math.round((sum / weight) * 100);
@@ -3942,7 +3949,7 @@ function formatCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
 		if (customobj[key] != "Default" && !(key == "scramble" && customobj["input"] != "Default")) {
-			if (key == "winCondition") {
+			if (key == "goal") {
 				strarr.push(customobj[key])
 			} else {
 				strarr.push(`${capital(key)}: ${customobj[key]}`);
@@ -3956,7 +3963,11 @@ function formatSettingsCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
 		if (customobj[key] != "Default") {
-			strarr.push(`${capital(key)}: ${customobj[key]}`);
+			if (key == "goal") {
+				strarr.push(`Goal: ${customobj[key]}`)
+			} else {
+				strarr.push(`${capital(key)}: ${customobj[key]}`);
+			}
 		}
 	})
 	return strarr.length > 0 ? strarr.join("\n") : "";
@@ -4207,10 +4218,12 @@ function startRound(data, scramble) {
 		} else {
 			waitStopTurning(data.data.type != "teamblind");
 		}
-		getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
-		if (competeWinCondition() == "Solve 1 Side") {
-			getEl("match_INSTRUCT").innerHTML = "Solve <b>one side</b>.";
+		const matchInstructObj = {
+			"Default": "Solve the cube faster than your opponent!",
+			"Solve 1 Side": "Solve <b>one side</b>.",
+			"Make Cubic Shape": "Turn the puzzle into <b>cubic shape</b>.",
 		}
+		getEl("match_INSTRUCT").innerHTML = matchInstructObj[competeGoal()] ;
 	}, 500);
 }
 
@@ -4224,9 +4237,9 @@ function playerIndex() {
 	}
 }
 
-function competeWinCondition() {
-	if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].winCondition) {
-		return competedata.data.customarr[competedata.round][playerIndex()].winCondition;
+function competeGoal() {
+	if (competedata.data.customarr && competedata.data.customarr[competedata.round][playerIndex()].goal) {
+		return competedata.data.customarr[competedata.round][playerIndex()].goal;
 	}
 	return "Default"
 }
@@ -4556,14 +4569,19 @@ function competeSettings(num = compete_type) {
 
         plusBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            const modal = createCustomDialog((finalValue) => {
+            const modal = createCustomDialog((finalValue, applyOpponent) => {
                 try {
                     const parsed = JSON.parse(finalValue);
                     optionText.textContent = formatSettingsCustom(parsed);
                     compete_customarr[roundIndex][playerIndex] = finalValue;
+					if (applyOpponent) {
+						compete_customarr[roundIndex][1 - playerIndex] = finalValue;
+						rows[roundIndex].optionText1.textContent = optionText.textContent;
+						rows[roundIndex].optionText2.textContent = optionText.textContent;
+					}
 					handleCompeteSettingsChange();
                 } catch (err) { console.error("Invalid JSON:", err); }
-            }, puzzleSelect.value, JSON.parse(compete_customarr[roundIndex][playerIndex]));
+            }, puzzleSelect.value, JSON.parse(compete_customarr[roundIndex][playerIndex]), num === "1v1");
             modal.style.display = "block";
         });
         
@@ -4605,7 +4623,7 @@ function competeSettings(num = compete_type) {
 			const applyBtn = document.createElement("button");
 			applyBtn.textContent = "Apply row to all";
 			applyBtn.classList.add("btn", "btn-secondary");
-			Object.assign(applyBtn.style, { fontSize: "10px", padding: "0 6px" });
+			Object.assign(applyBtn.style, { fontSize: "10px", padding: "1px 6px" });
 			applyBtn.onclick = () => {
 				// CHANGE START: Start loop at j = 0 to include the first row
 				for (let j = 0; j < rows.length; j++) {
@@ -5109,7 +5127,12 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 			competeScreenshot();
 			setDisplay(competedata.data.type == "1v1" ? "block" : "none", ["ss_container"]);
 			let fontSize = 40;
-			let word = competeWinCondition() == "Solve 1 Side" ? "Solve 1 Side!" : "Solve the cube!";
+			const competeWordObj = {
+				Default: "Solve the cube!",
+				"Solve 1 Side": "Solve 1 Side!",
+				"Make Cubic Shape": "Make Cubic hape!"
+			}
+			let word = competeWordObj[competeGoal()];
 			if (competedata.data.type == "teamblind") {
 				word = (competedata.data.blinded == socket.id) ? "🕶️" : "👁️";
 				fontSize = 80;
@@ -8101,7 +8124,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(compete_dims, compete_customarr);
+		console.log(computeCubeScore(getCubyFromPos, MAXX, CUBYESIZE));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11932,9 +11955,10 @@ function sideSolved(color)
 	}
 	return false;
 }
-function isRectangle(cubies) {
+
+function numCorners(cubies) {
 	if (cubies.length == 0) {
-		return true;
+		return 0;
 	}
 	let minx = CUBE[cubies[0]].x;
 	let maxx = CUBE[cubies[0]].x;
@@ -11957,14 +11981,19 @@ function isRectangle(cubies) {
 			corners++;
 		}
 	})
-	// let numsquished = +(minx == maxx) + +(miny == maxy) + +(minz == maxz)
-	return corners == 4;
+	return corners;
+}
+function isRectangle(cubies) {
+	if (cubies.length == 0) {
+		return true;
+	}
+
+	return numCorners(cubies) == 4;
 }
 function uniform(move) {
 	const dir = getMove(MAXX, CUBYESIZE, SIZE)[move][0];
 	const startaxis = getMove(MAXX, CUBYESIZE, SIZE)[move][1][0]
 	const dx = startaxis < 0 ? CUBYESIZE : -CUBYESIZE;
-	console.log("In Uniform", dir, startaxis, dx)
 	let base = 0;
 	for (let i = 0; i < 2; i++) {
 		let numcubies = 0;
@@ -11999,6 +12028,37 @@ function uniform(move) {
 	}
 	return true;
 }
+function sameNumCubiesInDir(dir) {
+	let base = 0;
+	for (let x = -MAXX; x <= MAXX; x += CUBYESIZE) {
+		let numcubies = 0;
+		for (let y = -MAXX; y <= MAXX; y += CUBYESIZE) {
+			for (let z = -MAXX; z <= MAXX; z += CUBYESIZE) {
+				let cuby;
+				if (dir == "x") {
+					cuby = getCubyFromPos(x, y, z);
+				}
+				if (dir == "y") {
+					cuby = getCubyFromPos(z, x, y);
+				}
+				if (dir == "z") {
+					cuby = getCubyFromPos(y, z, x);
+				}
+				numcubies += cuby != -1 ? 1 : 0;
+			}
+		}
+		if (base == 0) {
+			base = numcubies;
+		} else if (base != numcubies && numcubies != 0) {
+			return false;
+		}
+	}
+	return true;
+}
+function isCube() {
+	return sameNumCubiesInDir("x") && sameNumCubiesInDir("y") && sameNumCubiesInDir("z");
+}
+
 function isSolved()
 {
 	if([13, "lasagna"].includes(DIM)) {
