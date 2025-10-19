@@ -43,7 +43,7 @@ export default function (p) {
 	let compete_cube = "";
 	let compete_type = "";
 	let compete_dims = [];
-	let compete_shufflearr = [];
+	let compete_customarr = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
 	const speeddata = {
@@ -59,6 +59,7 @@ export default function (p) {
 	let othershuffle = false;
 	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
 	let SWITCHTIME = 15;
+	let saveCompeteSettings = {};
 	let isShuffling = false;
 	let otherShuffling = false;
 	let competeprogress = 0;
@@ -931,6 +932,8 @@ p.setup = () => {
 	["3x3", "2x2", "Xmas 2x2", "Xmas 3x3", "Plus Cube"].forEach(cube => {
 		TEAMBLIND_SEL.option(cube)
 	}) 
+
+	TEAMBLIND_SEL.changed(handleCompeteSettingsChange)
 
 	INPUT.option("Normal");
 	INPUT.option("3x3x2");
@@ -1946,13 +1949,6 @@ setInterval(() => {
 	STARTBLIND.html(DIM == 50 ? "Blind 3x3" : "Blind 2x2");
 	if (timer.isRunning) {
 		getEl("continuematch").style.display = "none";
-	}
-	compete_dims = competeDims();
-	if (COMPETE_ADVANCED.checked()) {
-		compete_dims = compete_dims.filter((_, index) => index % 2 == 0);
-		compete_shufflearr = competeDims().filter((_, index) => index % 2 == 1)
-	} else {
-		compete_shufflearr = [];
 	}
 	getEl("practice_instruct").style.display = isthin ? "none" : "block";
 	PRACTICE_SEL.style('width', isthin ? "125px" : "");
@@ -4474,7 +4470,6 @@ function continueMatch() {
 }
 
 function competeSettings(num = compete_type) {
-    // --- Initial Setup (largely unchanged) ---
     setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div", "competerestore"]);
     if (num === "1v1" && compete_type === "group" && competedata.userids?.length > 2) {
         alert("Cannot turn group compete into 1v1 match.");
@@ -4506,9 +4501,9 @@ function competeSettings(num = compete_type) {
     // --- Helper Function to Create a Player Column ---
     const createPlayerColumn = (roundIndex, playerIndex, typeLabel) => {
         // 1. Initialize data
-        if (!compete_shufflearr[roundIndex]) compete_shufflearr[roundIndex] = [];
-        if (!compete_shufflearr[roundIndex][playerIndex] || compete_shufflearr[roundIndex][playerIndex] === "Default") {
-            compete_shufflearr[roundIndex][playerIndex] = defaultShuffleData;
+        if (!compete_customarr[roundIndex]) compete_customarr[roundIndex] = [];
+        if (!compete_customarr[roundIndex][playerIndex] || compete_customarr[roundIndex][playerIndex] === "Default") {
+            compete_customarr[roundIndex][playerIndex] = defaultShuffleData;
         }
 
         // 2. Create elements
@@ -4538,7 +4533,7 @@ function competeSettings(num = compete_type) {
             puzzleSelect.value = compete_dims[roundIndex][playerIndex];
         }
         try {
-            const parsed = JSON.parse(compete_shufflearr[roundIndex][playerIndex]);
+            const parsed = JSON.parse(compete_customarr[roundIndex][playerIndex]);
             optionText.textContent = formatSettingsCustom(parsed);
         } catch {
             optionText.textContent = defaultShuffleText;
@@ -4551,15 +4546,20 @@ function competeSettings(num = compete_type) {
             setDisplay("block", ["compete_select"]);
             competeSelect(roundIndex, puzzleSelect, typeLabel);
         });
+		puzzleSelect.addEventListener("change", () => {
+			handleCompeteSettingsChange();
+		})
+
         plusBtn.addEventListener("click", (e) => {
             e.preventDefault();
             const modal = createCustomDialog((finalValue) => {
                 try {
                     const parsed = JSON.parse(finalValue);
                     optionText.textContent = formatSettingsCustom(parsed);
-                    compete_shufflearr[roundIndex][playerIndex] = finalValue;
+                    compete_customarr[roundIndex][playerIndex] = finalValue;
+					handleCompeteSettingsChange();
                 } catch (err) { console.error("Invalid JSON:", err); }
-            }, puzzleSelect.value, JSON.parse(compete_shufflearr[roundIndex][playerIndex]));
+            }, puzzleSelect.value, JSON.parse(compete_customarr[roundIndex][playerIndex]));
             modal.style.display = "block";
         });
         
@@ -4608,17 +4608,18 @@ function competeSettings(num = compete_type) {
 				// CHANGE END:
 					rows[j].select1.value = rows[0].select1.value;
 					if (COMPETE_ADVANCED.checked()) {
-						compete_shufflearr[j][0] = compete_shufflearr[0][0];
+						compete_customarr[j][0] = compete_customarr[0][0];
 						rows[j].optionText1.textContent = rows[0].optionText1.textContent;
 					}
 					if (num === "1v1") {
 						rows[j].select2.value = rows[0].select2.value;
 						if (COMPETE_ADVANCED.checked()) {
-							compete_shufflearr[j][1] = compete_shufflearr[0][1];
+							compete_customarr[j][1] = compete_customarr[0][1];
 							rows[j].optionText2.textContent = rows[0].optionText2.textContent;
 						}
 					}
 				}
+				handleCompeteSettingsChange();
 			};
 			extraColumn.appendChild(applyBtn);
 		}
@@ -4631,19 +4632,22 @@ function competeSettings(num = compete_type) {
         for (let j = 0; j < rows.length; j++) {
             rows[j].select1.value = "3x3";
             if (COMPETE_ADVANCED.checked()) {
-                compete_shufflearr[j][0] = defaultShuffleData;
+                compete_customarr[j][0] = defaultShuffleData;
                 rows[j].optionText1.textContent = "";
             }
             if (num === "1v1") {
                 rows[j].select2.value = "3x3";
                 if (COMPETE_ADVANCED.checked()) {
-                    compete_shufflearr[j][1] = defaultShuffleData;
+                    compete_customarr[j][1] = defaultShuffleData;
                     rows[j].optionText2.textContent = "";
                 }
             }
         }
         TEAMBLIND_SEL.selected("3x3");
+		handleCompeteSettingsChange();
     };
+
+	handleCompeteSettingsChange()
 }
 
 function competeSelect(round, select, text) {
@@ -4671,10 +4675,22 @@ function competeSelectButtons() {
 
 }
 
+function handleCompeteSettingsChange() {
+	console.log("changed");
+	compete_dims = competeDims();
+	if (COMPETE_ADVANCED.checked()) {
+		compete_dims = compete_dims.filter((_, index) => index % 2 == 0);
+		compete_customarr = competeDims().filter((_, index) => index % 2 == 1)
+	} else {
+		compete_customarr = [];
+	}
+}
+
 function finishCompeteSelect(dim) {
 	focused_select.value = dim;
 	setDisplay("block", ["creating_match"]);
 	CUBEMAP[dim]();
+	handleCompeteSettingsChange();
 	setDisplay("none", ["compete_select", "keymap", "input2"]);
 }
 
@@ -4786,8 +4802,8 @@ function competeDims() {
 				if (select) {
 					const puzzleType = select.value;
 					// Safely get the advanced option, providing a default if it's missing
-					const advancedOption = (compete_shufflearr[i] && compete_shufflearr[i][0])
-						? compete_shufflearr[i][0]
+					const advancedOption = (compete_customarr[i] && compete_customarr[i][0])
+						? compete_customarr[i][0]
 						: JSON.stringify({ scramble: "Default", input: "Default" });
 
 					// Push the puzzle and option as two separate arrays to create the interleaved structure
@@ -4820,8 +4836,8 @@ function competeDims() {
                 const yourPuzzle = selects[0].value;
                 const opponentPuzzle = selects[1].value;
 
-                const yourOption = compete_shufflearr[i][0];
-                const opponentOption = compete_shufflearr[i][1];
+                const yourOption = compete_customarr[i][0];
+                const opponentOption = compete_customarr[i][1];
 
                 puzzles.push([yourPuzzle, opponentPuzzle]);
                 options.push([yourOption, opponentOption]);
@@ -8065,7 +8081,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(getProgress());
+		console.log(compete_dims);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -12122,8 +12138,10 @@ getEl("compete_rounds").addEventListener("input", function () {
     if (this.value != "" && this.value <= 0 || isNaN(this.value)) {
         this.value = 1;
     }
-	competeSettings();
-	competeSettings();
+	if (this.value != "") {
+		competeSettings();
+		competeSettings();
+	}
 });
 function arrowPaint(dir) {
 	if (dir == "left") {
