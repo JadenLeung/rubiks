@@ -6391,7 +6391,7 @@ async function loadData(times) {
 		})
 		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3", "c_day_bweek", "c_day2_bweek"];
 		params.forEach((param) => {
-				localStorage[param] = userdata[index][param];
+				localStorage[param] = userdata[param];
 		})
 	}
 	successSQL("Loaded data");
