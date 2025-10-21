@@ -6396,12 +6396,14 @@ async function loadData(times) {
 		params.forEach((param) => {
 			try {
 				if (userdata[param] != "null" && userdata[param] != null && JSON.parse(userdata[param].week == week)) {
-					if ((localStorage[param] == undefined || localStorage[param] == -1)) {
+					if ((localStorage[param] == undefined || localStorage[param] == -1 || (JSON.parse(localStorage[param]).week != week && JSON.parse(userdata[param]).week == week))) {
 						localStorage[param] = userdata[param];
 					} else {
 						const dbobj = JSON.parse(userdata[param]);
 						const localobj = JSON.parse(localStorage[param]);
-						if (dbobj.week == week && dbobj.score < localobj.score) {
+						console.log(dbobj, localobj);
+						console.log(dbobj.week == week, +(dbobj.score) < +(localobj.score))
+						if (dbobj.week == week && +(dbobj.score) < +(localobj.score)) {
 							localStorage[param] = userdata[param];
 						}
 					}
