@@ -23,7 +23,7 @@ socket.on("connect_error", (err) => {
 export default function (p) {
 	const CUBYESIZE = 50;
 	const DEBUG = false;
-	let week = sinceNov3('w') % 20;
+	let week = sinceOct12('w') % 20;
 	let bruh = 0;
 	let CAM;
 	let keymappings = constkeymappings;
@@ -3756,7 +3756,7 @@ function idmode()
 
 	modeData("id");
 }
-function sinceNov3(what) {
+function sinceOct12(what) {
 	const startDate = new Date('2025-10-12');
 	const currentDate = new Date();
 	const msDifference = currentDate - startDate;
@@ -3764,7 +3764,17 @@ function sinceNov3(what) {
 	const weeksDifference = msDifference / div;
 	
 	return Math.floor(weeksDifference); // Return whole weeks
-  }
+}
+
+function sinceNov3() {
+	const startDate = new Date('2024-11-3');
+	const currentDate = new Date();
+	const msDifference = currentDate - startDate;
+	let div = 1000 * 60 * 60 * 24 * 7;
+	const weeksDifference = msDifference / div;
+	
+	return Math.floor(weeksDifference); // Return whole weeks
+}
 
 let colorindex = 0;
 function getColoredCuby(index) {
@@ -4979,14 +4989,14 @@ function challengemode() {
 	document.getElementById('c_desc').innerHTML = "You have <b>unlimited</b> attempts to solve the weekly scramble. There are 15 seconds of inspection time.";
 	document.getElementById('c_desc2').innerHTML = "Scores are reset every Sunday.";
 	document.getElementById('cd_title').innerHTML = "Daily Scramble";
-	if (localStorage.cdate2 == sinceNov3()) {
+	if (localStorage.cdate2 == sinceOct12()) {
 		document.getElementById('cd_desc').innerHTML = "Today, you achieved a score of <b>" + localStorage.c_today + "</b> in the Daily 3x3. Come back tomorow for another attempt!";
 		document.getElementById('cd_start').style.display = "none";
 	} else {
 		document.getElementById('cd_desc').innerHTML = "You have <b>1</b> attempt to solve the daily 3x3 scramble. There are 15 seconds of inspection time.";
 		document.getElementById('cd_start').style.display = "block";
 	}
-	if (localStorage.cdate3 == sinceNov3()) {
+	if (localStorage.cdate3 == sinceOct12()) {
 		document.getElementById('cd2_desc').innerHTML = "Today, you achieved a score of <b>" + localStorage.c_today2 + "</b> in the Daily 2x2. Come back tomorow for another attempt!";
 		document.getElementById('cd2_start').style.display = "none";
 	} else {
@@ -4995,8 +5005,8 @@ function challengemode() {
 	}
 }
 function dailychallenge(cube) {
-	if (localStorage.cdate3 == sinceNov3('d') && cube == 2) return;
-	if (localStorage.cdate2 == sinceNov3('d') && cube == 3) return;
+	if (localStorage.cdate3 == sinceOct12('d') && cube == 2) return;
+	if (localStorage.cdate2 == sinceOct12('d') && cube == 3) return;
 	DIM2 = cube == 3 ? 50 : 100;
 	DIM = DIM2;
 	SIZE = 3;
@@ -5015,10 +5025,10 @@ function dailychallenge(cube) {
 	waitStopTurning();
 	dstep = true;
 	if (cube == 3) {
-		localStorage.cdate2 = sinceNov3('d');
+		localStorage.cdate2 = sinceOct12('d');
 		localStorage.c_today = "DNF";
 	} else {
-		localStorage.cdate3 = sinceNov3('d');
+		localStorage.cdate3 = sinceOct12('d');
 		localStorage.c_today2 = "DNF";
 	}
 }
@@ -5748,7 +5758,7 @@ function updateScores() {
 	}
 	// movesmode scores
 	const doneweeks = 20;
-	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (week+1+doneweeks) +  "", c_day2: "Daily 2x2 all time"
+	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (sinceNov3() + 1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
 			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon"};
@@ -5769,12 +5779,12 @@ function setScore(mode, total, getlow = true) {
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
 	(MODE == "moves" && ((total > highscores && !getlow) || (total < highscores && getlow)))
-	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceNov3('d')) || total < highscores))) {
+	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceOct12('d')) || total < highscores))) {
 		if (localStorage.username != "signedout")
 			document.getElementById("highscore").style.display = "block";
 			localStorage[mode] = total;
 		if (["weekly", "daily"].includes(MODE)) {
-			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceNov3('d'));
+			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceOct12('d'));
 		}
 		updateScores();
 	}
@@ -6368,7 +6378,7 @@ async function loadData(times) {
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
 			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5",
-			"c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3", "c_day_bweek", "c_day2_bweek"];
+			"c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3"];
 		params.forEach((param) => {
 			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
 				localStorage[param] = userdata[param];
@@ -6380,6 +6390,26 @@ async function loadData(times) {
 				localStorage[param] = userdata[param];
 			}
 		})
+		console.log(userdata["c_day2_bweek"])
+	
+		params = ["c_day_bweek", "c_day2_bweek"];
+		params.forEach((param) => {
+			try {
+				if (userdata[param] != "null" && userdata[param] != null && JSON.parse(userdata[param].week == week)) {
+					if ((localStorage[param] == undefined || localStorage[param] == -1)) {
+						localStorage[param] = userdata[param];
+					} else {
+						const dbobj = JSON.parse(userdata[param]);
+						const localobj = JSON.parse(localStorage[param]);
+						if (dbobj.week == week && dbobj.score < localobj.score) {
+							localStorage[param] = userdata[param];
+						}
+					}
+				}
+			} catch (e) {
+
+			}
+		});
 	}
 	successSQL("Loaded data");
 	updateScores();
