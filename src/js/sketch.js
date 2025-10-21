@@ -6395,8 +6395,9 @@ async function loadData(times) {
 		params = ["c_day_bweek", "c_day2_bweek"];
 		params.forEach((param) => {
 			try {
+				console.log("Here, ", userdata[param] != "null",userdata[param] != null, JSON.parse(userdata[param]).week == week)
 				if (userdata[param] != "null" && userdata[param] != null && JSON.parse(userdata[param].week == week)) {
-					if ((localStorage[param] == undefined || localStorage[param] == -1 || (JSON.parse(localStorage[param]).week != week && JSON.parse(userdata[param]).week == week))) {
+					if ((localStorage[param] == undefined || localStorage[param] == -1 || (JSON.parse(localStorage[param]).week != week))) {
 						localStorage[param] = userdata[param];
 					} else {
 						const dbobj = JSON.parse(userdata[param]);
