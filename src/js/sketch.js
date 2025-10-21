@@ -6377,8 +6377,7 @@ async function loadData(times) {
 	console.log("Userdata is ", userdata);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
-			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5",
-			"c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3"];
+			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5"];
 		params.forEach((param) => {
 			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
 				localStorage[param] = userdata[param];
@@ -6390,27 +6389,10 @@ async function loadData(times) {
 				localStorage[param] = userdata[param];
 			}
 		})
-		console.log(userdata["c_day2_bweek"])
-	
-		params = ["c_day_bweek", "c_day2_bweek"];
+		params = ["c_today", "c_today2", "c_week", "c_day", "c_day2", "cdate", "cdate2","cdate3", "c_day_bweek", "c_day2_bweek"];
 		params.forEach((param) => {
-			try {
-				if (userdata[param] != "null" && userdata[param] != null && JSON.parse(userdata[param]).week == week) {
-					if ((localStorage[param] == undefined || localStorage[param] == -1 || (JSON.parse(localStorage[param]).week != week))) {
-						localStorage[param] = userdata[param];
-					} else {
-						const dbobj = JSON.parse(userdata[param]);
-						const localobj = JSON.parse(localStorage[param]);
-						if (dbobj.week == week && +(dbobj.score) < +(localobj.score)) {
-							localStorage[param] = userdata[param];
-						}
-					}
-				}
-
-			} catch (e) {
-				console.log("exception", e)
-			}
-		});
+				localStorage[param] = userdata[index][param];
+		})
 	}
 	successSQL("Loaded data");
 	updateScores();
