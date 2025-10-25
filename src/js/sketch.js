@@ -7512,8 +7512,13 @@ function shuffleCube(override = false) {
 					arr.push(opposite2[rnd])
 					total += rnd + "2' " + opposite2[rnd] + " ";
 				}
+			} else if (["2x3x4", "2x3x5"].includes(DIM) && i < 15) {
+				console.log("here2")
+				arr.push(rnd);
+				arr.push(rnd);
+				total += rnd + "2 ";
 			} else if(doubly || ((SCRAM.value() == "3x3x2" 
-			|| ((["2x2x4", "3x3x5", "2x3x4", "2x3x5"].includes(DIM) || (custom == 1 && SIZE > 3 && CUSTOMSHIFT.checked())) && i < 15))
+			|| ((["2x2x4", "3x3x5"].includes(DIM) || (custom == 1 && SIZE > 3 && CUSTOMSHIFT.checked())) && i < 15))
 			 &&  bad5.includes(rnd[0])))
 			{
 				console.log("HEREEEE")
@@ -10714,6 +10719,7 @@ function darkMode(){
 		darkmode = false;
 		// reSetup();
 	}
+	DARKMODE.checked(darkmode);
 	getEl("outertime").style.color = document.body.style.color;
 }
 function greenLayer(){
