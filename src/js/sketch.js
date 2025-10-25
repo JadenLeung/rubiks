@@ -29,7 +29,6 @@ export default function (p) {
 	let keymappings = constkeymappings;
 	let CAM_PICKER;
 	let CAMZOOM = -170;
-	let alldown;
 	let PICKER;
 	let botestimate;
 	let juststarted = false;
@@ -2133,6 +2132,14 @@ function getCubyFromPos(x, y, z) {
 		}
 	}
 	return -1;
+}
+function isRowEmpty(axis, row) {
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		if (CUBE[i][axis] == row && CUBE[i].shown) {
+			return false;
+		}
+	}
+	return true;
 }
 
 function findCubyNear(x, y, z, dx, dy, dz) {
@@ -7955,6 +7962,15 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	if(rows[0] < -MAXX || rows[rows.length - 1] > MAXX || rows.length > (MAXX * 2 / CUBYESIZE + 1)) {
 		return false;
 	}
+
+	if (rows[0] == -MAXX && isRowEmpty(axis, rows[0])) {
+		rows = rows.map(r => r + CUBYESIZE);
+	} else if (rows[rows.length - 1] == MAXX && isRowEmpty(axis, rows[rows.length - 1])) {
+		rows = rows.map(r => r - CUBYESIZE);
+	} else if (rows.length == 1 && rows[0] == 0 && isRowEmpty(axis, rows[0])) {
+		rows = [-CUBYESIZE, 0, CUBYESIZE];
+	}
+
 	if(bandaged.length > 0){
 		for(let i = 0; i < bandaged.length; i++){
 			total = 0;
@@ -7993,13 +8009,30 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	if (!bcheck) {
 		return rows;
 	}
+
+	let alldown = true;
+	let onedown = false;
+	const values = rows;
+	let cubies = shownCubies();
+	for(let i = 0; i < cubies.length; i++) {
+		onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
+	}
+	for(let i = 0; i < cubies.length; i++) {
+		alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
+	}
+
+	if(alldown == true) timed = false;
+	if (!onedown) {
+		return;
+	}
+
+
+
 	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && timed)
 	{
-		if(!alldown) {
-			timer.reset();
-			timer.start();
-			if (cstep == 1 || cstep == 1.5) cstep++;
-		}
+		timer.reset();
+		timer.start();
+		if (cstep == 1 || cstep == 1.5) cstep++;
 	}
 
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -8253,7 +8286,6 @@ p.keyPressed = (event) => {
 	if(canMan == true)
 	{
 		setLayout();
-		alldown = false;
 		
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 			if (CUBE[i].animating()) {
@@ -8458,7 +8490,7 @@ function adjustMove(move) {
 		// 	console.log("Illegal!");
 		// 	return false;
 		// }
-		if (["M", "S", "E"].includes(move[0]) && (move.includes("w") || SIZE % 2 == 0) && !uniform(move)) {
+		if (["M", "S", "E"].includes(move[0]) && !uniform(move)) {
 			console.log("Illegal2!");
 			return false;
 		}
@@ -8477,9 +8509,6 @@ function multiple(nb, timed, use = "default") {
 	if (nb < arr.length) {
 		canMan = false;
 		timer.inspection = false;
-		let cubies = shownCubies();
-		let onedown = true;
-		alldown = false;
 		if (!getMove(MAXX, CUBYESIZE, SIZE).hasOwnProperty(arr[nb]) && !["x", "y", "z"].includes(arr[nb][0])) { // Bad move
 			multiple(nb + 1, timed, use)
 			return;
@@ -8490,41 +8519,6 @@ function multiple(nb, timed, use = "default") {
 		} else {
 			multiple(arr.length, timed, use);
 			return;
-		}
-		if(!["x", "y", "z"].includes(arr[nb][0])){
-			alldown = true;
-			onedown = false;
-			const move = arr[nb];
-			const movemap = getMove(MAXX, CUBYESIZE, SIZE);
-			const axis = movemap[move][0];
-			const values = movemap[move][1];
-			if ([move, move + "'"].includes(arr[nb])) {
-				for(let i = 0; i < cubies.length; i++) {
-					onedown = onedown || values.some((value) => value == CUBE[cubies[i]][axis]);
-				}
-				for(let i = 0; i < cubies.length; i++) {
-					alldown = alldown && values.some((value) => value == CUBE[cubies[i]][axis]);
-				}
-			}
-		}
-		if(alldown == true) timed = false;
-		if (!onedown) {
-			console.log("NOTATION CHANGING", arr[nb]);
-			const bewide = ["L", "R", "F", "B", "U", "D", "M", "S", "E"];
-			const map = {Lw: "M", "Lw'": "M'", Rw: "M'", "Rw'": "M", Fw: "S", "Fw'": "S'",
-				Bw: "S'", "Bw'": "S", Uw: "E'", "Uw'": "E", Dw: "E", "Dw'": "E'"};
-			if (!arr[nb].includes("w") && bewide.includes(arr[nb][0])) {
-				arr[nb] = arr[nb][0] + "w" + (arr[nb].includes("'") ? "'" : "");
-				multiple(nb, timed, use);
-				return;
-			} else if (map.hasOwnProperty(arr[nb])) {
-				arr[nb] = map[arr[nb]];
-                multiple(nb, timed, use);
-                return;
-			} else {
-				multiple(nb + 1, timed, use);
-				return;
-			}
 		}
 		console.log("NOTATION", arr[nb], use);
 		notation(arr[nb], timed);
@@ -11640,7 +11634,6 @@ function dragCube(cuby1, color1, cuby2, color2)
 				arr.push(opposite2[arr[0][0]] + (arr[0].includes("'") ?  "" : "'"));
 			}
 		}
-		alldown = false;
 		multiple(0, true);
 		selectedCuby = -1;
 		selectedColor = [];
