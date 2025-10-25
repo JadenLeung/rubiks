@@ -8501,13 +8501,17 @@ function adjustMove(move) {
 				return false;
 			}
 		}
-		if ("lfrbud".includes(move[0]) && !uniform(move)) {
+		if ("lfrbud".includes(move[0]) && !uniform(move[0].toUpperCase())) {
 			move = move[0].toUpperCase() + move.slice(1);
 			console.log("changedmove ", move)
 		}
 		if (!(move.includes("w")) && ["L", "F", "R", "B", "U", "D"].includes(move[0]) && !uniform(move)) {
-			if (move.includes("'")) move = move[0] + "w'";
-			else move += "w";
+			const axis = getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+			const row = getMove(MAXX, CUBYESIZE, SIZE)[move][1][0];
+			if (!isRowEmpty(axis, row)) {
+				if (move.includes("'")) move = move[0] + "w'";
+				else move += "w";
+			}
 		}
 	}
 	return move;
