@@ -3299,8 +3299,6 @@ function randomBandage(){
 		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
 	}
 	bandaged2 = [];
-	ban9();
-	CUBEMAP[BANDAGE_SELECT.value()]();
 }
 function smoothBandage(random = false) {
 	let cnt = 0;
@@ -8176,8 +8174,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata);
-		console.log(getID());
+		console.log(bandaged, bandaged2);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
