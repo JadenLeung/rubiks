@@ -8490,9 +8490,16 @@ function adjustMove(move) {
 		// 	console.log("Illegal!");
 		// 	return false;
 		// }
-		if (["M", "S", "E"].includes(move[0]) && !uniform(move)) {
-			console.log("Illegal2!");
-			return false;
+		if (["M", "S", "E"].includes(move[0]) && (isRowEmpty(getMove(MAXX, CUBYESIZE, SIZE)[move][0], 0) || move.includes("w"))) {
+			if (move[0] == "M" && !(uniform("L") && uniform("R"))) {
+				return false;
+			}
+			if (move[0] == "E" && !(uniform("U") && uniform("D"))) {
+				return false;
+			}
+			if (move[0] == "S" && !(uniform("F") && uniform("B"))) {
+				return false;
+			}
 		}
 		if ("lfrbud".includes(move[0]) && !uniform(move)) {
 			move = move[0].toUpperCase() + move.slice(1);
