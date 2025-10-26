@@ -8212,7 +8212,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(bandaged, bandaged2);
+		console.log(DIM);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11465,11 +11465,17 @@ function dragAction()
 }
 function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouseY2)
 {
-	console.log("In dragcube");
 	if(!canMan)
-	return;
-	if(cuby1 == cuby2 && getFace(cuby1, mouseX1, mouseY1) == getFace(cuby2, mouseX2, mouseY2))
-	return;
+		return;
+	let face1 = getFace(cuby1, mouseX1, mouseY1);
+	let face2 = getFace(cuby2, mouseX2, mouseY2);
+	if (["2x3x4", "2x3x5", 2, 15].includes(DIM)) {
+		face1 = getFaceOld(cuby1, color1);
+		face2 = getFaceOld(cuby2, color2);
+	}
+	console.log(cuby1, cuby2, face1, face2)
+	if(cuby1 == cuby2 && face1 == face2)
+		return;
 	if(Array.isArray(DIM) && DIM[0] == "adding") return; 
 	if (cuby1 == -1 || cuby2 == -1) return;
 	console.log("Drag that idiot", cuby1, color1, cuby2, color2);
@@ -11497,9 +11503,7 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 	let revturnorder = turnorder.slice().reverse();
 	
 	let turning = false;
-	let face1 = getFace(cuby1, mouseX1, mouseY1);
-	let face2 = getFace(cuby2, mouseX2, mouseY2);
-
+	console.log(cuby1, cuby2, face1, face2)
 	if (cuby1 == cuby2) { // turning over
 		console.log("Equal cubies")
 		arr = [];
@@ -11522,9 +11526,8 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 				}
 			}
 		})
-	} else if (getFace(cuby1, mouseX1, mouseY1) == getFace(cuby2, mouseX2, mouseY2) && sharedAxis(cuby1, cuby2).timeshared > 1) {
+	} else if (face1 == face2 && sharedAxis(cuby1, cuby2).timeshared > 1) {
 		console.log("Same face cubies")
-		let face1 = getFace(cuby1, mouseX1, mouseY1);
 		const TURNARR = [
 			{axis: "z", turn: xaxis, faces:
 			[{face: 5, order: revturnorder, upaxis: "x", lastaxis: "y"},
@@ -11593,7 +11596,6 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 				5: {compare: ["x","z"], x : [0, 1], z: [2, 3]},
 			}
 			const dirobj = direction[face2];
-			console.log(dirobj, getFace(cuby2, mouseX2, mouseY2));
 			let axis1 = dirobj.compare[0];
 			let axis2 = dirobj.compare[1];
 			let da = CUBE[cuby1][axis1] - CUBE[cuby2][axis1];
@@ -11803,22 +11805,22 @@ function getFace(cuby1, mouseX, mouseY)
 	}
 	
 	return closestFace;
-	/*for(let i = 0; i < 6; i++)
-	{
-		for(let x = 0; x < 3; x++)
-		{
-			for(let y = 0; y < 3; y++)
-			{
-				let testnum = +(layout[i][x][y][2] + layout[i][x][y][3]);
-				if(layout[i][x][y][0] == getColor(color1) && testnum == cuby1)
-				{
-					return i;
-				}
-			}
-		}
-	}*/
-	return;
 }
+
+function getFaceOld(cuby1, color1)
+{
+	const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
+	let dir = null;
+	Object.keys(dirs).forEach((d) => {
+		if (!CUBE[cuby1] || !CUBE[cuby1].hasOwnProperty(d)) return;
+		if (getColor(CUBE[cuby1][d].levels) == getColor(color1)) {
+			dir = dirs[d];
+		}
+	})
+	return dir;
+}
+
+
 function sharedAxis(cuby1, cuby2) {
 	let obj = false;
 	let timeshared = 0;
