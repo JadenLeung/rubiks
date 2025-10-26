@@ -7191,6 +7191,10 @@ function getCubyByColor(arr1) {
 		return CUBE[i];
 		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.red.levels))
 		return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.magenta.levels))
+			return CUBE[i];
+		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.black.levels))
+			return CUBE[i];
 	}
 }
 
