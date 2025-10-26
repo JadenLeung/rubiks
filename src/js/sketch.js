@@ -7200,7 +7200,7 @@ function getCubyIndexByColor2(arr1) //original
 {
 	// console.log(arr1);
 	let realcolor = getColor(arr1);
-	if (realcolor == "k") return false;
+	// if (realcolor == "k") return false;
 	//console.log(realcolor);
 	let allcolors = [];
 	let adder = SIZE % 2 == 0 ? MAXX + 25 : MAXX;
