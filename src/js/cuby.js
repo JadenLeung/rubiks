@@ -125,7 +125,7 @@ export default class Cuby {
       if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
 
     }
-    if([2,15].includes(special[6]) || size == 1){ //rainbow
+    if([2,15].includes(special[6])){ //rainbow
         const directions = ["back", "front", "bottom", "top", "right", "left"];
         const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
         const opposite = {o:"r", r:"o", g:"b", b:"g", g:"b", y:"w", w:"y", k:"k"};
