@@ -11749,25 +11749,14 @@ function getFace(cuby1, mouseX, mouseY)
 	const camPosArray = CAM.getPosition([]);
 	const camPos = p.createVector(camPosArray[0], camPosArray[1], camPosArray[2]);
 	
-	let closestFace = null;
-	let minDistance = Infinity;
-	
 	// Get projection matrices from renderer
 	const renderer = p._renderer;
 	const projMatrix = renderer.uPMatrix;
 	const mvMatrix = renderer.uMVMatrix;
 	
-	for (let face of faces) {
-		// Check if face is visible (pointing towards camera)
-		const toCamera = p5.Vector.sub(camPos, face.center).normalize();
-		const visibility = p5.Vector.dot(face.normal, toCamera);
-		
-		// Skip faces not visible from camera
-		if (visibility <= 0) continue;
-		
-		// Manual projection to screen space
-		// Transform world space to clip space
-		const pos = [face.center.x, face.center.y, face.center.z, 1];
+	// Helper function to project a 3D point to screen coordinates
+	const projectToScreen = (x, y, z) => {
+		const pos = [x, y, z, 1];
 		
 		// Apply modelview matrix
 		const mv = [
@@ -11786,25 +11775,130 @@ function getFace(cuby1, mouseX, mouseY)
 		];
 		
 		// Perspective divide
-		if (clip[3] === 0) continue;
+		if (clip[3] === 0) return null;
 		const ndc = [clip[0] / clip[3], clip[1] / clip[3], clip[2] / clip[3]];
 		
 		// Convert to screen coordinates
 		const screenX = (ndc[0] + 1) * p.width / 2;
 		const screenY = (1 - ndc[1]) * p.height / 2;
 		
-		// Distance from mouse to projected face center
-		const dx = mouseX - screenX;
-		const dy = mouseY - screenY;
-		const distance = Math.sqrt(dx * dx + dy * dy);
+		return { x: screenX, y: screenY, depth: ndc[2] };
+	};
+	
+	// Helper to get face corners in 3D space
+	const getFaceCorners = (face) => {
+		const h = halfSize;
+		switch(face.index) {
+			case 0: // back (z-)
+				return [
+					[cuby.x - h, cuby.y - h, cuby.z - h],
+					[cuby.x + h, cuby.y - h, cuby.z - h],
+					[cuby.x + h, cuby.y + h, cuby.z - h],
+					[cuby.x - h, cuby.y + h, cuby.z - h]
+				];
+			case 1: // front (z+)
+				return [
+					[cuby.x - h, cuby.y - h, cuby.z + h],
+					[cuby.x + h, cuby.y - h, cuby.z + h],
+					[cuby.x + h, cuby.y + h, cuby.z + h],
+					[cuby.x - h, cuby.y + h, cuby.z + h]
+				];
+			case 2: // right (x-)
+				return [
+					[cuby.x - h, cuby.y - h, cuby.z - h],
+					[cuby.x - h, cuby.y - h, cuby.z + h],
+					[cuby.x - h, cuby.y + h, cuby.z + h],
+					[cuby.x - h, cuby.y + h, cuby.z - h]
+				];
+			case 3: // left (x+)
+				return [
+					[cuby.x + h, cuby.y - h, cuby.z - h],
+					[cuby.x + h, cuby.y - h, cuby.z + h],
+					[cuby.x + h, cuby.y + h, cuby.z + h],
+					[cuby.x + h, cuby.y + h, cuby.z - h]
+				];
+			case 4: // bottom (y-)
+				return [
+					[cuby.x - h, cuby.y - h, cuby.z - h],
+					[cuby.x + h, cuby.y - h, cuby.z - h],
+					[cuby.x + h, cuby.y - h, cuby.z + h],
+					[cuby.x - h, cuby.y - h, cuby.z + h]
+				];
+			case 5: // top (y+)
+				return [
+					[cuby.x - h, cuby.y + h, cuby.z - h],
+					[cuby.x + h, cuby.y + h, cuby.z - h],
+					[cuby.x + h, cuby.y + h, cuby.z + h],
+					[cuby.x - h, cuby.y + h, cuby.z + h]
+				];
+		}
+	};
+	
+	// Helper to check if point is inside polygon using ray casting
+	const pointInPolygon = (point, polygon) => {
+		let inside = false;
+		for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+			const xi = polygon[i].x, yi = polygon[i].y;
+			const xj = polygon[j].x, yj = polygon[j].y;
+			
+			const intersect = ((yi > point.y) !== (yj > point.y))
+				&& (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+			if (intersect) inside = !inside;
+		}
+		return inside;
+	};
+	
+	let bestFace = null;
+	let bestDepth = Infinity;
+	
+	for (let face of faces) {
+		// Check if face is visible (pointing towards camera)
+		const toCamera = p5.Vector.sub(camPos, face.center).normalize();
+		const visibility = p5.Vector.dot(face.normal, toCamera);
 		
-		if (distance < minDistance) {
-			minDistance = distance;
-			closestFace = face.index;
+		// Skip faces not visible from camera
+		if (visibility <= 0) continue;
+		
+		// Get and project all four corners
+		const corners3D = getFaceCorners(face);
+		const cornersScreen = corners3D.map(c => projectToScreen(c[0], c[1], c[2])).filter(c => c !== null);
+		
+		if (cornersScreen.length < 4) continue;
+		
+		// Check if mouse is within the face bounds
+		if (pointInPolygon({x: mouseX, y: mouseY}, cornersScreen)) {
+			// If mouse is inside this face, pick the one closest to camera (smallest depth)
+			const avgDepth = cornersScreen.reduce((sum, c) => sum + c.depth, 0) / cornersScreen.length;
+			if (avgDepth < bestDepth) {
+				bestDepth = avgDepth;
+				bestFace = face.index;
+			}
 		}
 	}
 	
-	return closestFace;
+	// If no face contains the mouse, fall back to closest face center
+	if (bestFace === null) {
+		let minDistance = Infinity;
+		for (let face of faces) {
+			const toCamera = p5.Vector.sub(camPos, face.center).normalize();
+			const visibility = p5.Vector.dot(face.normal, toCamera);
+			if (visibility <= 0) continue;
+			
+			const centerScreen = projectToScreen(face.center.x, face.center.y, face.center.z);
+			if (!centerScreen) continue;
+			
+			const dx = mouseX - centerScreen.x;
+			const dy = mouseY - centerScreen.y;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+			
+			if (distance < minDistance) {
+				minDistance = distance;
+				bestFace = face.index;
+			}
+		}
+	}
+	
+	return bestFace;
 }
 
 function getFaceOld(cuby1, color1)
