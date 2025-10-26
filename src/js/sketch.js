@@ -1837,7 +1837,6 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && (!mouseAllowed() || (custom == 1 && !canMouse()))) document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned off.)";
 	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1 && DIM != "snake_eye") bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
@@ -1869,7 +1868,7 @@ setInterval(() => {
 		setDisplay("none", ["wannapeek", "peekbutton"])
 	}
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
-	getEl("custommouse").innerHTML = canMouse() ? "(Mouse inputs are turned on.)" : "(Mouse inputs are turned off.)";
+	// getEl("custommouse").innerHTML = canMouse() ? "(Mouse inputs are turned on.)" : "(Mouse inputs are turned off.)";
 	getEl("switcher").style.display = (getEl("blind").style.display == "block" || (getEl("s_prac").style.display != "none")) ? "block" : "none";
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
@@ -2497,9 +2496,6 @@ function quickSolve(savesetup = false)
 		}
 	}
 }
-function mouseAllowed() {
-	return !NOMOUSE.includes(DIM) // && SIZE <= 3;
-}
 function speedSetup()
 {
 	if(document.getElementById("s_instruct").innerHTML.includes("In one game of") ||
@@ -3125,9 +3121,6 @@ function setInput() {
 		document.getElementById("keymap").style.display = "none";
 		document.getElementById("test_alg_div").style.display = "none";
 		document.getElementById("input2").style.display = "none";
-		if ((!mouseAllowed() && custom == 0) || custom == 1 && !canMouse()) {
-			document.getElementById("input2").style.display = "block";
-		}
 		if (SHUFFLE_BTN) SHUFFLE_BTN.html('<i class="bi bi-shuffle"></i>');
 		if (UNDO) UNDO.html('<i class="bi bi-arrow-90deg-left"></i>');
 		if (REDO) REDO.html('<i class="bi bi-arrow-90deg-right"></i>');
@@ -7841,22 +7834,22 @@ function getIndex(cuby)
 function arraysEqual(arr1, arr2) {
     return arr1.length === arr2.length && arr1.every((value, index) => value == arr2[index]);
 }
-function canMouse() {
-	let cubies = shownCubies();
-	const sides = ["front", "back", "left", "right", "top", "bottom"];
-	for (let i = 0; i < cubies.length; ++i) {
-		let set = new Set();
-		for (let j = 0; j < sides.length; ++j) {
-			const color = getColor(CUBE[i][sides[j]].levels);
-			if (color == "k") {
-				return false;
-			}
-			if (set.has(color)) return false;
-			set.add(color);
-		}
-	}
-	return true;
-}
+// function canMouse() {
+// 	let cubies = shownCubies();
+// 	const sides = ["front", "back", "left", "right", "top", "bottom"];
+// 	for (let i = 0; i < cubies.length; ++i) {
+// 		let set = new Set();
+// 		for (let j = 0; j < sides.length; ++j) {
+// 			const color = getColor(CUBE[i][sides[j]].levels);
+// 			if (color == "k") {
+// 				return false;
+// 			}
+// 			if (set.has(color)) return false;
+// 			set.add(color);
+// 		}
+// 	}
+// 	return true;
+// }
 function hasColor(c) {
 	const sides = ["front", "back", "left", "right", "top", "bottom"];
 	let hasit = false;
@@ -7870,8 +7863,6 @@ function hasColor(c) {
 	return hasit;
 }
 function startAction() {	
-	if(MODE == "cube" && !mouseAllowed() && custom == 0) return; 
-	if(custom == 1 && !canMouse()) return; 
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5 && MINIMODE == "physical"){ //racedetect
 		raceDetect();
 		return;
@@ -11476,9 +11467,10 @@ function dragAction()
 }
 function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouseY2)
 {
+	console.log("In dragcube");
 	if(!canMan)
 	return;
-	if(cuby1 == cuby2 && getColor(color1) == getColor(color2))
+	if(cuby1 == cuby2 && getFace(cuby1, mouseX1, mouseY1) == getFace(cuby2, mouseX2, mouseY2))
 	return;
 	if(Array.isArray(DIM) && DIM[0] == "adding") return; 
 	if (cuby1 == -1 || cuby2 == -1) return;
@@ -11572,7 +11564,7 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 				});
 			}
 		})
-	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1 && !special[0] && DIM != "2x3x4") {
+	} else if (sharedAxis(cuby1, cuby2) && sharedAxis(cuby1, cuby2).timeshared == 1 && !special[0]) {
 		const sharedata = sharedAxis(cuby1, cuby2);
 		const TURNOBJ = {
 			z: {compare: ["x", "y"], vec: 2, turn: xaxis},
