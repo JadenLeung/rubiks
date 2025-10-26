@@ -1837,7 +1837,6 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	else document.getElementById("turnoff").innerHTML = "(Mouse inputs are turned on.)";
 	if(MODE == "cube" && modnum != 1 && DIM != "snake_eye") bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
 	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
@@ -1868,7 +1867,6 @@ setInterval(() => {
 		setDisplay("none", ["wannapeek", "peekbutton"])
 	}
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
-	// getEl("custommouse").innerHTML = canMouse() ? "(Mouse inputs are turned on.)" : "(Mouse inputs are turned off.)";
 	getEl("switcher").style.display = (getEl("blind").style.display == "block" || (getEl("s_prac").style.display != "none")) ? "block" : "none";
 	FULLSCREEN.style("background-color: transparent; color: " + document.body.style.color);
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
