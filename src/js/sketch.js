@@ -7875,12 +7875,17 @@ function startAction() {
 		return;
 	}
 	let hoveredColor;
+	let mouseXPos, mouseYPos;
 	if(p.touches.length == 0) {
 		hoveredColor = p.get(p.mouseX, p.mouseY);
+		mouseXPos = p.mouseX;
+		mouseYPos = p.mouseY;
 	} else {
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
 		hoveredColor = p.get(xx, yy);
+		mouseXPos = xx;
+		mouseYPos = yy;
 	}
 
 	setLayout();
@@ -7889,7 +7894,7 @@ function startAction() {
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
 
-		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, hoveredColor), "dir", oppdirs[getFace(cuby, hoveredColor)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
+		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, mouseXPos, mouseYPos), "dir", oppdirs[getFace(cuby, mouseXPos, mouseYPos)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -11438,25 +11443,32 @@ p.touchMoved = () => {
 function dragAction()
 {
 	let hoveredColor;
+	let mouseXPos, mouseYPos;
 	if(p.touches.length == 0)
+	{
 		hoveredColor = p.get(p.mouseX, p.mouseY);
+		mouseXPos = p.mouseX;
+		mouseYPos = p.mouseY;
+	}
 	else
 	{
 		let xx = p.touches[0].x;
 		let yy = p.touches[0].y;
 		hoveredColor = p.get(xx, yy);
+		mouseXPos = xx;
+		mouseYPos = yy;
 	}
 	if (hoveredColor) {
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		if (cuby !== false) {
 			if (selectedCuby !== false) {
-				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor))
+				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, mouseXPos, mouseYPos))
 					redo = [];
 			}
 		}
 	}
 }
-function dragCube(cuby1, color1, cuby2, color2)
+function dragCube(cuby1, color1, cuby2, color2, mouseX, mouseY)
 {
 	if(!canMan)
 	return;
@@ -11489,8 +11501,8 @@ function dragCube(cuby1, color1, cuby2, color2)
 	let revturnorder = turnorder.slice().reverse();
 	
 	let turning = false;
-	let face1 = getFace(cuby1, color1);
-	let face2 = getFace(cuby2, color2);
+	let face1 = getFace(cuby1, mouseX, mouseY);
+	let face2 = getFace(cuby2, mouseX, mouseY);
 
 	if (cuby1 == cuby2) { // turning over
 		console.log("Equal cubies")
@@ -11514,9 +11526,9 @@ function dragCube(cuby1, color1, cuby2, color2)
 				}
 			}
 		})
-	} else if (getFace(cuby1, color1) == getFace(cuby2, color2) && sharedAxis(cuby1, cuby2).timeshared > 1) {
+	} else if (getFace(cuby1, mouseX, mouseY) == getFace(cuby2, mouseX, mouseY) && sharedAxis(cuby1, cuby2).timeshared > 1) {
 		console.log("Same face cubies")
-		let face1 = getFace(cuby1, color1);
+		let face1 = getFace(cuby1, mouseX, mouseY);
 		const TURNARR = [
 			{axis: "z", turn: xaxis, faces:
 			[{face: 5, order: revturnorder, upaxis: "x", lastaxis: "y"},
@@ -11585,7 +11597,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				5: {compare: ["x","z"], x : [0, 1], z: [2, 3]},
 			}
 			const dirobj = direction[face2];
-			console.log(dirobj, getFace(cuby2, color2));
+			console.log(dirobj, getFace(cuby2, mouseX, mouseY));
 			let axis1 = dirobj.compare[0];
 			let axis2 = dirobj.compare[1];
 			let da = CUBE[cuby1][axis1] - CUBE[cuby2][axis1];
@@ -11599,7 +11611,7 @@ function dragCube(cuby1, color1, cuby2, color2)
 				reald = db; 
 			}
 			if (face1 == face2) {
-				console.log("Same faces ", getFace(cuby2, color2));
+				console.log("Same faces ", getFace(cuby2, mouseX, mouseY));
 				const BANNED = {
 					0: "z", 1: "z", 2: "x", 3: "x", 4: "y", 5: "y"
 				}
@@ -11716,17 +11728,85 @@ p.draw = () => {
 	
 	renderCube();
 }
-function getFace(cuby1, color1)
+function getFace(cuby1, mouseX, mouseY)
 {
-	const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
-	let dir = null;
-	Object.keys(dirs).forEach((d) => {
-		if (!CUBE[cuby1] || !CUBE[cuby1].hasOwnProperty(d)) return;
-		if (getColor(CUBE[cuby1][d].levels) == getColor(color1)) {
-			dir = dirs[d];
+	// Face indices: back:0, front:1, right:2, left:3, bottom:4, top:5
+	if (!CUBE[cuby1]) return null;
+	
+	const cuby = CUBE[cuby1];
+	
+	// Simple approach: project cuby face centers to screen space and find closest to mouse
+	const halfSize = CUBYESIZE / 2;
+	
+	const faces = [
+		{ index: 0, center: p.createVector(cuby.x, cuby.y, cuby.z - halfSize), normal: p.createVector(0, 0, -1), name: "back" },
+		{ index: 1, center: p.createVector(cuby.x, cuby.y, cuby.z + halfSize), normal: p.createVector(0, 0, 1), name: "front" },
+		{ index: 2, center: p.createVector(cuby.x - halfSize, cuby.y, cuby.z), normal: p.createVector(-1, 0, 0), name: "right" },
+		{ index: 3, center: p.createVector(cuby.x + halfSize, cuby.y, cuby.z), normal: p.createVector(1, 0, 0), name: "left" },
+		{ index: 4, center: p.createVector(cuby.x, cuby.y - halfSize, cuby.z), normal: p.createVector(0, -1, 0), name: "bottom" },
+		{ index: 5, center: p.createVector(cuby.x, cuby.y + halfSize, cuby.z), normal: p.createVector(0, 1, 0), name: "top" }
+	];
+	
+	// Get camera position to check which faces are visible
+	const camPosArray = CAM.getPosition([]);
+	const camPos = p.createVector(camPosArray[0], camPosArray[1], camPosArray[2]);
+	
+	let closestFace = null;
+	let minDistance = Infinity;
+	
+	// Get projection matrices from renderer
+	const renderer = p._renderer;
+	const projMatrix = renderer.uPMatrix;
+	const mvMatrix = renderer.uMVMatrix;
+	
+	for (let face of faces) {
+		// Check if face is visible (pointing towards camera)
+		const toCamera = p5.Vector.sub(camPos, face.center).normalize();
+		const visibility = p5.Vector.dot(face.normal, toCamera);
+		
+		// Skip faces not visible from camera
+		if (visibility <= 0) continue;
+		
+		// Manual projection to screen space
+		// Transform world space to clip space
+		const pos = [face.center.x, face.center.y, face.center.z, 1];
+		
+		// Apply modelview matrix
+		const mv = [
+			mvMatrix.mat4[0] * pos[0] + mvMatrix.mat4[4] * pos[1] + mvMatrix.mat4[8] * pos[2] + mvMatrix.mat4[12] * pos[3],
+			mvMatrix.mat4[1] * pos[0] + mvMatrix.mat4[5] * pos[1] + mvMatrix.mat4[9] * pos[2] + mvMatrix.mat4[13] * pos[3],
+			mvMatrix.mat4[2] * pos[0] + mvMatrix.mat4[6] * pos[1] + mvMatrix.mat4[10] * pos[2] + mvMatrix.mat4[14] * pos[3],
+			mvMatrix.mat4[3] * pos[0] + mvMatrix.mat4[7] * pos[1] + mvMatrix.mat4[11] * pos[2] + mvMatrix.mat4[15] * pos[3]
+		];
+		
+		// Apply projection matrix
+		const clip = [
+			projMatrix.mat4[0] * mv[0] + projMatrix.mat4[4] * mv[1] + projMatrix.mat4[8] * mv[2] + projMatrix.mat4[12] * mv[3],
+			projMatrix.mat4[1] * mv[0] + projMatrix.mat4[5] * mv[1] + projMatrix.mat4[9] * mv[2] + projMatrix.mat4[13] * mv[3],
+			projMatrix.mat4[2] * mv[0] + projMatrix.mat4[6] * mv[1] + projMatrix.mat4[10] * mv[2] + projMatrix.mat4[14] * mv[3],
+			projMatrix.mat4[3] * mv[0] + projMatrix.mat4[7] * mv[1] + projMatrix.mat4[11] * mv[2] + projMatrix.mat4[15] * mv[3]
+		];
+		
+		// Perspective divide
+		if (clip[3] === 0) continue;
+		const ndc = [clip[0] / clip[3], clip[1] / clip[3], clip[2] / clip[3]];
+		
+		// Convert to screen coordinates
+		const screenX = (ndc[0] + 1) * p.width / 2;
+		const screenY = (1 - ndc[1]) * p.height / 2;
+		
+		// Distance from mouse to projected face center
+		const dx = mouseX - screenX;
+		const dy = mouseY - screenY;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+		
+		if (distance < minDistance) {
+			minDistance = distance;
+			closestFace = face.index;
 		}
-	})
-	return dir;
+	}
+	
+	return closestFace;
 	/*for(let i = 0; i < 6; i++)
 	{
 		for(let x = 0; x < 3; x++)
