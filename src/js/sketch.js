@@ -308,6 +308,8 @@ const opposite2 = {
 
 let selectedCuby = -1;
 let selectedColor = [];
+let selectedMouseX = -1;
+let selectedMouseY = -1;
 let dev = 0;
 let color = "lol";
 let colorTwo = "lmao";
@@ -7915,10 +7917,14 @@ function startAction() {
 			//console.log(hoveredColor, getIndex(getCubyByColor(hoveredColor)), getCubyIndexByColor2(hoveredColor), getPos(cuby), cubyColors[getCubyIndexByColor2(hoveredColor)]);
 			selectedCuby = cuby;
 			selectedColor = hoveredColor;
+			selectedMouseX = mouseXPos;
+			selectedMouseY = mouseYPos;
 		}
 	} else {
 		selectedCuby = -1;
 		selectedColor = [];
+		selectedMouseX = -1;
+		selectedMouseY = -1;
 		//cleanAllSelectedCubies();
 	}
 }
@@ -11462,13 +11468,13 @@ function dragAction()
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		if (cuby !== false) {
 			if (selectedCuby !== false) {
-				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, mouseXPos, mouseYPos))
+				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, selectedMouseX, selectedMouseY, mouseXPos, mouseYPos))
 					redo = [];
 			}
 		}
 	}
 }
-function dragCube(cuby1, color1, cuby2, color2, mouseX, mouseY)
+function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouseY2)
 {
 	if(!canMan)
 	return;
@@ -11501,8 +11507,8 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX, mouseY)
 	let revturnorder = turnorder.slice().reverse();
 	
 	let turning = false;
-	let face1 = getFace(cuby1, mouseX, mouseY);
-	let face2 = getFace(cuby2, mouseX, mouseY);
+	let face1 = getFace(cuby1, mouseX1, mouseY1);
+	let face2 = getFace(cuby2, mouseX2, mouseY2);
 
 	if (cuby1 == cuby2) { // turning over
 		console.log("Equal cubies")
@@ -11526,9 +11532,9 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX, mouseY)
 				}
 			}
 		})
-	} else if (getFace(cuby1, mouseX, mouseY) == getFace(cuby2, mouseX, mouseY) && sharedAxis(cuby1, cuby2).timeshared > 1) {
+	} else if (getFace(cuby1, mouseX1, mouseY1) == getFace(cuby2, mouseX2, mouseY2) && sharedAxis(cuby1, cuby2).timeshared > 1) {
 		console.log("Same face cubies")
-		let face1 = getFace(cuby1, mouseX, mouseY);
+		let face1 = getFace(cuby1, mouseX1, mouseY1);
 		const TURNARR = [
 			{axis: "z", turn: xaxis, faces:
 			[{face: 5, order: revturnorder, upaxis: "x", lastaxis: "y"},
@@ -11597,7 +11603,7 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX, mouseY)
 				5: {compare: ["x","z"], x : [0, 1], z: [2, 3]},
 			}
 			const dirobj = direction[face2];
-			console.log(dirobj, getFace(cuby2, mouseX, mouseY));
+			console.log(dirobj, getFace(cuby2, mouseX2, mouseY2));
 			let axis1 = dirobj.compare[0];
 			let axis2 = dirobj.compare[1];
 			let da = CUBE[cuby1][axis1] - CUBE[cuby2][axis1];
@@ -11611,7 +11617,7 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX, mouseY)
 				reald = db; 
 			}
 			if (face1 == face2) {
-				console.log("Same faces ", getFace(cuby2, mouseX, mouseY));
+				console.log("Same faces ", getFace(cuby2, mouseX2, mouseY2));
 				const BANNED = {
 					0: "z", 1: "z", 2: "x", 3: "x", 4: "y", 5: "y"
 				}
