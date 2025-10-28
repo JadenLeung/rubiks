@@ -5669,6 +5669,7 @@ function setSettings(obj) {
 	TOPWHITE.selected(obj.topwhite);
 	TOPPLL.selected(obj.toppll);
 	HOLLOW.checked(obj.hollow == 1);
+	SWIPEROTATE.checked(obj.swiperotate == 1);
 	let d = obj.background;
 	localStorage.background = d;
 	keymappings = JSON.parse(obj.keymappings);
