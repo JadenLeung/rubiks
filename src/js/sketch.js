@@ -165,7 +165,7 @@ export default function (p) {
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
-		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE,
+		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
 	let SCRAM;
@@ -552,6 +552,11 @@ p.setup = () => {
 	
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
+	
+	CAM.setPanScale(0);
+	CAM.setZoomScale(0);
+	CAM.setWheelScale(0);
+	
 	CAM.zoom(CAMZOOM + ZOOMADD);
 	CAM.rotateX(-p.PI / ROTX);
 	CAM.rotateY(-p.PI / ROTY);
@@ -1146,6 +1151,11 @@ p.setup = () => {
 	DARKMODE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	DARKMODE.changed(darkMode);
 
+	SWIPEROTATE = p.createCheckbox("", localStorage.swiperotate === "true" ? true : false);
+	SWIPEROTATE.parent("swiperotate")
+	SWIPEROTATE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
+	SWIPEROTATE.changed(swipeRotate);
+
 	hollowCube(false);
 	
 	let temp = ["#d6f1ff", "#e7e5ff", "#0a1970"]
@@ -1547,6 +1557,7 @@ setInterval(() => {
 	localStorage.keymappings = JSON.stringify(keymappings);
 	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color ) + " " + special[4];
 	localStorage.hollow = HOLLOW.checked();
+	localStorage.swiperotate = SWIPEROTATE.checked();
 	localStorage.border_width = BORDER_SLIDER.value();
 	localStorage.audioon = audioon;
 	localStorage.racespeed = RACE_SLIDER.value();
@@ -1987,6 +1998,13 @@ setInterval(() => {
 	}
 	if (isMobile() && isthin) {
 		getEl("inputscram").style.display = "none";
+	}
+	if (SWIPEROTATE.checked()) {
+		if (CAM.getRotationScale() != 0)
+			CAM.setRotationScale(0);
+	} else {
+		if (CAM.getRotationScale() != 0.001)
+			CAM.setRotationScale(0.001);
 	}
 }, 10)
 //forever
@@ -6316,6 +6334,7 @@ async function saveData(username, password, method, al) {
 		audioon:localStorage.audioon == 'true' ? 1 : 0,
 		background:localStorage.background,
 		hollow: localStorage.hollow == 'true' ? 1 : 0,
+		swiperotate: localStorage.swiperotate == 'true' ? 1 : 0,
 		keyboard:localStorage.keyboard,
 		speed:localStorage.speed,
 		toppll:localStorage.toppll,
@@ -10726,6 +10745,14 @@ function darkMode(){
 	DARKMODE.checked(darkmode);
 	getEl("outertime").style.color = document.body.style.color;
 }
+
+function swipeRotate() {
+	if (SWIPEROTATE.checked()) {
+		console.log("checked");
+	} else {
+		console.log("not checked");
+	}
+}
 function greenLayer(){
 	for(let i = 0; i < 6; i++)
 	{
@@ -11355,12 +11382,23 @@ function raceDetect(){
 //   *************************************
 
 p.mousePressed = () => {
-	//if(MODE != "cube" || (MODE == "cube" && DIM == 2))
-		startAction();
+
+	if (SWIPEROTATE.checked()) {
+		let hoveredColor = p.get(p.mouseX, p.mouseY);
+		if (hoveredColor && arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) {
+			touchrotate[2] = true;
+			touchrotate[0] = p.mouseX;
+			touchrotate[1] = p.mouseY;
+			touchrotate[3] = touchrotate[0];
+			touchrotate[4] = touchrotate[1];
+		} else {
+			touchrotate[2] = false;
+		}
+	}
+	startAction();
 }
 
 p.touchStarted = () => {
-	// if(layout[2][1][1][0] != "w") return;
 	let hoveredColor;
 	if(p.touches.length == 0) {
 		hoveredColor = p.get(p.mouseX, p.mouseY);
@@ -11375,8 +11413,6 @@ p.touchStarted = () => {
 		touchrotate[1] = p.touches[0].y;
 		touchrotate[3] = touchrotate[0];
 		touchrotate[4] = touchrotate[1];
-		// alert("settings " + touchrotate[0] + " " + touchrotate[1])
-		// alert(touchrotate[0] + " " + touchrotate[1]);
 	} else {
 		touchrotate[2] = false;
 	}
@@ -11389,13 +11425,15 @@ p.touchStarted = () => {
 	startAction();
 }
 
-p.touchEnded = () => {
+p.touchEnded = releaseAction;
+p.mouseReleased = releaseAction; 
+
+function releaseAction() {
 	if (touchrotate[2] && !["paint"].includes(MODE)) {
 		let xx = touchrotate[3];
 		let yy = touchrotate[4];
 		let difx = touchrotate[0] - xx;
 		let dify = touchrotate[1] - yy;
-		// alert(touchrotate[0] + " " + touchrotate[1] + " " + touchrotate[3] + " " + touchrotate[4] + " " + difx + " " + dify);
 		const sensitivity = 25;
 		if (Math.abs(difx) > sensitivity || Math.abs(dify) > sensitivity) {
 			if (difx > sensitivity && Math.abs(difx) >= Math.abs(dify)) {
@@ -11407,6 +11445,7 @@ p.touchEnded = () => {
 			} else {
 				changeArr("x'");
 			}
+			console.log("herer", touchrotate, arr);
 			multiple(0, true);
 		}
 	}
@@ -11427,20 +11466,26 @@ function isTouchingGrayArea(x, y) {
            y <= rect.bottom;
 }
 
-p.mouseDragged = () => {
-	dragAction();
-}
-p.touchMoved = () => {
+p.mouseDragged = dragAction;
+
+p.touchMoved = dragAction;
+
+
+function dragAction()
+{
 	if (touchrotate[2]) {
-		let xx = p.touches[0].x;
-		let yy = p.touches[0].y;
+		let xx, yy;
+		if (Array.isArray(p.touches) && p.touches.length > 0) {
+			xx = p.touches[0].x;
+			yy = p.touches[0].y;
+		} else {
+			xx = p.mouseX;
+			yy = p.mouseY;
+		}
+		touchrotate[2] = true;
 		touchrotate[3] = xx;
 		touchrotate[4] = yy;
 	}
-	dragAction();
-}
-function dragAction()
-{
 	let hoveredColor;
 	let mouseXPos, mouseYPos;
 	if(p.touches.length == 0)
