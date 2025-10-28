@@ -7909,7 +7909,7 @@ function startAction() {
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
 
-		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, mouseXPos, mouseYPos), "dir", oppdirs[getFace(cuby, mouseXPos, mouseYPos)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
+		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, mouseXPos, mouseYPos), "dir", oppdirs[getFace(cuby, mouseXPos, mouseYPos)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby), "colorindex", getColorIndexFromCubyAndFace(cuby,  getFace(cuby, mouseXPos, mouseYPos)));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -11429,13 +11429,13 @@ p.touchStarted = () => {
 p.touchEnded = releaseAction;
 p.mouseReleased = releaseAction; 
 
-function releaseAction() {
+function checkShouldRotate() {
 	if (touchrotate[2] && !["paint"].includes(MODE)) {
 		let xx = touchrotate[3];
 		let yy = touchrotate[4];
 		let difx = touchrotate[0] - xx;
 		let dify = touchrotate[1] - yy;
-		const sensitivity = 25;
+		const sensitivity = isMobile() ? 25 : 100;
 		if (Math.abs(difx) > sensitivity || Math.abs(dify) > sensitivity) {
 			if (difx > sensitivity && Math.abs(difx) >= Math.abs(dify)) {
 				changeArr("y");
@@ -11447,10 +11447,18 @@ function releaseAction() {
 				changeArr("x'");
 			}
 			console.log("herer", touchrotate, arr);
+			if (!isMobile()) {
+				touchrotate[0] = xx;
+				touchrotate[1] = yy;
+			} else {
+				touchrotate[2] = false;
+			}
 			multiple(0, true);
 		}
 	}
-	touchrotate[2] = false;
+}
+function releaseAction() {
+	checkShouldRotate();
 	if(MODE == "speed" && race > 1 && timer.getTime() == 0 && !shuffling && MINIMODE == "physical"){
 		canMan = true;
 		solveCube();
@@ -11474,19 +11482,6 @@ p.touchMoved = dragAction;
 
 function dragAction()
 {
-	if (touchrotate[2]) {
-		let xx, yy;
-		if (Array.isArray(p.touches) && p.touches.length > 0) {
-			xx = p.touches[0].x;
-			yy = p.touches[0].y;
-		} else {
-			xx = p.mouseX;
-			yy = p.mouseY;
-		}
-		touchrotate[2] = true;
-		touchrotate[3] = xx;
-		touchrotate[4] = yy;
-	}
 	let hoveredColor;
 	let mouseXPos, mouseYPos;
 	if(p.touches.length == 0)
@@ -11502,6 +11497,11 @@ function dragAction()
 		hoveredColor = p.get(xx, yy);
 		mouseXPos = xx;
 		mouseYPos = yy;
+	}
+	if (touchrotate[2]) {
+		touchrotate[3] = mouseXPos;
+		touchrotate[4] = mouseYPos;
+		checkShouldRotate();
 	}
 	if (hoveredColor) {
 		const cuby = getCubyIndexByColor2(hoveredColor);
@@ -12544,6 +12544,23 @@ function arrowPaint(dir) {
 			else if (colorindex % 9 > 2) paintit("original", -3);
 			else paintit("original", -(colorindex % 9 + 1));
 		} 
+	}
+}
+
+function getColorIndexFromCubyAndFace(cuby, face) {
+	let faceOffset;
+	const normalizedPos = [CUBE[cuby].x / CUBYESIZE, CUBE[cuby].y / CUBYESIZE, CUBE[cuby].z / CUBYESIZE];
+	const xdif = normalizedPos[0] + 1;
+	const ydif = normalizedPos[1] + 1;
+	const zdif = normalizedPos[2] + 1;
+	switch(face) {
+		case 2:
+			return cuby;
+		case 5:
+			return xdif * SIZE + zdif + 9;
+		case 1:
+			return xdif * SIZE + (2 - ydif) + 18;
+		
 	}
 }
 
