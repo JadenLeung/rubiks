@@ -4701,7 +4701,26 @@ function competeSettings(num = compete_type) {
 
     // --- Main Loop to Build Rows ---
 	if (num === "1v1") {
-		// Random header will be added below the Apply Column row after rows are created
+		// Add column headers for 1v1 mode
+		const headerDiv = document.createElement("div");
+		headerDiv.style.cssText = "display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;";
+
+		const spacer = document.createElement("span");
+		spacer.style.width = "80px";
+
+		const youHeader = document.createElement("span");
+		youHeader.style.cssText = "flex: 1; text-align: left; font-weight: bold;";
+		youHeader.textContent = "You";
+
+		const oppHeader = document.createElement("span");
+		oppHeader.style.cssText = "flex: 1; text-align: left; font-weight: bold;";
+		oppHeader.textContent = "Opponent";
+
+		const rightSpacer = document.createElement("span");
+		rightSpacer.style.width = "120px";
+
+		headerDiv.append(spacer, youHeader, oppHeader, rightSpacer);
+		container.appendChild(headerDiv);
 	// Remove the group header from the top - it will be added below after rows
 	} else {
 	}
@@ -4933,15 +4952,15 @@ function competeSettings(num = compete_type) {
 
 		// You column controls
 		const youLabel = document.createElement("div");
-		youLabel.style.cssText = "font-size: 11px; font-weight: bold;";
-		youLabel.textContent = "Random Generator:";
+		youLabel.style.cssText = "font-size: 12px; font-weight: bold;";
+		youLabel.textContent = "Random Cube Generator:";
 
 		const youControls = document.createElement("div");
 		youControls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
 
 		const youDiffLabel = document.createElement("label");
 		youDiffLabel.style.cssText = "font-size: 10px; margin: 0; white-space: nowrap;";
-		youDiffLabel.textContent = "Difficulty:";
+		youDiffLabel.textContent = "Difficulty (1-5):";
 
 		const youMinInput = document.createElement("input");
 		youMinInput.type = "number";
@@ -5161,23 +5180,28 @@ function handleCompeteSettingsChange() {
 function updateRandomHeaderVisibility() {
 	try {
 		const enabled = document.getElementById('random_cube_generator_toggle')?.checked;
-		// Player headers: random buttons and difficulty inputs
-		const ids = [
-			'random_p1_btn', 'difficulty_min_p1', 'difficulty_max_p1',
-			'random_p2_btn', 'difficulty_min_p2', 'difficulty_max_p2',
-			'random_group_btn', 'difficulty_min_group', 'difficulty_max_group'
-		];
-		ids.forEach(id => {
-			const el = document.getElementById(id);
-			if (el && el.parentElement) {
-				// The controls are inside a flex container; hide the immediate controls container
-				// If the element itself should be hidden, hide it; otherwise hide parent container
-				const container = el.closest && el.closest('div') ? el.closest('div') : el.parentElement;
-				container.style.visibility = enabled ? '' : 'hidden';
-				container.style.opacity = enabled ? '' : '0';
-				container.style.pointerEvents = enabled ? '' : 'none';
+		
+		// Hide/show the entire random header rows by finding them through one of their child elements
+		const randomP1Btn = document.getElementById('random_p1_btn');
+		const randomGroupBtn = document.getElementById('random_group_btn');
+		
+		// For 1v1 mode - hide the entire random header row
+		if (randomP1Btn) {
+			// Navigate up to the row container (the flex row with width 650px)
+			let row = randomP1Btn.closest('div[style*="width: 650px"]');
+			if (row && row.parentElement) {
+				row.style.display = enabled ? 'flex' : 'none';
 			}
-		});
+		}
+		
+		// For group mode - hide the entire random header row
+		if (randomGroupBtn) {
+			// Navigate up to the row container (the flex row with width 450px)
+			let row = randomGroupBtn.closest('div[style*="width: 450px"]');
+			if (row && row.parentElement) {
+				row.style.display = enabled ? 'flex' : 'none';
+			}
+		}
 	} catch (e) {
 		console.warn('updateRandomHeaderVisibility error', e);
 	}
