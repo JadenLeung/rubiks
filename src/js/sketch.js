@@ -5075,7 +5075,10 @@ function competeSettings(num = compete_type) {
 		handleCompeteSettingsChange();
     };
 
-	handleCompeteSettingsChange()
+	handleCompeteSettingsChange();
+	try {
+		updateRandomHeaderVisibility();
+	} catch (e) {}
 }
 
 function competeSelect(round, player, select, text, optionText) {
@@ -5115,6 +5118,42 @@ function handleCompeteSettingsChange() {
 	} else {
 		compete_customarr = [];
 	}
+}
+
+// Toggle visibility of the random generation header controls based on the checkbox in index.html
+function updateRandomHeaderVisibility() {
+	try {
+		const enabled = document.getElementById('random_cube_generator_toggle')?.checked;
+		// Player headers: random buttons and difficulty inputs
+		const ids = [
+			'random_p1_btn', 'difficulty_min_p1', 'difficulty_max_p1',
+			'random_p2_btn', 'difficulty_min_p2', 'difficulty_max_p2',
+			'random_group_btn', 'difficulty_min_group', 'difficulty_max_group'
+		];
+		ids.forEach(id => {
+			const el = document.getElementById(id);
+			if (el && el.parentElement) {
+				// The controls are inside a flex container; hide the immediate controls container
+				// If the element itself should be hidden, hide it; otherwise hide parent container
+				const container = el.closest && el.closest('div') ? el.closest('div') : el.parentElement;
+				container.style.visibility = enabled ? '' : 'hidden';
+				container.style.opacity = enabled ? '' : '0';
+				container.style.pointerEvents = enabled ? '' : 'none';
+			}
+		});
+	} catch (e) {
+		console.warn('updateRandomHeaderVisibility error', e);
+	}
+}
+
+// Wire the checkbox (if present) to update visibility when toggled
+const randomToggleEl = document.getElementById('random_cube_generator_toggle');
+if (randomToggleEl) {
+	randomToggleEl.addEventListener('change', () => {
+		updateRandomHeaderVisibility();
+	});
+	// Call once to set initial visibility
+	setTimeout(updateRandomHeaderVisibility, 100);
 }
 
 function finishCompeteSelect(dim) {
