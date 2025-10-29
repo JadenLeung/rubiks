@@ -4860,7 +4860,7 @@ function competeSettings(num = compete_type) {
 
 		const diffLabel = document.createElement("label");
 		diffLabel.style.cssText = "font-size: 10px; margin: 0; white-space: nowrap;";
-		diffLabel.textContent = "Difficulty:";
+		diffLabel.textContent = "Difficulty (1-5):";
 
 		const minInput = document.createElement("input");
 		minInput.type = "number";
@@ -4952,7 +4952,7 @@ function competeSettings(num = compete_type) {
 
 		// You column controls
 		const youLabel = document.createElement("div");
-		youLabel.style.cssText = "font-size: 12px; font-weight: bold;";
+		youLabel.style.cssText = "font-size: 11px; font-weight: bold;";
 		youLabel.textContent = "Random Cube Generator:";
 
 		const youControls = document.createElement("div");
@@ -4997,7 +4997,7 @@ function competeSettings(num = compete_type) {
 
 		const oppDiffLabel = document.createElement("label");
 		oppDiffLabel.style.cssText = "font-size: 10px; margin: 0; white-space: nowrap;";
-		oppDiffLabel.textContent = "Difficulty:";
+		oppDiffLabel.textContent = "Difficulty (1-5):";
 
 		const oppMinInput = document.createElement("input");
 		oppMinInput.type = "number";
