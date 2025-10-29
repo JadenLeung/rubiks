@@ -4158,6 +4158,62 @@ function joinRoom(room = getEl("join_input").value) {
 	})
 }
 
+function possibleWeight(lower, upper, startdifficulty = 0, currow = 0, currindexarr = []) {
+	console.log("All params are ", lower ,upper, startdifficulty, currow)
+	let allcandidates = [];
+	const weights = {
+		"3x3x2": -0.5,
+		"Double": -0.5,
+		"Solve 1 Side": -1.5,
+	}
+	const possibleCubes = !COMPETE_ADVANCED.checked() ? [[],[]] : [
+		["3x3x2", "Double"],
+		["Solve 1 Side"],
+	];
+	if (currow >= possibleCubes.length) {
+		let weight = startdifficulty;
+		let candidate = [];
+		currindexarr.forEach((index, row) => {
+			if (index == -1) {
+				candidate.push("Default")
+				return;
+			}
+			console.log("In row", row, index, possibleCubes[row][index]);
+			weight += weights[possibleCubes[row][index]];
+			candidate.push(possibleCubes[row][index]);
+		})
+		weight = Math.max(weight, 1);
+		weight = Math.min(weight, 5);
+		if (weight >= lower && weight <= upper) {
+			allcandidates.push(candidate);
+		}
+	} else {
+		for (let i = -1; i < possibleCubes[currow].length; i++) {
+			const possibleweights = possibleWeight(lower, upper, startdifficulty, currow + 1, [...currindexarr, i]);
+			allcandidates = allcandidates.concat(possibleweights);
+		}
+	}
+	return allcandidates;
+}
+
+function generateRandomCube(lower = -100, upper = 100) {
+	let allweights = {}
+	Object.keys(DIMS_OBJ).forEach((key) => {
+		console.log("key is ", key)
+		const candidates = possibleWeight(lower, upper, DIMS_OBJ[key].difficulty)
+		if (candidates.length > 0)
+			allweights[key] = candidates;
+	});
+	console.log("All weights is ", allweights);
+	let randomkey = p.random(Object.keys(allweights));
+	let allconfigs = allweights[randomkey];
+	if (Math.random() < 0.5 && allconfigs[0].every((x) => x == "Default")) {
+		return {cube: randomkey, scramble: allweights[randomkey][0][0], wincondition: allweights[randomkey][0][1]}
+	}
+	let rndindex = Math.floor(Math.random() * allconfigs.length)
+	return {cube: randomkey, scramble: allweights[randomkey][rndindex][0], wincondition: allweights[randomkey][rndindex][1]}
+}
+
 function startMatch() {
 	socket.emit("start-match", room);
 }
@@ -7909,7 +7965,7 @@ function startAction() {
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
 
-		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, mouseXPos, mouseYPos), "dir", oppdirs[getFace(cuby, mouseXPos, mouseYPos)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby), "colorindex", getColorIndexFromCubyAndFace(cuby,  getFace(cuby, mouseXPos, mouseYPos)));
+		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, mouseXPos, mouseYPos), "dir", oppdirs[getFace(cuby, mouseXPos, mouseYPos)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -8236,7 +8292,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(DIM);
+		console.log(JSON.stringify(generateRandomCube(1,5)));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
