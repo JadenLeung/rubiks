@@ -4806,6 +4806,29 @@ function competeSettings(num = compete_type) {
 			}
 		};
 
+		// Helper to apply random configs to a column: playerIndex 0 = You, 1 = Opponent
+		function applyRandomToColumn(playerIndex, minDiff, maxDiff) {
+			for (let j = 0; j < rows.length; j++) {
+				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				if (playerIndex === 0) {
+					rows[j].select1.value = randomConfig.cube;
+					if (COMPETE_ADVANCED.checked()) {
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						compete_customarr[j][0] = customData;
+						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
+					}
+				} else {
+					rows[j].select2.value = randomConfig.cube;
+					if (COMPETE_ADVANCED.checked()) {
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						compete_customarr[j][1] = customData;
+						rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
+					}
+				}
+			}
+			handleCompeteSettingsChange();
+		}
+
 		// Random button for Player 1 (You)
 		const randomP1Btn = document.getElementById("random_p1_btn");
 		randomP1Btn.onclick = () => {
@@ -5235,39 +5258,43 @@ function competeDims() {
 			const container = document.getElementById("1v1_container");
         const rows = container.querySelectorAll(":scope > div:not(:first-child)");
 
-        if (!COMPETE_ADVANCED.checked()) {
-            // Non-advanced is simple: two puzzle selects per row.
-            for (const row of rows) {
-                const selects = row.getElementsByTagName("select");
-                if (selects[0] && selects[1]) {
-                    results.push([selects[0].value, selects[1].value]);
-                }
-            }
-        } else {
-            // Advanced mode: two puzzle selects + custom JSON options from the global array.
-            let puzzles = [];
-            let options = [];
+		if (!COMPETE_ADVANCED.checked()) {
+			// Non-advanced is simple: two puzzle selects per row.
+			for (const row of rows) {
+				const selects = row.getElementsByTagName("select");
+				if (selects && selects.length >= 2 && selects[0] && selects[1]) {
+					results.push([selects[0].value, selects[1].value]);
+				} else {
+					// Skip malformed row silently
+				}
+			}
+		} else {
+			// Advanced mode: two puzzle selects + custom JSON options from the global array.
+			let puzzles = [];
+			let options = [];
 
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const selects = row.getElementsByTagName("select");
-                
-                const yourPuzzle = selects[0].value;
-                const opponentPuzzle = selects[1].value;
+			for (let i = 0; i < rows.length; i++) {
+				const row = rows[i];
+				const selects = row.getElementsByTagName("select");
 
-                const yourOption = compete_customarr[i][0];
-                const opponentOption = compete_customarr[i][1];
+				// Safely extract puzzle values
+				const yourPuzzle = (selects && selects[0]) ? selects[0].value : "3x3";
+				const opponentPuzzle = (selects && selects[1]) ? selects[1].value : "3x3";
 
-                puzzles.push([yourPuzzle, opponentPuzzle]);
-                options.push([yourOption, opponentOption]);
-            }
+				// Safely extract options from compete_customarr, falling back to defaults
+				const yourOption = (compete_customarr[i] && compete_customarr[i][0]) ? compete_customarr[i][0] : JSON.stringify({ scramble: "Default", input: "Default" });
+				const opponentOption = (compete_customarr[i] && compete_customarr[i][1]) ? compete_customarr[i][1] : JSON.stringify({ scramble: "Default", input: "Default" });
 
-            // Recreate the original interleaved output format.
-            for (let i = 0; i < puzzles.length; i++) {
-                results.push(puzzles[i]);
-                results.push(options[i]);
-            }
-        }
+				puzzles.push([yourPuzzle, opponentPuzzle]);
+				options.push([yourOption, opponentOption]);
+			}
+
+			// Recreate the original interleaved output format.
+			for (let i = 0; i < puzzles.length; i++) {
+				results.push(puzzles[i]);
+				results.push(options[i]);
+			}
+		}
     }
     return results;
 }
