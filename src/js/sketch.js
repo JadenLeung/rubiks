@@ -4700,49 +4700,65 @@ function competeSettings(num = compete_type) {
     };
 
     // --- Main Loop to Build Rows ---
-    if (num === "1v1") { 
-		container.innerHTML = `
-		<div style="display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;">
-			<span style="width: 80px;"></span>
-			<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;">
-				<div style="display: flex; align-items: center; gap: 4px;">
-					You
-					<button id="apply_col_btn" class="btn btn-secondary" style="font-size: 10px; padding: 1px 6px; margin-left: 5px;">Apply column >></button>
-				</div>
-				<div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-					<label style="font-size: 11px; margin: 0; white-space: nowrap;">Difficulty:</label>
-					<input type="number" id="difficulty_min_p1" min="1" max="5" step="0.5" value="1" style="width: 45px; padding: 2px; font-size: 11px;">
-					<span style="font-size: 10px;">to</span>
-					<input type="number" id="difficulty_max_p1" min="1" max="5" step="0.5" value="5" style="width: 45px; padding: 2px; font-size: 11px;">
-					<button id="random_p1_btn" class="btn btn-success" style="font-size: 10px; padding: 1px 6px;">Generate Random</button>
-				</div>
-			</span>
-			<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;">
-				<div>Opponent</div>
-				<div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-					<label style="font-size: 11px; margin: 0; white-space: nowrap;">Difficulty:</label>
-					<input type="number" id="difficulty_min_p2" min="1" max="5" step="0.5" value="1" style="width: 45px; padding: 2px; font-size: 11px;">
-					<span style="font-size: 10px;">to</span>
-					<input type="number" id="difficulty_max_p2" min="1" max="5" step="0.5" value="5" style="width: 45px; padding: 2px; font-size: 11px;">
-					<button id="random_p2_btn" class="btn btn-success" style="font-size: 10px; padding: 1px 6px;">Generate Random</button>
-				</div>
-			</span>
-			<span style="width: 120px;"></span>
-		</div>`;
+	if (num === "1v1") {
+		// Programmatically build header to avoid duplicated HTML for You/Opponent
+		const headerDiv = document.createElement("div");
+		headerDiv.style.cssText = "display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;";
 
-		const applyColBtn = document.getElementById("apply_col_btn");
-		applyColBtn.onclick = () => {
-			for (let j = 0; j < rows.length; j++) {
-				if (rows[j].select2) { // ensure opponent column exists
-					rows[j].select2.value = rows[j].select1.value; // copy "You" to "Opponent"
-					if (COMPETE_ADVANCED.checked()) {
-						compete_customarr[j][1] = compete_customarr[j][0]; // copy custom settings
-						rows[j].optionText2.textContent = rows[j].optionText1.textContent;
-					}
-				}
-			}
-			handleCompeteSettingsChange();
+		const spacer = document.createElement("span");
+		spacer.style.width = "80px";
+
+		const makePlayerHeader = (labelText, minId, maxId, btnId, btnText) => {
+			const col = document.createElement("span");
+			col.style.cssText = "flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;";
+
+			const title = document.createElement("div");
+			title.style.cssText = "display: flex; align-items: center; gap: 4px;";
+			title.textContent = labelText;
+
+			const controls = document.createElement("div");
+			controls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
+
+			const lbl = document.createElement("label");
+			lbl.style.cssText = "font-size: 11px; margin: 0; white-space: nowrap;";
+			lbl.textContent = "Difficulty (1-5):";
+
+			const minInput = document.createElement("input");
+			minInput.type = "number";
+			minInput.id = minId;
+			minInput.min = 1; minInput.max = 5; minInput.step = 0.5; minInput.value = 1;
+			minInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
+
+			const toSpan = document.createElement("span");
+			toSpan.style.fontSize = "10px";
+			toSpan.textContent = "to";
+
+			const maxInput = document.createElement("input");
+			maxInput.type = "number";
+			maxInput.id = maxId;
+			maxInput.min = 1; maxInput.max = 5; maxInput.step = 0.5; maxInput.value = 5;
+			maxInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
+
+			const btn = document.createElement("button");
+			btn.id = btnId;
+			btn.className = "btn btn-success";
+			btn.style.cssText = "font-size: 10px; padding: 1px 6px;";
+			btn.textContent = btnText;
+
+			controls.append(lbl, minInput, toSpan, maxInput, btn);
+			col.append(title, controls);
+			return col;
 		};
+
+		const youCol = makePlayerHeader("You", "difficulty_min_p1", "difficulty_max_p1", "random_p1_btn", "Generate Random");
+		const oppCol = makePlayerHeader("Opponent", "difficulty_min_p2", "difficulty_max_p2", "random_p2_btn", "Generate Random");
+		const rightSpacer = document.createElement("span");
+		rightSpacer.style.width = "120px";
+
+		headerDiv.append(spacer, youCol, oppCol, rightSpacer);
+		container.appendChild(headerDiv);
+
+		// We'll append the "Apply column >>" button underneath the first column after rows are created
 
 		// Difficulty inputs for Player 1 - round to nearest 0.5
 		const diffMinP1 = document.getElementById("difficulty_min_p1");
@@ -4795,20 +4811,7 @@ function competeSettings(num = compete_type) {
 		randomP1Btn.onclick = () => {
 			const minDiff = parseFloat(diffMinP1.value);
 			const maxDiff = parseFloat(diffMaxP1.value);
-			for (let j = 0; j < rows.length; j++) {
-				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
-				rows[j].select1.value = randomConfig.cube;
-				if (COMPETE_ADVANCED.checked()) {
-					const customData = JSON.stringify({
-						scramble: randomConfig.scramble,
-						input: "Default",
-						goal: randomConfig.wincondition
-					});
-					compete_customarr[j][0] = customData;
-					rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
-				}
-			}
-			handleCompeteSettingsChange();
+			applyRandomToColumn(0, minDiff, maxDiff);
 		};
 
 		// Random button for Player 2 (Opponent)
@@ -4816,38 +4819,59 @@ function competeSettings(num = compete_type) {
 		randomP2Btn.onclick = () => {
 			const minDiff = parseFloat(diffMinP2.value);
 			const maxDiff = parseFloat(diffMaxP2.value);
-			for (let j = 0; j < rows.length; j++) {
-				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
-				rows[j].select2.value = randomConfig.cube;
-				if (COMPETE_ADVANCED.checked()) {
-					const customData = JSON.stringify({
-						scramble: randomConfig.scramble,
-						input: "Default",
-						goal: randomConfig.wincondition
-					});
-					compete_customarr[j][1] = customData;
-					rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
-				}
-			}
-			handleCompeteSettingsChange();
+			applyRandomToColumn(1, minDiff, maxDiff);
 		};
 	} else {
-		// For group mode, add random button in header
-		container.innerHTML = `
-		<div style="display: flex; width: 450px; gap: 10px; margin-bottom: 10px; align-items: center;">
-			<span style="width: 80px;"></span>
-			<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;">
-				<div>Everyone</div>
-				<div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-					<label style="font-size: 11px; margin: 0; white-space: nowrap;">Difficulty:</label>
-					<input type="number" id="difficulty_min_group" min="1" max="5" step="0.5" value="1" style="width: 45px; padding: 2px; font-size: 11px;">
-					<span style="font-size: 10px;">to</span>
-					<input type="number" id="difficulty_max_group" min="1" max="5" step="0.5" value="5" style="width: 45px; padding: 2px; font-size: 11px;">
-					<button id="random_group_btn" class="btn btn-success" style="font-size: 10px; padding: 1px 6px;">Random</button>
-				</div>
-			</span>
-			<span style="width: 120px;"></span>
-		</div>`;
+		// For group mode, add random button in header (programmatic)
+		const groupHeader = document.createElement("div");
+		groupHeader.style.cssText = "display: flex; width: 450px; gap: 10px; margin-bottom: 10px; align-items: center;";
+
+		const leftSpacer = document.createElement("span");
+		leftSpacer.style.width = "80px";
+
+		const everyoneCol = document.createElement("span");
+		everyoneCol.style.cssText = "flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;";
+
+		const title = document.createElement("div");
+		title.textContent = "Everyone";
+
+		const controls = document.createElement("div");
+		controls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
+
+		const lbl = document.createElement("label");
+		lbl.style.cssText = "font-size: 11px; margin: 0; white-space: nowrap;";
+		lbl.textContent = "Difficulty (1-5):";
+
+		const minInput = document.createElement("input");
+		minInput.type = "number";
+		minInput.id = "difficulty_min_group";
+		minInput.min = 1; minInput.max = 5; minInput.step = 0.5; minInput.value = 1;
+		minInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
+
+		const toSpan = document.createElement("span");
+		toSpan.style.fontSize = "10px";
+		toSpan.textContent = "to";
+
+		const maxInput = document.createElement("input");
+		maxInput.type = "number";
+		maxInput.id = "difficulty_max_group";
+		maxInput.min = 1; maxInput.max = 5; maxInput.step = 0.5; maxInput.value = 5;
+		maxInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
+
+		const btn = document.createElement("button");
+		btn.id = "random_group_btn";
+		btn.className = "btn btn-success";
+		btn.style.cssText = "font-size: 10px; padding: 1px 6px;";
+		btn.textContent = "Generate Random";
+
+		controls.append(lbl, minInput, toSpan, maxInput, btn);
+		everyoneCol.append(title, controls);
+
+		const rightSpacer = document.createElement("span");
+		rightSpacer.style.width = "120px";
+
+		groupHeader.append(leftSpacer, everyoneCol, rightSpacer);
+		container.appendChild(groupHeader);
 	}
 
 	// Add random button handler for group mode after rows are created
@@ -4882,21 +4906,31 @@ function competeSettings(num = compete_type) {
 			randomGroupBtn.onclick = () => {
 				const minDiff = parseFloat(diffMinGroup.value);
 				const maxDiff = parseFloat(diffMaxGroup.value);
-				for (let j = 0; j < rows.length; j++) {
-					const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				applyRandomToColumn(0, minDiff, maxDiff);
+			};
+		}
+
+		// Helper to apply random configs to a column: playerIndex 0 = You, 1 = Opponent
+		function applyRandomToColumn(playerIndex, minDiff, maxDiff) {
+			for (let j = 0; j < rows.length; j++) {
+				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				if (playerIndex === 0) {
 					rows[j].select1.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({
-							scramble: randomConfig.scramble,
-							input: "Default",
-							goal: randomConfig.wincondition
-						});
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
 						compete_customarr[j][0] = customData;
 						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
 					}
+				} else {
+					rows[j].select2.value = randomConfig.cube;
+					if (COMPETE_ADVANCED.checked()) {
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						compete_customarr[j][1] = customData;
+						rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
+					}
 				}
-				handleCompeteSettingsChange();
-			};
+			}
+			handleCompeteSettingsChange();
 		}
 	};
 
@@ -4916,7 +4950,7 @@ function competeSettings(num = compete_type) {
             p2 = createPlayerColumn(i, 1, "opponent ");
             row.append(p2.container);
         }
-        rows.push({ select1: p1.puzzleSelect, optionText1: p1.optionText, select2: p2?.puzzleSelect, optionText2: p2?.optionText });
+	rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText });
 
         // Add "Apply to all" button to the first row
         const extraColumn = document.createElement("span");
@@ -4954,6 +4988,48 @@ function competeSettings(num = compete_type) {
 	// Setup group mode random button after rows are created
 	if (num === "group") {
 		setupGroupRandomButton();
+	}
+
+	// In 1v1 mode, create a bottom row containing an "Apply column >>" button in the first column cell
+	if (num === "1v1" && rows.length > 0) {
+		const bottomRow = document.createElement("div");
+		Object.assign(bottomRow.style, { display: "flex", width: "650px", gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+
+		const emptyLabel = document.createElement("span");
+		emptyLabel.style.width = (isthin ? 20 : 80) + "px";
+
+		const firstColCell = document.createElement("div");
+		Object.assign(firstColCell.style, { display: "flex", flexDirection: "column", gap: "5px", flex: "1" });
+
+		const secondColCell = document.createElement("div");
+		Object.assign(secondColCell.style, { flex: "1" });
+
+		const extraCell = document.createElement("span");
+		extraCell.style.width = "120px";
+
+		const applyColBtn = document.createElement("button");
+		applyColBtn.textContent = "Apply column >>";
+		applyColBtn.classList.add("btn", "btn-secondary");
+		Object.assign(applyColBtn.style, { fontSize: "10px", padding: "6px 10px", marginTop: "6px" });
+		applyColBtn.onclick = () => {
+			for (let j = 0; j < rows.length; j++) {
+				if (rows[j].select2) { // ensure opponent column exists
+					rows[j].select2.value = rows[j].select1.value; // copy "You" to "Opponent"
+					if (COMPETE_ADVANCED.checked()) {
+						compete_customarr[j][1] = compete_customarr[j][0]; // copy custom settings
+						rows[j].optionText2.textContent = rows[j].optionText1.textContent;
+					}
+				}
+			}
+			handleCompeteSettingsChange();
+		};
+
+		firstColCell.appendChild(applyColBtn);
+		bottomRow.appendChild(emptyLabel);
+		bottomRow.appendChild(firstColCell);
+		bottomRow.appendChild(secondColCell);
+		bottomRow.appendChild(extraCell);
+		container.appendChild(bottomRow);
 	}
 
     // --- Restore Button Logic ---
