@@ -4167,7 +4167,7 @@ function possibleWeight(lower, upper, startdifficulty = 0, currow = 0, currindex
 		"Solve 1 Side": -1.5,
 	}
 	const possibleCubes = !COMPETE_ADVANCED.checked() ? [[],[]] : [
-		["3x3x2", "Double"],
+		["3x3x2", "Double Turns"],
 		["Solve 1 Side"],
 	];
 	if (currow >= possibleCubes.length) {
@@ -4768,14 +4768,14 @@ function competeSettings(num = compete_type) {
 				if (playerIndex === 0) {
 					rows[j].select1.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: randomConfig.scramble, goal: randomConfig.wincondition });
 						compete_customarr[j][0] = customData;
 						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
 					}
 				} else {
 					rows[j].select2.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: randomConfig.scramble, goal: randomConfig.wincondition });
 						compete_customarr[j][1] = customData;
 						rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
 					}
@@ -5078,14 +5078,14 @@ function competeSettings(num = compete_type) {
 				if (playerIndex === 0) {
 					rows[j].select1.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: randomConfig.scramble, goal: randomConfig.wincondition });
 						compete_customarr[j][0] = customData;
 						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
 					}
 				} else {
 					rows[j].select2.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: randomConfig.scramble, goal: randomConfig.wincondition });
 						compete_customarr[j][1] = customData;
 						rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
 					}
