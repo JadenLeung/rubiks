@@ -4701,200 +4701,9 @@ function competeSettings(num = compete_type) {
 
     // --- Main Loop to Build Rows ---
 	if (num === "1v1") {
-		// Programmatically build header to avoid duplicated HTML for You/Opponent
-		const headerDiv = document.createElement("div");
-		headerDiv.style.cssText = "display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;";
-
-		const spacer = document.createElement("span");
-		spacer.style.width = "80px";
-
-		const makePlayerHeader = (labelText, minId, maxId, btnId, btnText) => {
-			const col = document.createElement("span");
-			col.style.cssText = "flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;";
-
-			const title = document.createElement("div");
-			title.style.cssText = "display: flex; align-items: center; gap: 4px;";
-			title.textContent = labelText;
-
-			const controls = document.createElement("div");
-			controls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
-
-			const lbl = document.createElement("label");
-			lbl.style.cssText = "font-size: 11px; margin: 0; white-space: nowrap;";
-			lbl.textContent = "Difficulty (1-5):";
-
-			const minInput = document.createElement("input");
-			minInput.type = "number";
-			minInput.id = minId;
-			minInput.min = 1; minInput.max = 5; minInput.step = 0.5; minInput.value = 1;
-			minInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
-
-			const toSpan = document.createElement("span");
-			toSpan.style.fontSize = "10px";
-			toSpan.textContent = "to";
-
-			const maxInput = document.createElement("input");
-			maxInput.type = "number";
-			maxInput.id = maxId;
-			maxInput.min = 1; maxInput.max = 5; maxInput.step = 0.5; maxInput.value = 5;
-			maxInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
-
-			const btn = document.createElement("button");
-			btn.id = btnId;
-			btn.className = "btn btn-success";
-			btn.style.cssText = "font-size: 10px; padding: 1px 6px;";
-			btn.textContent = btnText;
-
-			controls.append(lbl, minInput, toSpan, maxInput, btn);
-			col.append(title, controls);
-			return col;
-		};
-
-		const youCol = makePlayerHeader("You", "difficulty_min_p1", "difficulty_max_p1", "random_p1_btn", "Generate Random");
-		const oppCol = makePlayerHeader("Opponent", "difficulty_min_p2", "difficulty_max_p2", "random_p2_btn", "Generate Random");
-		const rightSpacer = document.createElement("span");
-		rightSpacer.style.width = "120px";
-
-		headerDiv.append(spacer, youCol, oppCol, rightSpacer);
-		container.appendChild(headerDiv);
-
-		// We'll append the "Apply column >>" button underneath the first column after rows are created
-
-		// Difficulty inputs for Player 1 - round to nearest 0.5
-		const diffMinP1 = document.getElementById("difficulty_min_p1");
-		const diffMaxP1 = document.getElementById("difficulty_max_p1");
-		
-		const roundToHalf = (val) => Math.round(val * 2) / 2;
-		
-		diffMinP1.onchange = () => {
-			let val = parseFloat(diffMinP1.value);
-			val = Math.max(1, Math.min(5, roundToHalf(val)));
-			diffMinP1.value = val;
-			if (val > parseFloat(diffMaxP1.value)) {
-				diffMaxP1.value = val;
-			}
-		};
-		
-		diffMaxP1.onchange = () => {
-			let val = parseFloat(diffMaxP1.value);
-			val = Math.max(1, Math.min(5, roundToHalf(val)));
-			diffMaxP1.value = val;
-			if (val < parseFloat(diffMinP1.value)) {
-				diffMinP1.value = val;
-			}
-		};
-
-		// Difficulty inputs for Player 2 - round to nearest 0.5
-		const diffMinP2 = document.getElementById("difficulty_min_p2");
-		const diffMaxP2 = document.getElementById("difficulty_max_p2");
-		
-		diffMinP2.onchange = () => {
-			let val = parseFloat(diffMinP2.value);
-			val = Math.max(1, Math.min(5, roundToHalf(val)));
-			diffMinP2.value = val;
-			if (val > parseFloat(diffMaxP2.value)) {
-				diffMaxP2.value = val;
-			}
-		};
-		
-		diffMaxP2.onchange = () => {
-			let val = parseFloat(diffMaxP2.value);
-			val = Math.max(1, Math.min(5, roundToHalf(val)));
-			diffMaxP2.value = val;
-			if (val < parseFloat(diffMinP2.value)) {
-				diffMinP2.value = val;
-			}
-		};
-
-		// Helper to apply random configs to a column: playerIndex 0 = You, 1 = Opponent
-		function applyRandomToColumn(playerIndex, minDiff, maxDiff) {
-			for (let j = 0; j < rows.length; j++) {
-				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
-				if (playerIndex === 0) {
-					rows[j].select1.value = randomConfig.cube;
-					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
-						compete_customarr[j][0] = customData;
-						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
-					}
-				} else {
-					rows[j].select2.value = randomConfig.cube;
-					if (COMPETE_ADVANCED.checked()) {
-						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
-						compete_customarr[j][1] = customData;
-						rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
-					}
-				}
-			}
-			handleCompeteSettingsChange();
-		}
-
-		// Random button for Player 1 (You)
-		const randomP1Btn = document.getElementById("random_p1_btn");
-		randomP1Btn.onclick = () => {
-			const minDiff = parseFloat(diffMinP1.value);
-			const maxDiff = parseFloat(diffMaxP1.value);
-			applyRandomToColumn(0, minDiff, maxDiff);
-		};
-
-		// Random button for Player 2 (Opponent)
-		const randomP2Btn = document.getElementById("random_p2_btn");
-		randomP2Btn.onclick = () => {
-			const minDiff = parseFloat(diffMinP2.value);
-			const maxDiff = parseFloat(diffMaxP2.value);
-			applyRandomToColumn(1, minDiff, maxDiff);
-		};
+		// Random header will be added below the Apply Column row after rows are created
+	// Remove the group header from the top - it will be added below after rows
 	} else {
-		// For group mode, add random button in header (programmatic)
-		const groupHeader = document.createElement("div");
-		groupHeader.style.cssText = "display: flex; width: 450px; gap: 10px; margin-bottom: 10px; align-items: center;";
-
-		const leftSpacer = document.createElement("span");
-		leftSpacer.style.width = "80px";
-
-		const everyoneCol = document.createElement("span");
-		everyoneCol.style.cssText = "flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;";
-
-		const title = document.createElement("div");
-		title.textContent = "Everyone";
-
-		const controls = document.createElement("div");
-		controls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
-
-		const lbl = document.createElement("label");
-		lbl.style.cssText = "font-size: 11px; margin: 0; white-space: nowrap;";
-		lbl.textContent = "Difficulty (1-5):";
-
-		const minInput = document.createElement("input");
-		minInput.type = "number";
-		minInput.id = "difficulty_min_group";
-		minInput.min = 1; minInput.max = 5; minInput.step = 0.5; minInput.value = 1;
-		minInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
-
-		const toSpan = document.createElement("span");
-		toSpan.style.fontSize = "10px";
-		toSpan.textContent = "to";
-
-		const maxInput = document.createElement("input");
-		maxInput.type = "number";
-		maxInput.id = "difficulty_max_group";
-		maxInput.min = 1; maxInput.max = 5; maxInput.step = 0.5; maxInput.value = 5;
-		maxInput.style.cssText = "width: 45px; padding: 2px; font-size: 11px;";
-
-		const btn = document.createElement("button");
-		btn.id = "random_group_btn";
-		btn.className = "btn btn-success";
-		btn.style.cssText = "font-size: 10px; padding: 1px 6px;";
-		btn.textContent = "Generate Random";
-
-		controls.append(lbl, minInput, toSpan, maxInput, btn);
-		everyoneCol.append(title, controls);
-
-		const rightSpacer = document.createElement("span");
-		rightSpacer.style.width = "120px";
-
-		groupHeader.append(leftSpacer, everyoneCol, rightSpacer);
-		container.appendChild(groupHeader);
 	}
 
 	// Add random button handler for group mode after rows are created
@@ -5010,6 +4819,58 @@ function competeSettings(num = compete_type) {
 
 	// Setup group mode random button after rows are created
 	if (num === "group") {
+		// Add random header row beneath the rows for group mode
+		const groupRandomRow = document.createElement("div");
+		Object.assign(groupRandomRow.style, { display: "flex", width: "450px", gap: "10px", alignItems: "flex-start", marginBottom: "10px", marginTop: "10px" });
+
+		const emptyLabel = document.createElement("span");
+		emptyLabel.style.width = (isthin ? 20 : 80) + "px";
+
+		const randomCol = document.createElement("div");
+		Object.assign(randomCol.style, { display: "flex", flexDirection: "column", gap: "4px", flex: "1" });
+
+		const extraCell = document.createElement("span");
+		extraCell.style.width = "120px";
+
+		const label = document.createElement("div");
+		label.style.cssText = "font-size: 11px; font-weight: bold;";
+		label.textContent = "Random Generator:";
+
+		const controls = document.createElement("div");
+		controls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
+
+		const diffLabel = document.createElement("label");
+		diffLabel.style.cssText = "font-size: 10px; margin: 0; white-space: nowrap;";
+		diffLabel.textContent = "Difficulty:";
+
+		const minInput = document.createElement("input");
+		minInput.type = "number";
+		minInput.id = "difficulty_min_group";
+		minInput.min = 1; minInput.max = 5; minInput.step = 0.5; minInput.value = 1;
+		minInput.style.cssText = "width: 45px; padding: 2px; font-size: 10px;";
+
+		const toSpan = document.createElement("span");
+		toSpan.style.fontSize = "10px";
+		toSpan.textContent = "to";
+
+		const maxInput = document.createElement("input");
+		maxInput.type = "number";
+		maxInput.id = "difficulty_max_group";
+		maxInput.min = 1; maxInput.max = 5; maxInput.step = 0.5; maxInput.value = 5;
+		maxInput.style.cssText = "width: 45px; padding: 2px; font-size: 10px;";
+
+		const btn = document.createElement("button");
+		btn.id = "random_group_btn";
+		btn.className = "btn btn-success";
+		btn.style.cssText = "font-size: 10px; padding: 2px 6px;";
+		btn.textContent = "Generate";
+
+		controls.append(diffLabel, minInput, toSpan, maxInput, btn);
+		randomCol.append(label, controls);
+
+		groupRandomRow.append(emptyLabel, randomCol, extraCell);
+		container.appendChild(groupRandomRow);
+
 		setupGroupRandomButton();
 	}
 
@@ -5053,6 +4914,182 @@ function competeSettings(num = compete_type) {
 		bottomRow.appendChild(secondColCell);
 		bottomRow.appendChild(extraCell);
 		container.appendChild(bottomRow);
+
+		// Add random header row beneath the Apply Column row
+		const randomHeaderRow = document.createElement("div");
+		Object.assign(randomHeaderRow.style, { display: "flex", width: "650px", gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+
+		const randomEmptyLabel = document.createElement("span");
+		randomEmptyLabel.style.width = (isthin ? 20 : 80) + "px";
+
+		const randomYouCol = document.createElement("div");
+		Object.assign(randomYouCol.style, { display: "flex", flexDirection: "column", gap: "4px", flex: "1" });
+
+		const randomOppCol = document.createElement("div");
+		Object.assign(randomOppCol.style, { display: "flex", flexDirection: "column", gap: "4px", flex: "1" });
+
+		const randomExtraCell = document.createElement("span");
+		randomExtraCell.style.width = "120px";
+
+		// You column controls
+		const youLabel = document.createElement("div");
+		youLabel.style.cssText = "font-size: 11px; font-weight: bold;";
+		youLabel.textContent = "Random Generator:";
+
+		const youControls = document.createElement("div");
+		youControls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
+
+		const youDiffLabel = document.createElement("label");
+		youDiffLabel.style.cssText = "font-size: 10px; margin: 0; white-space: nowrap;";
+		youDiffLabel.textContent = "Difficulty:";
+
+		const youMinInput = document.createElement("input");
+		youMinInput.type = "number";
+		youMinInput.id = "difficulty_min_p1";
+		youMinInput.min = 1; youMinInput.max = 5; youMinInput.step = 0.5; youMinInput.value = 1;
+		youMinInput.style.cssText = "width: 45px; padding: 2px; font-size: 10px;";
+
+		const youToSpan = document.createElement("span");
+		youToSpan.style.fontSize = "10px";
+		youToSpan.textContent = "to";
+
+		const youMaxInput = document.createElement("input");
+		youMaxInput.type = "number";
+		youMaxInput.id = "difficulty_max_p1";
+		youMaxInput.min = 1; youMaxInput.max = 5; youMaxInput.step = 0.5; youMaxInput.value = 5;
+		youMaxInput.style.cssText = "width: 45px; padding: 2px; font-size: 10px;";
+
+		const youBtn = document.createElement("button");
+		youBtn.id = "random_p1_btn";
+		youBtn.className = "btn btn-success";
+		youBtn.style.cssText = "font-size: 10px; padding: 2px 6px;";
+		youBtn.textContent = "Generate";
+
+		youControls.append(youDiffLabel, youMinInput, youToSpan, youMaxInput, youBtn);
+		randomYouCol.append(youLabel, youControls);
+
+		// Opponent column controls
+		const oppLabel = document.createElement("div");
+		oppLabel.style.cssText = "font-size: 11px; font-weight: bold;";
+		oppLabel.textContent = "Random Generator:";
+
+		const oppControls = document.createElement("div");
+		oppControls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
+
+		const oppDiffLabel = document.createElement("label");
+		oppDiffLabel.style.cssText = "font-size: 10px; margin: 0; white-space: nowrap;";
+		oppDiffLabel.textContent = "Difficulty:";
+
+		const oppMinInput = document.createElement("input");
+		oppMinInput.type = "number";
+		oppMinInput.id = "difficulty_min_p2";
+		oppMinInput.min = 1; oppMinInput.max = 5; oppMinInput.step = 0.5; oppMinInput.value = 1;
+		oppMinInput.style.cssText = "width: 45px; padding: 2px; font-size: 10px;";
+
+		const oppToSpan = document.createElement("span");
+		oppToSpan.style.fontSize = "10px";
+		oppToSpan.textContent = "to";
+
+		const oppMaxInput = document.createElement("input");
+		oppMaxInput.type = "number";
+		oppMaxInput.id = "difficulty_max_p2";
+		oppMaxInput.min = 1; oppMaxInput.max = 5; oppMaxInput.step = 0.5; oppMaxInput.value = 5;
+		oppMaxInput.style.cssText = "width: 45px; padding: 2px; font-size: 10px;";
+
+		const oppBtn = document.createElement("button");
+		oppBtn.id = "random_p2_btn";
+		oppBtn.className = "btn btn-success";
+		oppBtn.style.cssText = "font-size: 10px; padding: 2px 6px;";
+		oppBtn.textContent = "Generate";
+
+		oppControls.append(oppDiffLabel, oppMinInput, oppToSpan, oppMaxInput, oppBtn);
+		randomOppCol.append(oppLabel, oppControls);
+
+		randomHeaderRow.append(randomEmptyLabel, randomYouCol, randomOppCol, randomExtraCell);
+		container.appendChild(randomHeaderRow);
+
+		// Wire up the difficulty input handlers and random button handlers
+		const diffMinP1 = document.getElementById("difficulty_min_p1");
+		const diffMaxP1 = document.getElementById("difficulty_max_p1");
+		const diffMinP2 = document.getElementById("difficulty_min_p2");
+		const diffMaxP2 = document.getElementById("difficulty_max_p2");
+		
+		const roundToHalf = (val) => Math.round(val * 2) / 2;
+		
+		diffMinP1.onchange = () => {
+			let val = parseFloat(diffMinP1.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMinP1.value = val;
+			if (val > parseFloat(diffMaxP1.value)) {
+				diffMaxP1.value = val;
+			}
+		};
+		
+		diffMaxP1.onchange = () => {
+			let val = parseFloat(diffMaxP1.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMaxP1.value = val;
+			if (val < parseFloat(diffMinP1.value)) {
+				diffMinP1.value = val;
+			}
+		};
+		
+		diffMinP2.onchange = () => {
+			let val = parseFloat(diffMinP2.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMinP2.value = val;
+			if (val > parseFloat(diffMaxP2.value)) {
+				diffMaxP2.value = val;
+			}
+		};
+		
+		diffMaxP2.onchange = () => {
+			let val = parseFloat(diffMaxP2.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMaxP2.value = val;
+			if (val < parseFloat(diffMinP2.value)) {
+				diffMinP2.value = val;
+			}
+		};
+
+		// Helper to apply random configs to a column: playerIndex 0 = You, 1 = Opponent
+		function applyRandomToColumn(playerIndex, minDiff, maxDiff) {
+			for (let j = 0; j < rows.length; j++) {
+				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				if (playerIndex === 0) {
+					rows[j].select1.value = randomConfig.cube;
+					if (COMPETE_ADVANCED.checked()) {
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						compete_customarr[j][0] = customData;
+						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
+					}
+				} else {
+					rows[j].select2.value = randomConfig.cube;
+					if (COMPETE_ADVANCED.checked()) {
+						const customData = JSON.stringify({ scramble: randomConfig.scramble, input: "Default", goal: randomConfig.wincondition });
+						compete_customarr[j][1] = customData;
+						rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
+					}
+				}
+			}
+			handleCompeteSettingsChange();
+		}
+
+		// Random button for Player 1 (You)
+		const randomP1Btn = document.getElementById("random_p1_btn");
+		randomP1Btn.onclick = () => {
+			const minDiff = parseFloat(diffMinP1.value);
+			const maxDiff = parseFloat(diffMaxP1.value);
+			applyRandomToColumn(0, minDiff, maxDiff);
+		};
+
+		// Random button for Player 2 (Opponent)
+		const randomP2Btn = document.getElementById("random_p2_btn");
+		randomP2Btn.onclick = () => {
+			const minDiff = parseFloat(diffMinP2.value);
+			const maxDiff = parseFloat(diffMaxP2.value);
+			applyRandomToColumn(1, minDiff, maxDiff);
+		};
 	}
 
     // --- Restore Button Logic ---
