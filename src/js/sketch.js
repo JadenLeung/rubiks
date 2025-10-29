@@ -4196,15 +4196,28 @@ function possibleWeight(lower, upper, startdifficulty = 0, currow = 0, currindex
 	return allcandidates;
 }
 
-function generateRandomCube(lower = -100, upper = 100) {
+function generateRandomCube(lower = -100, upper = 100, minDifficulty = null, maxDifficulty = null) {
 	let allweights = {}
 	Object.keys(DIMS_OBJ).forEach((key) => {
 		console.log("key is ", key)
+		// If difficulty range is specified, only include cubes within that range
+		if (minDifficulty !== null && maxDifficulty !== null) {
+			const cubeDiff = DIMS_OBJ[key].difficulty;
+			if (cubeDiff < minDifficulty || cubeDiff > maxDifficulty) {
+				return; // Skip this cube
+			}
+		}
 		const candidates = possibleWeight(lower, upper, DIMS_OBJ[key].difficulty)
 		if (candidates.length > 0)
 			allweights[key] = candidates;
 	});
 	console.log("All weights is ", allweights);
+	
+	// If no cubes match, expand the search
+	if (Object.keys(allweights).length === 0 && minDifficulty !== null) {
+		return generateRandomCube(lower, upper, null, null); // Fall back to any difficulty
+	}
+	
 	let randomkey = p.random(Object.keys(allweights));
 	let allconfigs = allweights[randomkey];
 	if (Math.random() < 0.5 && allconfigs[0].every((x) => x == "Default")) {
@@ -4691,11 +4704,29 @@ function competeSettings(num = compete_type) {
 		container.innerHTML = `
 		<div style="display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;">
 			<span style="width: 80px;"></span>
-			<span style="flex: 1; text-align: left; display: flex; align-items: center; gap: 4px;">
-				You
-				<button id="apply_col_btn" class="btn btn-secondary" style="font-size: 10px; padding: 1px 6px; margin-left: 5px;">Apply column >></button>
+			<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+				<div style="display: flex; align-items: center; gap: 4px;">
+					You
+					<button id="apply_col_btn" class="btn btn-secondary" style="font-size: 10px; padding: 1px 6px; margin-left: 5px;">Apply column >></button>
+				</div>
+				<div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+					<label style="font-size: 11px; margin: 0; white-space: nowrap;">Difficulty:</label>
+					<input type="number" id="difficulty_min_p1" min="1" max="5" step="0.5" value="1" style="width: 45px; padding: 2px; font-size: 11px;">
+					<span style="font-size: 10px;">to</span>
+					<input type="number" id="difficulty_max_p1" min="1" max="5" step="0.5" value="5" style="width: 45px; padding: 2px; font-size: 11px;">
+					<button id="random_p1_btn" class="btn btn-success" style="font-size: 10px; padding: 1px 6px;">Generate Random</button>
+				</div>
 			</span>
-			<span style="flex: 1; text-align: left;">Opponent</span>
+			<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+				<div>Opponent</div>
+				<div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+					<label style="font-size: 11px; margin: 0; white-space: nowrap;">Difficulty:</label>
+					<input type="number" id="difficulty_min_p2" min="1" max="5" step="0.5" value="1" style="width: 45px; padding: 2px; font-size: 11px;">
+					<span style="font-size: 10px;">to</span>
+					<input type="number" id="difficulty_max_p2" min="1" max="5" step="0.5" value="5" style="width: 45px; padding: 2px; font-size: 11px;">
+					<button id="random_p2_btn" class="btn btn-success" style="font-size: 10px; padding: 1px 6px;">Generate Random</button>
+				</div>
+			</span>
 			<span style="width: 120px;"></span>
 		</div>`;
 
@@ -4712,7 +4743,162 @@ function competeSettings(num = compete_type) {
 			}
 			handleCompeteSettingsChange();
 		};
+
+		// Difficulty inputs for Player 1 - round to nearest 0.5
+		const diffMinP1 = document.getElementById("difficulty_min_p1");
+		const diffMaxP1 = document.getElementById("difficulty_max_p1");
+		
+		const roundToHalf = (val) => Math.round(val * 2) / 2;
+		
+		diffMinP1.onchange = () => {
+			let val = parseFloat(diffMinP1.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMinP1.value = val;
+			if (val > parseFloat(diffMaxP1.value)) {
+				diffMaxP1.value = val;
+			}
+		};
+		
+		diffMaxP1.onchange = () => {
+			let val = parseFloat(diffMaxP1.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMaxP1.value = val;
+			if (val < parseFloat(diffMinP1.value)) {
+				diffMinP1.value = val;
+			}
+		};
+
+		// Difficulty inputs for Player 2 - round to nearest 0.5
+		const diffMinP2 = document.getElementById("difficulty_min_p2");
+		const diffMaxP2 = document.getElementById("difficulty_max_p2");
+		
+		diffMinP2.onchange = () => {
+			let val = parseFloat(diffMinP2.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMinP2.value = val;
+			if (val > parseFloat(diffMaxP2.value)) {
+				diffMaxP2.value = val;
+			}
+		};
+		
+		diffMaxP2.onchange = () => {
+			let val = parseFloat(diffMaxP2.value);
+			val = Math.max(1, Math.min(5, roundToHalf(val)));
+			diffMaxP2.value = val;
+			if (val < parseFloat(diffMinP2.value)) {
+				diffMinP2.value = val;
+			}
+		};
+
+		// Random button for Player 1 (You)
+		const randomP1Btn = document.getElementById("random_p1_btn");
+		randomP1Btn.onclick = () => {
+			const minDiff = parseFloat(diffMinP1.value);
+			const maxDiff = parseFloat(diffMaxP1.value);
+			for (let j = 0; j < rows.length; j++) {
+				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				rows[j].select1.value = randomConfig.cube;
+				if (COMPETE_ADVANCED.checked()) {
+					const customData = JSON.stringify({
+						scramble: randomConfig.scramble,
+						input: "Default",
+						goal: randomConfig.wincondition
+					});
+					compete_customarr[j][0] = customData;
+					rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
+				}
+			}
+			handleCompeteSettingsChange();
+		};
+
+		// Random button for Player 2 (Opponent)
+		const randomP2Btn = document.getElementById("random_p2_btn");
+		randomP2Btn.onclick = () => {
+			const minDiff = parseFloat(diffMinP2.value);
+			const maxDiff = parseFloat(diffMaxP2.value);
+			for (let j = 0; j < rows.length; j++) {
+				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				rows[j].select2.value = randomConfig.cube;
+				if (COMPETE_ADVANCED.checked()) {
+					const customData = JSON.stringify({
+						scramble: randomConfig.scramble,
+						input: "Default",
+						goal: randomConfig.wincondition
+					});
+					compete_customarr[j][1] = customData;
+					rows[j].optionText2.textContent = formatSettingsCustom(JSON.parse(customData));
+				}
+			}
+			handleCompeteSettingsChange();
+		};
+	} else {
+		// For group mode, add random button in header
+		container.innerHTML = `
+		<div style="display: flex; width: 450px; gap: 10px; margin-bottom: 10px; align-items: center;">
+			<span style="width: 80px;"></span>
+			<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+				<div>Everyone</div>
+				<div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+					<label style="font-size: 11px; margin: 0; white-space: nowrap;">Difficulty:</label>
+					<input type="number" id="difficulty_min_group" min="1" max="5" step="0.5" value="1" style="width: 45px; padding: 2px; font-size: 11px;">
+					<span style="font-size: 10px;">to</span>
+					<input type="number" id="difficulty_max_group" min="1" max="5" step="0.5" value="5" style="width: 45px; padding: 2px; font-size: 11px;">
+					<button id="random_group_btn" class="btn btn-success" style="font-size: 10px; padding: 1px 6px;">Random</button>
+				</div>
+			</span>
+			<span style="width: 120px;"></span>
+		</div>`;
 	}
+
+	// Add random button handler for group mode after rows are created
+	const setupGroupRandomButton = () => {
+		const diffMinGroup = document.getElementById("difficulty_min_group");
+		const diffMaxGroup = document.getElementById("difficulty_max_group");
+		const randomGroupBtn = document.getElementById("random_group_btn");
+		
+		const roundToHalf = (val) => Math.round(val * 2) / 2;
+		
+		if (diffMinGroup && diffMaxGroup) {
+			diffMinGroup.onchange = () => {
+				let val = parseFloat(diffMinGroup.value);
+				val = Math.max(1, Math.min(5, roundToHalf(val)));
+				diffMinGroup.value = val;
+				if (val > parseFloat(diffMaxGroup.value)) {
+					diffMaxGroup.value = val;
+				}
+			};
+			
+			diffMaxGroup.onchange = () => {
+				let val = parseFloat(diffMaxGroup.value);
+				val = Math.max(1, Math.min(5, roundToHalf(val)));
+				diffMaxGroup.value = val;
+				if (val < parseFloat(diffMinGroup.value)) {
+					diffMinGroup.value = val;
+				}
+			};
+		}
+		
+		if (randomGroupBtn) {
+			randomGroupBtn.onclick = () => {
+				const minDiff = parseFloat(diffMinGroup.value);
+				const maxDiff = parseFloat(diffMaxGroup.value);
+				for (let j = 0; j < rows.length; j++) {
+					const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+					rows[j].select1.value = randomConfig.cube;
+					if (COMPETE_ADVANCED.checked()) {
+						const customData = JSON.stringify({
+							scramble: randomConfig.scramble,
+							input: "Default",
+							goal: randomConfig.wincondition
+						});
+						compete_customarr[j][0] = customData;
+						rows[j].optionText1.textContent = formatSettingsCustom(JSON.parse(customData));
+					}
+				}
+				handleCompeteSettingsChange();
+			};
+		}
+	};
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         const row = document.createElement("div");
@@ -4764,6 +4950,11 @@ function competeSettings(num = compete_type) {
         row.appendChild(extraColumn);
         container.appendChild(row);
     }
+
+	// Setup group mode random button after rows are created
+	if (num === "group") {
+		setupGroupRandomButton();
+	}
 
     // --- Restore Button Logic ---
     getEl("competerestore").onclick = () => {

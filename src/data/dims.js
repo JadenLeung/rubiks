@@ -18,7 +18,7 @@ export const DIMS_OBJ = {
     "Plus Lite" : {type: ["Non-cubic", "Baby"], difficulty: 1, scramble: "Normal"},
     "3x3x2 Plus Cube" : {type: ["Non-cubic", "Baby"], difficulty: 1.5, scramble: "3x3x2"},
     "Plus Cube" : {type: ["Non-cubic"], difficulty: 2, scramble: "Middle Slices"},
-    "4x4 Plus Cube" : {type: ["Non-cubic", "Big"], difficulty: 4.5, scramble: "Normal"},
+    "4x4 Plus Cube" : {type: ["Non-cubic", "Big"], difficulty: 3.5, scramble: "Normal"},
     "Jank 2x2" : {type: ["Non-cubic"], difficulty: 3, scramble: "Normal"},
     "Xmas 2x2" : {type: ["Shape", "NxN"], difficulty: 2, scramble: "Normal"},
     "Xmas 3x3" : {type: ["Shape", "NxN"], difficulty: 3, scramble: "Normal"},
