@@ -7,7 +7,7 @@ export const DIMS_OBJ = {
     "1x2x3" : {type: ["Baby", "Cuboid"], difficulty: 1, scramble: "3x3x2"},
     "1x3x3" : {type: ["Baby", "Cuboid", "Shapeshift"], difficulty: 1.5, scramble: "Normal"},
     "1x4x4" : {type: ["Baby", "Cuboid"], difficulty: 1.5, scramble: "3x3x2"},
-    "1x5x5" : {type: ["Baby", "Cuboid"], difficulty: 1.5, scramble: "3x3x2"},
+    "1x5x5" : {type: ["Baby", "Cuboid"], difficulty: 2, scramble: "3x3x2"},
     "2x2x3" : {type: ["Cuboid"], difficulty: 2, scramble: "3x3x2"},
     "2x2x4" : {type: ["Big", "Cuboid", "Shapeshift"], difficulty: 3, scramble: "Normal"},
     "2x3x4" : {type: ["Big", "Cuboid", "Shapeshift"], difficulty: 3.5, scramble: "3x3x2"},
