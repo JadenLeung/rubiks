@@ -4196,17 +4196,10 @@ function possibleWeight(lower, upper, startdifficulty = 0, currow = 0, currindex
 	return allcandidates;
 }
 
-function generateRandomCube(lower = -100, upper = 100, minDifficulty = null, maxDifficulty = null) {
+function generateRandomCube(lower = -100, upper = 100) {
 	let allweights = {}
 	Object.keys(DIMS_OBJ).forEach((key) => {
 		console.log("key is ", key)
-		// If difficulty range is specified, only include cubes within that range
-		if (minDifficulty !== null && maxDifficulty !== null) {
-			const cubeDiff = DIMS_OBJ[key].difficulty;
-			if (cubeDiff < minDifficulty || cubeDiff > maxDifficulty) {
-				return; // Skip this cube
-			}
-		}
 		const candidates = possibleWeight(lower, upper, DIMS_OBJ[key].difficulty)
 		if (candidates.length > 0)
 			allweights[key] = candidates;
@@ -4215,7 +4208,7 @@ function generateRandomCube(lower = -100, upper = 100, minDifficulty = null, max
 	
 	// If no cubes match, expand the search
 	if (Object.keys(allweights).length === 0 && minDifficulty !== null) {
-		return generateRandomCube(lower, upper, null, null); // Fall back to any difficulty
+		return generateRandomCube(lower, upper); // Fall back to any difficulty
 	}
 	
 	let randomkey = p.random(Object.keys(allweights));
@@ -4764,7 +4757,7 @@ function competeSettings(num = compete_type) {
 		// Helper to apply random configs to a column: playerIndex 0 = You, 1 = Opponent
 		function applyRandomToColumn(playerIndex, minDiff, maxDiff) {
 			for (let j = 0; j < rows.length; j++) {
-				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				const randomConfig = generateRandomCube(minDiff, maxDiff);
 				if (playerIndex === 0) {
 					rows[j].select1.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
@@ -4852,8 +4845,8 @@ function competeSettings(num = compete_type) {
 		extraCell.style.width = "120px";
 
 		const label = document.createElement("div");
-		label.style.cssText = "font-size: 11px; font-weight: bold;";
-		label.textContent = "Random Generator:";
+		label.style.cssText = "font-size: 12px; font-weight: bold;";
+		label.textContent = "Random Cube Generator:";
 
 		const controls = document.createElement("div");
 		controls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
@@ -4881,7 +4874,7 @@ function competeSettings(num = compete_type) {
 		const btn = document.createElement("button");
 		btn.id = "random_group_btn";
 		btn.className = "btn btn-success";
-		btn.style.cssText = "font-size: 10px; padding: 2px 6px;";
+		btn.style.cssText = "font-size: 15px; padding: 2px 6px;";
 		btn.textContent = "Generate";
 
 		controls.append(diffLabel, minInput, toSpan, maxInput, btn);
@@ -4952,7 +4945,7 @@ function competeSettings(num = compete_type) {
 
 		// You column controls
 		const youLabel = document.createElement("div");
-		youLabel.style.cssText = "font-size: 11px; font-weight: bold;";
+		youLabel.style.cssText = "font-size: 12px; font-weight: bold;";
 		youLabel.textContent = "Random Cube Generator:";
 
 		const youControls = document.createElement("div");
@@ -4981,7 +4974,7 @@ function competeSettings(num = compete_type) {
 		const youBtn = document.createElement("button");
 		youBtn.id = "random_p1_btn";
 		youBtn.className = "btn btn-success";
-		youBtn.style.cssText = "font-size: 10px; padding: 2px 6px;";
+		youBtn.style.cssText = "font-size: 15px; padding: 2px 6px;";
 		youBtn.textContent = "Generate";
 
 		youControls.append(youDiffLabel, youMinInput, youToSpan, youMaxInput, youBtn);
@@ -4989,8 +4982,8 @@ function competeSettings(num = compete_type) {
 
 		// Opponent column controls
 		const oppLabel = document.createElement("div");
-		oppLabel.style.cssText = "font-size: 11px; font-weight: bold;";
-		oppLabel.textContent = "Random Generator:";
+		oppLabel.style.cssText = "font-size: 12px; font-weight: bold;";
+		oppLabel.textContent = "Random Cube Generator:";
 
 		const oppControls = document.createElement("div");
 		oppControls.style.cssText = "display: flex; align-items: center; gap: 4px; flex-wrap: wrap;";
@@ -5018,7 +5011,7 @@ function competeSettings(num = compete_type) {
 		const oppBtn = document.createElement("button");
 		oppBtn.id = "random_p2_btn";
 		oppBtn.className = "btn btn-success";
-		oppBtn.style.cssText = "font-size: 10px; padding: 2px 6px;";
+		oppBtn.style.cssText = "font-size: 15px; padding: 2px 6px;";
 		oppBtn.textContent = "Generate";
 
 		oppControls.append(oppDiffLabel, oppMinInput, oppToSpan, oppMaxInput, oppBtn);
@@ -5074,7 +5067,7 @@ function competeSettings(num = compete_type) {
 		// Helper to apply random configs to a column: playerIndex 0 = You, 1 = Opponent
 		function applyRandomToColumn(playerIndex, minDiff, maxDiff) {
 			for (let j = 0; j < rows.length; j++) {
-				const randomConfig = generateRandomCube(-100, 100, minDiff, maxDiff);
+				const randomConfig = generateRandomCube(minDiff, maxDiff);
 				if (playerIndex === 0) {
 					rows[j].select1.value = randomConfig.cube;
 					if (COMPETE_ADVANCED.checked()) {
@@ -8686,7 +8679,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(JSON.stringify(generateRandomCube(1,5)));
+		console.log((generateRandomCube(2,4)));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9032,7 +9025,8 @@ function multiple(nb, timed, use = "default") {
 				if(undo[undo.length-2] == bad) {
 					undo.pop();
 					undo.pop();
-					moves--;
+					if (!["x", "y", "z"].includes(arr[nb][0]))
+						moves--;
 				} else {
 					if (!["x", "y", "z"].includes(arr[nb][0]))
 						moves++;
