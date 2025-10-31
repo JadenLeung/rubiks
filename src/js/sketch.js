@@ -11963,7 +11963,7 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 		return;
 	let face1 = getFace(cuby1, mouseX1, mouseY1);
 	let face2 = getFace(cuby2, mouseX2, mouseY2);
-	if (["2x3x4", "2x3x5", 2, 15].includes(DIM)) {
+	if (["2x3x4", "2x3x5", "3x3x4", 2, 15].includes(DIM)) {
 		face1 = getFaceOld(cuby1, color1);
 		face2 = getFaceOld(cuby2, color2);
 	}
