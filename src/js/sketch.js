@@ -4020,9 +4020,10 @@ function enterLobby(data, r) {
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("inline", ["outertime", "reset_div"]);
 	setDisplay("block", ["cnv_div"]);
-	setDisplay("block", ["waitingroom", "practice_container", "chat_instruct", "chat-container"]);
+	setDisplay("block", ["practice_container", "chat_instruct", "chat-container"]);
 	setDisplay("flex", ["competeinput"]);
 	setDisplay(data.data.leader == socket.id ? "inline" : "none", ["editcompete"]);
+	getEl("waitingroom").style.display = isShown("compete_select") ? "none" : "block";
 	console.log("Refreshed")
 	room = r;
 	getEl("waitingroomid").innerHTML = "Joined room " + room;
@@ -5330,7 +5331,7 @@ function competeDims() {
 			}
 		} else {
 			// Advanced: Collect puzzle and option for each row, then interleave them
-			for (let i = 0; i < rows.length; i++) {
+			for (let i = 0; i < rows.length - 1; i++) {
 				const row = rows[i];
 				const select = row.querySelector("select");
 				
@@ -5348,7 +5349,7 @@ function competeDims() {
 			}
 		}
 	} else if (compete_type == "1v1") {
-			const container = document.getElementById("1v1_container");
+		const container = document.getElementById("1v1_container");
         const rows = container.querySelectorAll(":scope > div:not(:first-child)");
 
 		if (!COMPETE_ADVANCED.checked()) {
@@ -5366,7 +5367,7 @@ function competeDims() {
 			let puzzles = [];
 			let options = [];
 
-			for (let i = 0; i < rows.length; i++) {
+			for (let i = 0; i < rows.length - 2; i++) {
 				const row = rows[i];
 				const selects = row.getElementsByTagName("select");
 
@@ -8679,7 +8680,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log((generateRandomCube(2,4)));
+		console.log(isShown("compete_select"));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
