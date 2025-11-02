@@ -2545,14 +2545,18 @@ function moveSetup()
 		comstep--;
 		canMan = true;
 		quickSolve();
-		moves = 0;
-		undo = [];
-		redo = [];
-		arr = [];
-		otherShuffling = true;
-		changeArr(competeshuffle);
-		multiple2("compete");
-		waitStopTurning(false, "compete");
+		setTimeout(() => {
+			if (comstep > 0) {
+				moves = 0;
+				undo = [];
+				redo = [];
+				arr = [];
+				otherShuffling = true;
+				changeArr(competeshuffle);
+				multiple2("compete");
+				waitStopTurning(false, "compete");
+			}
+		}, 100);
 		return;
 	}
 	if ((cstep > 0 || mastep > 0) && (!savesetupdim.includes(DIM) || SIZE > 3 || ["cuboid", "baby"].includes(ma_data.type))) {
