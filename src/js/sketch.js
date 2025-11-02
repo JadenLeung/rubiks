@@ -8424,6 +8424,7 @@ function animateRotate(axis, dir) {
 	}
 }
 function animate(axis, rows, dir, timed, bcheck = true) {
+	rows = rows.sort((a, b) => a - b);
 	
 	if(isAnimating()) return false;
 	if (blinded() || (MODE == "competing" && competedata.data.type == "teamblind" 
@@ -8437,12 +8438,21 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	}
 
 	if (rows[0] == -MAXX && isRowEmpty(axis, rows[0])) {
-		rows = rows.map(r => r + CUBYESIZE);
+		rows = rows.map(r => (
+			(r === 0 || r + CUBYESIZE === 0 || Math.sign(r) === Math.sign(r + CUBYESIZE))
+				? r + CUBYESIZE
+				: r
+		));
 	} else if (rows[rows.length - 1] == MAXX && isRowEmpty(axis, rows[rows.length - 1])) {
-		rows = rows.map(r => r - CUBYESIZE);
+		rows = rows.map(r => (
+			(r === 0 || r - CUBYESIZE === 0 || Math.sign(r) === Math.sign(r - CUBYESIZE))
+				? r - CUBYESIZE
+				: r
+		));
 	} else if (rows.length == 1 && rows[0] == 0 && isRowEmpty(axis, rows[0])) {
 		rows = [-CUBYESIZE, 0, CUBYESIZE];
 	}
+
 
 	if(bandaged.length > 0){
 		for(let i = 0; i < bandaged.length; i++){
