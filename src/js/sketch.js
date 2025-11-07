@@ -3737,7 +3737,7 @@ function cubemode()
 	reSetup();
 	MODE = "cube";
 	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct", 
-		"or_instruct2", "or_instruct4", "custom2", "custom4", "recent_solves_container"]);
+		"or_instruct2", "or_instruct4", "custom2", "custom4"]);
 	setDisplay("block", ["scram", "input", "allmodes", "modarrow", "cube"]);
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 

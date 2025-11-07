@@ -10,7 +10,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
         if (timesParOld) timesParOld.style.display = 'none';
         if (movesParOld) movesParOld.style.display = 'none';
     }
-	if ((MODE == "normal" && MINIMODE == "normal") || MODE == "timed") {
+	if ((MODE == "normal" && MINIMODE == "normal") || MODE == "timed" || MODE == "cube") {
 		container.style.display = 'block';
 		
 		// Clear existing rows
