@@ -4627,14 +4627,18 @@ function competeSettings(num = compete_type) {
         }
 
         // 2. Create elements
-        const columnStyle = { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
+        const columnStyle = isthin 
+            ? { display: "flex", flexDirection: "column", gap: "5px", width: "120px", flexShrink: "0" }
+            : { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
         const cubeContainer = document.createElement("div");
         Object.assign(cubeContainer.style, columnStyle);
         
         const puzzleSelect = document.createElement("select");
-        puzzleSelect.style.width = "100%";
+        puzzleSelect.style.width = isthin ? "120px" : "100%";
         alldims.forEach(text => puzzleSelect.appendChild(new Option(text, text)));
-        puzzleSelect.onmousedown = (e) => e.preventDefault();
+        if (!isthin) {
+            puzzleSelect.onmousedown = (e) => e.preventDefault();
+        }
 
         const optionText = document.createElement("p");
         Object.assign(optionText.style, { fontSize: "13px", margin: "0", padding: "6px 0", whiteSpace: "pre-wrap", wordBreak: "break-word", flex: "1" });
@@ -4662,10 +4666,13 @@ function competeSettings(num = compete_type) {
 
         // 4. Add event listeners
         puzzleSelect.addEventListener("click", () => {
-            showCnvDiv();
-            setDisplay("none", ["creating_match"]);
-            setDisplay("block", ["compete_select"]);
-            competeSelect(roundIndex, playerIndex, puzzleSelect, typeLabel, optionText);
+            if (!isthin) {
+                showCnvDiv();
+                setDisplay("none", ["creating_match"]);
+                setDisplay("block", ["compete_select"]);
+                competeSelect(roundIndex, playerIndex, puzzleSelect, typeLabel, optionText);
+            }
+            // On mobile (isthin), let the default dropdown behavior happen
         });
 		puzzleSelect.addEventListener("change", () => {
 			handleCompeteSettingsChange();
@@ -4697,21 +4704,21 @@ function competeSettings(num = compete_type) {
         return { container: cubeContainer, puzzleSelect, optionText };
     };
 
-    // --- Main Loop to Build Rows ---
+	// --- Main Loop to Build Rows ---
 	if (num === "1v1") {
 		// Add column headers for 1v1 mode
 		const headerDiv = document.createElement("div");
-		headerDiv.style.cssText = "display: flex; width: 650px; gap: 10px; margin-bottom: 10px; align-items: center;";
-
-		const spacer = document.createElement("span");
-		spacer.style.width = "80px";
+		const headerWidth = isthin ? "410px" : "650px";
+		headerDiv.style.cssText = `display: flex; width: ${headerWidth}; gap: 10px; margin-bottom: 10px; align-items: center;`;		const spacer = document.createElement("span");
+		spacer.style.width = isthin ? "20px" : "80px";
 
 		const youHeader = document.createElement("span");
-		youHeader.style.cssText = "flex: 1; text-align: left; font-weight: bold;";
+		const headerStyle = isthin ? "width: 120px; text-align: left; font-weight: bold; flex-shrink: 0;" : "flex: 1; text-align: left; font-weight: bold;";
+		youHeader.style.cssText = headerStyle;
 		youHeader.textContent = "You";
 
 		const oppHeader = document.createElement("span");
-		oppHeader.style.cssText = "flex: 1; text-align: left; font-weight: bold;";
+		oppHeader.style.cssText = isthin ? "width: 120px; text-align: left; font-weight: bold; flex-shrink: 0;" : "flex: 1; text-align: left; font-weight: bold;";
 		oppHeader.textContent = "Opponent";
 
 		const rightSpacer = document.createElement("span");
@@ -4785,7 +4792,8 @@ function competeSettings(num = compete_type) {
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         const row = document.createElement("div");
-        Object.assign(row.style, { display: "flex", width: num === "1v1" ? "650px" : "450px", gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+        const rowWidth = isthin ? (num === "1v1" ? "300px" : "180px") : (num === "1v1" ? "650px" : "450px");
+        Object.assign(row.style, { display: "flex", width: rowWidth, gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
         
         const label = document.createElement("span");
         label.textContent = `${isthin ? "R" : "Round "}${i + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
@@ -4806,7 +4814,7 @@ function competeSettings(num = compete_type) {
         extraColumn.style.width = "120px";
        if (i === 0) {
 			const applyBtn = document.createElement("button");
-			applyBtn.textContent = "Apply row to all";
+			applyBtn.textContent = !isthin ? "Apply row to all" : "↓";
 			applyBtn.classList.add("btn", "btn-secondary");
 			Object.assign(applyBtn.style, { fontSize: "10px", padding: "1px 6px" });
 			applyBtn.onclick = () => {
@@ -4894,16 +4902,23 @@ function competeSettings(num = compete_type) {
 	// In 1v1 mode, create a bottom row containing an "Apply column >>" button in the first column cell
 	if (num === "1v1" && rows.length > 0) {
 		const bottomRow = document.createElement("div");
-		Object.assign(bottomRow.style, { display: "flex", width: "650px", gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+		const bottomRowWidth = isthin ? "410px" : "650px";
+		Object.assign(bottomRow.style, { display: "flex", width: bottomRowWidth, gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
 
 		const emptyLabel = document.createElement("span");
 		emptyLabel.style.width = (isthin ? 20 : 80) + "px";
 
 		const firstColCell = document.createElement("div");
-		Object.assign(firstColCell.style, { display: "flex", flexDirection: "column", gap: "5px", flex: "1" });
+		const firstColStyle = isthin 
+			? { display: "flex", flexDirection: "column", gap: "5px", width: "120px", flexShrink: "0" }
+			: { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
+		Object.assign(firstColCell.style, firstColStyle);
 
 		const secondColCell = document.createElement("div");
-		Object.assign(secondColCell.style, { flex: "1" });
+		const secondColStyle = isthin 
+			? { width: "120px", flexShrink: "0" }
+			: { flex: "1" };
+		Object.assign(secondColCell.style, secondColStyle);
 
 		const extraCell = document.createElement("span");
 		extraCell.style.width = "120px";
@@ -4934,16 +4949,23 @@ function competeSettings(num = compete_type) {
 
 		// Add random header row beneath the Apply Column row
 		const randomHeaderRow = document.createElement("div");
-		Object.assign(randomHeaderRow.style, { display: "flex", width: "650px", gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+		const randomHeaderWidth = isthin ? "410px" : "650px";
+		Object.assign(randomHeaderRow.style, { display: "flex", width: randomHeaderWidth, gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
 
 		const randomEmptyLabel = document.createElement("span");
 		randomEmptyLabel.style.width = (isthin ? 20 : 80) + "px";
 
 		const randomYouCol = document.createElement("div");
-		Object.assign(randomYouCol.style, { display: "flex", flexDirection: "column", gap: "4px", flex: "1" });
+		const randomYouColStyle = isthin 
+			? { display: "flex", flexDirection: "column", gap: "4px", width: "120px", flexShrink: "0" }
+			: { display: "flex", flexDirection: "column", gap: "4px", flex: "1" };
+		Object.assign(randomYouCol.style, randomYouColStyle);
 
 		const randomOppCol = document.createElement("div");
-		Object.assign(randomOppCol.style, { display: "flex", flexDirection: "column", gap: "4px", flex: "1" });
+		const randomOppColStyle = isthin 
+			? { display: "flex", flexDirection: "column", gap: "4px", width: "120px", flexShrink: "0" }
+			: { display: "flex", flexDirection: "column", gap: "4px", flex: "1" };
+		Object.assign(randomOppCol.style, randomOppColStyle);
 
 		const randomExtraCell = document.createElement("span");
 		randomExtraCell.style.width = "120px";
@@ -5185,8 +5207,8 @@ function updateRandomHeaderVisibility() {
 		
 		// For 1v1 mode - hide the entire random header row
 		if (randomP1Btn) {
-			// Navigate up to the row container (the flex row with width 650px)
-			let row = randomP1Btn.closest('div[style*="width: 650px"]');
+			// Navigate up to the row container (the flex row with width 650px or 410px for mobile)
+			let row = randomP1Btn.closest('div[style*="width: 650px"]') || randomP1Btn.closest('div[style*="width: 410px"]');
 			if (row && row.parentElement) {
 				row.style.display = enabled ? 'flex' : 'none';
 			}
@@ -5194,8 +5216,8 @@ function updateRandomHeaderVisibility() {
 		
 		// For group mode - hide the entire random header row
 		if (randomGroupBtn) {
-			// Navigate up to the row container (the flex row with width 450px)
-			let row = randomGroupBtn.closest('div[style*="width: 450px"]');
+			// Navigate up to the row container (the flex row with width 450px or 280px for mobile)
+			let row = randomGroupBtn.closest('div[style*="width: 450px"]') || randomGroupBtn.closest('div[style*="width: 280px"]');
 			if (row && row.parentElement) {
 				row.style.display = enabled ? 'flex' : 'none';
 			}
