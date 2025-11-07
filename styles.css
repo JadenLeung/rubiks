@@ -416,6 +416,9 @@ button:hover {
     }
 }
 @media screen and (max-width: 767px) {
+    #right {
+        padding-bottom: 100px !important;
+    }
     #outertime {
         position: absolute;
         top: 90%;
