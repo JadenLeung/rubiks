@@ -3652,7 +3652,7 @@ function regular(nocustom){
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2",
-		"custom-dialog", "custom-dialog-backdrop"]);
+		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -3736,7 +3736,8 @@ function cubemode()
 	regular(true);
 	reSetup();
 	MODE = "cube";
-	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct", "or_instruct2", "or_instruct4", "custom2", "custom4"]);
+	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct", 
+		"or_instruct2", "or_instruct4", "custom2", "custom4", "recent_solves_container"]);
 	setDisplay("block", ["scram", "input", "allmodes", "modarrow", "cube"]);
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
@@ -3764,7 +3765,7 @@ function idmode()
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 
-	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram", "timeselect"]);
+	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram", "timeselect", "recent_solves_container"]);
 	setDisplay("block", ["ID3", "test_alg_div","ID4","ID5"]);
 	setDisplay("inline", ["iddefault"])
 	
@@ -3815,7 +3816,7 @@ function paintmode() {
 	MODE = "paint";
 	special[2] = savesetup;
 	// quickSolve(savesetup);
-	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition"]);
+	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition","recent_solves_container"]);
 	setDisplay("block", ["paint","finishpaint"]);
 	setDisplay("inline", ["iddefault"]);
 	canMan = false;
@@ -3910,7 +3911,7 @@ function competemode() {
 	modeData("compete");
 	regular();
 	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
-			"or_instruct", "or_instruct2", "or_instruct4"
+			"or_instruct", "or_instruct2", "or_instruct4", "recent_solves_container"
 	]);
 	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
@@ -5462,7 +5463,7 @@ function challengemode() {
 	regular(true);
 	MODE = "challenge";
 	refreshButtons();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3"]);
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3", "recent_solves_container"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
 	SCRAM.value("Normal");
@@ -6016,6 +6017,7 @@ function settingsmode()
 	}
 	DIM = DIM2;
 	MODE = "normal";
+	MINIMODE = "settings";
 	reSetup();
 	stopMoving();
 	fullScreen(false);
@@ -6051,7 +6053,7 @@ function speedmode()
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "end" });
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
-	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect","s_start"]);
+	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect","s_start", "recent_solves_container"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
 
@@ -6110,7 +6112,7 @@ function movesmode()
 		startCube() 
 	}
 	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
-		"solve", "input", "input2", "scram", "timeselect"]);
+		"solve", "input", "input2", "scram", "timeselect", "recent_solves_container"]);
 	setDisplay("inline", ["m_34", "m_4"]);
 	setDisplay("block", ["m_high", "blind","b_start","marathon","ma_buttons"]);
 
@@ -8283,7 +8285,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, ao5, mo5, movesarr);
+	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE);
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
