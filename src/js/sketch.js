@@ -9,6 +9,7 @@ import { constkeymappings } from '../data/keymap.js';
 import {modeData, getUserData, printUsers, putUsers, hasUser, putSuggestion} from "./backend.js";
 import { createCustomDialog } from '../components/GameDialog.js';
 import { computeCubeScore } from '../components/computeCubeScore.js';
+import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -8282,6 +8283,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
+	updateRecentSolvesTable(MODE, ao5, mo5, movesarr);
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -13271,6 +13273,7 @@ window.addEventListener('keydown', (e) => {
 	capture: true,   // this disables arrow key scrolling in modern Chrome
 	passive: false   // this is optional, my code works without it
 });
+
 }
 /*
 Mo50 virtual
@@ -13405,31 +13408,5 @@ Instead of smiling we'll cry tears of sorrow
 Mr.Sunshine keep coming through
 You know that we're counting on you
 Your precious rays will brighten our days
-Mr. Sunshine give us your rays/*
-
-
-12:50
-
-Start out with a seed
-Plant it snuggly in the ground
-Take a can of water and sprinkle all around
-The sun comes out for warming the clouds will bring us rain
-Stop the weeds from growing and the plants will be your friends
-
-It's growing time in story land
-All the plants have their done part
-And now you know if you'll help them grow
-They'll help to give your day a healthy start
-
-We hope you had a good time at our show
-And I hope you learned a lot from things I know
-You've really been quite grand for our guest at storyland
-And we surely hate to see you have to go
-
-(repeat)
-
-If you want to plant a garden on your very own
-Our vegetables have shown you how they should be grown
-Start off with our seeds and tend to all their needs
-And we'll always be good eating in your home
-*/ 
+Mr. Sunshine give us your rays
+*/
