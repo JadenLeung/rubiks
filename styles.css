@@ -276,6 +276,16 @@ button:hover {
     width: 100px; 
     margin-top: 20px
 }
+#continuematch {
+    position: absolute;
+    top: 7%;
+    right: 1%;
+    z-index:2;
+    font-size: 30px; 
+    min-width: 150px; 
+    margin-top: 20px;
+    text-align: center;
+}
 #practice_container {
     position: absolute;
     top: 9%;
@@ -451,6 +461,12 @@ button:hover {
         top: 0%;
         font-size: 20px;
         width: 80px;
+    }
+    #continuematch {
+        top: 0%;
+        font-size: 20px;
+        min-width: 120px;
+        text-align: center;
     }
     #s_RACE2 {
         top: 0%;

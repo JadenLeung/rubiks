@@ -4627,14 +4627,14 @@ function competeSettings(num = compete_type) {
         }
 
         // 2. Create elements
-        const columnStyle = isthin 
+        const columnStyle = (isthin && num === "1v1")
             ? { display: "flex", flexDirection: "column", gap: "5px", width: "120px", flexShrink: "0" }
             : { display: "flex", flexDirection: "column", gap: "5px", flex: "1" };
         const cubeContainer = document.createElement("div");
         Object.assign(cubeContainer.style, columnStyle);
         
         const puzzleSelect = document.createElement("select");
-        puzzleSelect.style.width = isthin ? "120px" : "100%";
+        puzzleSelect.style.width = (isthin && num === "1v1") ? "120px" : "100%";
         alldims.forEach(text => puzzleSelect.appendChild(new Option(text, text)));
         if (!isthin) {
             puzzleSelect.onmousedown = (e) => e.preventDefault();
@@ -4792,7 +4792,7 @@ function competeSettings(num = compete_type) {
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         const row = document.createElement("div");
-        const rowWidth = isthin ? (num === "1v1" ? "300px" : "180px") : (num === "1v1" ? "650px" : "450px");
+        const rowWidth = isthin ? (num === "1v1" ? "410px" : "450px") : (num === "1v1" ? "650px" : "450px");
         Object.assign(row.style, { display: "flex", width: rowWidth, gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
         
         const label = document.createElement("span");
