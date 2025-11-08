@@ -25,7 +25,7 @@ export default function (p) {
 	const CUBYESIZE = 50;
 	const DEBUG = false;
 	let week = sinceOct12('w') % 20;
-	let bruh = 0;
+	let averagetimedata = {};
 	let CAM;
 	let keymappings = constkeymappings;
 	let CAM_PICKER;
@@ -2014,12 +2014,12 @@ setInterval(() => {
 	if (!getEl("show_keyboard_map").checked && MODE != "keyboard") {
 		setDisplay("none", ["keymap"]);
 	}
-	if (bruh.mode != MODE || bruh.minimode != MINIMODE || bruh.ao5length != ao5.length || bruh.mo5length != mo5.length) {
+	if (averagetimedata.mode != MODE || averagetimedata.minimode != MINIMODE || averagetimedata.ao5length != ao5.length || averagetimedata.mo5length != mo5.length) {
 		displayAverage();
-		bruh.mode = MODE;
-		bruh.minimode = MINIMODE;
-		bruh.ao5length = ao5.length;
-		bruh.mo5length = mo5.length;
+		averagetimedata.mode = MODE;
+		averagetimedata.minimode = MINIMODE;
+		averagetimedata.ao5length = ao5.length;
+		averagetimedata.mo5length = mo5.length;
 	}
 }, 10)
 //forever

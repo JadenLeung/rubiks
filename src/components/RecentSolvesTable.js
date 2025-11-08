@@ -19,7 +19,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	
 	// Hide Ao5 stat in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
-	console.log(ao5, mo5);
+	// console.log(ao5, mo5);
 	let competearr = false;
 	let opparr = false;
 	let isCompeting = false;
