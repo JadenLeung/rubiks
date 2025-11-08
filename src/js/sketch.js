@@ -4028,6 +4028,7 @@ function enterLobby(data, r) {
 		return;
 	}
 	compete_type = data.data.type;
+	MODE = "compete";
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("inline", ["outertime", "reset_div"]);
 	setDisplay("block", ["cnv_div"]);
@@ -4604,6 +4605,7 @@ function competeSettings(num = compete_type) {
         alert("Cannot turn group compete into 1v1 match.");
         return;
     }
+	MODE = "compete";
     compete_type = num;
     getEl("com_1v1_div").style.display = num === "1v1" ? "block" : "none";
     getEl("com_group_div").style.display = num === "group" ? "block" : "none";
@@ -8753,7 +8755,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(ao5, mo5, movesarr);
+		console.log(competedata);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

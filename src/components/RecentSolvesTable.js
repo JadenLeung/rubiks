@@ -6,6 +6,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	const movesParOld = document.getElementById('moves_par');
 	const movesHeader = document.getElementById('moves_header');
 	const mo5StatDiv = document.getElementById('mo5_stat').parentElement;
+	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
 	
 	
 	// Determine if we should show moves column (hide in speed mode)
@@ -14,6 +15,9 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	// Show/hide moves column header and stat
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
 	if (mo5StatDiv) mo5StatDiv.style.display = showMoves ? '' : 'none';
+	
+	// Hide Ao5 stat in competing mode
+	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
 	
 	console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
@@ -40,7 +44,10 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			
 			if (i < recentTimes.length) {
 				// Row with data
-				const solveNumber = ao5.length - recentTimes.length + i + 1;
+				// For cube mode, use mo5.length for numbering, otherwise use ao5.length
+				const solveNumber = mo5.length > 0 ?
+					mo5.length - recentTimes.length + i + 1
+					: i + 1;
 				
 				// # column
 				const cellNum = row.insertCell(0);
@@ -74,11 +81,12 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		// Update statistics
 		if (recentTimes.length > 0) {
 			const totalTime = recentTimes.reduce((a, b) => a + b, 0);
-			const ao5Value = recentTimes.length >= numRows ? (Math.round((totalTime / numRows) * 100) / 100) : 'N/A';
+			let ao5Value = recentTimes.length >= numRows ? (Math.round((totalTime / numRows) * 100) / 100) : 'N/A';
 			const totalMoves = recentMoves.filter(m => m > 0).reduce((a, b) => a + b, 0);
 			const mo5Value = recentMoves.length >= numRows ? Math.round(totalMoves / numRows) : 'N/A';
 			let bestTime = Math.min(...recentTimes.filter(t => t !== "DNF"));
-			if (bestTime === Infinity) bestTime = 'N/A';
+			if (bestTime == Infinity) bestTime = 'N/A';
+			if (Number.isNaN(ao5Value)) ao5Value = 'N/A';
 			
 			document.getElementById('ao5_stat').textContent = ao5Value === 'N/A' ? ao5Value : ao5Value + 's';
 			document.getElementById('mo5_stat').textContent = mo5Value === 'N/A' ? mo5Value : mo5Value + 's';
