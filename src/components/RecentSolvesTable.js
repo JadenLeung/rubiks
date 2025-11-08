@@ -3,6 +3,10 @@ function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr,
 	console.log("scramble is ", scramble, solveNumber)
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
+	
+	// Check if device is iOS or macOS
+	const isAppleDevice = /iPhone|iPad|iPod|Macintosh|MacIntel|MacPPC|Mac68K/.test(navigator.userAgent) || 
+	                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 	if (!modal) {
 		modal = document.createElement("div");
@@ -23,20 +27,21 @@ function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr,
 			color: "black",
 		});
 
-		modal.innerHTML = `
-			<h4>Solve Details</h4>
-			<div id="solve-detail-content" style="margin: 20px 0; text-align: left;"></div>
-			<div style="display: flex; gap: 10px;">
-				<button id="solve-detail-delete-btn" class="btn btn-danger" style="flex: 1;">Delete</button>
-				<button id="solve-detail-close-btn" class="btn btn-primary" style="flex: 1;">Close</button>
-			</div>
-		`;
-		document.body.appendChild(modal);
-
-		// Prevent clicks on modal from propagating
-		modal.onclick = (e) => {
-			e.stopPropagation();
-		};
+	modal.innerHTML = `
+		<h4>Solve Details</h4>
+		<div id="solve-detail-content" style="margin: 20px 0; text-align: left;"></div>
+		<div style="display: flex; gap: 10px;">
+			${isAppleDevice ? '<button id="solve-detail-share-btn" class="btn btn-secondary" style="flex: 1;">Share</button>' : ''}
+			<button id="solve-detail-delete-btn" class="btn btn-danger" style="flex: 1;">Delete</button>
+			<button id="solve-detail-close-btn" class="btn btn-primary" style="flex: 1;">Close</button>
+		</div>
+	`;
+	document.body.appendChild(modal);
+	
+	// Prevent clicks on modal from propagating
+	modal.onclick = (e) => {
+		e.stopPropagation();
+	};
 
 		backdrop = document.createElement("div");
 		backdrop.id = "solve-detail-backdrop";
@@ -62,48 +67,62 @@ function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr,
 			}
 		};
 
-		const closeBtn = document.getElementById("solve-detail-close-btn");
-		closeBtn.onclick = () => {
-			modal.style.display = "none";
-			backdrop.style.display = "none";
-			// Restore canMan when closing
-			if (window.canMan !== undefined) {
-				window.canMan = true;
-			}
-		};
-		
-		const deleteBtn = document.getElementById("solve-detail-delete-btn");
-		deleteBtn.onclick = () => {
-			// Will be set each time dialog is shown
-		};
-	}
-	
-	// Update delete button handler for this specific solve
-	const deleteBtn = document.getElementById("solve-detail-delete-btn");
-	deleteBtn.onclick = () => {
-		// Delete from arrays using removeSpecificTime (solveNumber is 1-indexed, arrays are 0-indexed)
-		const index = solveNumber - 1;
-		
-		if (typeof window.removeSpecificTime === 'function') {
-			window.removeSpecificTime(index);
-		}
-		
-		// Close dialog
+
+	const closeBtn = document.getElementById("solve-detail-close-btn");
+	closeBtn.onclick = () => {
 		modal.style.display = "none";
 		backdrop.style.display = "none";
-		
-		// Restore canMan
-		if (window.canMan !== undefined) {
-			window.canMan = true;
-		}
-		
-		// Call onDelete callback to refresh the table
-		if (onDelete) {
-			onDelete();
-		}
+	// Restore canMan when closing
+	if (window.canMan !== undefined) {
+		window.canMan = true;
+	}
+};
+
+const deleteBtn = document.getElementById("solve-detail-delete-btn");
+deleteBtn.onclick = () => {
+	// Will be set each time dialog is shown
+};
+
+if (isAppleDevice) {
+	const shareBtn = document.getElementById("solve-detail-share-btn");
+	shareBtn.onclick = () => {
+		// Will be set each time dialog is shown
 	};
+}
+}// Update delete button handler for this specific solve
+const deleteBtn = document.getElementById("solve-detail-delete-btn");
+deleteBtn.onclick = () => {
+	// Delete from arrays using removeSpecificTime (solveNumber is 1-indexed, arrays are 0-indexed)
+	const index = solveNumber - 1;	if (typeof window.removeSpecificTime === 'function') {
+		window.removeSpecificTime(index);
+	}
+	
+	// Close dialog
+	modal.style.display = "none";
+	backdrop.style.display = "none";
+	
+	// Restore canMan
+	if (window.canMan !== undefined) {
+		window.canMan = true;
+	}
+	
+	// Call onDelete callback to refresh the table
+	if (onDelete) {
+		onDelete();
+	}
+};
 
-
+// Update share button handler for this specific solve (only on Apple devices)
+if (isAppleDevice) {
+	const shareBtn = document.getElementById("solve-detail-share-btn");
+	if (shareBtn) {
+		shareBtn.onclick = () => {
+			const shareText = `I solved the virtual cube!\nTime: ${time}\nScramble: ${scramble || 'N/A'}\nhttps://virtual-cube.net/`;
+			const smsUrl = `sms:&body=${encodeURIComponent(shareText)}`;
+			window.open(smsUrl, '_blank');
+		};
+	}
+}
 	// Update content
 	const content = document.getElementById("solve-detail-content");
 	content.innerHTML = `
