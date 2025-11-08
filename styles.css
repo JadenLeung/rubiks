@@ -474,4 +474,15 @@ button:hover {
     #s_RACE2 {
         top: 0%;
     }
-}	
+}
+
+#recent_solves_body td {
+    text-align: center;
+    border: 1px solid;
+    height: 32px;
+    min-height: 32px;
+}
+
+#recent_solves_body tr {
+    height: 32px;
+}

@@ -16,15 +16,17 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
 		// Clear existing rows
 		tbody.innerHTML = '';
 		
-		if (ao5.length > 0) {
-			// Get last 5 solves
-			const startIndex = Math.max(0, ao5.length - 5);
-			const recentTimes = ao5.slice(startIndex);
-			const recentMoves = movesarr.slice(Math.max(0, movesarr.length - 5));
+		// Get last 5 solves (or fewer if less than 5)
+		const startIndex = Math.max(0, ao5.length - 5);
+		const recentTimes = ao5.slice(startIndex);
+		const recentMoves = movesarr.slice(Math.max(0, movesarr.length - 5));
+		
+		// Always create exactly 5 rows
+		for (let i = 0; i < 5; i++) {
+			const row = tbody.insertRow();
 			
-			// Add rows in reverse order (newest at top)
-			for (let i = 0; i < recentTimes.length; i++) {
-				const row = tbody.insertRow();
+			if (i < recentTimes.length) {
+				// Row with data
 				const solveNumber = mo5.length - recentTimes.length + i + 1;
 				
 				// # column
@@ -38,9 +40,21 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
 				// Moves column
 				const cellMoves = row.insertCell(2);
 				cellMoves.textContent = recentMoves[i] || 'N/A';
+			} else {
+				// Empty row
+				const cellNum = row.insertCell(0);
+				cellNum.textContent = '';
+				
+				const cellTime = row.insertCell(1);
+				cellTime.textContent = '';
+				
+				const cellMoves = row.insertCell(2);
+				cellMoves.textContent = '';
 			}
-			
-			// Update statistics
+		}
+		
+		// Update statistics
+		if (recentTimes.length > 0) {
 			const totalTime = recentTimes.reduce((a, b) => a + b, 0);
 			const ao5Value = recentTimes.length >= 5 ? (Math.round((totalTime / 5) * 100) / 100) : 'N/A';
 			const totalMoves = recentMoves.filter(m => m > 0).reduce((a, b) => a + b, 0);
@@ -50,12 +64,15 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
 			document.getElementById('ao5_stat').textContent = ao5Value === 'N/A' ? ao5Value : ao5Value + 's';
 			document.getElementById('mo5_stat').textContent = mo5Value;
 			document.getElementById('best_time_stat').textContent = bestTime + 's';
-			
-			statsSummary.style.display = 'block';
 		} else {
-			// No solves yet - show empty table with header only
-			statsSummary.style.display = 'none';
+			// No solves yet - show N/A for all stats
+			document.getElementById('ao5_stat').textContent = 'N/A';
+			document.getElementById('mo5_stat').textContent = 'N/A';
+			document.getElementById('best_time_stat').textContent = 'N/A';
 		}
+		
+		// Always show stats summary
+		statsSummary.style.display = 'block';
 	} else {
 		container.style.display = 'none';
 	}

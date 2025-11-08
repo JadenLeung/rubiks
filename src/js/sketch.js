@@ -2007,6 +2007,9 @@ setInterval(() => {
 		if (CAM.getRotationScale() != 0.001)
 			CAM.setRotationScale(0.001);
 	}
+	if (!getEl("show_keyboard_map").checked) {
+		setDisplay("none", ["keymap"]);
+	}
 }, 10)
 //forever
 function reSetup(rot) {
@@ -6779,6 +6782,14 @@ function speedOLL()
 }
 //onclick
 document.getElementById("l_home").onclick = regular;
+document.getElementById("show_keyboard_map").onchange = function() {
+	const isChecked = this.checked;
+	const tableDisplay = isChecked ? "table" : "none";
+	
+	if (document.getElementById("keymap")) {
+		document.getElementById("keymap").style.display = tableDisplay;
+	}
+};
 document.getElementById("savedata").onclick = () => saveData(localStorage.username, null, "POST", true);
 document.getElementById("savedata2").onclick = () => saveData(localStorage.username, null, "POST", true);
 async function saveData(username, password, method, al) {
