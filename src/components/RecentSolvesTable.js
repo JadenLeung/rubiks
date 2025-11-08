@@ -15,7 +15,6 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	
 	// Show/hide moves column header and stat
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
-	if (mo5StatDiv) mo5StatDiv.style.display = showMoves ? '' : 'none';
 	
 	// Hide Ao5 stat in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
@@ -123,13 +122,29 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		
 		// Update statistics
 		if (recentTimes.length > 0) {
-			const totalTime = recentTimes.reduce((a, b) => a + b, 0);
-			let ao5Value = recentTimes.length >= numRows ? (Math.round((totalTime / numRows) * 100) / 100) : 'N/A';
-			const totalMoves = recentMoves.filter(m => m > 0).reduce((a, b) => a + b, 0);
-			const mo5Value = recentMoves.length >= numRows ? Math.round(totalMoves / numRows) : 'N/A';
+			// Calculate Ao5: remove best and worst, then average the middle 3
+			let ao5Value = 'N/A';
+			if (recentTimes.length >= numRows) {
+				const validTimes = recentTimes.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+				if (validTimes.length >= 3) {
+					const sortedTimes = [...validTimes].sort((a, b) => a - b);
+					// Remove best (first) and worst (last)
+					const middleTimes = sortedTimes.slice(1, -1);
+					const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+					ao5Value = Math.round((totalMiddle / middleTimes.length) * 100) / 100;
+				}
+			}
+			
+			// Calculate Mo5 as mean of all valid solves (filter out N/A, undefined, null, DNF)
+			const allValidTimes = ao5.filter(t => t !== 'N/A' && t !== undefined && t !== null && t !== 'DNF' && !isNaN(t));
+			let mo5Value = 'N/A';
+			if (allValidTimes.length > 0) {
+				const totalAllTimes = allValidTimes.reduce((a, b) => a + b, 0);
+				mo5Value = Math.round((totalAllTimes / allValidTimes.length) * 100) / 100;
+			}
+			
 			let bestTime = Math.min(...recentTimes.filter(t => t !== "DNF"));
 			if (bestTime == Infinity) bestTime = 'N/A';
-			if (Number.isNaN(ao5Value)) ao5Value = 'N/A';
 			
 			document.getElementById('ao5_stat').textContent = ao5Value === 'N/A' ? ao5Value : ao5Value + 's';
 			document.getElementById('mo5_stat').textContent = mo5Value === 'N/A' ? mo5Value : mo5Value + 's';
