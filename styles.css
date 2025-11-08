@@ -269,7 +269,7 @@ button:hover {
 }
 #practiceskip {
     position: absolute;
-    top: 14%;
+    top: 100px;
     right: 1%;
     z-index:2;
     font-size: 30px; 
