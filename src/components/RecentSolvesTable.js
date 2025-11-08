@@ -110,8 +110,43 @@ function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr,
 		<p style="margin: 10px 0;"><strong>Solve #:</strong> ${solveNumber}</p>
 		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
 		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
-		<p style="margin: 10px 0;"><strong>Scramble:</strong> ${scramble || 'N/A'}</p>
+		<p style="margin: 10px 0; display: flex; align-items: center; gap: 8px;">
+			<strong>Scramble:</strong> 
+			<span id="scramble-text" style="flex: 1;">${scramble || 'N/A'}</span>
+			${scramble && scramble !== 'N/A' ? `
+			<button id="copy-scramble-btn" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center;" title="Copy scramble">
+				<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+					<path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/>
+				</svg>
+			</button>
+			` : ''}
+		</p>
 	`;
+	
+	// Add copy functionality
+	const copyBtn = document.getElementById("copy-scramble-btn");
+	if (copyBtn && scramble) {
+		copyBtn.onclick = (e) => {
+			e.stopPropagation();
+			navigator.clipboard.writeText(scramble).then(() => {
+				// Visual feedback
+				copyBtn.innerHTML = `
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+						<path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+					</svg>
+				`;
+				setTimeout(() => {
+					copyBtn.innerHTML = `
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+							<path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/>
+						</svg>
+					`;
+				}, 1500);
+			}).catch(err => {
+				console.error('Failed to copy scramble:', err);
+			});
+		};
+	}
 
 	// Disable canMan when showing dialog
 	if (window.canMan !== undefined) {
