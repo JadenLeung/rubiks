@@ -204,6 +204,7 @@ export default function (p) {
 	let ao5 = [];
 	let mo5 = [];
 	let movesarr = [];
+	let prevMovesArrLength = 0;
 	let scrambles = [];
 	let savesetup = [];
 	let savebandage = [];
@@ -1851,7 +1852,7 @@ setInterval(() => {
 	}
 	if(MODE == "cube" && modnum != 1 && DIM != "snake_eye") bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
-	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
+	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL", "PLLprac", "OLLprac"].includes(MINIMODE)))
 		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
 	else
 		realtop = TOPWHITE.value()[0].toLowerCase();
@@ -6197,8 +6198,10 @@ function showSpeed()
 	if(MODE == "speed")
 	{
 		document.getElementById("reset3_div").style.display = "inline";
-		document.getElementById("times_par").style.display = "block";
-		document.getElementById("time").style.display = "inline";
+		if (!isShown("recent_solves_container")) {
+			document.getElementById("times_par").style.display = "block";
+			document.getElementById("time").style.display = "inline";
+		}
 		document.getElementById("outertime").style.display = "inline";
 	}
 	if(MODE == "moves")
@@ -6316,7 +6319,7 @@ function easy()
 	}
 	if(easystep == 0)
 	{
-		ao5 = 0;
+		ao5 = [];
 		quickSolve();
 		reCam();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve the Cube";
@@ -6512,7 +6515,7 @@ function medium(){
 	{
 		reCam();
 		showSpeed();
-		ao5 = 0;
+		ao5 = [];
 		quickSolve();
 		timer.stop();
 		timer.reset();
@@ -6610,7 +6613,7 @@ function togglePLL(action, arr) {
 	}
 }
 function selectPLL(mode) {
-	MINIMODE = mode;
+	MINIMODE = mode + "prac";
 	pracmode = mode;
 	moves = 0;
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac"]);
@@ -6646,7 +6649,10 @@ function practicePLL() {
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Suggested Algorithm";
 		showSpeed();
-		setDisplay("block", ["moves_par", "outermoves", "practiceskip"]);
+		setDisplay("block", ["outermoves", "practiceskip"]);
+		if (!isShown("recent_solves_container")) {
+			document.getElementById("moves_par").style.display = "block";
+		}
 		timer.stop();
 		timer.reset();
 		let rnd = p.random(pracalgs);
@@ -6691,7 +6697,7 @@ function speedPLL()
 	{
 		timer.reset();
 		if(pllstep == 0)
-		ao5 = 0;
+		ao5 = [];
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
 		showSpeed();
@@ -6745,7 +6751,7 @@ function speedOLL()
 	{
 		timer.reset();
 		if(ollstep == 0)
-		ao5 = 0;
+		ao5 = [];
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (ollstep/2+1) + ": Solve the Top Layer";
 		showSpeed();
@@ -8237,7 +8243,7 @@ function displayAverage()
 	let maxpos = 0;
 	let display = "";
 	let displaymoves = "";
-	let actualao5 = 0;
+	let actualao5 = [];
 	let meano5 = 0; //not actually limited to 5
 	let meanmoves = 0;
 	if(ao5[ao5.length-1] == 0 && MODE != "moves")
@@ -8744,7 +8750,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(MODE);
+		console.log(ao5, mo5, movesarr);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -13226,6 +13232,7 @@ document.getElementById('login').addEventListener('click', function() {
 });
 
 getEl("practiceskip").addEventListener('click', function() {
+	if (!canMan) return;
 	pllpracstep = 2;
 	practicePLL();
 });

@@ -4,17 +4,17 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	const statsSummary = document.getElementById('stats_summary');
 	const timesParOld = document.getElementById('times_par');
 	const movesParOld = document.getElementById('moves_par');
-	console.log(MODE, MINIMODE)
+	// console.log(ao5, mo5, movesarr);
 	// Show table only in normal mode, otherwise show old format
 	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
-		|| (!keymapShown && ["pracPLL"].includes(MINIMODE))) {
+		|| (!keymapShown && ["pracPLL", "OLL"].includes(MINIMODE))) {
 		container.style.display = 'block';
 		container.style.marginBottom = ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)) ? '0' : '16px';
 		
 		// Clear existing rows
 		tbody.innerHTML = '';
 		
-		// Get last 5 solves (or fewer if less than 5)
+		// Get last 5 solves (or fewer if less than 5) - use ao5 for times
 		const startIndex = Math.max(0, ao5.length - 5);
 		const recentTimes = ao5.slice(startIndex);
 		const recentMoves = movesarr.slice(Math.max(0, movesarr.length - 5));
@@ -25,7 +25,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			
 			if (i < recentTimes.length) {
 				// Row with data
-				const solveNumber = mo5.length - recentTimes.length + i + 1;
+				const solveNumber = ao5.length - recentTimes.length + i + 1;
 				
 				// # column
 				const cellNum = row.insertCell(0);
