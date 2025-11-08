@@ -1,5 +1,5 @@
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble) {
+function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr, scrambles, onDelete) {
 	console.log("scramble is ", scramble, solveNumber)
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
@@ -26,9 +26,17 @@ function showSolveDialog(solveNumber, time, moves, scramble) {
 		modal.innerHTML = `
 			<h4>Solve Details</h4>
 			<div id="solve-detail-content" style="margin: 20px 0; text-align: left;"></div>
-			<button id="solve-detail-close-btn" class="btn btn-primary" style="width: 100%;">Close</button>
+			<div style="display: flex; gap: 10px;">
+				<button id="solve-detail-delete-btn" class="btn btn-danger" style="flex: 1;">Delete</button>
+				<button id="solve-detail-close-btn" class="btn btn-primary" style="flex: 1;">Close</button>
+			</div>
 		`;
 		document.body.appendChild(modal);
+
+		// Prevent clicks on modal from propagating
+		modal.onclick = (e) => {
+			e.stopPropagation();
+		};
 
 		backdrop = document.createElement("div");
 		backdrop.id = "solve-detail-backdrop";
@@ -44,17 +52,57 @@ function showSolveDialog(solveNumber, time, moves, scramble) {
 		});
 		document.body.appendChild(backdrop);
 
+		backdrop.onclick = (e) => {
+			e.stopPropagation();
+			modal.style.display = "none";
+			backdrop.style.display = "none";
+			// Restore canMan when closing
+			if (window.canMan !== undefined) {
+				window.canMan = true;
+			}
+		};
+
 		const closeBtn = document.getElementById("solve-detail-close-btn");
 		closeBtn.onclick = () => {
 			modal.style.display = "none";
 			backdrop.style.display = "none";
+			// Restore canMan when closing
+			if (window.canMan !== undefined) {
+				window.canMan = true;
+			}
 		};
-
-		backdrop.onclick = () => {
-			modal.style.display = "none";
-			backdrop.style.display = "none";
+		
+		const deleteBtn = document.getElementById("solve-detail-delete-btn");
+		deleteBtn.onclick = () => {
+			// Will be set each time dialog is shown
 		};
 	}
+	
+	// Update delete button handler for this specific solve
+	const deleteBtn = document.getElementById("solve-detail-delete-btn");
+	deleteBtn.onclick = () => {
+		// Delete from arrays using removeSpecificTime (solveNumber is 1-indexed, arrays are 0-indexed)
+		const index = solveNumber - 1;
+		
+		if (typeof window.removeSpecificTime === 'function') {
+			window.removeSpecificTime(index);
+		}
+		
+		// Close dialog
+		modal.style.display = "none";
+		backdrop.style.display = "none";
+		
+		// Restore canMan
+		if (window.canMan !== undefined) {
+			window.canMan = true;
+		}
+		
+		// Call onDelete callback to refresh the table
+		if (onDelete) {
+			onDelete();
+		}
+	};
+
 
 	// Update content
 	const content = document.getElementById("solve-detail-content");
@@ -62,7 +110,13 @@ function showSolveDialog(solveNumber, time, moves, scramble) {
 		<p style="margin: 10px 0;"><strong>Solve #:</strong> ${solveNumber}</p>
 		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
 		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
+		<p style="margin: 10px 0;"><strong>Scramble:</strong> ${scramble || 'N/A'}</p>
 	`;
+
+	// Disable canMan when showing dialog
+	if (window.canMan !== undefined) {
+		window.canMan = false;
+	}
 
 	// Show dialog
 	backdrop.style.display = "block";
@@ -178,12 +232,15 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 				}
 				
 				// Add click handler in normal mode
-				if (MODE === "normal" || MODE == "cube") {
+				if (MODE === "normal" || MODE == "cube" || MODE == "timed") {
 					row.style.cursor = "pointer";
 					row.onclick = () => {
 						const timeText = cellTime.textContent;
 						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
-						showSolveDialog(solveNumber, timeText, movesText, scrambles[solveNumber - 1]);
+						showSolveDialog(solveNumber, timeText, movesText, scrambles[solveNumber - 1], ao5, mo5, movesarr, scrambles, () => {
+							// Refresh the table after deletion
+							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, scrambles, competedata, socketId, opponentId);
+						});
 					};
 				}
 			} else {

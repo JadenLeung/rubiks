@@ -276,7 +276,7 @@ export default function (p) {
 	fetch('src/data/OLL.json')
 	.then((response) => response.json())
 	.then((obj9) => (setOLL(obj9)));
-	let canMan = true;
+	window.canMan = true;
 	let shuffleNB;
 	let undo = [];
 	let redo = [];
@@ -11817,10 +11817,20 @@ function removeAllTimes()
 	mo5 = [];
 	ao5 = [];
 }
-function removeSpecificTime(){
-	if(document.getElementById("timegone4").value > 0){
-		movesarr.splice(document.getElementById("timegone4").value - 1, 1);
-		mo5.splice(document.getElementById("timegone4").value - 1, 1);
+function removeSpecificTime(index){
+	// If index is provided, use it directly (0-indexed)
+	// Otherwise, use the value from the input field (1-indexed)
+	const indexToRemove = index !== undefined ? index : (document.getElementById("timegone4").value - 1);
+	
+	if(indexToRemove >= 0 && indexToRemove < mo5.length){
+		movesarr.splice(indexToRemove, 1);
+		mo5.splice(indexToRemove, 1);
+		
+		// Also remove from scrambles array if it exists
+		if(scrambles && indexToRemove < scrambles.length){
+			scrambles.splice(indexToRemove, 1);
+		}
+		
 		ao5 = [];
 		if(mo5.length <= 5){
 			for(let i = 0; i < mo5.length; i++) {
@@ -11836,6 +11846,8 @@ function removeSpecificTime(){
 		}
 	}
 }
+// Make removeSpecificTime globally accessible
+window.removeSpecificTime = removeSpecificTime;
 function removeTime()
 {
 	if(["normal","cube","timed"].includes(MODE) || pllpracstep > 0){
