@@ -371,6 +371,7 @@ class Timer {
 		this.isRunning = false;
 		
 		this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
+		displayAverage();
 	}
 	
 	reset () {
@@ -1527,7 +1528,7 @@ setInterval(() => {
 	document.getElementById('size2').innerText = CAMZOOM * -1;
 	document.getElementById('border2').innerText = special[1];
 	document.getElementById('gap2').innerText = special[3];
-	displayAverage();
+	// displayAverage();
 	displayTimes();
 	setLayout();
 	isthin = window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches;
@@ -2010,6 +2011,10 @@ setInterval(() => {
 	}
 	if (!getEl("show_keyboard_map").checked && MODE != "keyboard") {
 		setDisplay("none", ["keymap"]);
+	}
+	if (MODE + MINIMODE != bruh) {
+		displayAverage();
+		bruh = MODE + MINIMODE;
 	}
 }, 10)
 //forever
@@ -3633,6 +3638,7 @@ function regular(nocustom){
 	}
 	fullScreen(false);
 	reSetup();
+	displayAverage();
 	race = 0;
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -6066,7 +6072,6 @@ function speedmode()
 		"input", "input2", "scram", "s_RACE2", "timeselect","s_start", "recent_solves_container", "keymap"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
-
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Time Attack" : "2x2 Time Attack";
@@ -8490,6 +8495,7 @@ function animateRotate(axis, dir) {
 	}
 }
 function animate(axis, rows, dir, timed, bcheck = true) {
+	displayAverage();
 	rows = rows.sort((a, b) => a - b);
 	
 	if(isAnimating()) return false;

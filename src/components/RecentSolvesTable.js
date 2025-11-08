@@ -42,7 +42,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		}
 	}
 	
-	console.log(MODE, MINIMODE);
+	// console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
 	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
 		|| (!keymapShown && ["pracPLL", "OLL", "PLL", "easy", "medium"].includes(MINIMODE))
