@@ -8334,7 +8334,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, competedata, socket.id, getOp());
+	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, scrambles, competedata, socket.id, getOp());
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;

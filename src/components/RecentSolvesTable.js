@@ -1,4 +1,75 @@
-export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, competedata, socketId, opponentId) {
+// Create a dialog to show solve details
+function showSolveDialog(solveNumber, time, moves, scramble) {
+	console.log("scramble is ", scramble, solveNumber)
+	let modal = document.getElementById("solve-detail-dialog");
+	let backdrop = document.getElementById("solve-detail-backdrop");
+
+	if (!modal) {
+		modal = document.createElement("div");
+		modal.id = "solve-detail-dialog";
+		Object.assign(modal.style, {
+			position: "fixed",
+			top: "50%",
+			left: "50%",
+			transform: "translate(-50%, -50%)",
+			backgroundColor: "#fff",
+			padding: "20px",
+			borderRadius: "8px",
+			boxShadow: "0 2px 15px rgba(0,0,0,0.3)",
+			zIndex: "9999",
+			display: "none",
+			minWidth: "300px",
+			textAlign: "center",
+			color: "black",
+		});
+
+		modal.innerHTML = `
+			<h4>Solve Details</h4>
+			<div id="solve-detail-content" style="margin: 20px 0; text-align: left;"></div>
+			<button id="solve-detail-close-btn" class="btn btn-primary" style="width: 100%;">Close</button>
+		`;
+		document.body.appendChild(modal);
+
+		backdrop = document.createElement("div");
+		backdrop.id = "solve-detail-backdrop";
+		Object.assign(backdrop.style, {
+			position: "fixed",
+			top: "0",
+			left: "0",
+			width: "100%",
+			height: "100%",
+			backgroundColor: "rgba(0, 0, 0, 0.7)",
+			zIndex: "9998",
+			display: "none"
+		});
+		document.body.appendChild(backdrop);
+
+		const closeBtn = document.getElementById("solve-detail-close-btn");
+		closeBtn.onclick = () => {
+			modal.style.display = "none";
+			backdrop.style.display = "none";
+		};
+
+		backdrop.onclick = () => {
+			modal.style.display = "none";
+			backdrop.style.display = "none";
+		};
+	}
+
+	// Update content
+	const content = document.getElementById("solve-detail-content");
+	content.innerHTML = `
+		<p style="margin: 10px 0;"><strong>Solve #:</strong> ${solveNumber}</p>
+		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
+		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
+	`;
+
+	// Show dialog
+	backdrop.style.display = "block";
+	modal.style.display = "block";
+}
+
+export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, scrambles, competedata, socketId, opponentId) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -104,6 +175,16 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 					} else {
 						cellMoves.textContent = recentMoves[i] || 'N/A';
 					}
+				}
+				
+				// Add click handler in normal mode
+				if (MODE === "normal" || MODE == "cube") {
+					row.style.cursor = "pointer";
+					row.onclick = () => {
+						const timeText = cellTime.textContent;
+						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
+						showSolveDialog(solveNumber, timeText, movesText, scrambles[solveNumber - 1]);
+					};
 				}
 			} else {
 				// Empty row
