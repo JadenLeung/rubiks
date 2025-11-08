@@ -3703,6 +3703,7 @@ function regular(nocustom){
 	bstep = 0;
 	roundresult = []
 	getEl("r_iframe").src = "about:blank";
+	getEl("show_keyboard").style.display = isthin ? "none" : "block";
 	juststarted = false;
 	isShuffling = false;
 	ma_data.type = "";
