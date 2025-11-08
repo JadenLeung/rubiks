@@ -1,4 +1,4 @@
-export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
+export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -6,12 +6,10 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
 	const movesParOld = document.getElementById('moves_par');
 	console.log(MODE, MINIMODE)
 	// Show table only in normal mode, otherwise show old format
-    if (MODE == "normal" || MODE == "timed") {
-        if (timesParOld) timesParOld.style.display = 'none';
-        if (movesParOld) movesParOld.style.display = 'none';
-    }
-	if ((MODE == "normal" && MINIMODE == "normal") || MODE == "timed" || MODE == "cube") {
+	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
+		|| (!keymapShown && ["pracPLL"].includes(MINIMODE))) {
 		container.style.display = 'block';
+		container.style.marginBottom = ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)) ? '0' : '16px';
 		
 		// Clear existing rows
 		tbody.innerHTML = '';
@@ -76,4 +74,8 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
 	} else {
 		container.style.display = 'none';
 	}
+	if (container.style.display == 'block') {
+        if (timesParOld) timesParOld.style.display = 'none';
+        if (movesParOld) movesParOld.style.display = 'none';
+    }
 }

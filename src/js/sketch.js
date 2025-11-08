@@ -8309,7 +8309,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE);
+	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked);
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -8744,7 +8744,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isShown("compete_select"));
+		console.log(MODE);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
