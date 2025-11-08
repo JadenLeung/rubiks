@@ -213,6 +213,20 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 				const cellNum = row.insertCell(0);
 				cellNum.textContent = solveNumber;
 				
+				// Add click handler in normal mode (only on # column)
+				if (MODE === "normal" || MODE == "cube" || MODE == "timed") {
+					cellNum.style.cursor = "pointer";
+					cellNum.style.textDecoration = "underline";
+					cellNum.onclick = () => {
+						const timeText = cellTime.textContent;
+						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
+						showSolveDialog(solveNumber, timeText, movesText, scrambles[solveNumber - 1], ao5, mo5, movesarr, scrambles, () => {
+							// Refresh the table after deletion
+							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, scrambles, competedata, socketId, opponentId);
+						});
+					};
+				}
+				
 				// Time/You column
 				const cellTime = row.insertCell(1);
 				if (isCompeting) {
@@ -229,19 +243,6 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 					} else {
 						cellMoves.textContent = recentMoves[i] || 'N/A';
 					}
-				}
-				
-				// Add click handler in normal mode
-				if (MODE === "normal" || MODE == "cube" || MODE == "timed") {
-					row.style.cursor = "pointer";
-					row.onclick = () => {
-						const timeText = cellTime.textContent;
-						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
-						showSolveDialog(solveNumber, timeText, movesText, scrambles[solveNumber - 1], ao5, mo5, movesarr, scrambles, () => {
-							// Refresh the table after deletion
-							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, scrambles, competedata, socketId, opponentId);
-						});
-					};
 				}
 			} else {
 				// Empty row
