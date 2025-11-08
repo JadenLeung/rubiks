@@ -16,8 +16,9 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	// Show/hide moves column header and stat
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
 	
-	// Hide Ao5 stat in competing mode
+	// Hide Ao5 and Mo5 stats in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
+	if (mo5StatDiv) mo5StatDiv.style.display = MODE === "competing" ? 'none' : '';
 	// console.log(ao5, mo5);
 	let competearr = false;
 	let opparr = false;
