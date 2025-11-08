@@ -55,7 +55,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		tbody.innerHTML = '';
 		
 		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
-		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : 5;
+		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : MODE == "competing" ? Math.min(5, competedata.data.dims.length): 5;
 		
 		// Get last N solves (or fewer if less than N)
 		let recentTimes, recentMoves;
