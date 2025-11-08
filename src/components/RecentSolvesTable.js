@@ -23,7 +23,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE) {
 			const recentMoves = movesarr.slice(Math.max(0, movesarr.length - 5));
 			
 			// Add rows in reverse order (newest at top)
-			for (let i = recentTimes.length - 1; i >= 0; i--) {
+			for (let i = 0; i < recentTimes.length; i++) {
 				const row = tbody.insertRow();
 				const solveNumber = mo5.length - recentTimes.length + i + 1;
 				

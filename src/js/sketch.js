@@ -3651,7 +3651,7 @@ function regular(nocustom){
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
-		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2",
+		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
 		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
@@ -5990,7 +5990,7 @@ function keyboardmode() {
 	getEl("keyboardtext").innerHTML = "Click on a key to map it to a move";
 	changeKeys();
 	setDisplay("none", ["settings1", "keyboardmoves"]);
-	setDisplay("block", ["keyboard1", "keyboard2"]);
+	setDisplay("block", ["keyboard1", "keyboard2", "keyboard_header"]);
 	setDisplay("table", ["keymap"]);
 }
 function editKey(newmove) {
@@ -6026,7 +6026,7 @@ function settingsmode()
 	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
 	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", 
-		"timeselect", "ID1", "keyboard1", "keyboard2"]);
+		"timeselect", "ID1", "keyboard1", "keyboard2", "keyboard_header", "keymap"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
