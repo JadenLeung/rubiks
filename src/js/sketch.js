@@ -4540,6 +4540,7 @@ function continueMatch() {
 		console.log("emitting")
 		socket.emit("next-round", room);
 	} else {
+		MODE = "compete";
 		setDisplay("none", ["in_match", "keymap", "input2"]);
 		setDisplay("none", ["in_match", "keymap", "input2"]);
 		SCRAM.value("Normal");

@@ -7,6 +7,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	const movesHeader = document.getElementById('moves_header');
 	const mo5StatDiv = document.getElementById('mo5_stat').parentElement;
 	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
+	const timeHeader = document.getElementById('time_header');
 	
 	
 	// Determine if we should show moves column (hide in speed mode)
@@ -21,12 +22,25 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 
 	let competearr = false;
 	let opparr = false;
+	let isCompeting = false;
 	if (MODE === "competing" && competedata.data.type)
 	{
 		competearr = competedata.solvedarr.map(obj => obj[socketId]);
 		opparr = competedata.solvedarr.map(obj => obj[opponentId]);
+		isCompeting = Array.isArray(competearr);
 	}
-	console.log("compete arr is ", competearr, opparr)
+	
+	// Update header text based on mode
+	if (timeHeader) {
+		if (isCompeting) {
+			timeHeader.textContent = 'You';
+			movesHeader.textContent = 'Opponent';
+			movesHeader.style.display = ''; // Show opponent column in competing mode
+		} else {
+			timeHeader.textContent = 'Time';
+			movesHeader.textContent = 'Moves';
+		}
+	}
 	
 	console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
@@ -42,10 +56,19 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
 		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : 5;
 		
-		// Get last N solves (or fewer if less than N) - use ao5 for times
-		const startIndex = Math.max(0, ao5.length - numRows);
-		const recentTimes = ao5.slice(startIndex);
-		const recentMoves = movesarr.slice(Math.max(0, movesarr.length - numRows));
+		// Get last N solves (or fewer if less than N)
+		let recentTimes, recentMoves;
+		if (isCompeting) {
+			// Use competearr and opparr for competing mode
+			const startIndex = Math.max(0, competearr.length - numRows);
+			recentTimes = competearr.slice(startIndex);
+			recentMoves = opparr.slice(startIndex);
+		} else {
+			// Use ao5 for times in normal modes
+			const startIndex = Math.max(0, ao5.length - numRows);
+			recentTimes = ao5.slice(startIndex);
+			recentMoves = movesarr.slice(Math.max(0, movesarr.length - numRows));
+		}
 		
 		// Always create exactly N rows
 		for (let i = 0; i < numRows; i++) {
@@ -54,22 +77,32 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			if (i < recentTimes.length) {
 				// Row with data
 				// For cube mode, use mo5.length for numbering, otherwise use ao5.length
-				const solveNumber = mo5.length > 0 ?
-					mo5.length - recentTimes.length + i + 1
-					: i + 1;
+				const solveNumber = isCompeting 
+					? competearr.length - recentTimes.length + i + 1
+					: mo5.length > 0 
+						? mo5.length - recentTimes.length + i + 1
+						: i + 1;
 				
 				// # column
 				const cellNum = row.insertCell(0);
 				cellNum.textContent = solveNumber;
 				
-				// Time column
+				// Time/You column
 				const cellTime = row.insertCell(1);
-				cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
+				if (isCompeting) {
+					cellTime.textContent = recentTimes[i] === undefined ? '' : (recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's'));
+				} else {
+					cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
+				}
 				
-				// Moves column (only if showMoves is true)
-				if (showMoves) {
+				// Moves/Opponent column (show for competing or when showMoves is true)
+				if (isCompeting || showMoves) {
 					const cellMoves = row.insertCell(2);
-					cellMoves.textContent = recentMoves[i] || 'N/A';
+					if (isCompeting) {
+						cellMoves.textContent = recentMoves[i] === undefined ? '' : (recentMoves[i] + (recentMoves[i] == "DNF" ? "" : 's'));
+					} else {
+						cellMoves.textContent = recentMoves[i] || 'N/A';
+					}
 				}
 			} else {
 				// Empty row
@@ -79,8 +112,8 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 				const cellTime = row.insertCell(1);
 				cellTime.textContent = '';
 				
-				// Moves column (only if showMoves is true)
-				if (showMoves) {
+				// Moves/Opponent column (show for competing or when showMoves is true)
+				if (isCompeting || showMoves) {
 					const cellMoves = row.insertCell(2);
 					cellMoves.textContent = '';
 				}
