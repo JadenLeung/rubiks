@@ -459,44 +459,8 @@
 				<span style = "display: inline;" id = "delay2">4</span>
 				<p style = "display: inline" id = "delayuseless">&nbsp; <span class = "hidethinline">(For autosolve/alg test)</span></p>
 			</div>	
-			<div id = "keyboard1">
-				<div>
-					<p style = "display: inline;" id = "keyboardback"></p>
-					<p style = "display: inline;" id = "keyboarddefault"></p>
-					<p style = "display: inline;" id = "keyboarddefault2"></p>
-				</div>
-				<div style = "margin-top: 10px;">
-					<p style = "display: inline;">Editing keyboard:</p>
-					<select name="keyboards" id="keyboards">
-						<option value="Custom1">Custom1</option>
-						<option value="Custom2">Custom2</option>
-						<option value="Custom3">Custom3</option>
-					</select>
-				</div>
-				<label style = "display: inline;" >
-					Shift:
-					<input type="checkbox" id = "keyboardcheck">
-				</label>
-				<i id = "keyboardtitle2" style = "display: inline;">(Blank means x2 move multiplier)</i>
-			</div>
-			<table style="padding:2px; border:0px solid black;" class = "normal noselect" id = "keymap" >
-				<tr id = "changekeys5"><td colspan = "2"><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = "2"><sup>Esc</sup><sub>reset</sub></td><td colspan = "2"><sup>=</sup><sub>redo</sub></td><td colspan = "3"><sup>Bspace</sup><sub>undo</sub></td></tr>
-				<tr id = "changekeys1"><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
-				<tr id = "changekeys2"><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
-				<tr id = "changekeys3"><td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td></tr>
-				<tr id = "changekeys4"><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = "3"><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td></tr>
-			</table>
-			<div id = "keyboard2">
-				<p id = "keyboardtext">Click on a key to map it to a move</p>
-				<div id = "keyboardmoves"></div>
-			</div>
 			<div>
-				<p id="scramble_par" class="normal noselect">Scramble: <span id="scramble" style="font-size:12px; user-select: text;">N/A</span></p>
-				<div>
-					<h5 id = "timeselect" style = "padding-top: 10px; padding-bottom: 10px">Session <span id = "timeselectmini"></span></h5>
-					<p id = "times_par"  class = "noselect"><span id = "times_desc">Times:</span> <span id = "ao5" style = "font-size:12px; user-select: text;">N/A</span></p>
-					<p id = "moves_par" class = "noselect">Moves: <span id = "moves2" style = "font-size:12px; user-select: text;">N/A</span></p>
-				</div>
+				<h5 id = "timeselect" style = "padding-top: 10px; margin-top: 32px; padding-bottom: 10px">Session <span id = "timeselectmini"></span></h5>
 				<div id="recent_solves_container" style="display: none; max-width: 600px; margin-top: 10px;">
 					<table id="recent_solves_table" style="width: 100%; border-collapse: collapse; font-size: 14px;">
 						<thead>
@@ -518,10 +482,46 @@
 						</div>
 					</div>
 				</div>
+				<p id="scramble_par" class="normal noselect"><strong style="font-size: 14px;">Scramble: </strong><span id="scramble" style="font-size:12px; user-select: text;">N/A</span></p>
 				<div>
 					<p id = "points_par" style = "display: inline;" class = "normal noselect">Total Points: <span id = "points2" style = "font-size:12px;">0</span></p>
 					<p id="giveup2" style = "display: inline;"  class = "normal noselect"></p>
 				</div>
+			</div>
+			<div id = "keyboard1">
+				<div>
+					<p style = "display: inline;" id = "keyboardback"></p>
+					<p style = "display: inline;" id = "keyboarddefault"></p>
+					<p style = "display: inline;" id = "keyboarddefault2"></p>
+				</div>
+				<div style = "margin-top: 10px;">
+					<p style = "display: inline;">Editing keyboard:</p>
+					<select name="keyboards" id="keyboards">
+						<option value="Custom1">Custom1</option>
+						<option value="Custom2">Custom2</option>
+						<option value="Custom3">Custom3</option>
+					</select>
+				</div>
+				<label style = "display: inline;" >
+					Shift:
+					<input type="checkbox" id = "keyboardcheck">
+				</label>
+				<i id = "keyboardtitle2" style = "display: inline;">(Blank means x2 move multiplier)</i>
+			</div>
+			<table style="padding:2px; border:0px solid black; margin-top: 32px;" class = "normal noselect" id = "keymap" >
+				<tr id = "changekeys5"><td colspan = "2"><sup>~</sup><sub>shuffle</sub></td><td><sup>1</sup><sub>quit</sub></td><td colspan = "2"><sup>Esc</sup><sub>reset</sub></td><td colspan = "2"><sup>=</sup><sub>redo</sub></td><td colspan = "3"><sup>Bspace</sup><sub>undo</sub></td></tr>
+				<tr id = "changekeys1"><td><sup>Q</sup> <sub>S'</sub></td><td><sup>W</sup> <sub>B</sub></td><td><sup>E</sup> <sub>L'</sub></td><td><sup>R</sup> <sub>l'</sub></td><td><sup>T</sup> <sub>u'</sub></td><td><sup>Y</sup> <sub>u</sub></td><td><sup>U</sup> <sub>r</sub></td><td><sup>I</sup> <sub>R</sub></td><td><sup>O</sup> <sub>B'</sub></td><td><sup>P</sup> <sub>S</sub></td></tr>
+				<tr id = "changekeys2"><td><sup>A</sup> <sub>E</sub></td><td><sup>S</sup> <sub>D</sub></td><td><sup>D</sup> <sub>L</sub></td><td><sup>F</sup> <sub>U'</sub></td><td><sup>G</sup> <sub>F'</sub></td><td><sup>H</sup> <sub>F</sub></td><td><sup>J</sup> <sub>U</sub></td><td><sup>K</sup> <sub>R'</sub></td><td><sup>L</sup> <sub>D'</sub></td><td><sup>;</sup> <sub>E'</sub></td></tr>
+				<tr id = "changekeys3"><td><sup>Z</sup> <sub>d</sub></td><td><sup>X</sup> <sub></sub></td><td><sup>C</sup> <sub></sub></td><td><sup>V</sup> <sub>l</sub></td><td><sup>B</sup> <sub>f'</sub></td><td><sup>N</sup> <sub>f</sub></td><td><sup>M</sup> <sub>r'</sub></td><td><sup>,</sup> <sub>M'</sub></td><td><sup>.</sup> <sub>M</sub></td><td><sup>/</sup> <sub>d'</sub></td></tr>
+				<tr id = "changekeys4"><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td><sup></sup> <sub></sub></td><td colspan = "3"><sup>Space</sup> <sub>stop time</sub></td><td><sup>&larr;</sup><sub>y</sub></td><td><sup>&rarr;</sup><sub>y'</sub></td><td><sup>&uarr;</sup><sub>x</sub></td><td><sup>&darr;</sup><sub>x'</sub></td></tr>
+			</table>
+			<div id = "keyboard2">
+				<p id = "keyboardtext">Click on a key to map it to a move</p>
+				<div id = "keyboardmoves"></div>
+			</div>
+			<div>
+				<p id = "times_par"  class = "noselect"><span id = "times_desc">Times:</span> <span id = "ao5" style = "font-size:12px; user-select: text;">N/A</span></p>
+				<p id = "moves_par" class = "noselect">Moves: <span id = "moves2" style = "font-size:12px; user-select: text;">N/A</span></p>
 			</div>
 			<div>
 				<p style = "display: inline; font-size:12px;"><span id = "stepbig"></span><span id = "fraction"></span></h5>
