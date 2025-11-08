@@ -136,7 +136,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			}
 			
 			// Calculate Mo5 as mean of all valid solves (filter out N/A, undefined, null, DNF)
-			const allValidTimes = ao5.filter(t => t !== 'N/A' && t !== undefined && t !== null && t !== 'DNF' && !isNaN(t));
+			const allValidTimes = mo5.filter(t => t !== 'N/A' && t !== undefined && t !== null && t !== 'DNF' && !isNaN(t));
 			let mo5Value = 'N/A';
 			if (allValidTimes.length > 0) {
 				const totalAllTimes = allValidTimes.reduce((a, b) => a + b, 0);
