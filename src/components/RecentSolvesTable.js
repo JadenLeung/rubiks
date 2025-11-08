@@ -1,4 +1,4 @@
-export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown) {
+export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, competedata, socketId, opponentId) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -18,6 +18,15 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	
 	// Hide Ao5 stat in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
+
+	let competearr = false;
+	let opparr = false;
+	if (MODE === "competing" && competedata.data.type)
+	{
+		competearr = competedata.solvedarr.map(obj => obj[socketId]);
+		opparr = competedata.solvedarr.map(obj => obj[opponentId]);
+	}
+	console.log("compete arr is ", competearr, opparr)
 	
 	console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format

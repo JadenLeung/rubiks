@@ -8320,7 +8320,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked);
+	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, competedata, socket.id, getOp());
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -13088,6 +13088,9 @@ function MODEBUTTONSTYLE(bgColor) {
 	return `height:60px; width:${isthin ? 155 : 180}px; text-align:center; font-size:20px; background-color: ${bgColor}; border-color: black;`
 }
 function getOp() {
+	if (!competedata?.userids) {
+		return false;
+	}
 	let opponent = "";
 	competedata.userids.forEach(id => {
 		if (id != socket.id) opponent = id;
