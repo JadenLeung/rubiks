@@ -2007,7 +2007,7 @@ setInterval(() => {
 		if (CAM.getRotationScale() != 0.001)
 			CAM.setRotationScale(0.001);
 	}
-	if (!getEl("show_keyboard_map").checked) {
+	if (!getEl("show_keyboard_map").checked && MODE != "keyboard") {
 		setDisplay("none", ["keymap"]);
 	}
 }, 10)
@@ -3150,7 +3150,8 @@ function setInput() {
 		if (REDO) REDO.html('<i class="bi bi-arrow-90deg-right"></i>');
 
 	} else{
-		document.getElementById("keymap").style.display = "table";
+		if (getEl("show_keyboard_map").checked || MODE == "keyboard") 
+			document.getElementById("keymap").style.display = "table";
 		if(MODE == "normal" || MODE == "timed" || MODE == "cube")
 			document.getElementById("test_alg_div").style.display = "block";
 		document.getElementById("input2").style.display = "none";
@@ -3768,7 +3769,7 @@ function idmode()
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 
-	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram", "timeselect", "recent_solves_container"]);
+	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2", "scram", "timeselect", "recent_solves_container", "keymap"]);
 	setDisplay("block", ["ID3", "test_alg_div","ID4","ID5"]);
 	setDisplay("inline", ["iddefault"])
 	
@@ -3819,7 +3820,7 @@ function paintmode() {
 	MODE = "paint";
 	special[2] = savesetup;
 	// quickSolve(savesetup);
-	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition","recent_solves_container"]);
+	setDisplay("none", ["ID4","test_alg_div","ID5","saveposition","recent_solves_container", "keymap"]);
 	setDisplay("block", ["paint","finishpaint"]);
 	setDisplay("inline", ["iddefault"]);
 	canMan = false;
@@ -3914,7 +3915,7 @@ function competemode() {
 	modeData("compete");
 	regular();
 	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
-			"or_instruct", "or_instruct2", "or_instruct4", "recent_solves_container"
+			"or_instruct", "or_instruct2", "or_instruct4", "recent_solves_container", "keymap"
 	]);
 	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
 	setDisplay("inline", ["mode4", "mode5", "mode6", "mode8"]);
@@ -5466,7 +5467,7 @@ function challengemode() {
 	regular(true);
 	MODE = "challenge";
 	refreshButtons();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3", "recent_solves_container"]);
+	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3", "recent_solves_container", "keymap"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
 	SCRAM.value("Normal");
@@ -6056,7 +6057,8 @@ function speedmode()
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "end" });
 	refreshButtons();
 	SPEEDMODE.style('background-color', '#8ef5ee');
-	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", "input", "input2", "scram", "s_RACE2", "timeselect","s_start", "recent_solves_container"]);
+	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", 
+		"input", "input2", "scram", "s_RACE2", "timeselect","s_start", "recent_solves_container", "keymap"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
 
@@ -6115,7 +6117,7 @@ function movesmode()
 		startCube() 
 	}
 	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
-		"solve", "input", "input2", "scram", "timeselect", "recent_solves_container"]);
+		"solve", "input", "input2", "scram", "timeselect", "recent_solves_container", "keymap"]);
 	setDisplay("inline", ["m_34", "m_4"]);
 	setDisplay("block", ["m_high", "blind","b_start","marathon","ma_buttons"]);
 
