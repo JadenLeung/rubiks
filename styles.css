@@ -254,14 +254,14 @@ button:hover {
 }
 #outertime {
     position: absolute;
-    top: 9%;
+    top: 65px;
     left: 5%;
     font-family: 'Orbitron';
     font-size: 30px;
 }
 #peek_container {
     position: absolute;
-    top: 9%;
+    top: 65px;
     right: 1%;
     font-size: 30px;
     text-align: right;
@@ -288,7 +288,7 @@ button:hover {
 }
 #practice_container {
     position: absolute;
-    top: 9%;
+    top: 65px;
     right: 1%;
     font-size: 30px;
     text-align: right;
@@ -306,7 +306,7 @@ button:hover {
 }
 #outermoves {
     position: absolute;
-    top: 9%;
+    top: 65px;
     right: 1%;
     font-family: 'Orbitron';
     font-size: 30px;
@@ -314,7 +314,7 @@ button:hover {
 }
 #compete_group_container {
     position: absolute;
-    top: 9%;
+    top: 65px;
     right: 1%;
     font-size: 30px;
     text-align: right;
