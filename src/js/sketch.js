@@ -4444,7 +4444,7 @@ function competeTimes(data, end = false) {
 }
 
 function competePoints(data, el = "match_INSTRUCT4") {
-	if (MODE != "competing") {
+	if (MODE != "competing" && MODE != "compete") {
 		return;
 	}
 	competedata = data;
