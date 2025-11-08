@@ -6815,6 +6815,14 @@ if (localStorage.showKeyboardMap !== undefined) {
 	}
 }
 
+// Hide keyboard map checkbox on mobile devices
+if (isMobile()) {
+	const checkbox = document.getElementById("show_keyboard_map");
+	if (checkbox && checkbox.parentElement) {
+		checkbox.parentElement.style.display = 'none';
+	}
+}
+
 document.getElementById("show_keyboard_map").onchange = function() {
 	const isChecked = this.checked;
 	const tableDisplay = isChecked ? "table" : "none";
