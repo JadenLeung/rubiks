@@ -6780,11 +6780,22 @@ function speedOLL()
 		easy();
 	}
 }
-//onclick
+
 document.getElementById("l_home").onclick = regular;
+
+if (localStorage.showKeyboardMap !== undefined) {
+	const showKeyboard = localStorage.showKeyboardMap === 'true';
+	document.getElementById("show_keyboard_map").checked = showKeyboard;
+	if (document.getElementById("keymap")) {
+		document.getElementById("keymap").style.display = showKeyboard ? "table" : "none";
+	}
+}
+
 document.getElementById("show_keyboard_map").onchange = function() {
 	const isChecked = this.checked;
 	const tableDisplay = isChecked ? "table" : "none";
+	
+	localStorage.showKeyboardMap = isChecked;
 	
 	if (document.getElementById("keymap")) {
 		document.getElementById("keymap").style.display = tableDisplay;

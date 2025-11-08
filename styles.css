@@ -253,11 +253,11 @@ button:hover {
     flex-direction: column; /* Keeps latest content at the bottom */
 }
 #outertime {
-        position: absolute;
-        top: 9%;
-        left: 5%;
-        font-family: 'Orbitron';
-        font-size: 30px;
+    position: absolute;
+    top: 9%;
+    left: 5%;
+    font-family: 'Orbitron';
+    font-size: 30px;
 }
 #peek_container {
     position: absolute;
