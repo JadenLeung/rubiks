@@ -381,6 +381,8 @@ class Timer {
 			this.startTime = Date.now();
 			return;
 		}
+
+		displayAverage();
 		
 		this.startTime = 0;
 	}
@@ -2012,9 +2014,12 @@ setInterval(() => {
 	if (!getEl("show_keyboard_map").checked && MODE != "keyboard") {
 		setDisplay("none", ["keymap"]);
 	}
-	if (MODE + MINIMODE != bruh) {
+	if (bruh.mode != MODE || bruh.minimode != MINIMODE || bruh.ao5length != ao5.length || bruh.mo5length != mo5.length) {
 		displayAverage();
-		bruh = MODE + MINIMODE;
+		bruh.mode = MODE;
+		bruh.minimode = MINIMODE;
+		bruh.ao5length = ao5.length;
+		bruh.mo5length = mo5.length;
 	}
 }, 10)
 //forever
