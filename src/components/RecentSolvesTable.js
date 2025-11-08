@@ -7,17 +7,19 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	const movesHeader = document.getElementById('moves_header');
 	const mo5StatDiv = document.getElementById('mo5_stat').parentElement;
 	
+	
 	// Determine if we should show moves column (hide in speed mode)
-	const showMoves = MODE !== "speed";
+	const showMoves = !["speed", "competing"].includes(MODE);
 	
 	// Show/hide moves column header and stat
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
 	if (mo5StatDiv) mo5StatDiv.style.display = showMoves ? '' : 'none';
 	
-	// console.log(ao5, mo5, movesarr);
+	console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
 	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
-		|| (!keymapShown && ["pracPLL", "OLL", "PLL"].includes(MINIMODE))) {
+		|| (!keymapShown && ["pracPLL", "OLL", "PLL", "easy", "medium"].includes(MINIMODE))
+		|| (!keymapShown && ["competing"].includes(MODE))) {
 		container.style.display = 'block';
 		container.style.marginBottom = ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)) ? '0' : '16px';
 		
@@ -25,7 +27,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		tbody.innerHTML = '';
 		
 		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
-		const numRows = ["OLL", "PLL"].includes(MINIMODE) ? 4 : 5;
+		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : 5;
 		
 		// Get last N solves (or fewer if less than N) - use ao5 for times
 		const startIndex = Math.max(0, ao5.length - numRows);
@@ -46,7 +48,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 				
 				// Time column
 				const cellTime = row.insertCell(1);
-				cellTime.textContent = recentTimes[i] + 's';
+				cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
 				
 				// Moves column (only if showMoves is true)
 				if (showMoves) {
@@ -75,11 +77,12 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			const ao5Value = recentTimes.length >= numRows ? (Math.round((totalTime / numRows) * 100) / 100) : 'N/A';
 			const totalMoves = recentMoves.filter(m => m > 0).reduce((a, b) => a + b, 0);
 			const mo5Value = recentMoves.length >= numRows ? Math.round(totalMoves / numRows) : 'N/A';
-			const bestTime = Math.min(...recentTimes);
+			let bestTime = Math.min(...recentTimes.filter(t => t !== "DNF"));
+			if (bestTime === Infinity) bestTime = 'N/A';
 			
 			document.getElementById('ao5_stat').textContent = ao5Value === 'N/A' ? ao5Value : ao5Value + 's';
-			document.getElementById('mo5_stat').textContent = mo5Value;
-			document.getElementById('best_time_stat').textContent = bestTime + 's';
+			document.getElementById('mo5_stat').textContent = mo5Value === 'N/A' ? mo5Value : mo5Value + 's';
+			document.getElementById('best_time_stat').textContent = bestTime === 'N/A' ? bestTime : bestTime + 's';
 		} else {
 			// No solves yet - show N/A for all stats
 			document.getElementById('ao5_stat').textContent = 'N/A';

@@ -5563,6 +5563,7 @@ function showMarathon() {
 }
 function startMarathon(type) {
 	reSetup();
+	MINIMODE = "marathon"
 	ma_data.type = type;
 	if (type == "cuboid") {
 		ma_data.cubes = ["2x2x4", "2x3x4", "3x3x4", "3x3x5", "4x4 Plus Cube"];
@@ -6299,6 +6300,7 @@ function easy()
 {
 	undo = [];
 	redo = [];
+	MINIMODE = "easy";
 	let pics = ["pic1", "pic2", "pic3", "pic4"];
 	if(DIM == 100)
 		pics = ["pic11", "pic12", "pic13","pic14"]
@@ -6496,6 +6498,7 @@ function easy()
 function medium(){ 
 	undo = [];
 	redo = [];
+	MINIMODE = "medium";
 	let pics = ["pic6", "pic7", "pic8", "pic9"];
 	if(medstep % 2 == 0)
 	{
