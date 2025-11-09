@@ -1,6 +1,5 @@
 export default class Cuby {
-  constructor(size, x, y, z, buff, picker, p, index, custom, special, SIZE) {
-    console.log("constructor called");
+  constructor(size, x, y, z, buff, picker, p, index, custom, special, SIZE, existingCube) {
     //size = 50;
     this.cubysize = size;
     this.x = x;
@@ -13,7 +12,14 @@ export default class Cuby {
     this.custom = custom;
     this.special = special;
     this.adjustedcolor = false;
-    this.savecolors = {};
+    
+    // Preserve savecolors from existing cube if it exists
+    if (existingCube && existingCube.savecolors && Object.keys(existingCube.savecolors).length > 0) {
+      this.savecolors = {...existingCube.savecolors};
+    } else {
+      this.savecolors = {};
+    }
+    
     this.shown = true;
 
 	/*
@@ -317,6 +323,12 @@ export default class Cuby {
     const tmp = this.front;
     const buff_tmp = this.buff_front;
     
+    // Also rotate savecolors if they exist
+    let save_tmp;
+    if (this.savecolors && Object.keys(this.savecolors).length > 0) {
+      save_tmp = this.savecolors.front;
+    }
+    
     if (dir === -1) {
       this.front = this.bottom;
       this.bottom = this.back;
@@ -327,6 +339,13 @@ export default class Cuby {
       this.buff_bottom = this.buff_back;
       this.buff_back = this.buff_top;
       this.buff_top = buff_tmp;
+      
+      if (save_tmp !== undefined) {
+        this.savecolors.front = this.savecolors.bottom;
+        this.savecolors.bottom = this.savecolors.back;
+        this.savecolors.back = this.savecolors.top;
+        this.savecolors.top = save_tmp;
+      }
     } else {
       this.front = this.top;
       this.top = this.back;
@@ -337,12 +356,25 @@ export default class Cuby {
       this.buff_top = this.buff_back;
       this.buff_back = this.buff_bottom;
       this.buff_bottom = buff_tmp;
+      
+      if (save_tmp !== undefined) {
+        this.savecolors.front = this.savecolors.top;
+        this.savecolors.top = this.savecolors.back;
+        this.savecolors.back = this.savecolors.bottom;
+        this.savecolors.bottom = save_tmp;
+      }
     }
   }
 
   rotateY(dir) { // switch all but TOP / BOTTOM by it's predecessor..
     const tmp = this.front;
     const buff_tmp = this.buff_front;
+    
+    // Also rotate savecolors if they exist
+    let save_tmp;
+    if (this.savecolors && Object.keys(this.savecolors).length > 0) {
+      save_tmp = this.savecolors.front;
+    }
     
     if (dir === -1) {
       this.front = this.right;
@@ -354,6 +386,13 @@ export default class Cuby {
       this.buff_right = this.buff_back;
       this.buff_back = this.buff_left;
       this.buff_left = buff_tmp;
+      
+      if (save_tmp !== undefined) {
+        this.savecolors.front = this.savecolors.right;
+        this.savecolors.right = this.savecolors.back;
+        this.savecolors.back = this.savecolors.left;
+        this.savecolors.left = save_tmp;
+      }
     } else {
       this.front = this.left;
       this.left = this.back;
@@ -364,12 +403,25 @@ export default class Cuby {
       this.buff_left = this.buff_back;
       this.buff_back = this.buff_right;
       this.buff_right = buff_tmp;
+      
+      if (save_tmp !== undefined) {
+        this.savecolors.front = this.savecolors.left;
+        this.savecolors.left = this.savecolors.back;
+        this.savecolors.back = this.savecolors.right;
+        this.savecolors.right = save_tmp;
+      }
     }
   }
   
   rotateZ(dir) { // switch all but FRONT / BACK
     const tmp = this.top;
     const buff_tmp = this.buff_top;
+    
+    // Also rotate savecolors if they exist
+    let save_tmp;
+    if (this.savecolors && Object.keys(this.savecolors).length > 0) {
+      save_tmp = this.savecolors.top;
+    }
     
     if (dir === -1) {
       this.top = this.right;
@@ -381,6 +433,13 @@ export default class Cuby {
       this.buff_right = this.buff_bottom;
       this.buff_bottom = this.buff_left;
       this.buff_left = buff_tmp;
+      
+      if (save_tmp !== undefined) {
+        this.savecolors.top = this.savecolors.right;
+        this.savecolors.right = this.savecolors.bottom;
+        this.savecolors.bottom = this.savecolors.left;
+        this.savecolors.left = save_tmp;
+      }
     } else {
       this.top = this.left;
       this.left = this.bottom;
@@ -391,6 +450,13 @@ export default class Cuby {
       this.buff_left = this.buff_bottom;
       this.buff_bottom = this.buff_right;
       this.buff_right = buff_tmp;
+      
+      if (save_tmp !== undefined) {
+        this.savecolors.top = this.savecolors.left;
+        this.savecolors.left = this.savecolors.bottom;
+        this.savecolors.bottom = this.savecolors.right;
+        this.savecolors.right = save_tmp;
+      }
     }
   }
   

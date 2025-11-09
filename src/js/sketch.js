@@ -2031,6 +2031,9 @@ setInterval(() => {
 }, 10)
 //forever
 function reSetup(rot) {
+	// Save old CUBE before resetting
+	const oldCUBE = CUBE;
+	
 	m_points = 0;
 	CUBE = {};
 	arr = [];
@@ -2105,10 +2108,10 @@ function reSetup(rot) {
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE, oldCUBE[cnt]);
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE, oldCUBE[cnt]);
 				cnt++;
 			}
 		}
@@ -2514,6 +2517,10 @@ function quickSolve(savesetup = false)
 		savesetup = special[2];
 	}
 	setSpecial();
+	
+	// Save old CUBE before resetting
+	const oldCUBE = CUBE;
+	
 	CUBE = {};
 	let cnt = 0;
 	for (let i = 0; i < SIZE; i++) {
@@ -2525,10 +2532,10 @@ function quickSolve(savesetup = false)
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE, oldCUBE[cnt]);
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE, oldCUBE[cnt]);
 				cnt++;
 			}
 		}
@@ -7557,7 +7564,7 @@ function moveX(row, dir) { // switch `i` cubes and rotate theme..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		if (CUBE[i].x === row) {
 			primes = rotateMatrix(CUBE[i].y, CUBE[i].z, dir);
-			tmp[i] = new Cuby(DIM, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE);
+			tmp[i] = new Cuby(DIM, CUBE[i].x, primes.x, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE, CUBE[i]);
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateX(dir);
 			if (CUBE[i].debugging === true) {
@@ -7578,7 +7585,7 @@ function moveY(row, dir) { // switch `j` cubes and rotate them..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].y === row) { // if cubbie in the 'Y' face
 			primes = rotateMatrix(CUBE[i].x, CUBE[i].z, dir); // calculate new position for that cube
-			tmp[i] = new Cuby(DIM, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE); // buffer theme in a new cubye
+			tmp[i] = new Cuby(DIM, primes.x, CUBE[i].y, primes.y, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE, CUBE[i]); // buffer theme in a new cubye
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateY(dir);
 			if (CUBE[i].debugging === true) {
@@ -7599,7 +7606,7 @@ function moveZ(row, dir) { // switch `z` cubes and rotate them..
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) { // foreach cubes
 		if (CUBE[i].z === row) { // if cubbie in the 'z' face
 			primes = rotateMatrix(CUBE[i].x, CUBE[i].y, dir); // calculate new position for that cube
-			tmp[i] = new Cuby(DIM, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE); // buffer theme in a new cubye
+			tmp[i] = new Cuby(DIM, primes.x, primes.y, CUBE[i].z, RND_COLORS[i], PICKER, p, i, allcubies, special, SIZE, CUBE[i]); // buffer theme in a new cubye
 			tmp[i].syncColors(CUBE[i]);
 			tmp[i].rotateZ(dir);
 			if (CUBE[i].debugging === true) {
@@ -8448,7 +8455,7 @@ function startAction() {
 		const face = getFace(cuby, mouseXPos, mouseYPos);
 		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
 
-		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", getColor(CUBE[cuby].savecolors[dir].levels));
+		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", getColor(CUBE[cuby]?.savecolors[dir]?.levels));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -8786,9 +8793,9 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-			CUBE[i].setColor(CUBE[i].colors.magenta);
-		}
+		// for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		// 	CUBE[i].setColor(CUBE[i].colors.magenta);
+		// }
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
