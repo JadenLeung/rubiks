@@ -276,6 +276,9 @@ button:hover {
     width: 100px; 
     margin-top: 20px
 }
+#bannercube {
+    cursor: pointer;
+}
 #continuematch {
     position: absolute;
     top: 7%;
