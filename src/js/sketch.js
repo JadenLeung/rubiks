@@ -8445,8 +8445,10 @@ function startAction() {
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const cuby = getCubyIndexByColor2(hoveredColor);
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
+		const face = getFace(cuby, mouseXPos, mouseYPos);
+		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
 
-		console.log("Color", hoveredColor, "Cuby", cuby, "face", getFace(cuby, mouseXPos, mouseYPos), "dir", oppdirs[getFace(cuby, mouseXPos, mouseYPos)]?.toUpperCase(), "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Neighbors ", getNeighborsArr(cuby));
+		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", getColor(CUBE[cuby].savecolors[dir].levels));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -8784,7 +8786,9 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(solvedata);
+		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+			CUBE[i].setColor(CUBE[i].colors.magenta);
+		}
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

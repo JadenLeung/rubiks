@@ -1,5 +1,6 @@
 export default class Cuby {
   constructor(size, x, y, z, buff, picker, p, index, custom, special, SIZE) {
+    console.log("constructor called");
     //size = 50;
     this.cubysize = size;
     this.x = x;
