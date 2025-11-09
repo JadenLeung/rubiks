@@ -1,5 +1,5 @@
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble, cubename, onDelete) {
+function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, inputtype, onDelete) {
 	console.log("scramble is ", scramble, cubename);
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
@@ -130,7 +130,9 @@ if (isAppleDevice) {
 		<p style="margin: 10px 0;"><strong>Cube:</strong> ${cubename}</p>
 		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
 		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
-		<p style="margin: 10px 0; display: flex; align-items: center; gap: 8px;">
+		<p style="margin: 10px 0;"><strong>Input Type:</strong> ${inputtype}</p>
+		<p style="margin: 10px 0;"><strong>Scramble Type:</strong> ${scrambletype}</p>
+		<p style="margin: 10px 0; display: flex; align-items: flex-start; gap: 8px;">
 			<strong>Scramble:</strong> 
 			<span id="scramble-text" style="flex: 1;">${scramble || 'N/A'}</span>
 			${scramble && scramble !== 'N/A' ? `
@@ -275,7 +277,8 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 					cellNum.onclick = () => {
 						const timeText = cellTime.textContent;
 						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
-						showSolveDialog(solveNumber, timeText, movesText, solvedata[solveNumber - 1].scramble ?? solvedata[solveNumber - 1], solvedata[i].cubename, () => {
+						const curSolveData = solvedata[solveNumber - 1]
+						showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.inputtype, () => {
 							// Refresh the table after deletion
 							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
 						});

@@ -1540,7 +1540,13 @@ setInterval(() => {
 	if(secs < 20)
 	secs = 20;
 	if(solvedata.length < mo5.length)
-		solvedata.push({scramble: document.getElementById('scramble').innerText, cubename: CUBENAME})
+		solvedata.push(
+			{
+				scramble: document.getElementById('scramble').innerText, 
+				cubename: CUBENAME,
+				inputtype: INPUT.value(),
+				scrambletype: SCRAM.value(),
+			})
 	easytime = (custom == 0 || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[0] != "adding" && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22) && special[0] == false)
@@ -10754,7 +10760,6 @@ if(isSolved())
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	movesarr.push(moves);
-	solvedata.push({scramble: document.getElementById('scramble').innerText, cubename: CUBENAME});
 	flipmode = 0;
 	saystep = 0;
 	canMan = true;
