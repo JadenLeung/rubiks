@@ -8778,7 +8778,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata);
+		console.log(CUBENAME);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9539,7 +9539,7 @@ function refreshButtons()
 		setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, () => switchCube("Slice Bandage"));
 
 		CUBE8 = p.createButton('The Pillars');
-		setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, () => switchCube("The Pillars"));
+		setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, () => switchCube("Pillars"));
 
 		CUBE9 = p.createButton('Triple Quad');
 		setButton(CUBE9, "cube9", 'btn btn-info', allcubestyle, () => switchCube("Triple Quad"));
@@ -9551,13 +9551,13 @@ function refreshButtons()
 		setButton(CUBE11, "cube11", 'btn btn-info', allcubestyle, () => switchCube("Z Perm"));
 
 		CUBE12 = p.createButton('T Perm');
-		setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
+		setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, () => switchCube("T Perm"));
 
 		CUBE14 = p.createButton('Cube Bandage');
-		setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, change18.bind(null, 14, [[3,4,6,7,12,13,15,16]]));
+		setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, () => switchCube("Cube Bandage"));
 
 		CUBE16 = p.createButton('Bandaged 3x3x2');
-		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, change20.bind(null, 16, [[0,1], [24,25]]));
+		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 3x3x2"));
 	} else if (modnum == 2) {
 		FOURBYFOUR = p.createButton('4x4');
 		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchSize(4); FOURBYFOUR.style('background-color', "#8ef5ee");});
@@ -9566,49 +9566,49 @@ function refreshButtons()
 		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
-		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["2x2x4"](); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchCube("2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["2x3x4"](); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchCube("2x3x4"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		TWOBYTHREEBYFIVE = p.createButton('2x3x5');
-		setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {CUBEMAP["2x3x5"](); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {switchCube("2x3x5"); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["3x3x4"](); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchCube("3x3x4"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
 		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
-		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {CUBEMAP["3x3x5"](); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchCube("3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
 		LASAGNA = p.createButton('Earth Cube');
-		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {CUBEMAP["Earth Cube"](); LASAGNA.style('background-color', "#8ef5ee");});
+		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchCube("Earth Cube"); LASAGNA.style('background-color', "#8ef5ee");});
 
 		FOURPLUS = p.createButton('4x4 Plus Cube');
 		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
 	} else if (modnum == 3) {
 		ONEBYTWOBYTWO = p.createButton('1x2x2');
-		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x2x2"](); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
+		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {switchCube("1x2x2"); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
 
 		ONEBYTWOBYTHREE = p.createButton('1x2x3');
-		setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x2x3"](); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
+		setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {switchCube("1x2x3"); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
 
 		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x4x4"](); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchCube("1x4x4"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
-		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {CUBEMAP["1x5x5"](); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {switchCube("1x5x5"); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		SANDWICH2 = p.createButton('Sandwich 2x2');
-		setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {CUBEMAP["Sandwich 2x2"](); SANDWICH2.style('background-color', "#8ef5ee");});
+		setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {switchCube("Sandwich 2x2"); SANDWICH2.style('background-color', "#8ef5ee");});
 
 		PLUSLITE = p.createButton('Plus Lite');
-		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {CUBEMAP["Plus Lite"](); PLUSLITE.style('background-color', "#8ef5ee");});
+		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {switchCube("Plus Lite"); PLUSLITE.style('background-color', "#8ef5ee");});
 
 		PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
-		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {CUBEMAP["3x3x2 Plus Cube"](); PLUS3x3x2.style('background-color', "#8ef5ee");});
+		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {switchCube("3x3x2 Plus Cube"); PLUS3x3x2.style('background-color', "#8ef5ee");});
 
 		SNAKE_EYE = p.createButton('Snake Eyes');
-		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {CUBEMAP["Snake Eyes"]();  SNAKE_EYE.style('background-color', "#8ef5ee");});
+		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {switchCube("Snake Eyes");  SNAKE_EYE.style('background-color', "#8ef5ee");});
 	}
 
 }
