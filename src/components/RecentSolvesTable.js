@@ -1,5 +1,5 @@
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr, scrambles, onDelete) {
+function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr, solvedata, onDelete) {
 	console.log("scramble is ", scramble, solveNumber)
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
@@ -177,7 +177,7 @@ if (isAppleDevice) {
 	modal.style.display = "block";
 }
 
-export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, scrambles, competedata, socketId, opponentId) {
+export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -274,9 +274,9 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 					cellNum.onclick = () => {
 						const timeText = cellTime.textContent;
 						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
-						showSolveDialog(solveNumber, timeText, movesText, scrambles[solveNumber - 1], ao5, mo5, movesarr, scrambles, () => {
+						showSolveDialog(solveNumber, timeText, movesText, solvedata[solveNumber - 1].scramble ?? solvedata[solveNumber - 1], ao5, mo5, movesarr, solvedata, () => {
 							// Refresh the table after deletion
-							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, scrambles, competedata, socketId, opponentId);
+							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
 						});
 					};
 				}

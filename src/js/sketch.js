@@ -205,7 +205,7 @@ export default function (p) {
 	let mo5 = [];
 	let movesarr = [];
 	let prevMovesArrLength = 0;
-	let scrambles = [];
+	let solvedata = [];
 	let savesetup = [];
 	let savebandage = [];
 	let savedark = [];
@@ -290,7 +290,7 @@ if (localStorage.saveao5 && JSON.parse(localStorage.saveao5) && !JSON.parse(loca
 if (localStorage.saveao5) {
 	savetimes = JSON.parse(localStorage.saveao5);
 	session = +localStorage.session ?? 0;
-	({mo5, movesarr, ao5, scrambles} = savetimes[session]);
+	({mo5, movesarr, ao5, scrambles: solvedata} = savetimes[session]);
 }
 let opposite = [];
 opposite["g"] = "b";
@@ -744,8 +744,8 @@ p.setup = () => {
 	})
 	PRACTICE_SEL.changed(() => {
 		bandaged = [];
-		CUBEMAP[PRACTICE_SEL.value()]();
-		setDisplay("none", ["keymap", "input2"])
+		switchCube(PRACTICE_SEL.value());
+		setDisplay("none", ["keymap", "input2"]);
 	})
 	
 	COMPETE_ADVANCED = p.createCheckbox();
@@ -894,7 +894,7 @@ p.setup = () => {
 	SEL7.option("5x5");
 	SEL7.parent("select8")
 	SEL7.selected('3x3');
-	SEL7.changed(() => {CUBEMAP[SEL7.value()](); change9(true)});
+	SEL7.changed(() => {switchCube(SEL7.value()); change9(true)});
 
 	if (localStorage.saveshapemod) {
 		saveshapemod = JSON.parse(localStorage.saveshapemod).checkarr;
@@ -985,7 +985,7 @@ p.setup = () => {
 				return;
 			}
 			bandaged = [];
-			CUBEMAP[dim]();
+			switchCube(dim);
 			getEl("keymap").style.display = 'none';
 			getEl("compete_difficulty").innerHTML = `Difficulty: ${DIMS_OBJ[dim].difficulty}/5`;
 		});
@@ -1539,8 +1539,8 @@ setInterval(() => {
 	let secs = 375-SPEED*225;
 	if(secs < 20)
 	secs = 20;
-	if(scrambles.length < mo5.length)
-		scrambles.push(document.getElementById('scramble').innerText);
+	if(solvedata.length < mo5.length)
+		solvedata.push({scramble: document.getElementById('scramble').innerText, cubename: CUBENAME})
 	easytime = (custom == 0 || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[0] != "adding" && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
 	DIM[6].includes(14) && DIM[6].includes(16) && DIM[6].includes(22) && special[0] == false)
@@ -1549,7 +1549,7 @@ setInterval(() => {
 		goodsolved = false;
 
 	if (!["compete", "competing", "speed", "moves"].includes(MODE)) {
-		saveao5 = [ao5, mo5, scrambles, movesarr];
+		saveao5 = [ao5, mo5, solvedata, movesarr];
 		updateSession();
 	}
 	//local
@@ -2599,7 +2599,7 @@ function moveSetup()
 }
 
 function setBandage() {
-	CUBEMAP[BANDAGE_SELECT.value()]();
+	switchCube(BANDAGE_SELECT.value());
 	bandaged = [];
 	if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
 		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
@@ -3175,12 +3175,12 @@ function setInput() {
 	}
 }
 function updateSession() {
-	Object.assign(savetimes[session], { mo5, movesarr, ao5, scrambles});
+	Object.assign(savetimes[session], { mo5, movesarr, ao5, scrambles: solvedata});
 }
 function changeSession() {
 	if (!SESSION) return;
 	session = SESSION.value() - 1;
-	({mo5, movesarr, ao5, scrambles} = savetimes[session]);
+	({mo5, movesarr, ao5, scrambles: solvedata} = savetimes[session]);
 }
 function changeInput()
 {
@@ -3271,7 +3271,7 @@ function doneBandage(){
 	if (pushing) {
 		addBandage(false);
 	} else {
-		CUBEMAP[BANDAGE_SELECT.value()]();
+		switchCube(BANDAGE_SELECT.value());
 		setBandage();
 		if (SMOOTHBANDAGE.checked()) {
 			smoothBandage();
@@ -3468,7 +3468,7 @@ function Custom2(){
 	doneBandage();
 	modeData("custombandage");
 	ban9();
-	CUBEMAP[BANDAGE_SELECT.value()]();
+	switchCube(BANDAGE_SELECT.value());
 }
 function Custom()
 {
@@ -3499,7 +3499,7 @@ function Custom()
 	INPUT.value("Normal");
 	SCRAM.value("Normal");
 	modeData("customshape");
-	CUBEMAP[SEL7.value()]();
+	switchCube(SEL7.value());
 	change9();
 }
 function Reverse(move)
@@ -3622,13 +3622,13 @@ function regular(nocustom){
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
-		scrambles = [];
+		solvedata = [];
 	}
 	// console.log("Reseting", saveao5,["speed", "moves", "compete", "competing"].includes(MODE),(saveao5[1] && saveao5[1].length > 0) )
 	if(["speed", "moves", "compete", "competing"].includes(MODE) || (saveao5[1] && saveao5[1].length > 0)){
 		ao5 = saveao5[0];
 		mo5 = saveao5[1];
-		scrambles = saveao5[2];
+		solvedata = saveao5[2];
 		movesarr = saveao5[3];
 	}
 	if (DIM2 != 50 && DIM2 != 100 || comstep > 0) {
@@ -3726,7 +3726,7 @@ function timedmode()
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
-		scrambles = [];
+		solvedata = [];
 	}
 	if(MODE != "normal" || document.getElementById("test_alg_span").innerHTML == "Paste ID here:" || document.getElementById("settings1").style.display == "block")
 		regular(true);
@@ -3752,7 +3752,7 @@ function cubemode()
 	if(MODE == "speed" || MODE == "moves"){
 		ao5 = saveao5[0];
 		mo5 = saveao5[1];
-		scrambles = saveao5[2];
+		solvedata = saveao5[2];
 		movesarr = saveao5[3];
 	}
 	//if(MODE != "normal")
@@ -3975,10 +3975,10 @@ socket.on("refresh_rooms", (data, r) => {
 
 socket.on("joined_late", (data, r) => {
 	if (MODE == "compete") {
-		saveao5 = [ao5, mo5, scrambles, movesarr];
+		saveao5 = [ao5, mo5, solvedata, movesarr];
 		ao5 = [];
 		mo5 = [];
-		scrambles = [];
+		solvedata = [];
 		movesarr = [];
 		MODE = "competing";
 		competedata = data;
@@ -4071,7 +4071,7 @@ function enterLobby(data, r) {
 	if (Array.isArray(competedata.data.dims) && competedata.data.dims[0]
 		&& compete_cube != competedata.data.dims[0] && competedata.data.dims[0][cubenum]) {
 		PRACTICE_SEL.selected(competedata.data.dims[0][cubenum]);
-		CUBEMAP[competedata.data.dims[0][cubenum]]();
+		switchCube(competedata.data.dims[0][cubenum]);
 		compete_cube = competedata.data.dims[0];
 		getEl("keymap").style.display = "none";
 	}
@@ -4268,10 +4268,10 @@ socket.on("started-match", (data, scramble) => {
 	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time"]);
 	setDisplay("block", ["times_par"])
 	changeInput();
-	saveao5 = [ao5, mo5, scrambles, movesarr];
+	saveao5 = [ao5, mo5, solvedata, movesarr];
 	ao5 = [];
 	mo5 = [];
-	scrambles = [];
+	solvedata = [];
 	movesarr = [];
 	comstep = 1;
 	startRound(data, scramble);
@@ -4299,7 +4299,7 @@ function startRound(data, scramble) {
 	let cube = "";
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		cube = data.data.dims[data.round][0];
-		CUBEMAP[cube]();
+		switchCube(cube);
 		if (data.data.customarr && data.data.customarr.length > 0) {
 			if (data.data.customarr[data.round][0].input) {
 				INPUT.selected(data.data.customarr[data.round][0].input);
@@ -4310,7 +4310,7 @@ function startRound(data, scramble) {
 		}
 	} else {
 		cube = data.data.dims[data.round][1];
-		CUBEMAP[cube]();
+		switchCube(cube);
 		if (data.data.customarr) {
 			if (data.data.customarr[data.round][1].input) {
 				INPUT.selected(data.data.customarr[data.round][1].input);
@@ -5280,7 +5280,7 @@ function finishCompeteSelect(dim) {
 	}
 	
 	setDisplay("block", ["creating_match"]);
-	CUBEMAP[dim]();
+	switchCube(dim);
 	handleCompeteSettingsChange();
 	setDisplay("none", ["compete_select", "keymap", "input2"]);
 }
@@ -5485,7 +5485,7 @@ function challengemode() {
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
-		scrambles = [];
+		solvedata = [];
 	}
 	regular(true);
 	MODE = "challenge";
@@ -5627,7 +5627,7 @@ function shapemarathon() {
 			str +=  "<br>"
 		})
 		getEl("ma_list").innerHTML = str;
-		CUBEMAP[ma_data.cubes[mastep / 2]]();
+		switchCube(ma_data.cubes[mastep / 2]);
 		reSetup();
 		setTimeout(() => {
 			shuffleCube();
@@ -5763,7 +5763,7 @@ function launchGoMessage() {
 }
 
 function startchallenge() {
-	CUBEMAP[weeklyscrambles[week].cube]();
+	switchCube(weeklyscrambles[week].cube);
 	if (weeklyscrambles[week].hasOwnProperty("bandaged")) {
 		bandaged = weeklyscrambles[week].bandaged;
 	}
@@ -5912,7 +5912,7 @@ function suggestMode() {
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
-		scrambles = [];
+		solvedata = [];
 	}
 	regular(true);
 	DIM = DIM2;
@@ -5963,7 +5963,7 @@ function accountmode() {
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
-		scrambles = [];
+		solvedata = [];
 	}
 	regular(true);
 	DIM = DIM2;
@@ -5991,7 +5991,7 @@ function loginmode() {
 		ao5 = [];
 		mo5 = [];
 		movesarr = [];
-		scrambles = [];
+		solvedata = [];
 	}
 	regular(true);
 	DIM = DIM2;
@@ -6076,10 +6076,10 @@ function speedmode()
 	MODE = MINIMODE = "speed";
 	DIM = DIM2;
 	reSetup();
-	saveao5 = [ao5, mo5, scrambles, movesarr];
+	saveao5 = [ao5, mo5, solvedata, movesarr];
 	ao5 = [];
 	mo5 = [];
-	scrambles = [];
+	solvedata = [];
 	movesarr = [];
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "end" });
 	refreshButtons();
@@ -6129,11 +6129,11 @@ function movesmode()
 	MODE = "moves"
 	DIM = DIM2;
 	reSetup();
-	saveao5 = [ao5, mo5, scrambles, movesarr];
+	saveao5 = [ao5, mo5, solvedata, movesarr];
 	ao5 = [];
 	mo5 = [];
 	peeks = 0;
-	scrambles = [];
+	solvedata = [];
 	movesarr = [];
 
 	refreshButtons();
@@ -7110,7 +7110,7 @@ function raceHide() {
 	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
 }
 function botConnect(obj) {
-	CUBEMAP[obj.get('dim')]();
+	switchCube(obj.get('dim'));
 	fullScreen(true);
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -8103,17 +8103,17 @@ function downloadAll()
 	let total = "";
 	for(let i = 0; i < mo5.length; i++)
 	{
-		total += (i+1) + ") " + mo5[i] + "s, " + movesarr[i] + " moves, Scramble: " + scrambles[i] + "\n";
+		total += `${i + 1}) ${solvedata[i]?.cubename ? `Cube: ${solvedata[i].cubename}, ` : ""}${mo5[i]}s, ${movesarr[i]} moves, Scramble: ${solvedata[i]?.scramble ?? solvedata[i]}\n`;
 	}
 	download('cubestats.txt', total);
 }
 
 function displayTimes()
 {
-	if(scrambles.length > 1 & scrambles[scrambles.length-2] == scrambles[scrambles.length-1] && scrambles[scrambles.length-1] != "N/A")
-		scrambles.pop();
-	if(scrambles.length > mo5.length)
-		scrambles.pop();
+	if(solvedata.length > 1 & solvedata[solvedata.length-2] == solvedata[solvedata.length-1] && solvedata[solvedata.length-1].scramble != "N/A")
+		solvedata.pop();
+	if(solvedata.length > mo5.length)
+		solvedata.pop();
 	if(canMan == false) return;
 	if(MODE != "timed") return;
 	if (MODE == "timed") {
@@ -8342,7 +8342,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, scrambles, competedata, socket.id, getOp());
+	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, solvedata, competedata, socket.id, getOp());
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -10754,7 +10754,7 @@ if(isSolved())
 	document.getElementById("step").innerHTML = "";
 	document.getElementById("fraction").innerHTML = "";
 	movesarr.push(moves);
-	scrambles.push(document.getElementById('scramble').innerText)
+	solvedata.push({scramble: document.getElementById('scramble').innerText, cubename: CUBENAME});
 	flipmode = 0;
 	saystep = 0;
 	canMan = true;
@@ -11835,8 +11835,8 @@ function removeSpecificTime(index){
 		mo5.splice(indexToRemove, 1);
 		
 		// Also remove from scrambles array if it exists
-		if(scrambles && indexToRemove < scrambles.length){
-			scrambles.splice(indexToRemove, 1);
+		if(solvedata && indexToRemove < solvedata.length){
+			solvedata.splice(indexToRemove, 1);
 		}
 		
 		ao5 = [];
