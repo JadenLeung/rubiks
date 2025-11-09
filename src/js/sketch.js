@@ -233,6 +233,7 @@ export default function (p) {
 	 };
 	 let allcubies = IDtoReal(IDtoLayout(decode(colorvalues["b"])));
 	let allcubestyle = 'text-align:center; font-size:20px; border: none;' + (!ismid ? "height:45px; width:180px;" : "");
+	let CUBENAME = "3x3";
 	const CUBEMAP = {"2x2": changeTwo.bind(null, false), "3x3": changeThree.bind(null, false), "3x3x2": changeFive, "2x2x3": change19,
 		"Xmas 3x3": changeSeven, "Xmas 2x2": change8, "4x4" : switchSize.bind(null, 4), "5x5" : switchSize.bind(null, 5),
 		"1x2x2" : switchSize.bind(null, 5, "1x2x2", "1x2x2", "3x3x2"),
@@ -2751,6 +2752,7 @@ function changeTwo(switchstart = true)
 	DIM = 100;
 	DIM3 = 2;
 	DIM4 = 2;
+	CUBENAME = "2x2";
 	if (switchstart)
 		localStorage.startcube = 2;
 	modeData("twobytwo");
@@ -2782,6 +2784,7 @@ function changeThree(switchstart = true)
 	MAXX = 50;
 	DIM3 = 3;
 	DIM4 = 3;
+	CUBENAME = "3x3";
 	if (switchstart)
 		localStorage.startcube = 3;
 	THREEBYTHREE.class('btn btn-warning btn-sm');
@@ -2939,6 +2942,10 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
+function switchCube(cubename) {
+	CUBEMAP[cubename]();
+	CUBENAME = cubename;
+}
 function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3, b = []) {
 	DIM2 = d2;
 	DIM = d;
@@ -2952,7 +2959,6 @@ function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3, b = []) {
 	bandaged = b
 	reSetup();
 	refreshButtons();
-	console.log("bandaged is ", bandaged)
 }
 function change20(dim, b){
 	changeFive();
@@ -9508,41 +9514,41 @@ function refreshButtons()
 		setButton(ONEBYTHREE, "cube1", 'btn btn-info', allcubestyle, changeFour.bind(null, 0));
 
 		SANDWICH = p.createButton('3x3x2');
-		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, changeFive.bind(null, 0));
+		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, () => switchCube("3x3x2"));
 
 		CUBE3 = p.createButton('Plus Cube');
-		setButton(CUBE3, "cube3", 'btn btn-info', allcubestyle, changeSix.bind(null, 0));
+		setButton(CUBE3, "cube3", 'btn btn-info', allcubestyle, () => switchCube("Plus Cube"));
 
 		CUBE4 = p.createButton(isthin ? 'Xmas 3x3' : 'Christmas 3x3');
-		setButton(CUBE4, "cube4", 'btn btn-info', allcubestyle, changeSeven.bind(null, 0));
+		setButton(CUBE4, "cube4", 'btn btn-info', allcubestyle, () => switchCube("Xmas 3x3"));
 
 		CUBE5 = p.createButton(isthin ? 'Xmas 2x2' : 'Christmas 2x2');
-		setButton(CUBE5, "cube5", 'btn btn-info', allcubestyle, change8.bind(null, 0));
+		setButton(CUBE5, "cube5", 'btn btn-info', allcubestyle, () => switchCube("Xmas 2x2"));
 
 		CUBE6 = p.createButton('Jank 2x2');
-		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, change10.bind(null, 0));
+		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, () => switchCube("Jank 2x2"));
 
 		CUBE13 = p.createButton('Sandwich Cube');
-		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, change17.bind(null, 0));
+		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, () => switchCube("Sandwich"));
 
 		CUBE15 = p.createButton('2x2x3');
-		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, change19.bind(null, 0));
+		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
 	}
 	else if (modnum == 1) {
 		CUBE7 = p.createButton('Slice Bandage');
-		setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, change11.bind(null, 7, [[3,4,5,6,7,8]]));
+		setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, () => switchCube("Slice Bandage"));
 
 		CUBE8 = p.createButton('The Pillars');
-		setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, change12.bind(null, 8, [[0,3,6], [2,5,8]]));
+		setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, () => switchCube("The Pillars"));
 
 		CUBE9 = p.createButton('Triple Quad');
-		setButton(CUBE9, "cube9", 'btn btn-info', allcubestyle, change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]));
+		setButton(CUBE9, "cube9", 'btn btn-info', allcubestyle, () => switchCube("Triple Quad"));
 
 		CUBE10 = p.createButton('Bandaged 2x2');
-		setButton(CUBE10, "cube10", 'btn btn-info', allcubestyle, change14.bind(null, 10, [[6,8]]));
+		setButton(CUBE10, "cube10", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 2x2"));
 
 		CUBE11 = p.createButton('Z Perm');
-		setButton(CUBE11, "cube11", 'btn btn-info', allcubestyle, change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]));
+		setButton(CUBE11, "cube11", 'btn btn-info', allcubestyle, () => switchCube("Z Perm"));
 
 		CUBE12 = p.createButton('T Perm');
 		setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]));
