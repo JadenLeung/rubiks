@@ -12965,7 +12965,7 @@ function numSolved() {
 		const cubies = getCubiesInSide(dirobj.sidearr)
 		let colors = new Set()
 		cubies.forEach(cuby => {
-			colors.add(getColor(CUBE[cuby][dirobj.side].levels))
+			colors.add(getColor((CUBE[cuby]?.savecolors[dirobj.side]?.levels ?? CUBE[cuby][dirobj.side].levels)))
 		})
 		if (custom != 1) {
 			colors.delete("k");
