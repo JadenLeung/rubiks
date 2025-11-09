@@ -1,6 +1,6 @@
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble, ao5, mo5, movesarr, solvedata, onDelete) {
-	console.log("scramble is ", scramble, solveNumber)
+function showSolveDialog(solveNumber, time, moves, scramble, cubename, onDelete) {
+	console.log("scramble is ", scramble, cubename);
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
 	
@@ -117,7 +117,8 @@ if (isAppleDevice) {
 	const shareBtn = document.getElementById("solve-detail-share-btn");
 	if (shareBtn) {
 		shareBtn.onclick = () => {
-			const shareText = `I solved the virtual cube!\nTime: ${time}\nScramble: ${scramble || 'N/A'}\nhttps://virtual-cube.net/`;
+			console.log("Clicking ", cubename)
+			const shareText = `I solved the ${cubename}!\nTime: ${time}\nScramble: ${scramble || 'N/A'}\nhttps://virtual-cube.net/`;
 			const smsUrl = `sms:&body=${encodeURIComponent(shareText)}`;
 			window.open(smsUrl, '_blank');
 		};
@@ -126,7 +127,7 @@ if (isAppleDevice) {
 	// Update content
 	const content = document.getElementById("solve-detail-content");
 	content.innerHTML = `
-		<p style="margin: 10px 0;"><strong>Solve #:</strong> ${solveNumber}</p>
+		<p style="margin: 10px 0;"><strong>Cube:</strong> ${cubename}</p>
 		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
 		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
 		<p style="margin: 10px 0; display: flex; align-items: center; gap: 8px;">
@@ -274,7 +275,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 					cellNum.onclick = () => {
 						const timeText = cellTime.textContent;
 						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
-						showSolveDialog(solveNumber, timeText, movesText, solvedata[solveNumber - 1].scramble ?? solvedata[solveNumber - 1], ao5, mo5, movesarr, solvedata, () => {
+						showSolveDialog(solveNumber, timeText, movesText, solvedata[solveNumber - 1].scramble ?? solvedata[solveNumber - 1], solvedata[i].cubename, () => {
 							// Refresh the table after deletion
 							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
 						});
