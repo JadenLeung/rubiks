@@ -5517,6 +5517,8 @@ function challengemode() {
 function dailychallenge(cube) {
 	if (localStorage.cdate3 == sinceOct12('d') && cube == 2) return;
 	if (localStorage.cdate2 == sinceOct12('d') && cube == 3) return;
+	INPUT.selected("Normal");
+	SCRAM.selected("Normal");
 	DIM2 = cube == 3 ? 50 : 100;
 	DIM = DIM2;
 	SIZE = 3;
