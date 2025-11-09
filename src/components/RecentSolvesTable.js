@@ -118,7 +118,8 @@ if (isAppleDevice) {
 	if (shareBtn) {
 		shareBtn.onclick = () => {
 			console.log("Clicking ", cubename)
-			const shareText = `I solved the ${cubename}!\nTime: ${time}\nScramble: ${scramble || 'N/A'}\nhttps://virtual-cube.net/`;
+			const scrambleTypeText = scrambletype !== "Normal" ? `\nScramble Type: ${scrambletype}` : '';
+			const shareText = `I solved the ${cubename}!\nTime: ${time}${scrambleTypeText}\nScramble: ${scramble || 'N/A'}\nhttps://virtual-cube.net/`;
 			const smsUrl = `sms:&body=${encodeURIComponent(shareText)}`;
 			window.open(smsUrl, '_blank');
 		};
@@ -130,8 +131,7 @@ if (isAppleDevice) {
 		<p style="margin: 10px 0;"><strong>Cube:</strong> ${cubename}</p>
 		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
 		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
-		<p style="margin: 10px 0;"><strong>Input Type:</strong> ${inputtype}</p>
-		<p style="margin: 10px 0;"><strong>Scramble Type:</strong> ${scrambletype}</p>
+		${scrambletype !== "Normal" ? `<p style="margin: 10px 0;"><strong>Scramble Type:</strong> ${scrambletype}</p>` : ''}
 		<p style="margin: 10px 0; display: flex; align-items: flex-start; gap: 8px;">
 			<strong>Scramble:</strong> 
 			<span id="scramble-text" style="flex: 1;">${scramble || 'N/A'}</span>
