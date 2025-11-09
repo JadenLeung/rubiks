@@ -11,13 +11,21 @@ export default class Cuby {
     this.stroke = 0.5;
     this.custom = custom;
     this.special = special;
-    this.adjustedcolor = false;
-    
     // Preserve savecolors from existing cube if it exists
     if (existingCube && existingCube.savecolors && Object.keys(existingCube.savecolors).length > 0) {
       this.savecolors = {...existingCube.savecolors};
     } else {
       this.savecolors = {};
+    }
+
+    if (!existingCube || existingCube.oldx == undefined) {
+      this.oldx = x;
+      this.oldy = y;
+      this.oldz = z;
+    } else {
+      this.oldx = existingCube.oldx;
+      this.oldy = existingCube.oldy;
+      this.oldz = existingCube.oldz;
     }
     
     this.shown = true;
@@ -32,9 +40,9 @@ export default class Cuby {
       green: p.color(18, 219, 31, 255),
       yellow: p.color(209, 219, 18, 255),
     }; */
-    let xmul = SIZE % 2 == 1 ? this.x*0.02 : (this.x - 25) * 0.02;
-    let ymul = SIZE % 2 == 1 ? this.y*0.02 : (this.y - 25) * 0.02;
-    let zmul = SIZE % 2 == 1 ? this.z*0.02 : (this.z - 25) * 0.02;
+    let xmul = SIZE % 2 == 1 ? this.oldx*0.02 : (this.oldx - 25) * 0.02;
+    let ymul = SIZE % 2 == 1 ? this.oldy*0.02 : (this.oldy - 25) * 0.02;
+    let zmul = SIZE % 2 == 1 ? this.oldz*0.02 : (this.oldz - 25) * 0.02;
 	 this.colors = {
       def:   p.color(25 + xmul,  25 + ymul, 25 + zmul),
       white: p.color(250 + xmul, 250 + ymul, 250 + zmul),
@@ -263,29 +271,37 @@ export default class Cuby {
     })
   }
 
-  setColor(c, variance) {
-    if (!this.adjustedcolor)
+  setColor(c, temporary) {
+    if (!temporary) {
+      this.savecolors = {top: c, bottom: c, left: c, right: c, front: c, back: c};
+    }
+    if (temporary && Object.keys(this.savecolors).length == 0) {
       this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
+    }
     this.top = c;
     this.bottom = c;
     this.front = c;
     this.right = c;
     this.back = c;
     this.left = c;
-    this.adjustedcolor = true;
   }
-  setFaceColor(c, face) {
-    this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
+  setFaceColor(c, face, temporary) {
+    if (!temporary) {
+      this.savecolors[face] = c;
+    }
+    if (temporary && Object.keys(this.savecolors).length == 0) {
+      this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
+    }
     this[face] = c;
   }
   originalFaceColor(face) {
     this[face] = this.savecolors[face];
-    this.adjustedcolor = false;
   }
   originalColor() {
-    ({ top: this.top, bottom: this.bottom, front: this.front, 
-      right: this.right, back: this.back, left: this.left } = this.savecolors);
-    this.adjustedcolor = false;
+    if (Object.keys(this.savecolors).length != 0) {
+        ({ top: this.top, bottom: this.bottom, front: this.front, 
+          right: this.right, back: this.back, left: this.left } = this.savecolors);
+    }
   }
   
   animating() {

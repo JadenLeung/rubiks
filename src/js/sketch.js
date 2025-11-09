@@ -164,7 +164,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -260,7 +260,8 @@ export default function (p) {
 		"Pillars" : change12.bind(null, 8, [[0,3,6], [2,5,8]]),
 		"Triple Quad" :change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]),
 		"Z Perm" : 	change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]),
-		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]])
+		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]),
+		"3x3 Glow Cube": switchSize.bind(null, 3, 50, "glowcube"),
 	};
 
 	// attach event
@@ -670,6 +671,7 @@ p.setup = () => {
 	PLUSLITE = p.createButton('Plus Lite');
 	PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
 	SNAKE_EYE = p.createButton('Snake Eyes');
+	GLOW3x3 = p.createButton('3x3 Glow Cube');
 	refreshButtons();
 
 
@@ -1589,6 +1591,7 @@ setInterval(() => {
 	if(isSolved() && timer.getTime() > secs && timer.isRunning && (["normal", "timed", "cube"].includes(MODE) || race > 1))
 	{
 		timer.stop();
+		setGlowColors();
 		flipmode2 = 0;
 		movesarr.push(moves);
 		if(ao5.length<5)
@@ -1904,7 +1907,7 @@ setInterval(() => {
 		for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 			const key = +Object.entries(mapCuby()).find(([key, value]) => value == i)?.[0];
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
-				CUBE[i].setColor(CUBE[key].colors.magenta);
+				CUBE[i].setColor(CUBE[key].colors.magenta, true);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
 					let index = 0;
 					DIM[2].forEach((group, j) => {
@@ -2028,6 +2031,7 @@ setInterval(() => {
 		averagetimedata.ao5length = ao5.length;
 		averagetimedata.mo5length = mo5.length;
 	}
+	// setGlowColors();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2108,10 +2112,10 @@ function reSetup(rot) {
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE, oldCUBE[cnt]);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE, {});
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE, oldCUBE[cnt]);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, allcubies, special, SIZE, {});
 				cnt++;
 			}
 		}
@@ -2221,7 +2225,16 @@ function getOuterCubes() {
 	}
 	return outercubes;
 }
-function getCubiesInSide(sidearr) { 
+function getCubiesInSide(side) { 
+	const SIDEOBJ = {
+		"top": [0, 1, 0],
+		"bottom": [0, -1, 0],
+		"front": [0, 0, 1],
+		"back": [0, 0, -1],
+		"left": [1, 0, 0],
+		"right": [-1, 0, 0],
+	};
+	const sidearr = SIDEOBJ[side];
 	let cubies = getOuterCubes();
 	cubies = cubies.filter((c) => {
 		let cuby = CUBE[c];
@@ -2532,10 +2545,10 @@ function quickSolve(savesetup = false)
 				let z = (CUBYESIZE + GAP) * k - offset;
 				if(x == -2)
 				{
-					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE, oldCUBE[cnt]);
+					CUBE[cnt] = new Cuby(100, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE, {});
 					console.log("here");
 				}else
-				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE, oldCUBE[cnt]);
+				CUBE[cnt] = new Cuby(DIM, x, y, z, RND_COLORS[cnt], PICKER, p, cnt, savesetup, special, SIZE, {});
 				cnt++;
 			}
 		}
@@ -3859,7 +3872,7 @@ function paintmode() {
 	canMan = false;
 	colorindex = 0;
 	let obj = getColoredCuby(0);
-	CUBE[obj.cuby].setFaceColor(CUBE[obj.cuby].colors["magenta"], obj.face);
+	CUBE[obj.cuby].setFaceColor(CUBE[obj.cuby].colors["magenta"], obj.face, true);
 }
 function paintit(color, dx = 1) {
 	if (MODE != "paint") return;
@@ -3881,7 +3894,7 @@ function paintit(color, dx = 1) {
 		obj = getColoredCuby(colorindex);
 	 	colormap = +Object.entries(mapCuby()).find(([key, value]) => value == obj.cuby)?.[0];
 		if (color != "original") {
-			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors[color], obj.face);
+			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors[color], obj.face, false);
 		} else {
 			CUBE[obj.cuby].originalFaceColor(obj.face);
 		}
@@ -3915,14 +3928,14 @@ function paintit(color, dx = 1) {
 			multiple2("scramble");
 		}
 	}
-	// CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
+
 	if (arr.length > 0) {
 		setTimeout(() => {
-			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
+			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face, true);
 			canMan = false;
 		}, 40);
 	} else {
-		CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face);
+		CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face, true);
 	}
 }
 function finishpaint() {
@@ -8455,7 +8468,7 @@ function startAction() {
 		const face = getFace(cuby, mouseXPos, mouseYPos);
 		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
 
-		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", getColor(CUBE[cuby]?.savecolors[dir]?.levels));
+		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", getColorByCubyDir(cuby, dir));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -8624,6 +8637,9 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		for (let j = 0; j < SIZE; j++) {
 			if (CUBE[i].get(axis) === rows[j]) {
+				if (DIM2 == "glowcube") {
+					setGlowAnimateColor(i);
+				}
 				CUBE[i].row = rows[j];
 				CUBE[i].dir = dir;
 				CUBE[i].anim_axis = axis;
@@ -8796,6 +8812,7 @@ p.keyPressed = (event) => {
 		// for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		// 	CUBE[i].setColor(CUBE[i].colors.magenta);
 		// }
+		// console.log(setGlowColors());
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9187,6 +9204,7 @@ function waitForCondition(callback, use = "default") {
     if (!isAnimating()) {
 		console.log(use);
 		let delay = DELAY;
+		if (DIM2 == "glowcube") setGlowColors();
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
@@ -9438,7 +9456,7 @@ function refreshButtons()
 		TWOBYTHREEBYFOUR, TWOBYTHREEBYFIVE, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
-		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE
+		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3
 		];
 		
 		elements.forEach(el => el.remove());
@@ -9548,6 +9566,9 @@ function refreshButtons()
 		CUBE13 = p.createButton('Sandwich Cube');
 		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, () => switchCube("Sandwich"));
 
+		GLOW3x3 = p.createButton('3x3 Glow Cube');
+		setButton(GLOW3x3, "glow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Glow Cube"); GLOW3x3.style('background-color', "#8ef5ee");});
+
 		CUBE15 = p.createButton('2x2x3');
 		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
 	}
@@ -9577,10 +9598,10 @@ function refreshButtons()
 		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 3x3x2"));
 	} else if (modnum == 2) {
 		FOURBYFOUR = p.createButton('4x4');
-		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchSize(4); FOURBYFOUR.style('background-color', "#8ef5ee");});
+		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchCube("4x4"); FOURBYFOUR.style('background-color', "#8ef5ee");});
 
 		FIVEBYFIVE = p.createButton('5x5');
-		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchSize(5); FIVEBYFIVE.style('background-color', "#8ef5ee");});
+		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchCube("5x5"); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
 		TWOBYTWOBYFOUR = p.createButton('2x2x4');
 		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchCube("2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
@@ -9601,7 +9622,7 @@ function refreshButtons()
 		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchCube("Earth Cube"); LASAGNA.style('background-color', "#8ef5ee");});
 
 		FOURPLUS = p.createButton('4x4 Plus Cube');
-		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchSize(4, "4x4plus"); FOURPLUS.style('background-color', "#8ef5ee");});
+		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchCube("4x4 Plus Cube"); FOURPLUS.style('background-color', "#8ef5ee");});
 	} else if (modnum == 3) {
 		ONEBYTWOBYTWO = p.createButton('1x2x2');
 		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {switchCube("1x2x2"); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
@@ -11602,9 +11623,9 @@ function setLayout(){
 			for(let y = 0; y < SIZE; y++)
 			{
 				if(temp2[x][y] > 9)
-				layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " " + temp2[x][y];
+				layout[h][x][y] = getColorByCubyDir(temp2[x][y], pos[h]) + " " + temp2[x][y];
 				else
-				layout[h][x][y] = getColor(CUBE[temp2[x][y]][pos[h]].levels) + " 0" + temp2[x][y];
+				layout[h][x][y] = getColorByCubyDir(temp2[x][y], pos[h]) + " 0" + temp2[x][y];
 			}
 		}
 		temp = [];
@@ -11771,6 +11792,9 @@ function setLayout(){
 	opposite[layout[5][1][1][0]] = layout[4][1][1][0];
 	opposite["k"] = "k";
 	
+}
+function getColorByCubyDir(cuby, dir) {
+	return getColor((CUBE[cuby]?.savecolors[dir]?.levels ?? CUBE[cuby][dir]?.levels))
 }
 function getColor(color)
 {
@@ -12952,20 +12976,13 @@ function isSolved()
 }
 
 function numSolved() {
-	const DIRARR = [
-		{side: "top", sidearr: [0, 1, 0]},
-		{side: "bottom", sidearr: [0, -1, 0]},
-		{side: "front", sidearr: [0, 0, 1]},
-		{side: "back", sidearr: [0, 0, -1]},
-		{side: "left", sidearr: [1, 0, 0]},
-		{side: "right", sidearr: [-1, 0, 0]},
-	];
+	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
 	let numsolved = 0;
-	DIRARR.forEach((dirobj) => {
-		const cubies = getCubiesInSide(dirobj.sidearr)
+	DIRARR.forEach((dir) => {
+		const cubies = getCubiesInSide(dir)
 		let colors = new Set()
 		cubies.forEach(cuby => {
-			colors.add(getColor((CUBE[cuby]?.savecolors[dirobj.side]?.levels ?? CUBE[cuby][dirobj.side].levels)))
+			colors.add(getColorByCubyDir(cuby, dir));
 		})
 		if (custom != 1) {
 			colors.delete("k");
@@ -12977,7 +12994,44 @@ function numSolved() {
 	return numsolved;
 }
 
+function setGlowAnimateColor(i) {
+	if (!timer.isRunning) {
+		return;
+	}
+	CUBE[i].setColor(CUBE[i].colors.black, true);
+}
 
+function setGlowColors() {
+	if (isSolved()) {
+		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+			CUBE[i].originalColor();
+		}
+	}
+	if (!timer.isRunning) {
+		return;
+	}
+	setLayout();
+	const DIRARR = [
+		{dir: "top", face: 5},
+		{dir: "bottom", face: 4},
+		{dir: "back", face: 0},
+		{dir: "front", face: 1},
+		{dir: "right", face: 2},
+		{dir: "left", face: 3},
+	]
+	DIRARR.forEach((obj) => {
+		const middleColor = layout[obj.face][1][1][0];
+		const cubies = getCubiesInSide(obj.dir)
+		cubies.forEach(cuby => {
+			const oldcuby = cuby
+			if (getColorByCubyDir(cuby, obj.dir) != middleColor) {
+				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
+			} else {
+				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.yellow, obj.dir, true);
+			}
+		});
+	});
+}
 
 
 function median(values){  
@@ -13165,10 +13219,11 @@ socket.on("update-screenshot", (screenshot) => {
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
 	// competemode();
-	// modnum = 2;
-    // cubemode();
+	modnum = 2;
+    cubemode();
 	// CUBEMAP["2x3x5"]();
-	// TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");
+	switchCube("3x3 Glow Cube");
+	GLOW3x3.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {
