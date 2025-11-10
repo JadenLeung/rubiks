@@ -257,7 +257,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		for (let i = 0; i < numRows; i++) {
 			const row = tbody.insertRow();
 			
-			if (i < recentTimes.length) {
+			if (i < Math.max(recentTimes.length, recentMoves.length)) {
 				// Row with data
 				// For cube mode, use mo5.length for numbering, otherwise use ao5.length
 				const solveNumber = isCompeting 

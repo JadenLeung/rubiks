@@ -2025,7 +2025,7 @@ setInterval(() => {
 		setDisplay("none", ["keymap"]);
 	}
 	if (averagetimedata.mode != MODE || averagetimedata.minimode != MINIMODE || averagetimedata.ao5length != ao5.length || averagetimedata.mo5length != mo5.length
-		|| (MODE === "competing" && competedata?.data?.type == "1v1" && competedata.solvedarr.length > competedata.round && competedata.solvedarr[competedata.round][getOp()] !== undefined)
+		|| (MODE === "competing" && competedata?.data?.type == "1v1" && (competedata.solvedarr.length > competedata.round && competedata.solvedarr[competedata.round][getOp()] !== undefined))
 	) {
 		displayAverage();
 		averagetimedata.mode = MODE;
@@ -2034,7 +2034,6 @@ setInterval(() => {
 		averagetimedata.mo5length = mo5.length;
 		averagetimedata.oplength = competedata.round;
 	}
-	console.log(averagetimedata?.opmove?.length)
 	// setGlowColors();
 }, 10)
 //forever
@@ -8473,7 +8472,7 @@ function startAction() {
 		const face = getFace(cuby, mouseXPos, mouseYPos);
 		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
 
-		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", getColorByCubyDir(cuby, dir));
+		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", cuby && dir && getColorByCubyDir(cuby, dir));
 		if (cuby !== false) {
 
 			if(customb == 1){
