@@ -7879,7 +7879,7 @@ function randomLL()
 function shufflePossible(len, total2, prev){
 	document.getElementById("scramble").innerHTML = total2;
 	console.log("total is " + total2);
-	if(canMan == false || len < 1)return;
+	if((canMan == false && MODE != "competing") || len < 1)return;
 	arr = [];
 	shufflespeed = 2;
 	moves = 0;
@@ -7975,12 +7975,13 @@ function shuffleCube(override = false) {
 		numshuffle = 0;
 	}
 	if(bandaged.length > 0){
+		canMan = true;
 		if (DIM == 8)
-			shufflePossible(60, "", "  ");
+			shufflePossible(60 + Math.round(Math.random()), "", "  ");
 		if(DIM4 == 3)
-			shufflePossible(45, "", "  ");
+			shufflePossible(45 + Math.round(Math.random()), "", "  ");
 		else
-			shufflePossible(15, "", "  ");
+			shufflePossible(15 + Math.round(Math.random() * 3), "", "  ");
 		return;
 	}
 
