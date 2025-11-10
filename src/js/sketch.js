@@ -2024,13 +2024,17 @@ setInterval(() => {
 	if (!getEl("show_keyboard_map").checked && MODE != "keyboard") {
 		setDisplay("none", ["keymap"]);
 	}
-	if (averagetimedata.mode != MODE || averagetimedata.minimode != MINIMODE || averagetimedata.ao5length != ao5.length || averagetimedata.mo5length != mo5.length) {
+	if (averagetimedata.mode != MODE || averagetimedata.minimode != MINIMODE || averagetimedata.ao5length != ao5.length || averagetimedata.mo5length != mo5.length
+		|| (MODE === "competing" && competedata?.data?.type == "1v1" && competedata.solvedarr.length > competedata.round && competedata.solvedarr[competedata.round][getOp()] !== undefined)
+	) {
 		displayAverage();
 		averagetimedata.mode = MODE;
 		averagetimedata.minimode = MINIMODE;
 		averagetimedata.ao5length = ao5.length;
 		averagetimedata.mo5length = mo5.length;
+		averagetimedata.oplength = competedata.round;
 	}
+	console.log(averagetimedata?.opmove?.length)
 	// setGlowColors();
 }, 10)
 //forever
@@ -8814,6 +8818,7 @@ p.keyPressed = (event) => {
 		// 	CUBE[i].setColor(CUBE[i].colors.magenta);
 		// }
 		// console.log(setGlowColors());
+		console.log(competedata)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
