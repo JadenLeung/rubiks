@@ -295,7 +295,8 @@ export default class Cuby {
     this[face] = c;
   }
   originalFaceColor(face) {
-    this[face] = this.savecolors[face];
+    if (this.savecolors[face])
+      this[face] = this.savecolors[face];
   }
   originalColor() {
     if (Object.keys(this.savecolors).length != 0) {

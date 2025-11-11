@@ -2034,7 +2034,6 @@ setInterval(() => {
 		averagetimedata.mo5length = mo5.length;
 		averagetimedata.oplength = competedata.round;
 	}
-	// setGlowColors();
 }, 10)
 //forever
 function reSetup(rot) {
@@ -13032,7 +13031,7 @@ function setGlowColors() {
 			if (getColorByCubyDir(cuby, obj.dir) != middleColor) {
 				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
 			} else {
-				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.yellow, obj.dir, true);
+				CUBE[cuby].originalFaceColor(obj.dir);
 			}
 		});
 	});
