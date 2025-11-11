@@ -9522,12 +9522,8 @@ function refreshButtons()
 	{
 		ONEBYTHREE = setCubeButton(ONEBYTHREE, "cube1", "1x3x3");
 
-		console.log("ONEBYTHREE IS", ONEBYTHREE)
-
 		SANDWICH = p.createButton('3x3x2');
 		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, () => switchCube("3x3x2"));
-
-		console.log("SANDWICH IS", SANDWICH)
 
 		CUBE15 = p.createButton('2x2x3');
 		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
