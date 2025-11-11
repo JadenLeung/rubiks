@@ -164,7 +164,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -262,6 +262,7 @@ export default function (p) {
 		"Z Perm" : 	change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]),
 		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]),
 		"3x3 Glow Cube": switchSize.bind(null, 3, 50, "glowcube"),
+		"3x3 Anti-Glow": switchSize.bind(null, 3, 50, "antiglow"),
 	};
 
 	// attach event
@@ -637,41 +638,6 @@ p.setup = () => {
 	SPEEDMODE2 = p.createButton('Speed');
 	TIMEDMODE2 = p.createButton('Stat');
 	MOVESMODE2 = p.createButton('FMC');
-	
-	ONEBYTHREE = p.createButton('1x3x3');
-	SANDWICH = p.createButton('3x3x2');
-	CUBE3 = p.createButton('Plus Cube');
-	CUBE4 = p.createButton('Christmas 3x3');
-	CUBE5 = p.createButton('Christmas 2x2');
-	CUBE6 = p.createButton('Jank 2x2');
-	CUBE7 = p.createButton('Slice Bandage');
-	CUBE8 = p.createButton('The Pillars');
-	CUBE9 = p.createButton('Triple Quad');
-	CUBE10 = p.createButton('Bandaged 2x2');
-	CUBE11 = p.createButton('Z Perm');
-	CUBE12 = p.createButton('T Perm');
-	CUBE13 = p.createButton('Sandwich Cube');
-	CUBE14 = p.createButton('Cube Bandage');
-	CUBE15 = p.createButton('2x2x3');
-	CUBE16 = p.createButton('Bandaged 3x3x2');
-	FOURBYFOUR = p.createButton('4x4');
-	FIVEBYFIVE = p.createButton('5x5');
-	ONEBYFOURBYFOUR = p.createButton('1x4x4');
-	ONEBYFIVEBYFIVE = p.createButton('1x5x5');
-	TWOBYTWOBYFOUR = p.createButton('2x2x4');
-	TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-	TWOBYTHREEBYFIVE = p.createButton('2x3x5');
-	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
-	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-	FOURPLUS = p.createButton();
-	LASAGNA = p.createButton('Lasagna Cube');
-	ONEBYTWOBYTWO = p.createButton('1x2x2');
-	ONEBYTWOBYTHREE = p.createButton('1x2x3');
-	SANDWICH2 = p.createButton('Sandwich 2x2');
-	PLUSLITE = p.createButton('Plus Lite');
-	PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
-	SNAKE_EYE = p.createButton('Snake Eyes');
-	GLOW3x3 = p.createButton('3x3 Glow Cube');
 	refreshButtons();
 
 
@@ -8640,7 +8606,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		for (let j = 0; j < SIZE; j++) {
 			if (CUBE[i].get(axis) === rows[j]) {
-				if (DIM2 == "glowcube") {
+				if (DIM2.includes("glow")) {
 					setGlowAnimateColor(i);
 				}
 				CUBE[i].row = rows[j];
@@ -9208,7 +9174,7 @@ function waitForCondition(callback, use = "default") {
     if (!isAnimating()) {
 		console.log(use);
 		let delay = DELAY;
-		if (DIM2 == "glowcube") setGlowColors();
+		if (DIM2.includes("glow")) setGlowColors();
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
@@ -9453,17 +9419,17 @@ function refreshButtons()
 	getEl("bigcubes").style.display = modnum == 2 ? "block" : "none";
 	getEl("babycubes").style.display = modnum == 3 ? "block" : "none";
 	
-	const elements = [
+	const CUBE_BUTTONS = [
 		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
 		SPEEDMODE2, REGULAR2, TIMEDMODE2, MOVESMODE2, ONEBYTHREE, SANDWICH,
 		FOURBYFOUR, FIVEBYFIVE, ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE, TWOBYTWOBYFOUR,
 		TWOBYTHREEBYFOUR, TWOBYTHREEBYFIVE, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
-		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3
+		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3
 		];
 		
-		elements.forEach(el => el.remove());
+		CUBE_BUTTONS.forEach(el => {el && el.remove()});
 		  
 
 	let d = isthin? 1.5 : 1;
@@ -9555,6 +9521,9 @@ function refreshButtons()
 		SANDWICH = p.createButton('3x3x2');
 		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, () => switchCube("3x3x2"));
 
+		CUBE15 = p.createButton('2x2x3');
+		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
+
 		CUBE3 = p.createButton('Plus Cube');
 		setButton(CUBE3, "cube3", 'btn btn-info', allcubestyle, () => switchCube("Plus Cube"));
 
@@ -9573,8 +9542,8 @@ function refreshButtons()
 		GLOW3x3 = p.createButton('3x3 Glow Cube');
 		setButton(GLOW3x3, "glow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Glow Cube"); GLOW3x3.style('background-color', "#8ef5ee");});
 
-		CUBE15 = p.createButton('2x2x3');
-		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
+		ANTIGLOW3x3 = p.createButton('3x3 Anti-Glow');
+		setButton(ANTIGLOW3x3, "antiglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Anti-Glow"); ANTIGLOW3x3.style('background-color', "#8ef5ee");});
 	}
 	else if (modnum == 1) {
 		CUBE7 = p.createButton('Slice Bandage');
@@ -13028,10 +12997,11 @@ function setGlowColors() {
 		const cubies = getCubiesInSide(obj.dir)
 		cubies.forEach(cuby => {
 			const oldcuby = cuby
-			if (getColorByCubyDir(cuby, obj.dir) != middleColor) {
-				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
-			} else {
+			if ((CUBENAME == "3x3 Glow Cube" && getColorByCubyDir(cuby, obj.dir) == middleColor)
+			|| (CUBENAME == "3x3 Anti-Glow" && getColorByCubyDir(cuby, obj.dir) != middleColor)) {
 				CUBE[cuby].originalFaceColor(obj.dir);
+			} else {
+				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
 			}
 		});
 	});
