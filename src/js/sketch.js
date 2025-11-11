@@ -2406,6 +2406,11 @@ function IDtoLayout(num){
 	}
 	return layout2;
 }
+function setCubeButton(BUTTON, parent, name) {
+	BUTTON = p.createButton(name);
+	setButton(BUTTON, parent, 'btn btn-info', allcubestyle, () => {switchCube(name); BUTTON.style('background-color', "#8ef5ee");});
+	return BUTTON;
+}
 function setButton(BUTTON, parent, className, style, event) {
 	BUTTON.parent(parent);
 	BUTTON.class(className);
@@ -8606,7 +8611,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		for (let j = 0; j < SIZE; j++) {
 			if (CUBE[i].get(axis) === rows[j]) {
-				if (DIM2.includes("glow")) {
+				if (String(DIM2).includes("glow")) {
 					setGlowAnimateColor(i);
 				}
 				CUBE[i].row = rows[j];
@@ -9174,7 +9179,7 @@ function waitForCondition(callback, use = "default") {
     if (!isAnimating()) {
 		console.log(use);
 		let delay = DELAY;
-		if (DIM2.includes("glow")) setGlowColors();
+		if (String(DIM2).includes("glow")) setGlowColors();
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
@@ -9515,11 +9520,14 @@ function refreshButtons()
 	setButton(MOVESMODE2, "mode8", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px;', movesmode.bind(null, 0));
 	if(modnum == 0)
 	{
-		ONEBYTHREE = p.createButton('1x3x3');
-		setButton(ONEBYTHREE, "cube1", 'btn btn-info', allcubestyle, changeFour.bind(null, 0));
+		ONEBYTHREE = setCubeButton(ONEBYTHREE, "cube1", "1x3x3");
+
+		console.log("ONEBYTHREE IS", ONEBYTHREE)
 
 		SANDWICH = p.createButton('3x3x2');
 		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, () => switchCube("3x3x2"));
+
+		console.log("SANDWICH IS", SANDWICH)
 
 		CUBE15 = p.createButton('2x2x3');
 		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
