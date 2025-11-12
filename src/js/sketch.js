@@ -47,6 +47,7 @@ export default function (p) {
 	let compete_customarr = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
+	const mods = ["Shape Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies", "Glow Cubes"];
 	const speeddata = {
 		0:0.28, 25: 0.25, 50:0.2, 75:0.16677, 100:0.116, 125:0.083, 150:0.033, 175:0.016667, 200:0.016667, 225: 0.016667
 	};
@@ -157,6 +158,7 @@ export default function (p) {
 	let pbls = [];
 	let olls = [];
 	let CONTINUEMATCH;
+	let maxsolvestage = 0;
 	let m_points = 0;
 	let link1 = document.getElementById("link1");
 	let m_scramble = [];
@@ -164,7 +166,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -263,6 +265,7 @@ export default function (p) {
 		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]),
 		"3x3 Glow Cube": switchSize.bind(null, 3, 50, "glowcube"),
 		"3x3 Anti-Glow": switchSize.bind(null, 3, 50, "antiglow"),
+		"3x3 Side Glow": switchSize.bind(null, 3, 50, "sideglow"),
 	};
 
 	// attach event
@@ -2017,6 +2020,7 @@ function reSetup(rot) {
 	flipmode2 = 0;
 	easystep = 0;
 	medstep = 0;
+	maxsolvestage = 0;
 	//bruh = 0;
 	m_34step = 0;
 	ollstep = 0;
@@ -2971,7 +2975,7 @@ function change20(dim, b){
 	CUBE16.style('background-color', "#8ef5ee");
 }
 function changeMod(dx){
-	modnum = (modnum + dx + 4) % 4;
+	modnum = (modnum + dx + mods.length) % mods.length;
 	document.getElementById("custom").style.display = modnum == 0 ? "block" : "none"; 
 	document.getElementById("customb").style.display = modnum == 1 ? "block" : "none"; 
 	refreshButtons();
@@ -8403,18 +8407,7 @@ function arraysEqual(arr1, arr2) {
 // 	}
 // 	return true;
 // }
-function hasColor(c) {
-	const sides = ["front", "back", "left", "right", "top", "bottom"];
-	let hasit = false;
-	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
-		sides.forEach((side) => {
-			if (getColor(CUBE[i][side].levels) == c) {
-				hasit = true;
-			}
-		});
-	}
-	return hasit;
-}
+
 function startAction() {	
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5 && MINIMODE == "physical"){ //racedetect
 		raceDetect();
@@ -8787,7 +8780,10 @@ p.keyPressed = (event) => {
 		// 	CUBE[i].setColor(CUBE[i].colors.magenta);
 		// }
 		// console.log(setGlowColors());
-		console.log(competedata)
+		// console.log(competedata)
+		setGlowColors();
+		console.log(getOriginalSideColor("top"));
+		// console.log(sideWithOnlyColor("g"));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9415,7 +9411,6 @@ function Redo()
 }
 function refreshButtons()
 {
-	const mods = ["Shape Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies"];
 	document.getElementById("or_instruct5").innerHTML = mods[modnum];
 
 
@@ -9423,6 +9418,7 @@ function refreshButtons()
 	getEl("bandagemods").style.display = modnum == 1 ? "block" : "none";
 	getEl("bigcubes").style.display = modnum == 2 ? "block" : "none";
 	getEl("babycubes").style.display = modnum == 3 ? "block" : "none";
+	getEl("glowcubes").style.display = modnum == 4 ? "block" : "none";
 	
 	const CUBE_BUTTONS = [
 		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
@@ -9431,7 +9427,8 @@ function refreshButtons()
 		TWOBYTHREEBYFOUR, TWOBYTHREEBYFIVE, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
-		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3
+		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3,
+		SIDEGLOW3x3
 		];
 		
 		CUBE_BUTTONS.forEach(el => {el && el.remove()});
@@ -9542,12 +9539,6 @@ function refreshButtons()
 
 		CUBE13 = p.createButton('Sandwich Cube');
 		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, () => switchCube("Sandwich"));
-
-		GLOW3x3 = p.createButton('3x3 Glow Cube');
-		setButton(GLOW3x3, "glow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Glow Cube"); GLOW3x3.style('background-color', "#8ef5ee");});
-
-		ANTIGLOW3x3 = p.createButton('3x3 Anti-Glow');
-		setButton(ANTIGLOW3x3, "antiglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Anti-Glow"); ANTIGLOW3x3.style('background-color', "#8ef5ee");});
 	}
 	else if (modnum == 1) {
 		CUBE7 = p.createButton('Slice Bandage');
@@ -9624,6 +9615,15 @@ function refreshButtons()
 
 		SNAKE_EYE = p.createButton('Snake Eyes');
 		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {switchCube("Snake Eyes");  SNAKE_EYE.style('background-color', "#8ef5ee");});
+	} else if (modnum == 4) {
+		GLOW3x3 = p.createButton('3x3 Glow Cube');
+		setButton(GLOW3x3, "glow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Glow Cube"); GLOW3x3.style('background-color', "#8ef5ee");});
+
+		ANTIGLOW3x3 = p.createButton('3x3 Anti-Glow');
+		setButton(ANTIGLOW3x3, "antiglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Anti-Glow"); ANTIGLOW3x3.style('background-color', "#8ef5ee");});
+
+		SIDEGLOW3x3 = p.createButton('3x3 Side Glow');
+		setButton(SIDEGLOW3x3, "sideglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Side Glow"); SIDEGLOW3x3.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -12971,6 +12971,61 @@ function numSolved() {
 	return numsolved;
 }
 
+function getOriginalSideColor(side) {
+	const SIDEOBJ = {
+		back: allcubies[0][3],
+		front: allcubies[5][2],
+		bottom: allcubies[0][1],
+		top: allcubies[16][0],
+		right: allcubies[0][5],
+		left: allcubies[26][4],
+	}
+	return SIDEOBJ[side];
+}
+
+function sideWithOnlyColor(color) {
+	const DIRARR = [
+		{dir: "right", face: 2},
+		{dir: "left", face: 3},
+		{dir: "top", face: 5},
+		{dir: "bottom", face: 4},
+		{dir: "back", face: 0},
+		{dir: "front", face: 1},
+	]
+	for (const obj of DIRARR) {
+		const cubies = getCubiesInSide(obj.dir);
+		if (cubies.every(cuby => getColorByCubyDir(cuby, obj.dir) == color)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function cubyHasColor(cuby, color) {
+	const sides = ["front", "back", "left", "right", "top", "bottom"];
+	let hasit = false;
+	sides.forEach((side) => {
+		if (getColorByCubyDir(cuby, side) == color) {
+			hasit = true;
+		}
+	});
+	return hasit;
+}
+
+function cubyShowColor(colors) {
+	const sides = ["front", "back", "left", "right", "top", "bottom"];
+	sides.forEach((side) => {
+		const cubies = getCubiesInSide(side);
+		cubies.forEach(cuby => {
+			if (colors.includes(getColorByCubyDir(cuby, side))) {
+				CUBE[cuby].originalFaceColor(side); 
+			} else {
+				CUBE[cuby].setFaceColor(CUBE[cuby].colors.black, side, true);
+			}
+		});
+	})
+}
+
 function setGlowAnimateColor(i) {
 	if (!timer.isRunning) {
 		return;
@@ -12989,14 +13044,16 @@ function setGlowColors() {
 	}
 	setLayout();
 	const DIRARR = [
+		{dir: "right", face: 2},
 		{dir: "top", face: 5},
+		{dir: "left", face: 3},
 		{dir: "bottom", face: 4},
 		{dir: "back", face: 0},
 		{dir: "front", face: 1},
-		{dir: "right", face: 2},
-		{dir: "left", face: 3},
 	]
-	DIRARR.forEach((obj) => {
+
+	if (["3x3 Glow Cube", "3x3 Anti-Glow"].includes(CUBENAME)) {
+		DIRARR.forEach((obj) => {
 		const middleColor = layout[obj.face][1][1][0];
 		const cubies = getCubiesInSide(obj.dir)
 		cubies.forEach(cuby => {
@@ -13006,11 +13063,28 @@ function setGlowColors() {
 				CUBE[cuby].originalFaceColor(obj.dir);
 			} else {
 				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
-			}
+				}
+			});
 		});
-	});
-}
+	} else if (CUBENAME == "3x3 Side Glow") {
+		const colors = DIRARR.map(obj => getOriginalSideColor(obj.dir));
+		let solvestage = 0;
+		for (const color of colors) {
+			if (sideWithOnlyColor(color)) {
+				solvestage++;
+			} else {
+				break;
+			}
+		}
 
+		if (solvestage > maxsolvestage) {
+			maxsolvestage = solvestage;
+		}
+
+		const validcolors = colors.slice(0, maxsolvestage + 1);
+		cubyShowColor(validcolors);
+	}
+}
 
 function median(values){  
 
@@ -13197,7 +13271,7 @@ socket.on("update-screenshot", (screenshot) => {
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
 	// competemode();
-	modnum = 0;
+	modnum = 4;
     cubemode();
 	// CUBEMAP["2x3x5"]();
 	switchCube("3x3 Glow Cube");
