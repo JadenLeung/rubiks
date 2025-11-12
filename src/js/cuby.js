@@ -264,6 +264,12 @@ export default class Cuby {
     }
   }
 
+  getColorBySide(side) {
+    if (this.savecolors[side]) return getColor(this.savecolors[side].levels);
+    return getColor(this[side].levels);
+  }
+
+
   setBlack(dx = 0) {
     const directions = ["back", "front", "bottom", "top", "right", "left"];
     directions.forEach((face) => {
@@ -771,20 +777,20 @@ export default class Cuby {
           shiftarr = [1, 0, 0]; // 2x3x3, 3x3x4
         }
         if (shiftarr.length > 0) {
-          if (opparr.includes(getColor(this.left.levels))) {
+          if (opparr.includes(this.getColorBySide("left"))) {
             if (sidearr.includes(getColor(this.front.levels))) {
               shift(dir, xshift * shiftarr[0], yshift * shiftarr[1], zshift * shiftarr[2]);
             } else {
               shift(dir, xshift * shiftarr[0], yshift * shiftarr[2], zshift * shiftarr[1]);
             }
-          } else if (opparr.includes(getColor(this.top.levels))) {
+          } else if (opparr.includes(this.getColorBySide("top"))) {
             if (sidearr.includes(getColor(this.front.levels))) {
               shift(dir, xshift * shiftarr[1], yshift * shiftarr[0], zshift * shiftarr[2]);
             } else {
               shift(dir, xshift * shiftarr[2], yshift * shiftarr[0], zshift * shiftarr[1]);
             }
           } else {
-            if (sidearr.includes(getColor(this.left.levels))) {
+            if (sidearr.includes(getColor(this.getColorBySide("left")))) {
               shift(dir, xshift * shiftarr[2], yshift * shiftarr[1], zshift * shiftarr[0]);
             } else {
               shift(dir, xshift * shiftarr[1], yshift * shiftarr[2], zshift * shiftarr[0]);
@@ -828,6 +834,7 @@ export default class Cuby {
     }
   }
 }
+
 
 function getColor(color)
 {

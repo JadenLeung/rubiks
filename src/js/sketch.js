@@ -2671,6 +2671,7 @@ function stopTime(){
 			ao5.shift()
 		}
 		displayAverage();
+		setOriginalColor();
 	}
 }
 function stopMoving(){
@@ -7979,6 +7980,10 @@ function shuffleCube(override = false) {
 	let total = "";
 	let bad5 = [];
 	let mid = mids[SIZE];
+	maxsolvestage = 0;
+	if (String(DIM).includes("glow")) {
+		setOriginalColor();
+	}
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 	console.log("setup is ", setup)
 	if(setup[0] == -MAXX || setup[0] == MAXX) //top
@@ -13035,6 +13040,12 @@ function setGlowAnimateColor(i) {
 		return;
 	}
 	CUBE[i].setColor(CUBE[i].colors.black, true);
+}
+
+function setOriginalColor() {
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		CUBE[i].originalColor();
+	}
 }
 
 function setGlowColors() {
