@@ -166,7 +166,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW3x3;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -263,9 +263,10 @@ export default function (p) {
 		"Triple Quad" :change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]),
 		"Z Perm" : 	change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]),
 		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]),
-		"3x3 Glow Cube": switchSize.bind(null, 3, 50, "glowcube"),
-		"3x3 Anti-Glow": switchSize.bind(null, 3, 50, "antiglow"),
-		"3x3 Side Glow": switchSize.bind(null, 3, 50, "sideglow"),
+		"3x3 Glow Cube": switchSize.bind(null, 3, "glow", 50),
+		"3x3 Anti-Glow": switchSize.bind(null, 3,  "glow", 50),
+		"2x2 Side Glow": switchSize.bind(null, 3, "glow", 100),
+		"3x3 Side Glow": switchSize.bind(null, 3, "glow", 50),
 	};
 
 	// attach event
@@ -6241,7 +6242,7 @@ function showSpeed()
 function reCam()
 {
 	ZOOMADD = DIM == "1x2x2" ? 20 : DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" || DIM == "2x3x5" ? 120 : DIM == "2x2x4" ? 50 :
-				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : DIM2 == 100 ? 140 : 0;
+				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : (DIM2 == 100 || DIM4 == 2) ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
 	CAM.zoom(CAMZOOM + ZOOMADD);
@@ -8604,7 +8605,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		for (let j = 0; j < SIZE; j++) {
 			if (CUBE[i].get(axis) === rows[j]) {
-				if (String(DIM2).includes("glow")) {
+				if (String(DIM).includes("glow")) {
 					setGlowAnimateColor(i);
 				}
 				CUBE[i].row = rows[j];
@@ -8781,8 +8782,8 @@ p.keyPressed = (event) => {
 		// }
 		// console.log(setGlowColors());
 		// console.log(competedata)
-		setGlowColors();
-		console.log(getOriginalSideColor("top"));
+		// setGlowColors();
+		console.log(DIM, DIM2, DIM3, DIM4);
 		// console.log(sideWithOnlyColor("g"));
 	}
 	if(p.keyCode == 9){ //tab
@@ -9175,7 +9176,7 @@ function waitForCondition(callback, use = "default") {
     if (!isAnimating()) {
 		console.log(use);
 		let delay = DELAY;
-		if (String(DIM2).includes("glow")) setGlowColors();
+		if (String(DIM).includes("glow")) setGlowColors();
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
@@ -9428,7 +9429,7 @@ function refreshButtons()
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
 		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3,
-		SIDEGLOW3x3
+		SIDEGLOW3x3, SIDEGLOW2x2
 		];
 		
 		CUBE_BUTTONS.forEach(el => {el && el.remove()});
@@ -9624,6 +9625,9 @@ function refreshButtons()
 
 		SIDEGLOW3x3 = p.createButton('3x3 Side Glow');
 		setButton(SIDEGLOW3x3, "sideglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Side Glow"); SIDEGLOW3x3.style('background-color', "#8ef5ee");});
+
+		SIDEGLOW2x2 = p.createButton('2x2 Side Glow');
+		setButton(SIDEGLOW2x2, "sideglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Side Glow"); SIDEGLOW2x2.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -13066,7 +13070,7 @@ function setGlowColors() {
 				}
 			});
 		});
-	} else if (CUBENAME == "3x3 Side Glow") {
+	} else if (CUBENAME.includes("Side Glow")) {
 		const colors = DIRARR.map(obj => getOriginalSideColor(obj.dir));
 		let solvestage = 0;
 		for (const color of colors) {
