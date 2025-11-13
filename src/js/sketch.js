@@ -1877,7 +1877,7 @@ setInterval(() => {
 		for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 			const key = +Object.entries(mapCuby()).find(([key, value]) => value == i)?.[0];
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
-				CUBE[i].setColor(CUBE[key].colors.magenta, true);
+				CUBE[i].setColor(CUBE[i].colors.magenta, true);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
 					let index = 0;
 					DIM[2].forEach((group, j) => {
@@ -1885,10 +1885,12 @@ setInterval(() => {
 							index = j;
 						}
 					})
-					CUBE[i].setBlack((index * 15) % 150);
+					CUBE[i].setChangingBlack((index * 15) % 150);
+					// CUBE[i].setColor(CUBE[key].colors.black, true);
 			} else if (!DIM[1].includes(i) && getColor(CUBE[i].right.levels) == "m") {
 				CUBE[i].originalColor();
 			}
+			// CUBE[i].setColor(CUBE[i].colors.black, true);
 		}
 	}
 	if (MINIMODE == "virtual" && timer.isRunning && timer.inspection && timer.getTime() > -3000 && timer.getTime() < 0) {
@@ -3231,13 +3233,8 @@ function viewBandage(def){
 	else bandaged2 = [-2];
 	
 	ban9();
-	if (!def) {
-		reSetup();
-	}
-	//canMan = false;
-	
 }
-function addBandage(reset = true){
+function addBandage(){
 	customb = 1;
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
@@ -3245,8 +3242,6 @@ function addBandage(reset = true){
 	setDisplay("block", ["okban", "cancelban"]);
 	bandaged2 = [-1];
 	ban9();
-	if (reset && DIM2 != 50)
-		reSetup();
 }
 function doneBandage(){
 	document.getElementById("addbandage2").innerHTML= "";
@@ -3274,7 +3269,7 @@ function doneBandage(){
 		bandaged3[BANDAGE_SELECT.value()].slot = BANDAGE_SLOT.value();
 	}
 	if (pushing) {
-		addBandage(false);
+		addBandage();
 	} else {
 		switchCube(BANDAGE_SELECT.value());
 		setBandage();
@@ -5848,8 +5843,8 @@ function toggleOverlay(show, p = true) {
 		if (p) peeks++;
 	}
 	if (MODE != "competing") {
-		getEl("wannapeek").style.display = getEl("overlay").style.display;
-		getEl("peekbutton").style.display = getEl("overlay").style.display;
+		getEl("wannapeek").style.display = show ? "block" : "none";
+		getEl("peekbutton").style.display = show ? "block" : "none";
 	} else {
 		setDisplay("none", ["wannapeek", "peekbutton"]);
 	}
@@ -8783,12 +8778,12 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		// 	CUBE[i].setColor(CUBE[i].colors.magenta);
+		// 	CUBE[i].setColor(CUBE[i].colors.black, true);
 		// }
+		console.log("adding", DIM, DIM2, DIM3, DIM4);
 		// console.log(setGlowColors());
 		// console.log(competedata)
 		// setGlowColors();
-		console.log(DIM, DIM2, DIM3, DIM4);
 		// console.log(sideWithOnlyColor("g"));
 	}
 	if(p.keyCode == 9){ //tab
@@ -13045,6 +13040,12 @@ function setGlowAnimateColor(i) {
 function setOriginalColor() {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		CUBE[i].originalColor();
+	}
+}
+
+function setCubyAllColor(color) {
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		CUBE[i].setColor(CUBE[i].colors[color], true);
 	}
 }
 
