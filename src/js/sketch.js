@@ -7898,6 +7898,7 @@ function shufflePossible(len, total2, prev){
 			possible2.push(move);
 		}
 	}
+	possible2 = possible2.map(x => adjustMove(x)).filter(x => x !== false);
 	if(possible2.length == 0) return;
 	let actualmove = p.random(possible2);
 	if(prev[0] == actualmove[0] && possible2.length > 1)
@@ -8780,7 +8781,8 @@ p.keyPressed = (event) => {
 		// for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		// 	CUBE[i].setColor(CUBE[i].colors.black, true);
 		// }
-		console.log("adding", DIM, DIM2, DIM3, DIM4);
+		// console.log("adding", DIM, DIM2, DIM3, DIM4);
+		// shufflePossible();
 		// console.log(setGlowColors());
 		// console.log(competedata)
 		// setGlowColors();
