@@ -150,8 +150,12 @@ if (isAppleDevice) {
 		const stat = solvestat;
 		if (stat && stat.active && (stat.cross || stat.f2l || stat.oll)) {
 			// Parse the displayed total time to a numeric value (strip trailing 's' if present)
+			let solvemethod = "CFOP";
 			const totalTime = typeof time === 'number' ? time : (typeof time === 'string' ? parseFloat(time) : NaN);
 			const totalMoves = typeof moves === 'number' ? moves : (typeof moves === 'string' ? parseInt(moves, 10) : NaN);
+			if (stat.side && stat.f2lmoves - stat.sidemoves >= 15) {
+				solvemethod = "Beginner's Method";
+			}
 
 			const cross = typeof stat.cross === 'number' ? stat.cross : (stat.cross ? parseFloat(stat.cross) : NaN);
 			const crossMoves = stat.crossmoves !== undefined ? Number(stat.crossmoves) : NaN;
@@ -172,8 +176,9 @@ if (isAppleDevice) {
 
 			const statHtml = `
 				<div id="solve-stat" style="margin-top: 12px; text-align: left;">
-					<h5 style="margin-top: 40px;">F2L Solve Statistics</h5>
+					<h5 style="margin-top: 40px;">${solvemethod} Solve Statistics</h5>
 					<p style="margin:4px 0;"><strong>Cross:</strong> ${fmtTime(cross)} &nbsp; (${fmtMoves(crossMoves)} moves)</p>
+					${solvemethod === "Beginner's Method" ? `<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(stat.side)} &nbsp; (${fmtMoves(stat.sidemoves)} moves)</p>` : ''}
 					<p style="margin:4px 0;"><strong>F2L:</strong> ${fmtTime(f2lPairing)} &nbsp; (${fmtMoves(f2lPairingMoves)} moves)</p>
 					<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
 					<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>

@@ -13164,6 +13164,10 @@ function trackSolveProgress(override) {
 		cursolvestat.cross = timer.roundedTime();
 		cursolvestat.crossmoves = moves;
 	}
+	if (!cursolvestat.side && getSolvedByFunc(getCubiesInSide)) {
+		cursolvestat.side = timer.roundedTime();
+		cursolvestat.sidemoves = moves;
+	}
 	if (!cursolvestat.f2l && getSolvedByFunc(getF2LCubies)) {
 		cursolvestat.f2l = timer.roundedTime();
 		cursolvestat.f2lmoves = moves;
