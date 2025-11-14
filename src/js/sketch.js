@@ -9165,6 +9165,7 @@ function multiple(nb, timed, use = "default") {
 			if(race > 0 && MINIMODE == "physical"){
 				canMan = false;
 			}
+			trackSolveProgress(true);
 		} else if (comstep > 0) {
 			waitForCondition(logProgressUpdate)
 		}
@@ -13157,8 +13158,8 @@ function setGlowColors() {
 	}
 }
 
-function trackSolveProgress() {
-	if (!cursolvestat.active || !timer.isRunning) return;
+function trackSolveProgress(override) {
+	if (!override && (!cursolvestat.active || !timer.isRunning)) return;
 	if (!cursolvestat.cross && getSolvedByFunc(getCrossCubies)) {
 		cursolvestat.cross = timer.roundedTime();
 		cursolvestat.crossmoves = moves;

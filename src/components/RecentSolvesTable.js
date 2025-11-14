@@ -1,5 +1,5 @@
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, inputtype, onDelete) {
+function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete) {
 	console.log("scramble is ", scramble, cubename);
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
@@ -144,6 +144,47 @@ if (isAppleDevice) {
 			` : ''}
 		</p>
 	`;
+
+	// If solve object (from global solvedata) contains solvestat and it's active, show a Solve Stat breakdown
+	try {
+		const stat = solvestat;
+		if (stat && stat.active && (stat.cross || stat.f2l || stat.oll)) {
+			// Parse the displayed total time to a numeric value (strip trailing 's' if present)
+			const totalTime = typeof time === 'number' ? time : (typeof time === 'string' ? parseFloat(time) : NaN);
+			const totalMoves = typeof moves === 'number' ? moves : (typeof moves === 'string' ? parseInt(moves, 10) : NaN);
+
+			const cross = typeof stat.cross === 'number' ? stat.cross : (stat.cross ? parseFloat(stat.cross) : NaN);
+			const crossMoves = stat.crossmoves !== undefined ? Number(stat.crossmoves) : NaN;
+			const f2l = typeof stat.f2l === 'number' ? stat.f2l : (stat.f2l ? parseFloat(stat.f2l) : NaN);
+			const f2lMoves = stat.f2lmoves !== undefined ? Number(stat.f2lmoves) : NaN;
+			const oll = typeof stat.oll === 'number' ? stat.oll : (stat.oll ? parseFloat(stat.oll) : NaN);
+			const ollMoves = stat.ollmoves !== undefined ? Number(stat.ollmoves) : NaN;
+
+			const fmtTime = (n) => (isNaN(n) ? 'N/A' : (Math.round(n * 100) / 100) + 's');
+			const fmtMoves = (n) => (isNaN(n) ? 'N/A' : n);
+
+			const f2lPairing = (!isNaN(f2l) && !isNaN(cross)) ? f2l - cross : NaN;
+			const f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(crossMoves)) ? f2lMoves - crossMoves : NaN;
+			const ollSegment = (!isNaN(oll) && !isNaN(f2l)) ? oll - f2l : NaN;
+			const ollSegmentMoves = (!isNaN(ollMoves) && !isNaN(f2lMoves)) ? ollMoves - f2lMoves : NaN;
+			const pllSegment = (!isNaN(totalTime) && !isNaN(oll)) ? totalTime - oll : NaN;
+			const pllSegmentMoves = (!isNaN(totalMoves) && !isNaN(ollMoves)) ? totalMoves - ollMoves : NaN;
+
+			const statHtml = `
+				<div id="solve-stat" style="margin-top: 12px; text-align: left;">
+					<h5 style="margin-top: 40px;">F2L Solve Statistics</h5>
+					<p style="margin:4px 0;"><strong>Cross:</strong> ${fmtTime(cross)} &nbsp; (${fmtMoves(crossMoves)} moves)</p>
+					<p style="margin:4px 0;"><strong>F2L:</strong> ${fmtTime(f2lPairing)} &nbsp; (${fmtMoves(f2lPairingMoves)} moves)</p>
+					<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
+					<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>
+				</div>
+			`;
+
+			content.innerHTML += statHtml;
+		}
+	} catch (e) {
+		console.warn('Failed to render solve stat', e);
+	}
 	
 	// Add copy functionality
 	const copyBtn = document.getElementById("copy-scramble-btn");
@@ -278,7 +319,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 						const timeText = cellTime.textContent;
 						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
 						const curSolveData = solvedata[solveNumber - 1]
-						showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.inputtype, () => {
+						showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.solvestat, () => {
 							// Refresh the table after deletion
 							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
 						});
