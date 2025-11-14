@@ -10123,6 +10123,7 @@ function stepTwo(){
 		saystep = 7;
 		document.getElementById("step").innerHTML = "Putting corner pieces on bottom";
 		document.getElementById("fraction").innerHTML = "3/8):";
+		trackAutoSolveProgress(0);
 		arr = [];
 		let color2 = layout[5][0][1][0];
 		let color3 = layout[1][0][1][0];
@@ -10614,6 +10615,7 @@ multipleCross2(0);
 else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][2][0][0] != color || layout[2][2][2][0] != color && saystep < 9){
 document.getElementById("step").innerHTML = "Orienting remaining Corners";
 document.getElementById("fraction").innerHTML = "4/8):";
+trackAutoSolveProgress(0);
 saystep = 8;
 arr = [];
 if(layout[2][2][2][0] == color)
@@ -10694,6 +10696,7 @@ else if(!( layout[5][1][0][0] == layout[5][1][1][0] && layout[5][1][1][0] == lay
 {
 	document.getElementById("step").innerHTML = "Solving middle layer";
 	document.getElementById("fraction").innerHTML = "5/8):";
+	trackAutoSolveProgress(0);
 	saystep = 11;
 	arr = [];
 	console.log("sdfds " + (layout[3][0][1].includes(opposite[color]) && layout[3][1][0].includes(opposite[color]) && 
@@ -10789,6 +10792,7 @@ if(!(layout[2][0][1][0] == color && layout[2][1][0][0] == color && layout[2][1][
 	console.log(layout);
 	document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
 	document.getElementById("fraction").innerHTML = "6/8):";
+	trackAutoSolveProgress(1);
 	saystep = 13;
 	flipmode = 0;
 	arr = [];
@@ -10965,6 +10969,7 @@ else if(layout[2][0][0][0] != color || layout[2][0][2][0] != color || layout[2][
 	setLayout();
 	document.getElementById("step").innerHTML = "Orientation of Last Layer (OLL)";
 	document.getElementById("fraction").innerHTML = "6/8):";
+	trackAutoSolveProgress(1);
 	flipmode = 0;
 	saystep = 14;
 	arr = [];
@@ -11008,6 +11013,7 @@ else if(!(layout[0][0][0][0] == layout[0][0][2][0] && layout[5][0][0][0] == layo
 	setLayout();
 	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
 	document.getElementById("fraction").innerHTML = "7/8):";
+	trackAutoSolveProgress(2);
 	saystep = 15;
 	arr = [];
 	flipmode = 0;
@@ -11074,6 +11080,7 @@ else if(correctPFL() < 3 && DIM == 50)
 {
 	document.getElementById("step").innerHTML = "Permutation of the Last Layer (PLL)";
 	document.getElementById("fraction").innerHTML = "7/8):";
+	trackAutoSolveProgress(2);
 	flipmode2 = 0;
 	flipmode = 0;
 	setLayout();
@@ -11121,6 +11128,7 @@ else if(layout[5][0][0][0] != layout[5][1][1][0])
 {
 	document.getElementById("step").innerHTML = "Adjusting Upper Face (AUF)";
 	document.getElementById("fraction").innerHTML = "8/8):";
+	trackAutoSolveProgress(2);
 	flipmode2 = 0;
 	flipmode = 0;
 	setLayout();
@@ -13176,6 +13184,30 @@ function trackSolveProgress(override) {
 		cursolvestat.oll = timer.roundedTime();
 		cursolvestat.ollmoves = moves;
 	}
+}
+
+function trackAutoSolveProgress(index) {
+	const steps = [
+		{
+			name: "cross", 
+		},
+		{
+			name: "f2l", 
+
+		},
+		{
+			name: "oll", 
+		}
+	];
+	steps.forEach((stepObj, stepIndex) => {
+		if (stepIndex <= index) {
+			const name = stepObj.name;
+			if (!cursolvestat[name]) {
+				cursolvestat[name] = timer.roundedTime();
+				cursolvestat[name + "moves"] = moves;
+			}
+		}
+	});
 }
 
 function median(values){  
