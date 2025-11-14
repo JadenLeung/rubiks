@@ -7982,6 +7982,7 @@ function shuffleCube(override = false) {
 	let total = "";
 	let bad5 = [];
 	let mid = mids[SIZE];
+	cursolvestat = {};
 	cursolvestat.active = true;
 	maxsolvestage = 0;
 	if (String(DIM).includes("glow")) {

@@ -167,8 +167,15 @@ if (isAppleDevice) {
 			const fmtTime = (n) => (isNaN(n) ? 'N/A' : (Math.round(n * 100) / 100) + 's');
 			const fmtMoves = (n) => (isNaN(n) ? 'N/A' : n);
 
-			const f2lPairing = (!isNaN(f2l) && !isNaN(cross)) ? f2l - cross : NaN;
-			const f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(crossMoves)) ? f2lMoves - crossMoves : NaN;
+			let f2lPairing = (!isNaN(f2l) && !isNaN(cross)) ? f2l - cross : NaN;
+			let f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(crossMoves)) ? f2lMoves - crossMoves : NaN;
+			let sideSegment, sideSegmentMoves;
+			if (solvemethod === "Beginner's Method") {
+				sideSegment = (!isNaN(stat.side) && !isNaN(cross)) ? stat.side - cross : NaN;
+				sideSegmentMoves = (!isNaN(stat.sidemoves) && !isNaN(crossMoves)) ? stat.sidemoves - crossMoves : NaN;
+				f2lPairing = (!isNaN(f2l) && !isNaN(stat.side)) ? f2l - stat.side : NaN;
+				f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(stat.sidemoves)) ? f2lMoves - stat.sidemoves : NaN;
+			}
 			const ollSegment = (!isNaN(oll) && !isNaN(f2l)) ? oll - f2l : NaN;
 			const ollSegmentMoves = (!isNaN(ollMoves) && !isNaN(f2lMoves)) ? ollMoves - f2lMoves : NaN;
 			const pllSegment = (!isNaN(totalTime) && !isNaN(oll)) ? totalTime - oll : NaN;
@@ -178,7 +185,7 @@ if (isAppleDevice) {
 				<div id="solve-stat" style="margin-top: 12px; text-align: left;">
 					<h5 style="margin-top: 40px;">${solvemethod} Solve Statistics</h5>
 					<p style="margin:4px 0;"><strong>Cross:</strong> ${fmtTime(cross)} &nbsp; (${fmtMoves(crossMoves)} moves)</p>
-					${solvemethod === "Beginner's Method" ? `<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(stat.side)} &nbsp; (${fmtMoves(stat.sidemoves)} moves)</p>` : ''}
+					${solvemethod === "Beginner's Method" ? `<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(sideSegment)} &nbsp; (${sideSegmentMoves} moves)</p>` : ''}
 					<p style="margin:4px 0;"><strong>F2L:</strong> ${fmtTime(f2lPairing)} &nbsp; (${fmtMoves(f2lPairingMoves)} moves)</p>
 					<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
 					<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>
