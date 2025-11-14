@@ -5929,7 +5929,7 @@ function suggestMode() {
 	document.getElementById("l_title").innerHTML = "Create an Account";
 	document.getElementById("l_forgot").innerText = "Have an account?";
 	document.getElementById("l_link").innerText = "Log in";
-	setDisplay("none", ["test_alg_div", "timeselect"]);
+	setDisplay("none", ["test_alg_div", "timeselect", "keymap", "show_keyboard"]);
 	setDisplay("block", ["loginform", "suggest_container", "suggest_submit"]);
 	setDisplay("inline", ["suggest_input"])
 	
