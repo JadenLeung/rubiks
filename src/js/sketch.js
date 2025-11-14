@@ -6063,7 +6063,7 @@ function settingsmode()
 	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
 	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", 
-		"timeselect", "ID1", "keyboard1", "keyboard2", "keyboard_header", "keymap"]);
+		"timeselect", "ID1", "keyboard1", "keyboard2", "keyboard_header", "keymap", "show_keyboard"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
