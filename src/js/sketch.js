@@ -99,6 +99,7 @@ export default function (p) {
 	let ROTX = 2.8
 	let ROTY = 7;
 	let ROTZ = 2;
+	let cursolvestat = {};
 	let SUGGESTION;
 	let ZOOM3 = -170;
 	let ZOOM2 = -25;
@@ -1518,6 +1519,7 @@ setInterval(() => {
 				cubename: CUBENAME,
 				inputtype: INPUT.value(),
 				scrambletype: SCRAM.value(),
+				solvestat: cursolvestat,
 			})
 	easytime = (custom == 0 || custom == 2 || (Array.isArray(DIM) && DIM[0] != "adding" && ((DIM4 == 2 && (DIM[6].length < 20 || difColors())) || (goodsolved && difColors()) || DIM[6].length == 0)));
 	if(Array.isArray(DIM) && DIM[0] != "adding" && DIM[6].includes(4) && DIM[6].includes(10) && DIM[6].includes(12) && DIM[6].includes(13) &&
@@ -2024,6 +2026,7 @@ function reSetup(rot) {
 	easystep = 0;
 	medstep = 0;
 	maxsolvestage = 0;
+	cursolvestat = {};
 	//bruh = 0;
 	m_34step = 0;
 	ollstep = 0;
@@ -2200,7 +2203,7 @@ function getOuterCubes() {
 	}
 	return outercubes;
 }
-function getCubiesInSide(side) { 
+function getCubiesInSide(side, cubies = getOuterCubes()) { 
 	const SIDEOBJ = {
 		"top": [0, 1, 0],
 		"bottom": [0, -1, 0],
@@ -2210,7 +2213,6 @@ function getCubiesInSide(side) {
 		"right": [-1, 0, 0],
 	};
 	const sidearr = SIDEOBJ[side];
-	let cubies = getOuterCubes();
 	cubies = cubies.filter((c) => {
 		let cuby = CUBE[c];
 		return findCubyNear(cuby.x + sidearr[0], cuby.y + sidearr[1], cuby.z + sidearr[2], sidearr[0], sidearr[1], sidearr[2]) == -1 ;
@@ -5730,6 +5732,10 @@ function mapCuby() {
 	}
 	return map;
 }
+
+function mapCubyReverse() {
+	return Object.fromEntries(Object.entries(mapCuby()).map(([k, v]) => [v, +k]))
+}
 function mapBandaged() {
 	let copyban = bandaged.map(innerArray => [...innerArray]);
 	for (let i = 0; i < bandaged.length; ++i) {
@@ -7976,6 +7982,7 @@ function shuffleCube(override = false) {
 	let total = "";
 	let bad5 = [];
 	let mid = mids[SIZE];
+	cursolvestat.active = true;
 	maxsolvestage = 0;
 	if (String(DIM).includes("glow")) {
 		setOriginalColor();
@@ -8778,15 +8785,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		// 	CUBE[i].setColor(CUBE[i].colors.black, true);
-		// }
-		// console.log("adding", DIM, DIM2, DIM3, DIM4);
-		// shufflePossible();
-		// console.log(setGlowColors());
-		// console.log(competedata)
-		// setGlowColors();
-		// console.log(sideWithOnlyColor("g"));
+		console.log(cursolvestat);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9182,6 +9181,7 @@ function waitForCondition(callback, use = "default") {
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
+		if (MODE == "normal" && DIM == 50) trackSolveProgress();
 		if (["solving", "testalg"].includes(use) && delay > 0) {
 			setTimeout(function() {
 				callback();
@@ -11394,6 +11394,59 @@ function InverseAll(str) {
 	})
 	return newarr.reverse().join(" ");
 }
+
+// side is top, bottom, etc.
+function getCrossCubies(side) {
+	let cubies = getCubiesInSide(side); 
+	cubies = cubies.filter(cuby => Math.abs(CUBE[cuby].x) != MAXX || Math.abs(CUBE[cuby].y) != MAXX || Math.abs(CUBE[cuby].z) != MAXX); 
+	const CROSS_OBJ = {
+		left: [10, 12, 14, 16],
+		right: [10, 12, 14, 16],
+		front: [4, 10, 16, 22],
+		back: [4, 10, 16, 22],
+		top: [4, 12, 14, 22],
+		bottom: [4, 12, 14, 22],
+	}
+	return [...cubies, ...CROSS_OBJ[side]];
+}
+
+function getF2LCubies(side) {
+	let cubies = getOuterCubes()
+	const opposite = {
+		top: "bottom",
+		bottom: "top",
+		front: "back",
+		back: "front",
+		left: "right",
+		right: "left",
+	}
+	const avoidcubies = new Set(getCubiesInSide(opposite[side])); 
+	return cubies.filter(cuby => !avoidcubies.has(cuby));
+}
+
+function getSolvedByFunc(func) {
+	const directions = ["top", "bottom", "front", "back", "left", "right"];
+	for (let dir of directions) {
+		const crosscubies = func(dir);
+		if (numSolved(crosscubies) == 6) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function isOLLSolved() {
+	const directions = [["top", 4], ["bottom", 5], ["front", 0], ["back", 1], ["left", 2], ["right", 3]];
+	for (let dir of directions) {
+		const crosscubies = getF2LCubies(dir[0]);
+		const side = dir[1];
+		if (numSolved(crosscubies) == 6 && sideSolved(layout[side][1][1][0])) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function crossColor(){
 	setLayout();
 	let totalmax = 0;
@@ -12958,11 +13011,11 @@ function isSolved()
 	}
 }
 
-function numSolved() {
+function numSolved(cs = getOuterCubes()) {
 	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
 	let numsolved = 0;
 	DIRARR.forEach((dir) => {
-		const cubies = getCubiesInSide(dir)
+		const cubies = getCubiesInSide(dir, cs)
 		let colors = new Set()
 		cubies.forEach(cuby => {
 			colors.add(getColorByCubyDir(cuby, dir));
@@ -12970,7 +13023,7 @@ function numSolved() {
 		if (custom != 1) {
 			colors.delete("k");
 		}
-		if (colors.size == 1) {
+		if (colors.size <= 1) {
 			numsolved++;
 		}
 	})
@@ -13101,6 +13154,22 @@ function setGlowColors() {
 
 		const validcolors = colors.slice(0, maxsolvestage + 1);
 		cubyShowColor(validcolors);
+	}
+}
+
+function trackSolveProgress() {
+	if (!cursolvestat.active || !timer.isRunning) return;
+	if (!cursolvestat.cross && getSolvedByFunc(getCrossCubies)) {
+		cursolvestat.cross = timer.roundedTime();
+		cursolvestat.crossmoves = moves;
+	}
+	if (!cursolvestat.f2l && getSolvedByFunc(getF2LCubies)) {
+		cursolvestat.f2l = timer.roundedTime();
+		cursolvestat.f2lmoves = moves;
+	}
+	if (!cursolvestat.oll && isOLLSolved()) {
+		cursolvestat.oll = timer.roundedTime();
+		cursolvestat.ollmoves = moves;
 	}
 }
 
