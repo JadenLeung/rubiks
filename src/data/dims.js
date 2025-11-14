@@ -1,6 +1,6 @@
 export const DIMS_OBJ = {
-    "2x2" : {type: ["NxN"], difficulty: 2, scramble: "Normal"},
     "3x3" : {type: ["NxN"], difficulty: 3, scramble: "Normal"},
+    "2x2" : {type: ["NxN"], difficulty: 2, scramble: "Normal"},
     "4x4" : {type: ["NxN", "Big"], difficulty: 4, scramble: "Normal"},
     "5x5" : {type: ["NxN", "Big"], difficulty: 5, scramble: "Normal"},
     "1x2x2" : {type: ["Baby", "Cuboid"], difficulty: 1, scramble: "3x3x2"},

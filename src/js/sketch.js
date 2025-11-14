@@ -3527,10 +3527,10 @@ function getProgress() { // temporary get progress
 			const map = {"right" : 1, "left" : 0, "front" : 4, "back" : 5, "top" : 2, "bottom" : 3};
 			if (neighbors[map[dir]] == -1) {
 				den++;
-				if (colormap[getColor(CUBE[cuby][dir].levels)])
-					colormap[getColor(CUBE[cuby][dir].levels)] += 1;
+				if (colormap[getColorByCubyDir(cuby, dir)])
+					colormap[getColorByCubyDir(cuby, dir)] += 1;
 				else
-					colormap[getColor(CUBE[cuby][dir].levels)] = 1;
+					colormap[getColorByCubyDir(cuby, dir)] = 1;
 			}
 		})
 		let max = 0;
@@ -13096,7 +13096,7 @@ function cubyShowColor(colors) {
 }
 
 function setGlowAnimateColor(i) {
-	if (!timer.isRunning || CUBENAME.includes("Side Glow")) {
+	if (!timer.isRunning || timer.getTime < 0 || CUBENAME.includes("Side Glow")) {
 		return;
 	}
 	CUBE[i].setColor(CUBE[i].colors.black, true);
@@ -13120,7 +13120,7 @@ function setGlowColors() {
 			CUBE[i].originalColor();
 		}
 	}
-	if (!timer.isRunning) {
+	if (!timer.isRunning || timer.getTime() <= 0) {
 		return;
 	}
 	setLayout();
