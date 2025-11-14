@@ -963,7 +963,7 @@ p.setup = () => {
 			getEl("compete_difficulty").innerHTML = `Difficulty: ${DIMS_OBJ[dim].difficulty}/5`;
 		});
 		btn.mouseOut(() => {
-			getEl("compete_difficulty").innerHTML = ``;
+			getEl("compete_difficulty").innerHTML = `No cube selected`;
 		});
 
 		competedim_buttons.push(btn);
@@ -4646,7 +4646,7 @@ function competeSettings(num = compete_type) {
     container.innerHTML = "";
     container.style.display = "block";
 
-    const alldims = ["3x3", "2x2", "4x4", "5x5", "1x2x2", "1x2x3", "1x3x3", "1x4x4", "1x5x5", "2x2x3", "2x2x4", "2x3x4", "2x3x5", "3x3x2", "3x3x4", "3x3x5", "Plus Lite", "3x3x2 Plus Cube", "Plus Cube", "4x4 Plus Cube", "Jank 2x2", "Xmas 2x2", "Xmas 3x3", "Sandwich 2x2", "Sandwich", "Earth Cube", "Bandaged 2x2", "Snake Eyes", "Cube Bandage", "Slice Bandage"];
+    const alldims = Object.keys(DIMS_OBJ);
     let rows = [];
 
     // --- Helper Function to Create a Player Column ---
@@ -5271,7 +5271,7 @@ if (randomToggleEl) {
 function finishCompeteSelect(dim) {
 	if (focused_competeobj.select.value != dim) {
 		focused_competeobj.select.value = dim;
-		console.log("HERE");
+		console.log("HERE", dim);
 		if (COMPETE_ADVANCED.checked()) {
 			let customarrobj = JSON.parse(compete_customarr[focused_competeobj.round][focused_competeobj.player]);
 			if (["Gearcube", "Last Layer"].includes(customarrobj.scramble) && !DIMS_OBJ[dim].type.includes("NxN")) {
