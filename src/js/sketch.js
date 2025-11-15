@@ -1872,7 +1872,6 @@ setInterval(() => {
 	if (getEl("s_prac2").style.display != "none") {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
-	if(MODE == "cube" && modnum != 1 && DIM != "snake_eye") bandaged = [];
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
 	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL", "PLLprac", "OLLprac"].includes(MINIMODE)))
 		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
@@ -3018,6 +3017,7 @@ function change19(){
 	CUBE15.style('background-color', "#8ef5ee");
 }
 function switchCube(cubename) {
+	bandaged = [];
 	CUBEMAP[cubename]();
 	CUBENAME = cubename;
 }
