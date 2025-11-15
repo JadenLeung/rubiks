@@ -27,6 +27,18 @@
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <meta charset="utf-8">
 	<link rel="stylesheet" href="styles.css">
+	<style>
+		/* Hide number input spinners */
+		input[type=number]::-webkit-inner-spin-button,
+		input[type=number]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		input[type=number] {
+			-moz-appearance: textfield;
+			appearance: textfield;
+		}
+	</style>
 </head>
  <body oncontextmenu="return false">
 	<!--h1 style = "text-align: center;">Virtual Cubing</h1-->
@@ -628,9 +640,17 @@
 					<h4 id = "compete_select_title" style="margin: 0;">Select Cube</h4>
 					<p id = "competesel_back" style="margin: 0;"></p>
 				</div>
-				<div class="input-group" style="margin-top: 10px; max-width: 200px;">
-					<input type="text" id="compete_search" class="form-control rounded-left" placeholder="🔎 Search Cube "
-						   style="border-right: none; padding-right: 40px;">
+				<div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+					<div class="input-group" style="max-width: 200px;">
+						<input type="text" id="compete_search" class="form-control rounded-left" placeholder="🔎 Search Cube "
+							   style="border-right: none; padding-right: 40px;">
+					</div>
+					<div style="display: flex; align-items: center; gap: 8px;">
+						<label for="difficulty_min_select" style="font-size: 12px; margin: 0; white-space: nowrap;">Difficulty (1-5):</label>
+						<input type="number" id="difficulty_min_select" min="1" max="5" step="0.5" value="1" style="width: 35px; padding: 2px; font-size: 10px;">
+						<span style="font-size: 10px;">to</span>
+						<input type="number" id="difficulty_max_select" min="1" max="5" step="0.5" value="5" style="width: 35px; padding: 2px; font-size: 10px;">
+					</div>
 				</div>
 				<p id = "select_container" style = "padding-top: 10px"></p>
 				<table style="border: none; border-collapse: collapse; outline: none; margin-top: 0px; padding-top: 0px;">

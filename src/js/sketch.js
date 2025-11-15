@@ -1052,7 +1052,7 @@ p.setup = () => {
 	const COMPETERESTORE = p.createButton('Restore Defaults');
 	setButton(COMPETERESTORE, "competerestore", 'btn btn-light', 'font-size:20px; border-color: black;', () => {});
 
-	const COMPETESELBACK = p.createButton('Cancel');
+	const COMPETESELBACK = p.createButton('×');
 	setButton(COMPETESELBACK, "competesel_back", 'btn btn-danger', 'font-size:20px;', () => {
 		hideCnvDiv();
 		setDisplay("none", ["compete_select"]);
@@ -5204,10 +5204,21 @@ function competeSelectButtons() {
 		b.style("backgroundColor", i == compete_modnum ? "#00488F" : "");
 	})
 	let selected = cubetypenames[compete_modnum];
+	
+	// Get difficulty range from inputs
+	const minDiff = parseFloat(getEl("difficulty_min_select")?.value || 1);
+	const maxDiff = parseFloat(getEl("difficulty_max_select")?.value || 5);
+	
 	let i = 0; 
 	competedim_buttons.forEach((b) => {
-		let shown = ((DIMS_OBJ[b.html()].type.includes(selected) || 
-			selected == "All")) && b.html().includes(getEl("compete_search").value);
+		const cubeName = b.html();
+		const cubeDifficulty = DIMS_OBJ[cubeName]?.difficulty || 0;
+		
+		let shown = ((DIMS_OBJ[cubeName].type.includes(selected) || 
+			selected == "All")) && 
+			cubeName.includes(getEl("compete_search").value) &&
+			cubeDifficulty >= minDiff && cubeDifficulty <= maxDiff;
+		
 		b.style('display', shown ? "block" : "none");
 		const NUM_COLS = isMobile() && isthin ? 2 : 3
 		if (shown) {
@@ -13573,6 +13584,20 @@ Object.entries(competitions).forEach(([id, text]) => {
 });
   
 getEl("compete_search").oninput = () => {
+	competeSelectButtons();
+}
+
+getEl("difficulty_min_select").oninput = (e) => {
+	const val = parseFloat(e.target.value);
+	if (val < 1) e.target.value = 1;
+	if (val > 5) e.target.value = 5;
+	competeSelectButtons();
+}
+
+getEl("difficulty_max_select").oninput = (e) => {
+	const val = parseFloat(e.target.value);
+	if (val < 1) e.target.value = 1;
+	if (val > 5) e.target.value = 5;
 	competeSelectButtons();
 }
 
