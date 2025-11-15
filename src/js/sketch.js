@@ -3220,6 +3220,7 @@ function viewBandage(def){
 	if(!def) {
 		bannum = 1;
 	}
+	if (timer.isRunning) switchCube(BANDAGE_SELECT.value());
 	setDisplay("block", ["okban"]); 
 	setDisplay("none", ["addbandage", "addbandage4", "custom5", "select9", "rng2", "input", "scram", "cancelban","bandage_outer","bandage_outer2","smoothbandage"]); 
 	setDisplay("inline", ["leftban", "rightban"]);
@@ -3238,6 +3239,7 @@ function viewBandage(def){
 }
 function addBandage(){
 	customb = 1;
+	if (timer.isRunning) switchCube(BANDAGE_SELECT.value());
 	document.getElementById("addbandage2").innerHTML= "<b>Click the cubies to join bandage group #" + (bandaged.length+1) + "</b>";
 	document.getElementById("addbandage3").innerHTML= "Avoid clicking on already bandaged cubies (shown in black).";
 	setDisplay("none", ["rng2", "addbandage", "addbandage4", "smoothbandage", "custom5", "select9", "input", "scram", "deleteban","bandage_outer","bandage_outer2"]);
