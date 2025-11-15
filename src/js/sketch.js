@@ -2885,7 +2885,7 @@ function changeCam(changeinp = true)
 {
 	INPUT.selected("Normal");
 	SCRAM.value("Normal");
-	changeinp && changeInput();
+	// changeinp && changeInput();
 	setSpecial();
 	SIZE = 3;
 	MAXX = 50;
@@ -9306,7 +9306,12 @@ function logProgressUpdate() {
 		competeprogress = getProgress();
 		progressUpdate();
 	}
-	competeScreenshot();
+	if (CUBENAME.toLowerCase().includes("glow")) {
+		setGlowColors();
+		setTimeout(() => competeScreenshot(), 100);
+	} else {
+		competeScreenshot();
+	}
 }
 
 function multiple2(use) {

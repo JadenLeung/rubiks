@@ -31,5 +31,6 @@ export const DIMS_OBJ = {
     "Slice Bandage" : {type: ["NxN", "Bandage"], difficulty: 3, scramble: "Normal"},
     "3x3 Glow Cube" : {type: ["NxN", "Glow"], difficulty: 3.5, scramble: "Normal"},
     "3x3 Anti-Glow" : {type: ["NxN", "Glow"], difficulty: 3.5, scramble: "Normal"},
-    "2x2 Side Glow" : {type: ["NxN", "Glow"], difficulty: 3.5, scramble: "Normal"},
+    "2x2 Side Glow" : {type: ["NxN", "Glow"], difficulty: 2.5, scramble: "Normal"},
+    "3x3 Side Glow" : {type: ["NxN", "Glow"], difficulty: 3.5, scramble: "Normal"},
 };
