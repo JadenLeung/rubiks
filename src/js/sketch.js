@@ -12173,10 +12173,6 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 		return;
 	let face1 = getFace(cuby1, mouseX1, mouseY1);
 	let face2 = getFace(cuby2, mouseX2, mouseY2);
-	if (["2x3x4", "2x3x5", "3x3x4", 2, 15].includes(DIM)) {
-		face1 = getFaceOld(cuby1, color1);
-		face2 = getFaceOld(cuby2, color2);
-	}
 	console.log(cuby1, cuby2, face1, face2)
 	if(cuby1 == cuby2 && face1 == face2)
 		return;
@@ -12437,16 +12433,19 @@ function getFace(cuby1, mouseX, mouseY)
 	
 	const cuby = CUBE[cuby1];
 	
+	// Get face shifts for non-cubic puzzles
+	const faceShifts = cuby.getFaceShifts ? cuby.getFaceShifts(SIZE) : null;
+	
 	// Simple approach: project cuby face centers to screen space and find closest to mouse
 	const halfSize = CUBYESIZE / 2;
 	
 	const faces = [
-		{ index: 0, center: p.createVector(cuby.x, cuby.y, cuby.z - halfSize), normal: p.createVector(0, 0, -1), name: "back" },
-		{ index: 1, center: p.createVector(cuby.x, cuby.y, cuby.z + halfSize), normal: p.createVector(0, 0, 1), name: "front" },
-		{ index: 2, center: p.createVector(cuby.x - halfSize, cuby.y, cuby.z), normal: p.createVector(-1, 0, 0), name: "right" },
-		{ index: 3, center: p.createVector(cuby.x + halfSize, cuby.y, cuby.z), normal: p.createVector(1, 0, 0), name: "left" },
-		{ index: 4, center: p.createVector(cuby.x, cuby.y - halfSize, cuby.z), normal: p.createVector(0, -1, 0), name: "bottom" },
-		{ index: 5, center: p.createVector(cuby.x, cuby.y + halfSize, cuby.z), normal: p.createVector(0, 1, 0), name: "top" }
+		{ index: 0, center: p.createVector(cuby.x + (faceShifts ? faceShifts.back[0] : 0), cuby.y + (faceShifts ? faceShifts.back[1] : 0), cuby.z - halfSize + (faceShifts ? faceShifts.back[2] : 0)), normal: p.createVector(0, 0, -1), name: "back" },
+		{ index: 1, center: p.createVector(cuby.x + (faceShifts ? faceShifts.front[0] : 0), cuby.y + (faceShifts ? faceShifts.front[1] : 0), cuby.z + halfSize + (faceShifts ? faceShifts.front[2] : 0)), normal: p.createVector(0, 0, 1), name: "front" },
+		{ index: 2, center: p.createVector(cuby.x - halfSize + (faceShifts ? faceShifts.right[0] : 0), cuby.y + (faceShifts ? faceShifts.right[1] : 0), cuby.z + (faceShifts ? faceShifts.right[2] : 0)), normal: p.createVector(-1, 0, 0), name: "right" },
+		{ index: 3, center: p.createVector(cuby.x + halfSize + (faceShifts ? faceShifts.left[0] : 0), cuby.y + (faceShifts ? faceShifts.left[1] : 0), cuby.z + (faceShifts ? faceShifts.left[2] : 0)), normal: p.createVector(1, 0, 0), name: "left" },
+		{ index: 4, center: p.createVector(cuby.x + (faceShifts ? faceShifts.bottom[0] : 0), cuby.y - halfSize + (faceShifts ? faceShifts.bottom[1] : 0), cuby.z + (faceShifts ? faceShifts.bottom[2] : 0)), normal: p.createVector(0, -1, 0), name: "bottom" },
+		{ index: 5, center: p.createVector(cuby.x + (faceShifts ? faceShifts.top[0] : 0), cuby.y + halfSize + (faceShifts ? faceShifts.top[1] : 0), cuby.z + (faceShifts ? faceShifts.top[2] : 0)), normal: p.createVector(0, 1, 0), name: "top" }
 	];
 	
 	// Get camera position to check which faces are visible
@@ -12492,48 +12491,51 @@ function getFace(cuby1, mouseX, mouseY)
 	// Helper to get face corners in 3D space
 	const getFaceCorners = (face) => {
 		const h = halfSize;
+		const shift = faceShifts ? faceShifts[face.name] : [0, 0, 0];
+		const sx = shift[0], sy = shift[1], sz = shift[2];
+		
 		switch(face.index) {
 			case 0: // back (z-)
 				return [
-					[cuby.x - h, cuby.y - h, cuby.z - h],
-					[cuby.x + h, cuby.y - h, cuby.z - h],
-					[cuby.x + h, cuby.y + h, cuby.z - h],
-					[cuby.x - h, cuby.y + h, cuby.z - h]
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
 				];
 			case 1: // front (z+)
 				return [
-					[cuby.x - h, cuby.y - h, cuby.z + h],
-					[cuby.x + h, cuby.y - h, cuby.z + h],
-					[cuby.x + h, cuby.y + h, cuby.z + h],
-					[cuby.x - h, cuby.y + h, cuby.z + h]
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
 				];
 			case 2: // right (x-)
 				return [
-					[cuby.x - h, cuby.y - h, cuby.z - h],
-					[cuby.x - h, cuby.y - h, cuby.z + h],
-					[cuby.x - h, cuby.y + h, cuby.z + h],
-					[cuby.x - h, cuby.y + h, cuby.z - h]
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
 				];
 			case 3: // left (x+)
 				return [
-					[cuby.x + h, cuby.y - h, cuby.z - h],
-					[cuby.x + h, cuby.y - h, cuby.z + h],
-					[cuby.x + h, cuby.y + h, cuby.z + h],
-					[cuby.x + h, cuby.y + h, cuby.z - h]
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz]
 				];
 			case 4: // bottom (y-)
 				return [
-					[cuby.x - h, cuby.y - h, cuby.z - h],
-					[cuby.x + h, cuby.y - h, cuby.z - h],
-					[cuby.x + h, cuby.y - h, cuby.z + h],
-					[cuby.x - h, cuby.y - h, cuby.z + h]
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz]
 				];
 			case 5: // top (y+)
 				return [
-					[cuby.x - h, cuby.y + h, cuby.z - h],
-					[cuby.x + h, cuby.y + h, cuby.z - h],
-					[cuby.x + h, cuby.y + h, cuby.z + h],
-					[cuby.x - h, cuby.y + h, cuby.z + h]
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
 				];
 		}
 	};

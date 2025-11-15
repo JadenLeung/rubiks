@@ -269,6 +269,67 @@ export default class Cuby {
     return getColor(this[side].levels);
   }
 
+  // Get the actual face center positions accounting for shifts in non-cubic puzzles
+  getFaceShifts(SIZE = 3) {
+    const shifts = { back: [0, 0, 0], front: [0, 0, 0], bottom: [0, 0, 0], top: [0, 0, 0], right: [0, 0, 0], left: [0, 0, 0] };
+    
+    // Check if this is a special shifted cube
+    if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6])) {
+      let c1 = this.custom[4][5];
+      let c2 = this.custom[22][4];
+      let c3 = this.custom[14][2];
+      let c4 = this.custom[12][3];
+      const opparr = [c1, c2];
+      const sidearr = [c3, c4];
+      
+      let xshift = this.x < 0 ? 25 : this.x > 0 ? -25 : 0;
+      let yshift = this.y < 0 ? 25 : this.y > 0 ? -25 : 0;
+      let zshift = this.z < 0 ? 25 : this.z > 0 ? -25 : 0;
+      
+      let shiftarr = [];
+      if (this.special[6].length > 0 && this.special[6].includes("x")) {
+        let dims = this.special[6].split("x");
+        shiftarr = [(+dims[0] + 1) % 2, (+dims[1] + 1) % 2, (+dims[2] + 1) % 2];
+      } else if ([15].includes(this.special[6])) { // 2x2x3
+        shiftarr = [0, 1, 1];  
+      } else {
+        shiftarr = [1, 0, 0]; // 2x3x3, 3x3x4
+      }
+      
+      if (shiftarr.length > 0) {
+        const dirs = ["back", "front", "bottom", "top", "right", "left"];
+        let finalShifts = [0, 0, 0];
+        
+        if (opparr.includes(this.getColorBySide("left"))) {
+          if (sidearr.includes(this.getColorBySide("front"))) {
+            finalShifts = [xshift * shiftarr[0], yshift * shiftarr[1], zshift * shiftarr[2]];
+          } else {
+            finalShifts = [xshift * shiftarr[0], yshift * shiftarr[2], zshift * shiftarr[1]];
+          }
+        } else if (opparr.includes(this.getColorBySide("top"))) {
+          if (sidearr.includes(this.getColorBySide("front"))) {
+            finalShifts = [xshift * shiftarr[1], yshift * shiftarr[0], zshift * shiftarr[2]];
+          } else {
+            finalShifts = [xshift * shiftarr[2], yshift * shiftarr[0], zshift * shiftarr[1]];
+          }
+        } else {
+          if (sidearr.includes(this.getColorBySide("left"))) {
+            finalShifts = [xshift * shiftarr[2], yshift * shiftarr[1], zshift * shiftarr[0]];
+          } else {
+            finalShifts = [xshift * shiftarr[1], yshift * shiftarr[2], zshift * shiftarr[0]];
+          }
+        }
+        
+        // Apply the same shifts to all faces
+        dirs.forEach((dir) => {
+          shifts[dir] = finalShifts;
+        });
+      }
+    }
+    
+    return shifts;
+  }
+
   setChangingBlack(dx = 0) {
     this.setColor(this.p.color(25 + dx,  25 + dx, 25 + dx), true);
   }
