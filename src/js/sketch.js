@@ -2259,7 +2259,7 @@ function getCubiesInSide(side, cubies = getOuterCubes()) {
 
 // face is 0-5
 function getMiddleColor(face) {
-	const mid = Math.floor(SIZE - 1 / 2);
+	const mid = Math.floor((SIZE - 1) / 2);
 	let middleColor = layout[face][mid][mid][0];
 	if (SIZE % 2 == 0) {
 		let counts = {};
@@ -8885,7 +8885,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(getMiddleColor(2));
+		console.log(SIZE);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
