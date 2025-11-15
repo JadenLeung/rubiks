@@ -61,7 +61,7 @@ export default function (p) {
 	const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "goal": "Default"});
     const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
 	let othershuffle = false;
-	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby"];
+	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby", "Bandage", "Glow"];
 	let SWITCHTIME = 15;
 	let saveCompeteSettings = {};
 	let isShuffling = false;
