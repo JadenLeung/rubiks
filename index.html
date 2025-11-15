@@ -39,6 +39,16 @@
 			appearance: textfield;
 		}
 	</style>
+	<script>
+		// Auto-blur all select elements on change
+		document.addEventListener('DOMContentLoaded', () => {
+			document.addEventListener('change', (e) => {
+				if (e.target.tagName === 'SELECT') {
+					e.target.blur();
+				}
+			});
+		});
+	</script>
 </head>
  <body oncontextmenu="return false">
 	<!--h1 style = "text-align: center;">Virtual Cubing</h1-->
@@ -166,7 +176,7 @@
 						<p class = "allcubes" id="antiglow3x3" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
 						<p class = "allcubes" id="sideglow2x2" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
 						<p class = "allcubes" id="sideglow3x3" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
-						<p class = "allcubes" id="customglow" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
+						<p class = "allcubes" id="customglowbutton" style = "text-align:center; margin-top: 0px; margin-bottom: 5px;"></p>
 					</div>
 				</div>
 			</div>
@@ -213,6 +223,10 @@
 			<div id = "customglow" style = "font-size:10px;">
 				<div style = "margin-top:10px;">
 					<p id = "customglowback" style = "display:inline; text-align:center; margin-top: 10px; margin-bottom: 5px;"></p>
+					<h6 style = "text-align:center; margin-top: 10px;">Custom Glow</h6>
+					<p style = "margin-top: 20px; font-size:16px;">Cube: <span id = "glow_cube_select" style = "font-size:15px;"></span></p>
+					<p style = "margin-top: 10px; font-size:16px;">Glow Type: <span id = "glow_select" style = "font-size:15px;"></span></p>
+					<p style = "margin-top: 10px; font-size:16px;" id = "glow_instruct"></p>
 				</div>
 			</div>
 			<h5 style = "text-align: center; margin-top: 20px;" id = "chat_instruct">Chat </h5>

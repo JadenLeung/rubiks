@@ -57,6 +57,7 @@ export default function (p) {
 	let DIM2 = 50;
 	let DIM3 = 3;
 	let DIM4 = 3;
+	let GLOW_CUBE_SELECT, GLOW_SELECT;
 	let focused_competeobj = {};
 	const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "goal": "Default"});
     const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
@@ -898,6 +899,26 @@ p.setup = () => {
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(setBandage);
 
+ 	GLOW_CUBE_SELECT = p.createSelect();
+	["2x2", "3x3", "4x4", "5x5", "3x3x2", "2x2x3"].forEach(cube => {
+		GLOW_CUBE_SELECT.option(cube)
+	})
+	GLOW_CUBE_SELECT.parent("glow_cube_select");
+	GLOW_CUBE_SELECT.changed(() => {
+		GLOW_CUBE_SELECT.elt.blur();
+		setCustomGlow();
+	});
+
+	GLOW_SELECT = p.createSelect();
+	["Glow Cube", "Anti-Glow", "Side Glow"].forEach(type => {
+		GLOW_SELECT.option(type)
+	})
+	GLOW_SELECT.parent("glow_select");
+	GLOW_SELECT.changed(() => {
+		GLOW_SELECT.elt.blur();
+		setCustomGlow();
+	});
+
 	BANDAGE_SLOT = p.createSelect();
 	for (let i = 1; i <= 5; i++) {
 		BANDAGE_SLOT.option(i);
@@ -1015,11 +1036,24 @@ p.setup = () => {
 
 	appendToTable(hotkeys2, "chattable", 1);
 
-	const BACK = p.createButton('Back');
-	setButton(BACK, "custom3", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
-
-	const BACK2 = p.createButton('Back');
-	setButton(BACK2, "custom5", 'btn btn-light', 'border-color: black;', cubemode.bind(null, 0));
+	// Create a single reusable back button
+	
+	// Helper function to place the back button at a specific location with a custom callback
+	function placeBackButton(elementId, callback, extraStyle = '') {
+		const SHARED_BACK = p.createButton('Back');
+		const style = extraStyle || 'border-color: black;';
+		setButton(SHARED_BACK, elementId, 'btn btn-light', style, callback);
+	}
+	
+	// Place the back button in different locations
+	const backbuttons = {
+		custom3: cubemode.bind(null, 0),
+		custom5: cubemode.bind(null, 0),
+		customglowback: cubemode.bind(null, 0),
+	}
+	Object.keys(backbuttons).forEach(id => {
+		placeBackButton(id, backbuttons[id]);
+	});
 
 	function setTogglePLL(c) {
 		let arr = [];
@@ -1232,7 +1266,7 @@ p.setup = () => {
 	setButton(CUSTOM2, "customb", 'btn btn-primary', allcubestyle, CustomBandage.bind(null, 0));
 
 	CUSTOMGLOW = p.createButton('Custom Glow');
-	setButton(CUSTOMGLOW, "customglow", 'btn btn-primary', allcubestyle, CustomGlow.bind(null, 0));
+	setButton(CUSTOMGLOW, "customglowbutton", 'btn btn-primary', allcubestyle, CustomGlow.bind(null, 0));
 	
 	RESET = p.createButton('Reset');
 	setButton(RESET, "reset_div", bstyle, '', reSetup.bind(null, 0));
@@ -2221,6 +2255,35 @@ function getCubiesInSide(side, cubies = getOuterCubes()) {
 		return findCubyNear(cuby.x + sidearr[0], cuby.y + sidearr[1], cuby.z + sidearr[2], sidearr[0], sidearr[1], sidearr[2]) == -1 ;
 	})
 	return cubies;
+}
+
+// face is 0-5
+function getMiddleColor(face) {
+	const mid = Math.floor(SIZE - 1 / 2);
+	let middleColor = layout[face][mid][mid][0];
+	if (SIZE % 2 == 0) {
+		let counts = {};
+
+		function addColor(c) {
+			counts[c] = (counts[c] || 0) + 1;
+		}
+
+		addColor(layout[face][1][1][0]);
+		addColor(layout[face][1][2][0]);
+		addColor(layout[face][2][1][0]);
+		addColor(layout[face][2][2][0]);
+
+		// Sort alphabetically, then pick the one with highest count
+		middleColor = Object.keys(counts)
+			.sort() // alphabetical
+			.reduce((best, color) => {
+				if (best === null || counts[color] > counts[best]) {
+					return color;
+				}
+				return best;
+			}, null);
+	}
+	return middleColor;
 }
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
@@ -3515,6 +3578,19 @@ function CustomGlow() {
 	setDisplay("block", ["customglow"]);
 	INPUT.value("Normal");
 	SCRAM.value("Normal");
+	setCustomGlow();
+}
+function setCustomGlow() {
+	switchCube(GLOW_CUBE_SELECT.value());
+	DIM = "glow";
+	CUBENAME = GLOW_CUBE_SELECT.value() + " " + GLOW_SELECT.value();
+	const glow_instruct_obj = {
+		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
+		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
+		"Side Glow": "Solve a side, to unlock the colors of the next."
+	}
+	getEl("glow_instruct").innerHTML = glow_instruct_obj[GLOW_SELECT.value()];
+	reSetup();
 }
 function Reverse(move)
 {
@@ -3688,7 +3764,7 @@ function regular(nocustom){
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
-		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par"]);
+		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -8809,7 +8885,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(cursolvestat);
+		console.log(getMiddleColor(2));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -13158,14 +13234,14 @@ function setGlowColors() {
 		{dir: "front", face: 1},
 	]
 
-	if (["3x3 Glow Cube", "3x3 Anti-Glow"].includes(CUBENAME)) {
+	if (["Glow Cube", "Anti-Glow"].some(c => CUBENAME.includes(c))) {
 		DIRARR.forEach((obj) => {
-		const middleColor = layout[obj.face][1][1][0];
+		let middleColor = getMiddleColor(obj.face);
 		const cubies = getCubiesInSide(obj.dir)
 		cubies.forEach(cuby => {
 			const oldcuby = cuby
-			if ((CUBENAME == "3x3 Glow Cube" && getColorByCubyDir(cuby, obj.dir) == middleColor)
-			|| (CUBENAME == "3x3 Anti-Glow" && getColorByCubyDir(cuby, obj.dir) != middleColor)) {
+			if ((CUBENAME.includes("Glow Cube") && getColorByCubyDir(cuby, obj.dir) == middleColor)
+			|| (CUBENAME.includes("Anti-Glow") && getColorByCubyDir(cuby, obj.dir) != middleColor)) {
 				CUBE[cuby].originalFaceColor(obj.dir);
 			} else {
 				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
