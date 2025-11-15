@@ -900,7 +900,7 @@ p.setup = () => {
 	BANDAGE_SELECT.changed(setBandage);
 
  	GLOW_CUBE_SELECT = p.createSelect();
-	Object.keys(DIMS_OBJ).filter(cube => !DIMS_OBJ[cube].type.includes("Glow")).forEach(cube => {
+	Object.keys(DIMS_OBJ).filter(cube => !DIMS_OBJ[cube].type.includes("Glow") && !DIMS_OBJ[cube].type.includes("Sandwich")).forEach(cube => {
 		GLOW_CUBE_SELECT.option(cube)
 	})
 	GLOW_CUBE_SELECT.parent("glow_cube_select");
@@ -8884,7 +8884,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(SIZE);
+		console.log(DIM, DIM2, DIM3);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

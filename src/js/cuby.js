@@ -90,7 +90,7 @@ export default class Cuby {
       this.back = this.colors.red;
     }
     if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4", "2x3x5", "1x5x5", "4x4plus", "1x2x2", "pluslite"].includes(size) ||
-        ["3x2x4", "4x3x3", "1x3x2", "5x3x3", "2x2x4", "2x3x5"].includes(this.special[6])) { // rainbow
+        ["3x2x4", "4x3x3", "1x3x2", "5x3x3", "2x2x4", "2x3x5"].includes(this.special[6])) { //rainbow
       this.back = this.c[this.custom[0][3]];
       this.front = this.c[this.custom[5][2]];
       this.bottom = this.c[this.custom[0][1]];
@@ -847,7 +847,7 @@ export default class Cuby {
               shift(dir, xshift * shiftarr[2], yshift * shiftarr[0], zshift * shiftarr[1]);
             }
           } else {
-            if (sidearr.includes(getColor(this.getColorBySide("left")))) {
+            if (sidearr.includes(this.getColorBySide("left"))) {
               shift(dir, xshift * shiftarr[2], yshift * shiftarr[1], zshift * shiftarr[0]);
             } else {
               shift(dir, xshift * shiftarr[1], yshift * shiftarr[2], zshift * shiftarr[0]);
