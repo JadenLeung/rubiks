@@ -188,7 +188,7 @@ export default function (p) {
 	let RIGHTMOD;
 	let LEFTBAN, RIGHTBAN;
 	let modnum = 0;
-	let CUSTOM, CUSTOM2;
+	let CUSTOM, CUSTOM2, CUSTOMGLOW;
 	let ADDBANDAGE, VIEWBANDAGE;
 	let customb = 0;
 	let bandaged2 = [];
@@ -1229,7 +1229,10 @@ p.setup = () => {
 	setButton(CUSTOM, "custom", 'btn btn-primary', allcubestyle, Custom.bind(null, 0));
 
 	CUSTOM2 = p.createButton('Custom Bandage');
-	setButton(CUSTOM2, "customb", 'btn btn-primary', allcubestyle, Custom2.bind(null, 0));
+	setButton(CUSTOM2, "customb", 'btn btn-primary', allcubestyle, CustomBandage.bind(null, 0));
+
+	CUSTOMGLOW = p.createButton('Custom Glow');
+	setButton(CUSTOMGLOW, "customglow", 'btn btn-primary', allcubestyle, CustomGlow.bind(null, 0));
 	
 	RESET = p.createButton('Reset');
 	setButton(RESET, "reset_div", bstyle, '', reSetup.bind(null, 0));
@@ -3447,33 +3450,6 @@ function inputPressed(move)
 		multiple(0, true);
 	}
 }
-function Custom2(){
-	custom = 2;
-	customb = 0;
-	document.getElementById("allmodes").style.display = "none";
-	document.getElementById("cube").style.display = "none";
-	document.getElementById("modarrow").style.display = "none";
-	document.getElementById("custom2").style.display = "none";
-	document.getElementById("custom4").style.display = "block";
-	document.getElementById("okban").style.display = "none";
-	document.getElementById("leftban").style.display = "none";
-	document.getElementById("rightban").style.display = "none";
-	if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
-		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
-	} else {
-		BANDAGE_SLOT.selected(1)
-	}
-	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
-		bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
-	} else {
-		bandaged = [];
-	}
-	changeCam(3);
-	doneBandage();
-	modeData("custombandage");
-	ban9();
-	switchCube(BANDAGE_SELECT.value());
-}
 function Custom()
 {
 	if (!localStorage.saveshapemod) {
@@ -3505,6 +3481,40 @@ function Custom()
 	modeData("customshape");
 	switchCube(SEL7.value());
 	change9();
+}
+function CustomBandage(){
+	custom = 2;
+	customb = 0;
+	document.getElementById("allmodes").style.display = "none";
+	document.getElementById("cube").style.display = "none";
+	document.getElementById("modarrow").style.display = "none";
+	document.getElementById("custom2").style.display = "none";
+	document.getElementById("custom4").style.display = "block";
+	document.getElementById("okban").style.display = "none";
+	document.getElementById("leftban").style.display = "none";
+	document.getElementById("rightban").style.display = "none";
+	if (bandaged3[BANDAGE_SELECT.value()] && bandaged3[BANDAGE_SELECT.value()].slot) {
+		BANDAGE_SLOT.selected(bandaged3[BANDAGE_SELECT.value()].slot)
+	} else {
+		BANDAGE_SLOT.selected(1)
+	}
+	if (bandaged3.hasOwnProperty(BANDAGE_SELECT.value()) && bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()]) {
+		bandaged = bandaged3[BANDAGE_SELECT.value()][BANDAGE_SLOT.value()];
+	} else {
+		bandaged = [];
+	}
+	changeCam(3);
+	doneBandage();
+	modeData("custombandage");
+	ban9();
+	switchCube(BANDAGE_SELECT.value());
+}
+function CustomGlow() {
+	custom = 2;
+	setDisplay("none", ["allmodes", "cube", "modarrow", "custom2", "okban", "leftban", "rightban"]);
+	setDisplay("block", ["customglow"]);
+	INPUT.value("Normal");
+	SCRAM.value("Normal");
 }
 function Reverse(move)
 {
