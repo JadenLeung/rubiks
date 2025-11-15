@@ -265,10 +265,10 @@ export default function (p) {
 		"Triple Quad" :change13.bind(null, 9, [[7,8,5,4],[16,15,12],[25,26,23,22]]),
 		"Z Perm" : 	change15.bind(null, 11, [[0,9], [20,11], [24,15], [8,17]]),
 		"T Perm" : change16.bind(null, 12, [[0,9], [2,11], [24,15], [26,17]]),
-		"3x3 Glow Cube": switchSize.bind(null, 3, "glow", 50),
-		"3x3 Anti-Glow": switchSize.bind(null, 3,  "glow", 50),
-		"2x2 Side Glow": switchSize.bind(null, 3, "glow", 100),
-		"3x3 Side Glow": switchSize.bind(null, 3, "glow", 50),
+		"3x3 Glow Cube": switchSize.bind(null, 3, 50, 50),
+		"3x3 Anti-Glow": switchSize.bind(null, 3,  50, 50),
+		"2x2 Side Glow": switchSize.bind(null, 3, 100, 100),
+		"3x3 Side Glow": switchSize.bind(null, 3, 50, 50),
 	};
 
 	// attach event
@@ -900,7 +900,7 @@ p.setup = () => {
 	BANDAGE_SELECT.changed(setBandage);
 
  	GLOW_CUBE_SELECT = p.createSelect();
-	["2x2", "3x3", "4x4", "5x5", "3x3x2", "2x2x3"].forEach(cube => {
+	Object.keys(DIMS_OBJ).filter(cube => !DIMS_OBJ[cube].type.includes("Glow")).forEach(cube => {
 		GLOW_CUBE_SELECT.option(cube)
 	})
 	GLOW_CUBE_SELECT.parent("glow_cube_select");
@@ -3582,7 +3582,6 @@ function CustomGlow() {
 }
 function setCustomGlow() {
 	switchCube(GLOW_CUBE_SELECT.value());
-	DIM = "glow";
 	CUBENAME = GLOW_CUBE_SELECT.value() + " " + GLOW_SELECT.value();
 	const glow_instruct_obj = {
 		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
@@ -8084,7 +8083,7 @@ function shuffleCube(override = false) {
 	cursolvestat = {};
 	cursolvestat.active = true;
 	maxsolvestage = 0;
-	if (String(DIM).includes("glow")) {
+	if (CUBENAME.toLowerCase().includes("glow")) {
 		setOriginalColor();
 	}
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
@@ -8713,7 +8712,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		for (let j = 0; j < SIZE; j++) {
 			if (CUBE[i].get(axis) === rows[j]) {
-				if (String(DIM).includes("glow")) {
+				if (CUBENAME.toLowerCase().includes("glow")) {
 					setGlowAnimateColor(i);
 				}
 				CUBE[i].row = rows[j];
@@ -9278,7 +9277,7 @@ function waitForCondition(callback, use = "default") {
     if (!isAnimating()) {
 		console.log(use);
 		let delay = DELAY;
-		if (String(DIM).includes("glow")) setGlowColors();
+		if (CUBENAME.toLowerCase().includes("glow")) setGlowColors();
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
