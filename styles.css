@@ -477,6 +477,9 @@ button:hover {
     #s_RACE2 {
         top: 0%;
     }
+    #practice_container {
+        top: 30px;
+    }
 }
 
 #recent_solves_body td {
