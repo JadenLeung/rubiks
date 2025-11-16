@@ -2160,6 +2160,8 @@ function reSetup(rot) {
 		nextcuby[18] = [9,20,24]; nextcuby[20] = [11,18,26]; nextcuby[24] = [15,18,26]; nextcuby[26] = [17,20,24];
 	}
 	reCam();
+	setBlackInterior();
+	// setTimeout(() => setBlackInterior(), 100);
 }
 function to132(num) {
 	var order = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*(){|}~ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
@@ -2283,6 +2285,20 @@ function getMiddleColor(face) {
 			}, null);
 	}
 	return middleColor;
+}
+
+function isInnerSide(cubynum, side) {
+	const SIDEOBJ = {
+		"top": [0, 1, 0],
+		"bottom": [0, -1, 0],
+		"front": [0, 0, 1],
+		"back": [0, 0, -1],
+		"left": [1, 0, 0],
+		"right": [-1, 0, 0],
+	};
+	let sidearr = SIDEOBJ[side];
+	let cuby = CUBE[cubynum];
+	return findCubyNear(cuby.x + sidearr[0], cuby.y + sidearr[1], cuby.z + sidearr[2], sidearr[0], sidearr[1], sidearr[2]) != -1;
 }
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
@@ -6348,6 +6364,19 @@ function reCam()
 	CAM.zoom(CAMZOOM + ZOOMADD);
 	rotateIt();
 }
+function setBlackInterior() {
+	const sides = ["left", "right", "bottom", "top", "front", "back"];
+	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
+		sides.forEach((side) => {
+			CUBE[i].innerside[side] = isInnerSide(i, side);
+			if (isInnerSide(i, side)) {
+				CUBE[i].setFaceColor(HOLLOW?.checked() ? "" : CUBE[i].colors.black, side, true);
+			} else {
+				CUBE[i].originalFaceColor(side);
+			}
+		});
+	}		
+}
 function updateScores() {
 	let modes = ["easy", "medium", "oll", "pll"];
 	let display = {easy: "Easy", medium: "Medium", oll: "OLL", pll: "PLL"};
@@ -8884,7 +8913,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(DIM, DIM2, DIM3);
+		// setBlackInterior()
+		console.log(isInnerSide(17, "right"));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

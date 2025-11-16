@@ -1,5 +1,6 @@
 export default class Cuby {
   constructor(size, x, y, z, buff, picker, p, index, custom, special, SIZE, existingCube) {
+    console.log("CSTR CALLED");
     //size = 50;
     this.cubysize = size;
     this.x = x;
@@ -14,8 +15,10 @@ export default class Cuby {
     // Preserve savecolors from existing cube if it exists
     if (existingCube && existingCube.savecolors && Object.keys(existingCube.savecolors).length > 0) {
       this.savecolors = {...existingCube.savecolors};
+      this.innerside = {...existingCube.innerside};
     } else {
       this.savecolors = {};
+      this.innerside = {};
     }
 
     if (!existingCube || existingCube.oldx == undefined) {
@@ -29,6 +32,93 @@ export default class Cuby {
     }
     
     this.shown = true;
+    let arr = [];
+    if(Array.isArray(this.cubysize) && this.cubysize[0] != "adding")
+    {
+      for (let i = 0; i < this.cubysize[6].length; i++) {
+        let toadd = this.cubysize[6][i];
+        if (this.special[6] == 100) {
+          toadd = {0 : 0, 1 : 2, 2 : 6, 3 : 8, 4 : 18, 5: 20, 6: 24, 7: 26}[toadd];
+        }
+        arr[i] = toadd;
+      }
+    }
+
+    if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || this.special[6] == 100)
+      arr.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
+    else if(this.cubysize == 1)
+      arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
+    else if(this.cubysize == 2 || this.special[6] == 2) {
+      arr = [9,10,11,12,13,14,15,16,17];
+      if (this.cubysize == "plus3x3x2")
+        arr.push(0, 2, 6, 8, 18, 20, 24, 26);
+    }
+    else if(this.cubysize == 3)
+      arr = [0,2,6,8,18,20,24,26];
+    else if(this.cubysize == 6)
+      arr = [0,1,2,3,6,9,10,11,12,15,18,19,20,21,22,23,24,25,26];
+    else if(this.special[6] == 15)
+      arr = [1,3,4,5,7,10,12,13,14,16,19,21,22,23,25];
+    else if(this.cubysize == "1x4x4") {
+      arr = [];
+      for (let x = 0; x < SIZE; x++) {
+        for (let y = 0; y < SIZE; y++) {
+          for (let z = 0; z < SIZE; z++) {
+            if (x != 2 || y == 2 || z == 2) {
+              arr.push(x * SIZE * SIZE + y * SIZE + z);
+            }
+          }
+        }
+      }
+    } else if (this.cubysize == "4x4plus" || this.cubysize == "pluslite") {
+      arr = [];
+      for (let x = 0; x < SIZE; x++) {
+        for (let y = 0; y < SIZE; y++) {
+          for (let z = 0; z < SIZE; z++) {
+            if (+(x % (SIZE - 1) == 0 )+ +(y % (SIZE - 1) == 0) + +(z % (SIZE - 1) == 0) > 1 ) {
+              arr.push(x * SIZE * SIZE + y * SIZE + z);
+            }
+          }
+        }
+      }
+    } else if(["3x2x4", "1x3x2", "5x3x3", "1x5x5", "1x2x2", "2x3x5"].includes(this.special[6])) {
+      arr = [];
+      for (let x = 0; x < SIZE; x++) {
+        for (let y = 0; y < SIZE; y++) {
+          for (let z = 0; z < SIZE; z++) {
+            let arraymap = {
+              1: [0, 1, 3, 4],
+              2: [0, 2, 4],
+              3: [0, 4],
+              4: [2],
+              5: []
+            }
+            let dimarr = this.special[6].split("x").map(Number);
+            if (arraymap[dimarr[0]].includes(x) || arraymap[dimarr[1]].includes(y) || arraymap[dimarr[2]].includes(z)) {
+              arr.push(x * SIZE * SIZE + y * SIZE + z);
+            }
+          }
+        }
+      }
+    }  else if(["4x3x3", "2x2x4"].includes(this.special[6])) {
+      arr = [0,1,2,3,4,7,8,11,12,13,14,15];
+      if (this.special[6] == "4x3x3") arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
+      let s = arr.length;
+      for (let i = 1; i < SIZE; i++) {
+        for (let j = 0; j < s; j++) {
+          if (this.special[6] == "4x3x3" && i == 2) continue;
+          arr.push(arr[j] + i * SIZE * SIZE);
+        }
+      }
+      if (this.special[6] == "4x3x3") arr.push(...Array.from({ length: 25 }, (_, i) => i + 50));
+    }
+
+
+    if(arr.includes(this.index) && this.cubysize != 50) {
+      this.shown = false;
+    } else {
+      this.shown = true;
+    }
 
 	/*
     this.colors = {
@@ -234,13 +324,6 @@ export default class Cuby {
         }
       }
     }
-    if(special[0] == true && this.special[6] != 2 && this.special[6] != 15 && this.size != 1){ //hollow
-      ["back", "front", "bottom", "top", "right", "left"].forEach((c) => {
-        if (getColor(this[c].levels) == "k") {
-          this[c] = "";
-        }
-      })
-    }
 
     this.buff_top = buff[2];
     this.buff_bottom = buff[3];
@@ -248,7 +331,6 @@ export default class Cuby {
     this.buff_back = buff[1];
     this.buff_left = buff[4];
     this.buff_right = buff[5];
-
 
   }
   
@@ -335,20 +417,12 @@ export default class Cuby {
   }
 
   setColor(c, temporary) {
-    if (!temporary) {
-      this.savecolors = {top: c, bottom: c, left: c, right: c, front: c, back: c};
-    }
-    if (temporary && Object.keys(this.savecolors).length == 0) {
-      this.savecolors = {top: this.top, bottom: this.bottom, left: this.left, right: this.right, front: this.front, back: this.back};
-    }
-    this.top = c;
-    this.bottom = c;
-    this.front = c;
-    this.right = c;
-    this.back = c;
-    this.left = c;
+    ["top", "bottom", "left", "right", "front", "back"].forEach((face) => {
+      this.setFaceColor(c, face, temporary);
+    });
   }
   setFaceColor(c, face, temporary) {
+    if (!this.innerside[face]) return;
     if (!temporary) {
       this.savecolors[face] = c;
     }
@@ -358,14 +432,15 @@ export default class Cuby {
     this[face] = c;
   }
   originalFaceColor(face) {
+    if (!this.innerside[face]) return;
     if (this.savecolors[face])
       this[face] = this.savecolors[face];
   }
   originalColor() {
-    if (Object.keys(this.savecolors).length != 0) {
-        ({ top: this.top, bottom: this.bottom, front: this.front, 
-          right: this.right, back: this.back, left: this.left } = this.savecolors);
-    }
+    if (!this.innerside[face]) return;
+    ["top", "bottom", "left", "right", "front", "back"].forEach((face) => {
+      this.originalFaceColor(face);
+    });
   }
   
   animating() {
@@ -667,94 +742,7 @@ export default class Cuby {
   }
   
   show(SIZE = 3) {
-    let arr = [];
-    if(Array.isArray(this.cubysize) && this.cubysize[0] != "adding")
-    {
-      for (let i = 0; i < this.cubysize[6].length; i++) {
-        let toadd = this.cubysize[6][i];
-        if (this.special[6] == 100) {
-          toadd = {0 : 0, 1 : 2, 2 : 6, 3 : 8, 4 : 18, 5: 20, 6: 24, 7: 26}[toadd];
-        }
-        arr[i] = toadd;
-      }
-    }
-
-    if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || this.special[6] == 100)
-      arr.push(1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25);
-    else if(this.cubysize == 1)
-      arr = [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26];
-    else if(this.cubysize == 2 || this.special[6] == 2) {
-      arr = [9,10,11,12,13,14,15,16,17];
-      if (this.cubysize == "plus3x3x2")
-        arr.push(0, 2, 6, 8, 18, 20, 24, 26);
-    }
-    else if(this.cubysize == 3)
-      arr = [0,2,6,8,18,20,24,26];
-    else if(this.cubysize == 6)
-      arr = [0,1,2,3,6,9,10,11,12,15,18,19,20,21,22,23,24,25,26];
-    else if(this.special[6] == 15)
-      arr = [1,3,4,5,7,10,12,13,14,16,19,21,22,23,25];
-    else if(this.cubysize == "1x4x4") {
-      arr = [];
-      for (let x = 0; x < SIZE; x++) {
-        for (let y = 0; y < SIZE; y++) {
-          for (let z = 0; z < SIZE; z++) {
-            if (x != 2 || y == 2 || z == 2) {
-              arr.push(x * SIZE * SIZE + y * SIZE + z);
-            }
-          }
-        }
-      }
-    } else if (this.cubysize == "4x4plus" || this.cubysize == "pluslite") {
-      arr = [];
-      for (let x = 0; x < SIZE; x++) {
-        for (let y = 0; y < SIZE; y++) {
-          for (let z = 0; z < SIZE; z++) {
-            if (+(x % (SIZE - 1) == 0 )+ +(y % (SIZE - 1) == 0) + +(z % (SIZE - 1) == 0) > 1 ) {
-              arr.push(x * SIZE * SIZE + y * SIZE + z);
-            }
-          }
-        }
-      }
-    } else if(["3x2x4", "1x3x2", "5x3x3", "1x5x5", "1x2x2", "2x3x5"].includes(this.special[6])) {
-      arr = [];
-      for (let x = 0; x < SIZE; x++) {
-        for (let y = 0; y < SIZE; y++) {
-          for (let z = 0; z < SIZE; z++) {
-            let arraymap = {
-              1: [0, 1, 3, 4],
-              2: [0, 2, 4],
-              3: [0, 4],
-              4: [2],
-              5: []
-            }
-            let dimarr = this.special[6].split("x").map(Number);
-            if (arraymap[dimarr[0]].includes(x) || arraymap[dimarr[1]].includes(y) || arraymap[dimarr[2]].includes(z)) {
-              arr.push(x * SIZE * SIZE + y * SIZE + z);
-            }
-          }
-        }
-      }
-    }  else if(["4x3x3", "2x2x4"].includes(this.special[6])) {
-      arr = [0,1,2,3,4,7,8,11,12,13,14,15];
-      if (this.special[6] == "4x3x3") arr = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24];
-      let s = arr.length;
-      for (let i = 1; i < SIZE; i++) {
-        for (let j = 0; j < s; j++) {
-          if (this.special[6] == "4x3x3" && i == 2) continue;
-          arr.push(arr[j] + i * SIZE * SIZE);
-        }
-      }
-      if (this.special[6] == "4x3x3") arr.push(...Array.from({ length: 25 }, (_, i) => i + 50));
-    }
-
-
-    if(arr.includes(this.index) && this.cubysize != 50) {
-      this.shown = false;
-      return;
-    } else {
-      this.shown = true;
-    }
+    if (!this.shown) return;
     let r = 25;
     if(this.cubysize == 100 || this.cubysize == 5 || this.cubysize == 10 || this.cubysize[7] == 2 || this.special[6] == 100)
       r = 50;
