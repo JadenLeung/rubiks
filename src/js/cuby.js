@@ -422,6 +422,7 @@ export default class Cuby {
     });
   }
   setFaceColor(c, face, temporary) {
+    console.log("NO", this.index, face, this.innerside[face]);
     if (this.innerside[face]) return;
     if (!temporary) {
       this.savecolors[face] = c;
@@ -432,6 +433,7 @@ export default class Cuby {
     this[face] = c;
   }
   originalFaceColor(face) {
+    console.log("OR", this.index, face, this.innerside[face]);
     if (this.innerside[face]) return;
     if (this.savecolors[face])
       this[face] = this.savecolors[face];
@@ -483,6 +485,12 @@ export default class Cuby {
       save_tmp = this.savecolors.front;
     }
     
+    // Also rotate innerside if it has keys
+    let inner_tmp;
+    if (this.innerside && Object.keys(this.innerside).length > 0) {
+      inner_tmp = this.innerside.front;
+    }
+    
     if (dir === -1) {
       this.front = this.bottom;
       this.bottom = this.back;
@@ -499,6 +507,13 @@ export default class Cuby {
         this.savecolors.bottom = this.savecolors.back;
         this.savecolors.back = this.savecolors.top;
         this.savecolors.top = save_tmp;
+      }
+      
+      if (inner_tmp !== undefined) {
+        this.innerside.front = this.innerside.bottom;
+        this.innerside.bottom = this.innerside.back;
+        this.innerside.back = this.innerside.top;
+        this.innerside.top = inner_tmp;
       }
     } else {
       this.front = this.top;
@@ -517,6 +532,13 @@ export default class Cuby {
         this.savecolors.back = this.savecolors.bottom;
         this.savecolors.bottom = save_tmp;
       }
+      
+      if (inner_tmp !== undefined) {
+        this.innerside.front = this.innerside.top;
+        this.innerside.top = this.innerside.back;
+        this.innerside.back = this.innerside.bottom;
+        this.innerside.bottom = inner_tmp;
+      }
     }
   }
 
@@ -528,6 +550,12 @@ export default class Cuby {
     let save_tmp;
     if (this.savecolors && Object.keys(this.savecolors).length > 0) {
       save_tmp = this.savecolors.front;
+    }
+    
+    // Also rotate innerside if it has keys
+    let inner_tmp;
+    if (this.innerside && Object.keys(this.innerside).length > 0) {
+      inner_tmp = this.innerside.front;
     }
     
     if (dir === -1) {
@@ -547,6 +575,13 @@ export default class Cuby {
         this.savecolors.back = this.savecolors.left;
         this.savecolors.left = save_tmp;
       }
+      
+      if (inner_tmp !== undefined) {
+        this.innerside.front = this.innerside.right;
+        this.innerside.right = this.innerside.back;
+        this.innerside.back = this.innerside.left;
+        this.innerside.left = inner_tmp;
+      }
     } else {
       this.front = this.left;
       this.left = this.back;
@@ -564,6 +599,13 @@ export default class Cuby {
         this.savecolors.back = this.savecolors.right;
         this.savecolors.right = save_tmp;
       }
+      
+      if (inner_tmp !== undefined) {
+        this.innerside.front = this.innerside.left;
+        this.innerside.left = this.innerside.back;
+        this.innerside.back = this.innerside.right;
+        this.innerside.right = inner_tmp;
+      }
     }
   }
   
@@ -575,6 +617,12 @@ export default class Cuby {
     let save_tmp;
     if (this.savecolors && Object.keys(this.savecolors).length > 0) {
       save_tmp = this.savecolors.top;
+    }
+    
+    // Also rotate innerside if it has keys
+    let inner_tmp;
+    if (this.innerside && Object.keys(this.innerside).length > 0) {
+      inner_tmp = this.innerside.top;
     }
     
     if (dir === -1) {
@@ -594,6 +642,13 @@ export default class Cuby {
         this.savecolors.bottom = this.savecolors.left;
         this.savecolors.left = save_tmp;
       }
+      
+      if (inner_tmp !== undefined) {
+        this.innerside.top = this.innerside.right;
+        this.innerside.right = this.innerside.bottom;
+        this.innerside.bottom = this.innerside.left;
+        this.innerside.left = inner_tmp;
+      }
     } else {
       this.top = this.left;
       this.left = this.bottom;
@@ -610,6 +665,13 @@ export default class Cuby {
         this.savecolors.left = this.savecolors.bottom;
         this.savecolors.bottom = this.savecolors.right;
         this.savecolors.right = save_tmp;
+      }
+      
+      if (inner_tmp !== undefined) {
+        this.innerside.top = this.innerside.left;
+        this.innerside.left = this.innerside.bottom;
+        this.innerside.bottom = this.innerside.right;
+        this.innerside.right = inner_tmp;
       }
     }
   }

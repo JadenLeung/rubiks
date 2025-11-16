@@ -8736,6 +8736,9 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 		timer.reset();
 		timer.start();
 		if (cstep == 1 || cstep == 1.5) cstep++;
+		// if (CUBENAME.toLowerCase().includes("glow")) {
+		// 	setCubyAllColor("black");
+		// }
 	}
 
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -8914,7 +8917,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// setBlackInterior()
-		console.log(isInnerSide(17, "right"));
+		console.log(SPEED);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -13234,9 +13237,9 @@ function setGlowAnimateColor(i) {
 	if (!timer.isRunning || timer.getTime < 0 || CUBENAME.includes("Side Glow")) {
 		return;
 	}
-	if (SPEED == 2) {
-		CUBE[i].setColor(CUBE[i].colors.black, true);
-	}
+	// if (SPEED == 2) {
+	// 	CUBE[i].setColor(CUBE[i].colors.black, true);
+	// }
 }
 
 function setOriginalColor() {
