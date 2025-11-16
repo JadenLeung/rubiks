@@ -422,7 +422,7 @@ export default class Cuby {
     });
   }
   setFaceColor(c, face, temporary) {
-    if (!this.innerside[face]) return;
+    if (this.innerside[face]) return;
     if (!temporary) {
       this.savecolors[face] = c;
     }
@@ -432,12 +432,11 @@ export default class Cuby {
     this[face] = c;
   }
   originalFaceColor(face) {
-    if (!this.innerside[face]) return;
+    if (this.innerside[face]) return;
     if (this.savecolors[face])
       this[face] = this.savecolors[face];
   }
   originalColor() {
-    if (!this.innerside[face]) return;
     ["top", "bottom", "left", "right", "front", "back"].forEach((face) => {
       this.originalFaceColor(face);
     });

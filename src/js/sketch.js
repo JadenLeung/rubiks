@@ -6368,12 +6368,12 @@ function setBlackInterior() {
 	const sides = ["left", "right", "bottom", "top", "front", "back"];
 	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 		sides.forEach((side) => {
-			CUBE[i].innerside[side] = isInnerSide(i, side);
 			if (isInnerSide(i, side)) {
 				CUBE[i].setFaceColor(HOLLOW?.checked() ? "" : CUBE[i].colors.black, side, true);
 			} else {
 				CUBE[i].originalFaceColor(side);
 			}
+			CUBE[i].innerside[side] = isInnerSide(i, side);
 		});
 	}		
 }
