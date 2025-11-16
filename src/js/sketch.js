@@ -13237,9 +13237,9 @@ function setGlowAnimateColor(i) {
 	if (!timer.isRunning || timer.getTime < 0 || CUBENAME.includes("Side Glow")) {
 		return;
 	}
-	// if (SPEED == 2) {
-	// 	CUBE[i].setColor(CUBE[i].colors.black, true);
-	// }
+	if (SPEED == 2) {
+		CUBE[i].setColor(CUBE[i].colors.black, true);
+	}
 }
 
 function setOriginalColor() {
