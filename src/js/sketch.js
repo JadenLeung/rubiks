@@ -1164,7 +1164,7 @@ p.setup = () => {
 	DARKMODE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	DARKMODE.changed(darkMode);
 
-	SWIPEROTATE = p.createCheckbox("", localStorage.swiperotate === "true" ? true : false);
+	SWIPEROTATE = p.createCheckbox("", localStorage.swiperotate === "false" ? false : true);
 	SWIPEROTATE.parent("swiperotate")
 	SWIPEROTATE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
 	SWIPEROTATE.changed(swipeRotate);
@@ -13237,9 +13237,7 @@ function setGlowAnimateColor(i) {
 	if (!timer.isRunning || timer.getTime < 0 || CUBENAME.includes("Side Glow")) {
 		return;
 	}
-	if (SPEED == 2) {
-		CUBE[i].setColor(CUBE[i].colors.black, true);
-	}
+	CUBE[i].setColor(CUBE[i].colors.black, true);
 }
 
 function setOriginalColor() {
