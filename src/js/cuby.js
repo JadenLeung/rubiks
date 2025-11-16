@@ -474,22 +474,58 @@ export default class Cuby {
     this.buff_left = cuby.buff_left;
     this.buff_right = cuby.buff_right;
   }
+
+  rotateXObj(obj, dir) {
+    if (!obj || Object.keys(obj).length == 0) return;
+    const tmp = obj.front;
+    if (dir === -1) {
+      obj.front = obj.bottom;
+      obj.bottom = obj.back;
+      obj.back = obj.top;
+      obj.top = tmp;
+    } else {
+      obj.front = obj.top;
+      obj.top = obj.back;
+      obj.back = obj.bottom;
+      obj.bottom = tmp;
+    }
+  }
+
+  rotateYObj(obj, dir) {
+    if (!obj || Object.keys(obj).length == 0) return;
+    const tmp = obj.front;
+    if (dir === -1) {
+      obj.front = obj.right;
+      obj.right = obj.back;
+      obj.back = obj.left;
+      obj.left = tmp;
+    } else {
+      obj.front = obj.left;
+      obj.left = obj.back;
+      obj.back = obj.right;
+      obj.right = tmp;
+    }
+  }
+
+  rotateZObj(obj, dir) {
+    if (!obj || Object.keys(obj).length == 0) return;
+    const tmp = obj.top;
+    if (dir === -1) {
+      obj.top = obj.right;
+      obj.right = obj.bottom;
+      obj.bottom = obj.left;
+      obj.left = tmp;
+    } else {
+      obj.top = obj.left;
+      obj.left = obj.bottom;
+      obj.bottom = obj.right;
+      obj.right = tmp;
+    }
+  }
   
   rotateX(dir) { // switch all but LEFT / RIGHT
     const tmp = this.front;
     const buff_tmp = this.buff_front;
-    
-    // Also rotate savecolors if they exist
-    let save_tmp;
-    if (this.savecolors && Object.keys(this.savecolors).length > 0) {
-      save_tmp = this.savecolors.front;
-    }
-    
-    // Also rotate innerside if it has keys
-    let inner_tmp;
-    if (this.innerside && Object.keys(this.innerside).length > 0) {
-      inner_tmp = this.innerside.front;
-    }
     
     if (dir === -1) {
       this.front = this.bottom;
@@ -501,20 +537,6 @@ export default class Cuby {
       this.buff_bottom = this.buff_back;
       this.buff_back = this.buff_top;
       this.buff_top = buff_tmp;
-      
-      if (save_tmp !== undefined) {
-        this.savecolors.front = this.savecolors.bottom;
-        this.savecolors.bottom = this.savecolors.back;
-        this.savecolors.back = this.savecolors.top;
-        this.savecolors.top = save_tmp;
-      }
-      
-      if (inner_tmp !== undefined) {
-        this.innerside.front = this.innerside.bottom;
-        this.innerside.bottom = this.innerside.back;
-        this.innerside.back = this.innerside.top;
-        this.innerside.top = inner_tmp;
-      }
     } else {
       this.front = this.top;
       this.top = this.back;
@@ -525,38 +547,16 @@ export default class Cuby {
       this.buff_top = this.buff_back;
       this.buff_back = this.buff_bottom;
       this.buff_bottom = buff_tmp;
-      
-      if (save_tmp !== undefined) {
-        this.savecolors.front = this.savecolors.top;
-        this.savecolors.top = this.savecolors.back;
-        this.savecolors.back = this.savecolors.bottom;
-        this.savecolors.bottom = save_tmp;
-      }
-      
-      if (inner_tmp !== undefined) {
-        this.innerside.front = this.innerside.top;
-        this.innerside.top = this.innerside.back;
-        this.innerside.back = this.innerside.bottom;
-        this.innerside.bottom = inner_tmp;
-      }
     }
+    
+    // Rotate savecolors and innerside using helper
+    this.rotateXObj(this.savecolors, dir);
+    this.rotateXObj(this.innerside, dir);
   }
 
   rotateY(dir) { // switch all but TOP / BOTTOM by it's predecessor..
     const tmp = this.front;
     const buff_tmp = this.buff_front;
-    
-    // Also rotate savecolors if they exist
-    let save_tmp;
-    if (this.savecolors && Object.keys(this.savecolors).length > 0) {
-      save_tmp = this.savecolors.front;
-    }
-    
-    // Also rotate innerside if it has keys
-    let inner_tmp;
-    if (this.innerside && Object.keys(this.innerside).length > 0) {
-      inner_tmp = this.innerside.front;
-    }
     
     if (dir === -1) {
       this.front = this.right;
@@ -568,20 +568,6 @@ export default class Cuby {
       this.buff_right = this.buff_back;
       this.buff_back = this.buff_left;
       this.buff_left = buff_tmp;
-      
-      if (save_tmp !== undefined) {
-        this.savecolors.front = this.savecolors.right;
-        this.savecolors.right = this.savecolors.back;
-        this.savecolors.back = this.savecolors.left;
-        this.savecolors.left = save_tmp;
-      }
-      
-      if (inner_tmp !== undefined) {
-        this.innerside.front = this.innerside.right;
-        this.innerside.right = this.innerside.back;
-        this.innerside.back = this.innerside.left;
-        this.innerside.left = inner_tmp;
-      }
     } else {
       this.front = this.left;
       this.left = this.back;
@@ -592,38 +578,16 @@ export default class Cuby {
       this.buff_left = this.buff_back;
       this.buff_back = this.buff_right;
       this.buff_right = buff_tmp;
-      
-      if (save_tmp !== undefined) {
-        this.savecolors.front = this.savecolors.left;
-        this.savecolors.left = this.savecolors.back;
-        this.savecolors.back = this.savecolors.right;
-        this.savecolors.right = save_tmp;
-      }
-      
-      if (inner_tmp !== undefined) {
-        this.innerside.front = this.innerside.left;
-        this.innerside.left = this.innerside.back;
-        this.innerside.back = this.innerside.right;
-        this.innerside.right = inner_tmp;
-      }
     }
+    
+    // Rotate savecolors and innerside using helper
+    this.rotateYObj(this.savecolors, dir);
+    this.rotateYObj(this.innerside, dir);
   }
   
   rotateZ(dir) { // switch all but FRONT / BACK
     const tmp = this.top;
     const buff_tmp = this.buff_top;
-    
-    // Also rotate savecolors if they exist
-    let save_tmp;
-    if (this.savecolors && Object.keys(this.savecolors).length > 0) {
-      save_tmp = this.savecolors.top;
-    }
-    
-    // Also rotate innerside if it has keys
-    let inner_tmp;
-    if (this.innerside && Object.keys(this.innerside).length > 0) {
-      inner_tmp = this.innerside.top;
-    }
     
     if (dir === -1) {
       this.top = this.right;
@@ -635,20 +599,6 @@ export default class Cuby {
       this.buff_right = this.buff_bottom;
       this.buff_bottom = this.buff_left;
       this.buff_left = buff_tmp;
-      
-      if (save_tmp !== undefined) {
-        this.savecolors.top = this.savecolors.right;
-        this.savecolors.right = this.savecolors.bottom;
-        this.savecolors.bottom = this.savecolors.left;
-        this.savecolors.left = save_tmp;
-      }
-      
-      if (inner_tmp !== undefined) {
-        this.innerside.top = this.innerside.right;
-        this.innerside.right = this.innerside.bottom;
-        this.innerside.bottom = this.innerside.left;
-        this.innerside.left = inner_tmp;
-      }
     } else {
       this.top = this.left;
       this.left = this.bottom;
@@ -659,21 +609,11 @@ export default class Cuby {
       this.buff_left = this.buff_bottom;
       this.buff_bottom = this.buff_right;
       this.buff_right = buff_tmp;
-      
-      if (save_tmp !== undefined) {
-        this.savecolors.top = this.savecolors.left;
-        this.savecolors.left = this.savecolors.bottom;
-        this.savecolors.bottom = this.savecolors.right;
-        this.savecolors.right = save_tmp;
-      }
-      
-      if (inner_tmp !== undefined) {
-        this.innerside.top = this.innerside.left;
-        this.innerside.left = this.innerside.bottom;
-        this.innerside.bottom = this.innerside.right;
-        this.innerside.right = inner_tmp;
-      }
     }
+    
+    // Rotate savecolors and innerside using helper
+    this.rotateZObj(this.savecolors, dir);
+    this.rotateZObj(this.innerside, dir);
   }
   
   // -1 / +1 because for some reasons the buffer does not have the exact same r,g,b values ? like whaaaatt
