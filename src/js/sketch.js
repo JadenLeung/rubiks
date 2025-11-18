@@ -134,6 +134,12 @@ export default function (p) {
 	let OLL, PLL, PLLPRAC, OLLPRAC;
 	let competedata = {};
 	let competerooms = {};
+	const glow_instruct_obj = {
+		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
+		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
+		"Side Glow": "Solve a side, to unlock the colors of the next.",
+		"Cuby Glow": "Build the cube, cuby by cuby. Solving the glowing cubies unlocks two more."
+	}
 	let REGULAR;
 	let SPEEDMODE;
 	let TIMEDMODE;
@@ -170,7 +176,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CUBYGLOW2x2;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -272,6 +278,7 @@ export default function (p) {
 		"2x2 Side Glow": switchSize.bind(null, 3, 100, 100),
 		"3x3 Side Glow": switchSize.bind(null, 3, 50, 50),
 		"2x2 Cuby Glow": switchSize.bind(null, 3, 100, 100),
+		"3x3 Cuby Glow": switchSize.bind(null, 3, 50, 50)
 	};
 
 	// attach event
@@ -913,7 +920,7 @@ p.setup = () => {
 	});
 
 	GLOW_SELECT = p.createSelect();
-	["Glow Cube", "Anti-Glow", "Side Glow", "Cuby Glow"].forEach(type => {
+	Object.keys(glow_instruct_obj).forEach(type => {
 		GLOW_SELECT.option(type)
 	})
 	GLOW_SELECT.parent("glow_select");
@@ -3621,11 +3628,6 @@ function CustomGlow() {
 function setCustomGlow() {
 	switchCube(GLOW_CUBE_SELECT.value());
 	CUBENAME = GLOW_CUBE_SELECT.value() + " " + GLOW_SELECT.value();
-	const glow_instruct_obj = {
-		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
-		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
-		"Side Glow": "Solve a side, to unlock the colors of the next."
-	}
 	getEl("glow_instruct").innerHTML = glow_instruct_obj[GLOW_SELECT.value()];
 	reSetup();
 }
@@ -9596,7 +9598,7 @@ function refreshButtons()
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
 		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3,
-		SIDEGLOW3x3, SIDEGLOW2x2, CUBYGLOW2x2
+		SIDEGLOW3x3, SIDEGLOW2x2, CUBYGLOW2x2, CUBYGLOW3x3
 		];
 		
 		CUBE_BUTTONS.forEach(el => {el && el.remove()});
@@ -9798,6 +9800,9 @@ function refreshButtons()
 
 		CUBYGLOW2x2 = p.createButton('2x2 Cuby Glow');
 		setButton(CUBYGLOW2x2, "cubyglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Cuby Glow"); CUBYGLOW2x2.style('background-color', "#8ef5ee");});
+
+		CUBYGLOW3x3 = p.createButton('3x3 Cuby Glow');
+		setButton(CUBYGLOW3x3, "cubyglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Cuby Glow"); CUBYGLOW3x3.style('background-color', "#8ef5ee");});
 	}
 
 }
@@ -13252,6 +13257,24 @@ function colorsInSide(side, cubies) {
 	});
 	colors.delete("k");
 	return colors;
+}
+
+function sideWithOnlyColor(color) {
+	const DIRARR = [
+		{dir: "right", face: 2},
+		{dir: "left", face: 3},
+		{dir: "top", face: 5},
+		{dir: "bottom", face: 4},
+		{dir: "back", face: 0},
+		{dir: "front", face: 1},
+	]
+	for (const obj of DIRARR) {
+		const cubies = getCubiesInSide(obj.dir);
+		if (cubies.every(cuby => getColorByCubyDir(cuby, obj.dir) == color)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function cubyHasColor(cuby, color) {
