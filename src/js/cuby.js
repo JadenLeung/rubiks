@@ -422,7 +422,6 @@ export default class Cuby {
     });
   }
   setFaceColor(c, face, temporary) {
-    console.log("NO", this.index, face, this.innerside[face]);
     if (this.innerside[face]) return;
     if (!temporary) {
       this.savecolors[face] = c;
@@ -433,7 +432,6 @@ export default class Cuby {
     this[face] = c;
   }
   originalFaceColor(face) {
-    console.log("OR", this.index, face, this.innerside[face]);
     if (this.innerside[face]) return;
     if (this.savecolors[face])
       this[face] = this.savecolors[face];
