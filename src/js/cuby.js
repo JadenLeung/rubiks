@@ -203,7 +203,9 @@ export default class Cuby {
       this.back = this.c[custom[mapped][3]];
       this.left = this.c[custom[mapped][4]];
       this.right = this.c[custom[mapped][5]];
-    } else if(SIZE == 3 && custom){
+    } 
+    
+    if(SIZE == 3 && custom){
       console.log(3);
       const cond = ([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
       if(cond && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
