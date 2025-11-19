@@ -47,7 +47,7 @@ export default function (p) {
 	let compete_customarr = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
-	const mods = ["Shape Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies", "Glow Cubes"];
+	const mods = ["Shape and Color Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies", "Glow Cubes"];
 	const speeddata = {
 		0:0.28, 25: 0.25, 50:0.2, 75:0.16677, 100:0.116, 125:0.083, 150:0.033, 175:0.016667, 200:0.016667, 225: 0.016667
 	};
