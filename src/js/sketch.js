@@ -13302,7 +13302,7 @@ function cubyShowColor(colors) {
 }
 
 function setGlowAnimateColor(i) {
-	if (!timer.isRunning || timer.getTime < 0 || CUBENAME.includes("Side Glow")) {
+	if (!timer.isRunning || timer.getTime < 0 || ["Side Glow", "Cuby Glow"].some(name => CUBENAME.includes(name))) {
 		return;
 	}
 	CUBE[i].setColor(CUBE[i].colors.black, true);
