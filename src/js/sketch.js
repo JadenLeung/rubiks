@@ -3214,7 +3214,6 @@ function change9(bigchange = false)
 		let end = (layer + 1) * size * size;
 		let onechecked = false;
 		for (let j = start; j < end; ++j) {
-			console.log("234", start, end, j, layer)
 			if (CHECK[j].checked())
 				onechecked = true;
 		}
@@ -8942,7 +8941,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// setBlackInterior()
-		console.log(strictlySolved([...cubyglows]));
+		console.log(DIM, DIM2);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

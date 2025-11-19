@@ -1,6 +1,5 @@
 export default class Cuby {
   constructor(size, x, y, z, buff, picker, p, index, custom, special, SIZE, existingCube) {
-    console.log("CSTR CALLED");
     //size = 50;
     this.cubysize = size;
     this.x = x;
@@ -12,6 +11,8 @@ export default class Cuby {
     this.stroke = 0.5;
     this.custom = custom;
     this.special = special;
+    const CUBYESIZE = 50;
+    let MAXX = (SIZE - 1) * 25;
     // Preserve savecolors from existing cube if it exists
     if (existingCube && existingCube.savecolors && Object.keys(existingCube.savecolors).length > 0) {
       this.savecolors = {...existingCube.savecolors};
@@ -156,12 +157,14 @@ export default class Cuby {
       m: p.color(245 + xmul,  25 + ymul, 245 + zmul),
     };
 	
-    this.top = this.colors.white; // Red
-    this.bottom = this.colors.yellow; // Orange
-    this.front = this.colors.red; // white
-    this.right = this.colors.blue; // Green
-    this.back = this.colors.orange; // yellow
-    this.left = this.colors.green; // Blue
+    if (custom) {
+      this.back = this.c[this.custom[0][3]];
+      this.front = this.c[this.custom[5][2]];
+      this.bottom = this.c[this.custom[0][1]];
+      this.top = this.c[this.custom[16][0]];
+      this.right = this.c[this.custom[0][5]];
+      this.left = this.c[this.custom[26][4]];
+    }
 
     // const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
     
@@ -175,19 +178,12 @@ export default class Cuby {
 
     if([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
     {
+      console.log(1);
       this.bottom = this.colors.white;
       this.right = this.colors.green;
       this.back = this.colors.red;
-    }
-    if ([6, "2x2x4", "3x3x5", "3x3x4", "1x4x4", "2x3x4", "2x3x5", "1x5x5", "4x4plus", "1x2x2", "pluslite"].includes(size) ||
-        ["3x2x4", "4x3x3", "1x3x2", "5x3x3", "2x2x4", "2x3x5"].includes(this.special[6])) { //rainbow
-      this.back = this.c[this.custom[0][3]];
-      this.front = this.c[this.custom[5][2]];
-      this.bottom = this.c[this.custom[0][1]];
-      this.top = this.c[this.custom[16][0]];
-      this.right = this.c[this.custom[0][5]];
-      this.left = this.c[this.custom[26][4]];
-    } else if (SIZE >= 4 && custom) {
+    } else if (SIZE >= 4 && (size == 50 || size == "lasagna") && custom) {
+      console.log(2);
       let map = {};
       for (let x = 0; x < SIZE; ++x) {
         for (let y = 0; y < SIZE; ++y) {
@@ -208,6 +204,7 @@ export default class Cuby {
       this.left = this.c[custom[mapped][4]];
       this.right = this.c[custom[mapped][5]];
     } else if(SIZE == 3 && custom){
+      console.log(3);
       const cond = ([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
       if(cond && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
       else this.top = this.c[custom[this.index][0]];
@@ -228,8 +225,8 @@ export default class Cuby {
       if(size == 6 && this.index < 18) this.left = this.c[custom[this.index+9][4]];
       if(size == 6 && this.index > 2) this.bottom = this.c[custom[this.index-3][1]];
       if(size == 6 && this.index > 0) this.back = this.c[custom[this.index-1][3]];
-
-    }
+    } 
+    
     if([2,15].includes(special[6])){ //rainbow
         const directions = ["back", "front", "bottom", "top", "right", "left"];
         const op = {back: "front", front: "back", bottom: "top", top:"bottom", right:"left", left:"right"};
@@ -266,7 +263,8 @@ export default class Cuby {
             this[d] = this.c[newstr[index]];
           })
         }
-    }
+    } 
+
     if([13, "lasagna", "sandwich2x2"].includes(size)){
       let a = "";
       let c1 = this.custom[4][5];
@@ -291,6 +289,7 @@ export default class Cuby {
     }
     if(Array.isArray(size) && size[0] != "adding")
     {
+      console.log(5);
       this.top = this.colors[size[2]];
       this.bottom = this.colors[size[5]];
       this.front = this.colors[size[3]];
@@ -300,6 +299,7 @@ export default class Cuby {
     }
     if(Array.isArray(size) && size[0] == "adding")
     {
+      console.log(6);
       if(size[1].includes(index))
       {
         this.top = this.colors.magenta;
