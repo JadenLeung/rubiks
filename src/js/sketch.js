@@ -8697,7 +8697,17 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 		return false;
 	}
 
-	if (rows[0] == -MAXX && isRowEmpty(axis, rows[0])) {
+	if (rows.length == 1 && rows[0] != 0) {
+		let dx = CUBYESIZE * -(Math.sign(rows[0]));
+		console.log("dx is ", dx)
+		while (isRowEmpty(axis, rows[0])) {
+			if(rows[0] < -MAXX || rows[rows.length - 1] > MAXX || rows.length > (MAXX * 2 / CUBYESIZE + 1)) {
+				return false;
+			}
+			console.log(rows[0])
+			rows[0] += dx;
+		}
+	} else if (rows[0] == -MAXX && isRowEmpty(axis, rows[0])) {
 		rows = rows.map(r => (
 			(r === 0 || r + CUBYESIZE === 0 || Math.sign(r) === Math.sign(r + CUBYESIZE))
 				? r + CUBYESIZE
@@ -8957,7 +8967,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// setBlackInterior()
-		// switchCuboid("1x2x2")
+		// switchCuboid("1x2x4")
 		console.log(DIM, DIM2);
 	}
 	if(p.keyCode == 9){ //tab
