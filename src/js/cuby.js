@@ -82,7 +82,7 @@ export default class Cuby {
           }
         }
       }
-    } else if(["3x2x4", "1x3x2", "5x3x3", "1x5x5", "1x2x2", "2x3x5"].includes(this.special[6])) {
+    } else if(["3x2x4", "1x3x2", "5x3x3", "1x5x5", "1x2x2", "2x3x5"].includes(this.special[6]) || this.cubysize == "cuboid") {
       arr = [];
       for (let x = 0; x < SIZE; x++) {
         for (let y = 0; y < SIZE; y++) {
@@ -205,7 +205,7 @@ export default class Cuby {
       this.right = this.c[custom[mapped][5]];
     } 
     
-    if(SIZE == 3 && custom){
+    if(SIZE == 3 && custom && !["pluslite"].includes(this.cubysize)){
       console.log(3);
       const cond = ([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
       if(cond && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
@@ -358,7 +358,7 @@ export default class Cuby {
     const shifts = { back: [0, 0, 0], front: [0, 0, 0], bottom: [0, 0, 0], top: [0, 0, 0], right: [0, 0, 0], left: [0, 0, 0] };
     
     // Check if this is a special shifted cube
-    if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6])) {
+    if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6]) || this.cubysize == "cuboid") {
       let c1 = this.custom[4][5];
       let c2 = this.custom[22][4];
       let c3 = this.custom[14][2];
@@ -799,7 +799,7 @@ export default class Cuby {
   }
   
 
-  if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6])) {
+  if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6]) || this.cubysize == "cuboid") {
     let c1 = this.custom[4][5];
     let c2 = this.custom[22][4];
     let c3 = this.custom[14][2];

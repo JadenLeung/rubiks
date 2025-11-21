@@ -3066,6 +3066,10 @@ function switchCube(cubename) {
 	CUBEMAP[cubename]();
 	CUBENAME = cubename;
 }
+function switchCuboid(cubename, b) {
+	switchSize(5, "cuboid", cubename);
+	CUBENAME = cubename;
+}
 function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3, b = []) {
 	DIM2 = d2;
 	DIM = d;
@@ -6380,7 +6384,19 @@ function showSpeed()
 }
 function reCam()
 {
-	ZOOMADD = DIM == "1x2x2" ? 20 : DIM == "1x2x3" ? 20 : DIM == "2x3x4" ? 60 : DIM == "1x4x4" ? 100 : DIM == "3x3x4" ? 60 : DIM == "3x3x5" || DIM == "2x3x5" ? 120 : DIM == "2x2x4" ? 50 :
+	const ZOOM_OBJ = {
+		1: 0,
+		2: 0,
+		3: 0,
+		4: 100,
+		5: 180,
+	}
+	let detectedzoom = -1;
+	if (String(DIM2).split('x').length - 1 === 2) {
+		let dimarr = DIM2.split("x").map(Number);
+		detectedzoom = ZOOM_OBJ[Math.max(...dimarr)];
+	}
+	ZOOMADD = detectedzoom != -1 ? detectedzoom :
 				SIZE >= 5 ? 180 : SIZE == 4 ? 100 : (DIM2 == 100 || DIM4 == 2) ? 140 : 0;
 	CAM = p.createEasyCam(p._renderer);
 	CAM_PICKER = p.createEasyCam(PICKER.buffer._renderer);
@@ -8941,6 +8957,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// setBlackInterior()
+		// switchCuboid("1x2x2")
 		console.log(DIM, DIM2);
 	}
 	if(p.keyCode == 9){ //tab
