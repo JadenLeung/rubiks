@@ -2332,14 +2332,26 @@ function isInnerSide(cubynum, side) {
 // In 3x3x2 turning, which direction axis does a single move
 // Move is in R, L, etc.
 function singleTurnDir(move) {
+	if (!getMove(MAXX, CUBYESIZE, SIZE)[move]) return true;
+	let dimarr = [2, 3, 3]
 	if (isCuboid(DIM2)) {
-		let dimarr = getCuboidDims(DIM2);
-		let parity = dimarr.reduce((x, y) => x + y, 0);
-		let badindex = dimarr.findIndex(x => x % 2 == parity % 2);
-		console.log(dimarr, parity, badindex);
-		return ["x", "y", "z"][badindex] == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+		dimarr = getCuboidDims(DIM2);
 	}
-	return "x" == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+	let parity = dimarr.reduce((x, y) => x + y, 0);
+	let badindex = dimarr.findIndex(x => x % 2 == parity % 2);
+	let mid = mids[SIZE];
+	let topcolor = getOriginalSideColor("right");
+	let axisarr;
+	console.log("this", topcolor, getColorByCubyDir(mid, "back") );
+	if(getColorByCubyDir(mid, "right") == topcolor || getColorByCubyDir(mid, "left") == topcolor) { //top
+		axisarr = ["x", "y", "z"]
+	} else if(getColorByCubyDir(mid, "back") == topcolor || getColorByCubyDir(mid, "front") == topcolor) { //left
+		axisarr = ["z", "x", "y"]
+	} else {
+		axisarr = ["y", "z", "x"]
+	}
+	console.log("axisarr is ", axisarr);
+	return axisarr[badindex] == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
 }
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
@@ -8972,7 +8984,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// setBlackInterior()
-		console.log(singleTurnDir("R"));
+		console.log(getOriginalSideColor("right"));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9157,8 +9169,8 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case "enter": //enter
-					// let input = prompt("Enter the cube");
-					// switchCuboid(input)
+					let input = prompt("Enter the cube");
+					switchCuboid(input)
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
