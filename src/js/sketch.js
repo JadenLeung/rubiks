@@ -135,6 +135,7 @@ export default function (p) {
 	let competedata = {};
 	let competerooms = {};
 	const glow_instruct_obj = {
+		"None": "No glow effect selected.",
 		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
 		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
 		"Side Glow": "Solve a side, to unlock the colors of the next.",
@@ -908,16 +909,6 @@ p.setup = () => {
 	BANDAGE_SELECT.parent("bandage_select")
 	BANDAGE_SELECT.selected('3x3');
 	BANDAGE_SELECT.changed(setBandage);
-
- 	GLOW_CUBE_SELECT = p.createSelect();
-	Object.keys(DIMS_OBJ).filter(cube => !DIMS_OBJ[cube].type.includes("Glow") && !DIMS_OBJ[cube].type.includes("Sandwich")).forEach(cube => {
-		GLOW_CUBE_SELECT.option(cube)
-	})
-	GLOW_CUBE_SELECT.parent("glow_cube_select");
-	GLOW_CUBE_SELECT.changed(() => {
-		GLOW_CUBE_SELECT.elt.blur();
-		setCustomGlow();
-	});
 
 	GLOW_SELECT = p.createSelect();
 	Object.keys(glow_instruct_obj).forEach(type => {
@@ -2342,17 +2333,16 @@ function singleTurnDir(move) {
 	let mid = mids[SIZE];
 	let topcolor = getOriginalSideColor(["right", "top", "front"][badindex]);
 	console.log("bad index ins ", badindex, topcolor)
-	let axisarr;
+	let checkmove;
 	console.log("this", topcolor, getColorByCubyDir(mid, "back") );
 	if(getColorByCubyDir(mid, "right") == topcolor || getColorByCubyDir(mid, "left") == topcolor) { //top
-		axisarr = ["x", "x", "x"]
+		checkmove = "x"
 	} else if(getColorByCubyDir(mid, "back") == topcolor || getColorByCubyDir(mid, "front") == topcolor) { //left
-		axisarr = ["z", "z", "z"]
+		checkmove = "z"
 	} else {
-		axisarr = ["y", "y", "y"]
+		checkmove = "y"
 	}
-	console.log("axisarr is ", axisarr);
-	return axisarr[badindex] == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+	return checkmove == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
 }
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
@@ -3092,10 +3082,16 @@ function switchCube(cubename) {
 	CUBENAME = cubename;
 }
 function switchCuboid(cubename, b) {
-	switchSize(5, "cuboid", cubename);
 	const dimarr = getCuboidDims(cubename);
+	if (dimarr.every(x => x == 2)) {
+		switchCube("2x2");
+	} else {
+		switchSize(5, "cuboid", cubename);
+	}
 	let input = "3x3x2";
-	if (dimarr.includes(1)) {
+	if (dimarr.every(x => x == 1)) {
+		input = "Normal";
+	} else if (dimarr.includes(1)) {
 		input = "Double Turns";
 	} else if (dimarr.every(x => x % 2 === dimarr[0] % 2)) {
 		input = "Normal";
@@ -3663,8 +3659,11 @@ function CustomGlow() {
 	setCustomGlow();
 }
 function setCustomGlow() {
-	switchCube(GLOW_CUBE_SELECT.value());
-	CUBENAME = GLOW_CUBE_SELECT.value() + " " + GLOW_SELECT.value();
+	let cubename = getEl("dim_x").value + "x" + getEl("dim_y").value + "x" + getEl("dim_z").value;
+	switchCuboid(cubename);
+	if (GLOW_SELECT.value() != "none") {
+		CUBENAME = cubename + " " + GLOW_SELECT.value();
+	}
 	getEl("glow_instruct").innerHTML = glow_instruct_obj[GLOW_SELECT.value()];
 	reSetup();
 }
@@ -8173,6 +8172,9 @@ function shuffleCube(override = false) {
 	timer.stop();
 	let possible = SIZE < 4 ? ["R", "L", "U", "D", "B", "F"] :
 	["R", "L", "U", "D", "B", "F", "Rw", "Lw", "Uw", "Dw", "Bw", "Fw"];
+	if (DIM == "cuboid" && getCuboidDims(DIM2).reduce((a, b) => Math.max(a, b), 0) < 4) {
+		possible = ["R", "L", "U", "D", "B", "F"];
+	}
 	let doubly = false;
 	let dontdo = false;
 	arr = [];
@@ -11475,6 +11477,29 @@ document.getElementById('colorPicker2').addEventListener('input', (event) => {
 document.getElementById('colorPicker3').addEventListener('input', (event) => {
 	document.body.style.color = event.target.value;
 	reSetup();
+});
+
+// Dimension input handlers
+const dimensionInputs = {
+	x: document.getElementById('dim_x'),
+	y: document.getElementById('dim_y'),
+	z: document.getElementById('dim_z')
+};
+
+Object.values(dimensionInputs).forEach(input => {
+	input.addEventListener('change', (event) => {
+		// Ensure only integer values 1-5 on blur/change
+		let value = parseInt(event.target.value);
+		
+		// If value is invalid, empty, or out of range, set to 3
+		if (isNaN(value) || value < 1 || value > 5) {
+			event.target.value = 3;
+		} else {
+			// Valid change - call setCustomGlow()
+			event.target.value = value;
+			setCustomGlow();
+		}
+	});
 });
 
 function rgbToHex(r, g, b) {

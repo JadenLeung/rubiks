@@ -222,11 +222,22 @@
 				<p id = "cancelban" style = "text-align:center; margin:5px; padding:0px;"></p>
 				<p id = "deleteban" style = "text-align:center; margin:5px; padding:0px;"></p>
 			</div>
-			<div id = "customglow" style = "font-size:10px;">
+			<div id = "customglow" style = "font-size:16px;">
 				<div style = "margin-top:10px;">
 					<p id = "customglowback" style = "display:inline; text-align:center; margin-top: 10px; margin-bottom: 5px;"></p>
+					<h6 style = "text-align:center; margin-top: 10px;">Cube Dimensions</h6>
+					<div id = "dimensions" style = "font-size:10px;">
+						<div style = "margin-top:10px;">
+							<p style = "margin-top: 10px; font-size:16px; text-align:center;">
+								<input type="number" id="dim_x" min="1" max="5" value="3" style="width: 50px; padding: 5px; font-size: 14px;">
+								<span style="margin: 0 5px;">×</span>
+								<input type="number" id="dim_y" min="1" max="5" value="3" style="width: 50px; padding: 5px; font-size: 14px;">
+								<span style="margin: 0 5px;">×</span>
+								<input type="number" id="dim_z" min="1" max="5" value="3" style="width: 50px; padding: 5px; font-size: 14px;">
+							</p>
+						</div>
+					</div>
 					<h6 style = "text-align:center; margin-top: 10px;">Custom Glow</h6>
-					<p style = "margin-top: 20px; font-size:16px;">Cube: <span id = "glow_cube_select" style = "font-size:15px;"></span></p>
 					<p style = "margin-top: 10px; font-size:16px;">Glow Type: <span id = "glow_select" style = "font-size:15px;"></span></p>
 					<p style = "margin-top: 10px; font-size:16px;" id = "glow_instruct"></p>
 				</div>
