@@ -2340,15 +2340,16 @@ function singleTurnDir(move) {
 	let parity = dimarr.reduce((x, y) => x + y, 0);
 	let badindex = dimarr.findIndex(x => x % 2 == parity % 2);
 	let mid = mids[SIZE];
-	let topcolor = getOriginalSideColor("right");
+	let topcolor = getOriginalSideColor(["right", "top", "front"][badindex]);
+	console.log("bad index ins ", badindex, topcolor)
 	let axisarr;
 	console.log("this", topcolor, getColorByCubyDir(mid, "back") );
 	if(getColorByCubyDir(mid, "right") == topcolor || getColorByCubyDir(mid, "left") == topcolor) { //top
-		axisarr = ["x", "y", "z"]
+		axisarr = ["x", "x", "x"]
 	} else if(getColorByCubyDir(mid, "back") == topcolor || getColorByCubyDir(mid, "front") == topcolor) { //left
-		axisarr = ["z", "x", "y"]
+		axisarr = ["z", "z", "z"]
 	} else {
-		axisarr = ["y", "z", "x"]
+		axisarr = ["y", "y", "y"]
 	}
 	console.log("axisarr is ", axisarr);
 	return axisarr[badindex] == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
@@ -3092,6 +3093,15 @@ function switchCube(cubename) {
 }
 function switchCuboid(cubename, b) {
 	switchSize(5, "cuboid", cubename);
+	const dimarr = getCuboidDims(cubename);
+	let input = "3x3x2";
+	if (dimarr.includes(1)) {
+		input = "Double Turns";
+	} else if (dimarr.every(x => x % 2 === dimarr[0] % 2)) {
+		input = "Normal";
+	}
+	INPUT.value(input);
+	SCRAM.value(input);
 	CUBENAME = cubename;
 }
 function switchSize(s, d = 50, d2 = 50, input = "Normal", d3 = 3, b = []) {
@@ -9169,8 +9179,8 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case "enter": //enter
-					let input = prompt("Enter the cube");
-					switchCuboid(input)
+					// let input = prompt("Enter the cube");
+					// switchCuboid(input)
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
@@ -9258,7 +9268,7 @@ function shownCubies() {
 }
 function adjustMove(move) {
 	console.log("move is ", move)
-	if (["2x2x4", "3x3x5", "2x3x4", "2x3x5"].includes(DIM) || custom == 1 && CUSTOMSHIFT.checked() && SIZE > 3) {
+	if (["2x2x4", "3x3x5", "2x3x4", "2x3x5"].includes(DIM) || custom == 1 && CUSTOMSHIFT.checked() && SIZE > 3 || DIM == "cuboid") {
 		// if (["M", "S", "E"].includes(move[0]) && !isCube() && DIM == "2x2x4") {
 		// 	console.log("Illegal!");
 		// 	return false;
