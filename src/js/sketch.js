@@ -2329,6 +2329,18 @@ function isInnerSide(cubynum, side) {
 	let cuby = CUBE[cubynum];
 	return findCubyNear(cuby.x + sidearr[0], cuby.y + sidearr[1], cuby.z + sidearr[2], sidearr[0], sidearr[1], sidearr[2]) != -1;
 }
+// In 3x3x2 turning, which direction axis does a single move
+// Move is in R, L, etc.
+function singleTurnDir(move) {
+	if (isCuboid(DIM2)) {
+		let dimarr = getCuboidDims(DIM2);
+		let parity = dimarr.reduce((x, y) => x + y, 0);
+		let badindex = dimarr.findIndex(x => x % 2 == parity % 2);
+		console.log(dimarr, parity, badindex);
+		return ["x", "y", "z"][badindex] == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+	}
+	return "x" == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
+}
 function rotateIt(){
 	CAM.rotateX(-p.PI / ROTX);
 	CAM.rotateY(-p.PI / ROTY);
@@ -3539,7 +3551,7 @@ function inputPressed(move)
 		arr = [move];
 		if(INPUT.value() == "Double Turns")
 			arr.push(arr[0]);
-		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
+		if(INPUT.value() == "3x3x2" && !singleTurnDir(includes(arr[0][0])))			
 			arr.push(arr[0]);
 		if(INPUT.value() == "Gearcube") {
 			if (['M', 'S', 'E'].includes(arr[0][0])) {
@@ -6382,6 +6394,12 @@ function showSpeed()
 		setDisplay("block", ["divider"]);
 	}
 }
+function isCuboid(dim) {
+	return String(dim).split('x').length - 1 === 2;
+}
+function getCuboidDims(dim) {
+	return dim.split("x").map(Number);
+}
 function reCam()
 {
 	const ZOOM_OBJ = {
@@ -6392,7 +6410,7 @@ function reCam()
 		5: 180,
 	}
 	let detectedzoom = -1;
-	if (String(DIM2).split('x').length - 1 === 2) {
+	if (isCuboid(DIM2)) {
 		let dimarr = DIM2.split("x").map(Number);
 		detectedzoom = ZOOM_OBJ[Math.max(...dimarr)];
 	}
@@ -8079,19 +8097,11 @@ function shufflePossible(len, total2, prev){
 		return;
 	}
 	let rnd2 = Math.random();
-	let bad5 = [];
 	let mid = mids[SIZE];
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
-	console.log("setup is ", setup)
-	if(setup[0] == -MAXX || setup[0] == MAXX) //top
-		bad5 = ['L','R','F','B','S','M','l','r','f','b', "Lw", "Rw", "Fw", "Bw", "Mw", "Sw"];
-	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
-		bad5 = ['U','D','F','B','E','S','u','d','f','b',"Uw","Dw","Fw","Bw","Ew","Sw"];
-	else bad5 = ['L','R','U','D','E','M','l','r','u','d',"Lw","Rw","Uw","Dw","Ew","Mw"]; // front
-
 	
 	if(SCRAM.value() == "Double Turns" || 
-	((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(BANDAGE_SELECT.value()) && len < 15)) && bad5.includes(actualmove)))
+	((SCRAM.value() == "3x3x2" || (["2x2x4", "3x3x5"].includes(BANDAGE_SELECT.value()) && len < 15)) && !singleTurnDir(actualmove)))
 	{
 		arr.push(actualmove);
 		arr.push(actualmove);
@@ -8146,7 +8156,6 @@ function shuffleCube(override = false) {
 	arr = [];
 	let bad = "";
 	let total = "";
-	let bad5 = [];
 	let mid = mids[SIZE];
 	cursolvestat = {};
 	cursolvestat.active = true;
@@ -8157,11 +8166,6 @@ function shuffleCube(override = false) {
 	}
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 	console.log("setup is ", setup)
-	if(setup[0] == -MAXX || setup[0] == MAXX) //top
-		bad5 = ['L','R','F','B','S','M','l','r','f','b'];
-	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
-		bad5 = ['U','D','F','B','E','S','u','d','f','b'];
-	else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 	if(true)
 	{
 		if(SCRAM.value() == "Middle Slices")
@@ -8247,7 +8251,7 @@ function shuffleCube(override = false) {
 				total += rnd + "2 ";
 			} else if(doubly || ((SCRAM.value() == "3x3x2" 
 			|| ((["2x2x4", "3x3x5"].includes(DIM) || (custom == 1 && SIZE > 3 && CUSTOMSHIFT.checked())) && i < 15))
-			 &&  bad5.includes(rnd[0])))
+			 && !singleTurnDir(rnd)))
 			{
 				console.log("HEREEEE")
 				arr.push(rnd);
@@ -8683,6 +8687,7 @@ function animateRotate(axis, dir) {
 	}
 }
 function animate(axis, rows, dir, timed, bcheck = true) {
+	console.log(axis, rows);
 	displayAverage();
 	rows = rows.sort((a, b) => a - b);
 	
@@ -8967,8 +8972,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// setBlackInterior()
-		// switchCuboid("1x2x4")
-		console.log(DIM, DIM2);
+		console.log(singleTurnDir("R"));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9055,12 +9059,6 @@ p.keyPressed = (event) => {
 		}
 		let mid = mids[SIZE];
 		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
-		let bad5 = [];
-		if(setup[0] == -MAXX || setup[0] == MAXX) //top
-			bad5 = ['L','R','F','B','S','M','l','r','f','b'];
-		else if(setup[2] == -MAXX || setup[2] == MAXX) //left
-			bad5 = ['U','D','F','B','E','S','u','d','f','b'];
-		else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 
 		const rotations = ["x", "x'", "y", "y'", "z", "z'"];
 			
@@ -9090,7 +9088,7 @@ p.keyPressed = (event) => {
 				console.log("HEREERE")
 				arr.push(arr[0]);
 			}
-			if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
+			if(INPUT.value() == "3x3x2" && !singleTurnDir(arr[0][0]))			
 				arr.push(arr[0]);
 			if(INPUT.value() == "Gearcube") {
 				if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
@@ -9159,6 +9157,8 @@ p.keyPressed = (event) => {
 			}
 			break;
 			case "enter": //enter
+					// let input = prompt("Enter the cube");
+					// switchCuboid(input)
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
@@ -9497,14 +9497,8 @@ function flexDo(foo, arr, shift = false) {
 	} else if (INPUT.value() == "Gearcube II") {
 		funcMult(foo, 3);
 	} else if (INPUT.value() == "3x3x2") {
-		let bad5 = [];
 		let mid = mids[SIZE];
-		// if (custom == 1) mid = shownCubies()[Math.floor(shownCubies().length / 2)];
-		let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
-		if(setup[0] == -MAXX || setup[0] == MAXX) bad5 = ['L','R','F','B','S','M'];
-		else if(setup[2] == -MAXX || setup[2] == MAXX) bad5 = ['U','D','F','B','E','S'];
-		else bad5 = ['L','R','U','D','E','M']; // front
-		if (bad5.includes(arr[arr.length - 1][0].toUpperCase())) {
+		if (!singleTurnDir(arr[arr.length - 1][0])) {
 			funcMult(foo, 2);
 		} else {
 			funcMult(foo, 1);
@@ -12363,15 +12357,9 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 	if(Array.isArray(DIM) && DIM[0] == "adding") return; 
 	if (cuby1 == -1 || cuby2 == -1) return;
 	console.log("Drag that idiot", cuby1, color1, cuby2, color2);
-	let bad5 = [];
 	let mid = mids[SIZE];
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 	console.log("setup is ", setup)
-	if(setup[0] == -MAXX || setup[0] == MAXX) //top
-		bad5 = ['L','R','F','B','S','M','l','r','f','b'];
-	else if(setup[2] == -MAXX || setup[2] == MAXX) //left
-		bad5 = ['U','D','F','B','E','S','u','d','f','b'];
-	else bad5 = ['L','R','U','D','E','M','l','r','u','d']; // front
 
 	const xaxis = SIZE > 4 ? ["L'", "l'", "M'", "r", "R"] :
 	SIZE == 4 ? ["L'", "l'", "r", "R"] : ["L'", "M'", "R"];
@@ -12526,7 +12514,7 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 	if (turning) {
 		if(INPUT.value() == "Double Turns")
 			arr.push(arr[0]);
-		if(INPUT.value() == "3x3x2" && bad5.includes(arr[0][0]))			
+		if(INPUT.value() == "3x3x2" && !singleTurnDir(arr[0][0]))			
 			arr.push(arr[0]);
 		if(INPUT.value() == "Gearcube") {
 			if (['M', 'S', 'E','l','r','u','d','f','b'].includes(arr[0][0])) {
