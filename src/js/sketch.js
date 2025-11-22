@@ -3089,7 +3089,7 @@ function switchCuboid(cubename, b) {
 		switchSize(5, "cuboid", cubename);
 	}
 	let input = "3x3x2";
-	if (dimarr.every(x => x == 1)) {
+	if (dimarr.filter(x => x === 1).length >= 2) {
 		input = "Normal";
 	} else if (dimarr.includes(1)) {
 		input = "Double Turns";
@@ -3661,7 +3661,7 @@ function CustomGlow() {
 function setCustomGlow() {
 	let cubename = getEl("dim_x").value + "x" + getEl("dim_y").value + "x" + getEl("dim_z").value;
 	switchCuboid(cubename);
-	if (GLOW_SELECT.value() != "none") {
+	if (GLOW_SELECT.value() != "None") {
 		CUBENAME = cubename + " " + GLOW_SELECT.value();
 	}
 	getEl("glow_instruct").innerHTML = glow_instruct_obj[GLOW_SELECT.value()];
