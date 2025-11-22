@@ -8223,6 +8223,16 @@ function shuffleCube(override = false) {
 	if (SIZE == 4) s = 30;
 	if (["2x2x4", "3x3x5"].includes(DIM) || SIZE > 4 || (SIZE == 4 && custom == 1)) s = 45;
 	if (["3x3x4", "1x4x4"].includes(DIM)) s = 30;
+	const scramble_obj = {
+		1: 4,
+		2: 10,
+		3: 18,
+		4: 45,
+		5: 60,
+	}
+	if (DIM == "cuboid") {
+		s = scramble_obj[getCuboidDims(DIM2).reduce((a, b) => Math.max(a, b), 0)];
+	}
 	console.log("S is", s)
 	if (shownCubies().length < 15 && custom == 0) s = 10;
 	console.log("s is", s)
@@ -9351,7 +9361,7 @@ function multiple(nb, timed, use = "default") {
 	else
 	{
 		shuffling = false;
-		if (isSolved() && numshuffle < 5 && use.includes("scramble") && ((["1x2x3", "1x2x2", "sandwich2x2"].includes(DIM)) || MODE == "competing")) {
+		if (isSolved() && numshuffle < 5 && use.includes("scramble") && ((["1x2x3", "1x2x2", "sandwich2x2", "cuboid"].includes(DIM)) || MODE == "competing")) {
 			shuffleCube(true);
 			numshuffle++;
 			return;
