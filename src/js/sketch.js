@@ -3796,22 +3796,14 @@ function regular(nocustom){
 		solvedata = saveao5[2];
 		movesarr = saveao5[3];
 	}
-	if (DIM2 != 50 && DIM2 != 100 || comstep > 0) {
-		startCube();
-	}
+	startCube();
 	document.getElementById("scramble").innerHTML = "N/A";
 	document.getElementById('password').value = '';
 	DELAY_SLIDER.value(0);
 	DELAY = 0;
 	canMan = true;
 	DIM = DIM2;
-	if(["cube","daily", "weekly"].includes(MODE)) {
-		startCube() 
-	}
 	MODE = "normal";
-	if (mastep > 0) {
-		startCube() 
-	}
 	fullScreen(false);
 	reSetup();
 	displayAverage();
@@ -9005,8 +8997,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// setBlackInterior()
-		console.log(getOriginalSideColor("right"));
+		console.log(DIM, DIM2, CUBENAME);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
