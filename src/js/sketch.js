@@ -2330,16 +2330,20 @@ function singleTurnDir(move) {
 	let parity = dimarr.reduce((x, y) => x + y, 0);
 	let badindex = dimarr.findIndex(x => x % 2 == parity % 2);
 	let mid = mids[SIZE];
-	let topcolor = getOriginalSideColor(["right", "top", "front"][badindex]);
-	console.log("bad index ins ", badindex, topcolor)
 	let checkmove;
-	console.log("this", topcolor, getColorByCubyDir(mid, "back") );
-	if(getColorByCubyDir(mid, "right") == topcolor || getColorByCubyDir(mid, "left") == topcolor) { //top
-		checkmove = "x"
-	} else if(getColorByCubyDir(mid, "back") == topcolor || getColorByCubyDir(mid, "front") == topcolor) { //left
-		checkmove = "z"
+	if (dimarr.filter(x => x == 1).length >= 2) {
+		return true;
+	} else if (dimarr.includes(1)) {
+		return false;
 	} else {
-		checkmove = "y"
+		let topcolor = getOriginalSideColor(["right", "top", "front"][badindex]);
+		if(getColorByCubyDir(mid, "right") == topcolor || getColorByCubyDir(mid, "left") == topcolor) { //top
+			checkmove = "x"
+		} else if(getColorByCubyDir(mid, "back") == topcolor || getColorByCubyDir(mid, "front") == topcolor) { //left
+			checkmove = "z"
+		} else {
+			checkmove = "y"
+		}
 	}
 	return checkmove == getMove(MAXX, CUBYESIZE, SIZE)[move][0];
 }
@@ -8998,7 +9002,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(ao5, mo5);
+		console.log(DIM, DIM2);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
