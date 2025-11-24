@@ -3796,7 +3796,9 @@ function regular(nocustom){
 		solvedata = saveao5[2];
 		movesarr = saveao5[3];
 	}
-	startCube();
+	if (CUBENAME != "3x3" && CUBENAME != "2x2") {
+		startCube();
+	}
 	document.getElementById("scramble").innerHTML = "N/A";
 	document.getElementById('password').value = '';
 	DELAY_SLIDER.value(0);
