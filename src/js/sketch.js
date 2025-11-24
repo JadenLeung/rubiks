@@ -1642,6 +1642,7 @@ setInterval(() => {
 			easystep++;
 			console.log("wefg")
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(Math.round(timer.getTime() / 10)/100.0);
 			easy();
 		}
 		else if(easystep == 5)
@@ -1655,6 +1656,7 @@ setInterval(() => {
 					{
 						timer.stop();
 						ao5.push(Math.round(timer.getTime() / 10)/100.0);
+						mo5.push(timer.roundedTime());
 						easystep++;
 						easy();
 					}	
@@ -1664,6 +1666,7 @@ setInterval(() => {
 			{
 				timer.stop();
 				ao5.push(Math.round(timer.getTime() / 10)/100.0);
+				mo5.push(timer.roundedTime());
 				easystep++;
 				easy();
 			}
@@ -1674,6 +1677,7 @@ setInterval(() => {
 			{
 				timer.stop();
 				ao5.push(Math.round(timer.getTime() / 10)/100.0);
+				mo5.push(timer.roundedTime());
 				easystep++;
 				easy();
 			}
@@ -1681,20 +1685,16 @@ setInterval(() => {
 		else if(medstep == 1 && mostSolved() == 9 || medstep == 3 && isSolved() || medstep == 5 && oppositeCross() || medstep == 7 && twobytwo() >= 3)
 		{
 			timer.stop();
-			if(ao5 == 0)
-			ao5 = [Math.round(timer.getTime() / 10)/100.0];
-			else
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(timer.roundedTime());
 			medstep++;
 			medium();
 		}
 		else if(isSolved() && pllstep % 2 == 1)
 		{
 			timer.stop();
-			if(ao5 == 0)
-			ao5 = [Math.round(timer.getTime() / 10)/100.0];
-			else
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(timer.roundedTime());
 			pllstep++;
 			speedPLL();
 		} else if(((isSolved() && pracmode == "PLL") || (sideSolved(realtop) && pracmode == "OLL")) && pllpracstep % 2 == 1) {
@@ -1715,10 +1715,8 @@ setInterval(() => {
 			practicePLL();
 		} else if(sideSolved(realtop) && ollstep % 2 == 1) {
 			timer.stop();
-			if(ao5 == 0)
-			ao5 = [Math.round(timer.getTime() / 10)/100.0];
-			else
 			ao5.push(Math.round(timer.getTime() / 10)/100.0);
+			mo5.push(timer.roundedTime());
 			ollstep++;
 			speedOLL();
 		}
@@ -1730,6 +1728,7 @@ setInterval(() => {
 			timer.stop();
 			let value = ma_data.type == "blind" ? peeks : Math.round(timer.getTime() / 10)/100.0;
 			ao5.push(value);
+			mo5.push(timer.roundedTime());
 			mastep++;
 			peeks = 0;
 			shapemarathon();
@@ -1806,8 +1805,8 @@ setInterval(() => {
 			comstep++;
 			timer.stop();
 			let time = timer.getTime() < 0 ? 0 : Math.round(timer.getTime() / 10)/100.0;
-			if(ao5 == 0) ao5 = [time];
-			else ao5.push(time);
+			ao5.push(time);
+			mo5.push(time);
 			console.log("time is ", time, timer.getTime());
 			socket.emit("progress-update", room, 100, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
 			if (competedata.data.type == "teamblind") {
@@ -1822,8 +1821,8 @@ setInterval(() => {
 			timer.stop();
 			timer.reset();
 			comstep++;
-			if(ao5 == 0) ao5 = ["DNF"];
-			else ao5.push("DNF");
+			ao5.push("DNF");
+			mo5.push("DNF");
 			socket.emit("solved", room, "DNF");
 			fadeInText(1, "DNF");
 			setTimeout(() => {fadeInText(0, "DNF")}, 400);
@@ -2827,8 +2826,8 @@ function giveUp()
 		timer.reset();
 		comstep++;
 		if (competedata.data.type != "teamblind") {
-			if(ao5 == 0) ao5 = ["DNF"];
-			else ao5.push("DNF");
+			ao5.push("DNF");
+			mo5.push("DNF");
 		}
 		socket.emit("solved", room, "DNF");
 		fadeInText(1, "DNF");
@@ -8999,7 +8998,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(DIM, DIM2, CUBENAME);
+		console.log(ao5, mo5);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9732,125 +9731,123 @@ function refreshButtons()
 
 	MOVESMODE2 = p.createButton('Chal');
 	setButton(MOVESMODE2, "mode8", 'btn btn-info btn-sm mode1', 'text-align:center; font-size:10px;', movesmode.bind(null, 0));
-	if(modnum == 0)
-	{
-		ONEBYTHREE = setCubeButton(ONEBYTHREE, "cube1", "1x3x3");
+	
+	// Shape Mods
+	ONEBYTHREE = setCubeButton(ONEBYTHREE, "cube1", "1x3x3");
 
-		SANDWICH = p.createButton('3x3x2');
-		setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, () => switchCube("3x3x2"));
+	SANDWICH = p.createButton('3x3x2');
+	setButton(SANDWICH, "cube2", 'btn btn-info', allcubestyle, () => switchCube("3x3x2"));
 
-		CUBE15 = p.createButton('2x2x3');
-		setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
+	CUBE15 = p.createButton('2x2x3');
+	setButton(CUBE15, "cube15", 'btn btn-info', allcubestyle, () => switchCube("2x2x3"));
 
-		CUBE3 = p.createButton('Plus Cube');
-		setButton(CUBE3, "cube3", 'btn btn-info', allcubestyle, () => switchCube("Plus Cube"));
+	CUBE3 = p.createButton('Plus Cube');
+	setButton(CUBE3, "cube3", 'btn btn-info', allcubestyle, () => switchCube("Plus Cube"));
 
-		CUBE4 = p.createButton(isthin ? 'Xmas 3x3' : 'Christmas 3x3');
-		setButton(CUBE4, "cube4", 'btn btn-info', allcubestyle, () => switchCube("Xmas 3x3"));
+	CUBE4 = p.createButton(isthin ? 'Xmas 3x3' : 'Christmas 3x3');
+	setButton(CUBE4, "cube4", 'btn btn-info', allcubestyle, () => switchCube("Xmas 3x3"));
 
-		CUBE5 = p.createButton(isthin ? 'Xmas 2x2' : 'Christmas 2x2');
-		setButton(CUBE5, "cube5", 'btn btn-info', allcubestyle, () => switchCube("Xmas 2x2"));
+	CUBE5 = p.createButton(isthin ? 'Xmas 2x2' : 'Christmas 2x2');
+	setButton(CUBE5, "cube5", 'btn btn-info', allcubestyle, () => switchCube("Xmas 2x2"));
 
-		CUBE6 = p.createButton('Jank 2x2');
-		setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, () => switchCube("Jank 2x2"));
+	CUBE6 = p.createButton('Jank 2x2');
+	setButton(CUBE6, "cube6", 'btn btn-info', allcubestyle, () => switchCube("Jank 2x2"));
 
-		CUBE13 = p.createButton('Sandwich Cube');
-		setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, () => switchCube("Sandwich"));
-	}
-	else if (modnum == 1) {
-		CUBE7 = p.createButton('Slice Bandage');
-		setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, () => switchCube("Slice Bandage"));
+	CUBE13 = p.createButton('Sandwich Cube');
+	setButton(CUBE13, "cube13", 'btn btn-info', allcubestyle, () => switchCube("Sandwich"));
 
-		CUBE8 = p.createButton('The Pillars');
-		setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, () => switchCube("Pillars"));
+	// Bandage Mods
+	CUBE7 = p.createButton('Slice Bandage');
+	setButton(CUBE7, "cube7", 'btn btn-info', allcubestyle, () => switchCube("Slice Bandage"));
 
-		CUBE9 = p.createButton('Triple Quad');
-		setButton(CUBE9, "cube9", 'btn btn-info', allcubestyle, () => switchCube("Triple Quad"));
+	CUBE8 = p.createButton('The Pillars');
+	setButton(CUBE8, "cube8", 'btn btn-info', allcubestyle, () => switchCube("Pillars"));
 
-		CUBE10 = p.createButton('Bandaged 2x2');
-		setButton(CUBE10, "cube10", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 2x2"));
+	CUBE9 = p.createButton('Triple Quad');
+	setButton(CUBE9, "cube9", 'btn btn-info', allcubestyle, () => switchCube("Triple Quad"));
 
-		CUBE11 = p.createButton('Z Perm');
-		setButton(CUBE11, "cube11", 'btn btn-info', allcubestyle, () => switchCube("Z Perm"));
+	CUBE10 = p.createButton('Bandaged 2x2');
+	setButton(CUBE10, "cube10", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 2x2"));
 
-		CUBE12 = p.createButton('T Perm');
-		setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, () => switchCube("T Perm"));
+	CUBE11 = p.createButton('Z Perm');
+	setButton(CUBE11, "cube11", 'btn btn-info', allcubestyle, () => switchCube("Z Perm"));
 
-		CUBE14 = p.createButton('Cube Bandage');
-		setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, () => switchCube("Cube Bandage"));
+	CUBE12 = p.createButton('T Perm');
+	setButton(CUBE12, "cube12", 'btn btn-info', allcubestyle, () => switchCube("T Perm"));
 
-		CUBE16 = p.createButton('Bandaged 3x3x2');
-		setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 3x3x2"));
-	} else if (modnum == 2) {
-		FOURBYFOUR = p.createButton('4x4');
-		setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchCube("4x4"); FOURBYFOUR.style('background-color', "#8ef5ee");});
+	CUBE14 = p.createButton('Cube Bandage');
+	setButton(CUBE14, "cube14", 'btn btn-info', allcubestyle, () => switchCube("Cube Bandage"));
 
-		FIVEBYFIVE = p.createButton('5x5');
-		setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchCube("5x5"); FIVEBYFIVE.style('background-color', "#8ef5ee");});
+	CUBE16 = p.createButton('Bandaged 3x3x2');
+	setButton(CUBE16, "cube16", 'btn btn-info', allcubestyle, () => switchCube("Bandaged 3x3x2"));
+	
+	FOURBYFOUR = p.createButton('4x4');
+	setButton(FOURBYFOUR, "4x4", 'btn btn-info', allcubestyle, () => {switchCube("4x4"); FOURBYFOUR.style('background-color', "#8ef5ee");});
 
-		TWOBYTWOBYFOUR = p.createButton('2x2x4');
-		setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchCube("2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
+	FIVEBYFIVE = p.createButton('5x5');
+	setButton(FIVEBYFIVE, "5x5", 'btn btn-info', allcubestyle, () => {switchCube("5x5"); FIVEBYFIVE.style('background-color', "#8ef5ee");});
 
-		TWOBYTHREEBYFOUR = p.createButton('2x3x4');
-		setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchCube("2x3x4"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+	TWOBYTWOBYFOUR = p.createButton('2x2x4');
+	setButton(TWOBYTWOBYFOUR, "2x2x4", 'btn btn-info', allcubestyle, () => {switchCube("2x2x4"); TWOBYTWOBYFOUR.style('background-color', "#8ef5ee");});
 
-		TWOBYTHREEBYFIVE = p.createButton('2x3x5');
-		setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {switchCube("2x3x5"); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+	TWOBYTHREEBYFOUR = p.createButton('2x3x4');
+	setButton(TWOBYTHREEBYFOUR, "2x3x4", 'btn btn-info', allcubestyle, () => {switchCube("2x3x4"); TWOBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
-		THREEBYTHREEBYFOUR = p.createButton('3x3x4');
-		setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchCube("3x3x4"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
+	TWOBYTHREEBYFIVE = p.createButton('2x3x5');
+	setButton(TWOBYTHREEBYFIVE, "2x3x5", 'btn btn-info', allcubestyle, () => {switchCube("2x3x5"); TWOBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
-		THREEBYTHREEBYFIVE = p.createButton('3x3x5');
-		setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchCube("3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
+	THREEBYTHREEBYFOUR = p.createButton('3x3x4');
+	setButton(THREEBYTHREEBYFOUR, "3x3x4", 'btn btn-info', allcubestyle, () => {switchCube("3x3x4"); THREEBYTHREEBYFOUR.style('background-color', "#8ef5ee");});
 
-		LASAGNA = p.createButton('Earth Cube');
-		setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchCube("Earth Cube"); LASAGNA.style('background-color', "#8ef5ee");});
+	THREEBYTHREEBYFIVE = p.createButton('3x3x5');
+	setButton(THREEBYTHREEBYFIVE, "3x3x5", 'btn btn-info', allcubestyle, () => {switchCube("3x3x5"); THREEBYTHREEBYFIVE.style('background-color', "#8ef5ee");});
 
-		FOURPLUS = p.createButton('4x4 Plus Cube');
-		setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchCube("4x4 Plus Cube"); FOURPLUS.style('background-color', "#8ef5ee");});
-	} else if (modnum == 3) {
-		ONEBYTWOBYTWO = p.createButton('1x2x2');
-		setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {switchCube("1x2x2"); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
+	LASAGNA = p.createButton('Earth Cube');
+	setButton(LASAGNA, "lasagna", 'btn btn-info', allcubestyle, () => {switchCube("Earth Cube"); LASAGNA.style('background-color', "#8ef5ee");});
 
-		ONEBYTWOBYTHREE = p.createButton('1x2x3');
-		setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {switchCube("1x2x3"); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
+	FOURPLUS = p.createButton('4x4 Plus Cube');
+	setButton(FOURPLUS, "4x4plus", 'btn btn-info', allcubestyle, () => {switchCube("4x4 Plus Cube"); FOURPLUS.style('background-color', "#8ef5ee");});
+	ONEBYTWOBYTWO = p.createButton('1x2x2');
+	setButton(ONEBYTWOBYTWO, "1x2x2", 'btn btn-info', allcubestyle, () => {switchCube("1x2x2"); ONEBYTWOBYTWO.style('background-color', "#8ef5ee");});
 
-		ONEBYFOURBYFOUR = p.createButton('1x4x4');
-		setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchCube("1x4x4"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
+	ONEBYTWOBYTHREE = p.createButton('1x2x3');
+	setButton(ONEBYTWOBYTHREE, "1x2x3", 'btn btn-info', allcubestyle, () => {switchCube("1x2x3"); ONEBYTWOBYTHREE.style('background-color', "#8ef5ee");});
 
-		ONEBYFIVEBYFIVE = p.createButton('1x5x5');
-		setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {switchCube("1x5x5"); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
+	ONEBYFOURBYFOUR = p.createButton('1x4x4');
+	setButton(ONEBYFOURBYFOUR, "1x4x4", 'btn btn-info', allcubestyle, () => {switchCube("1x4x4"); ONEBYFOURBYFOUR.style('background-color', "#8ef5ee");});
 
-		SANDWICH2 = p.createButton('Sandwich 2x2');
-		setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {switchCube("Sandwich 2x2"); SANDWICH2.style('background-color', "#8ef5ee");});
+	ONEBYFIVEBYFIVE = p.createButton('1x5x5');
+	setButton(ONEBYFIVEBYFIVE, "1x5x5", 'btn btn-info', allcubestyle, () => {switchCube("1x5x5"); ONEBYFIVEBYFIVE.style('background-color', "#8ef5ee");});
 
-		PLUSLITE = p.createButton('Plus Lite');
-		setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {switchCube("Plus Lite"); PLUSLITE.style('background-color', "#8ef5ee");});
+	SANDWICH2 = p.createButton('Sandwich 2x2');
+	setButton(SANDWICH2, "sandwich2x2", 'btn btn-info', allcubestyle, () => {switchCube("Sandwich 2x2"); SANDWICH2.style('background-color', "#8ef5ee");});
 
-		PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
-		setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {switchCube("3x3x2 Plus Cube"); PLUS3x3x2.style('background-color', "#8ef5ee");});
+	PLUSLITE = p.createButton('Plus Lite');
+	setButton(PLUSLITE, "pluslite", 'btn btn-info', allcubestyle, () => {switchCube("Plus Lite"); PLUSLITE.style('background-color', "#8ef5ee");});
 
-		SNAKE_EYE = p.createButton('Snake Eyes');
-		setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {switchCube("Snake Eyes");  SNAKE_EYE.style('background-color', "#8ef5ee");});
-	} else if (modnum == 4) {
-		GLOW3x3 = p.createButton('3x3 Glow Cube');
-		setButton(GLOW3x3, "glow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Glow Cube"); GLOW3x3.style('background-color', "#8ef5ee");});
+	PLUS3x3x2 = p.createButton('3x3x2 Plus Cube');
+	setButton(PLUS3x3x2, "plus3x3x2", 'btn btn-info', allcubestyle, () => {switchCube("3x3x2 Plus Cube"); PLUS3x3x2.style('background-color', "#8ef5ee");});
 
-		ANTIGLOW3x3 = p.createButton('3x3 Anti-Glow');
-		setButton(ANTIGLOW3x3, "antiglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Anti-Glow"); ANTIGLOW3x3.style('background-color', "#8ef5ee");});
+	SNAKE_EYE = p.createButton('Snake Eyes');
+	setButton(SNAKE_EYE, "snake_eye", 'btn btn-info', allcubestyle, () => {switchCube("Snake Eyes");  SNAKE_EYE.style('background-color', "#8ef5ee");});
 
-		SIDEGLOW3x3 = p.createButton('3x3 Side Glow');
-		setButton(SIDEGLOW3x3, "sideglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Side Glow"); SIDEGLOW3x3.style('background-color', "#8ef5ee");});
+	GLOW3x3 = p.createButton('3x3 Glow Cube');
+	setButton(GLOW3x3, "glow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Glow Cube"); GLOW3x3.style('background-color', "#8ef5ee");});
 
-		SIDEGLOW2x2 = p.createButton('2x2 Side Glow');
-		setButton(SIDEGLOW2x2, "sideglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Side Glow"); SIDEGLOW2x2.style('background-color', "#8ef5ee");});
+	ANTIGLOW3x3 = p.createButton('3x3 Anti-Glow');
+	setButton(ANTIGLOW3x3, "antiglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Anti-Glow"); ANTIGLOW3x3.style('background-color', "#8ef5ee");});
 
-		CUBYGLOW2x2 = p.createButton('2x2 Cuby Glow');
-		setButton(CUBYGLOW2x2, "cubyglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Cuby Glow"); CUBYGLOW2x2.style('background-color', "#8ef5ee");});
+	SIDEGLOW3x3 = p.createButton('3x3 Side Glow');
+	setButton(SIDEGLOW3x3, "sideglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Side Glow"); SIDEGLOW3x3.style('background-color', "#8ef5ee");});
 
-		CUBYGLOW3x3 = p.createButton('3x3 Cuby Glow');
-		setButton(CUBYGLOW3x3, "cubyglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Cuby Glow"); CUBYGLOW3x3.style('background-color', "#8ef5ee");});
-	}
+	SIDEGLOW2x2 = p.createButton('2x2 Side Glow');
+	setButton(SIDEGLOW2x2, "sideglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Side Glow"); SIDEGLOW2x2.style('background-color', "#8ef5ee");});
+
+	CUBYGLOW2x2 = p.createButton('2x2 Cuby Glow');
+	setButton(CUBYGLOW2x2, "cubyglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Cuby Glow"); CUBYGLOW2x2.style('background-color', "#8ef5ee");});
+
+	CUBYGLOW3x3 = p.createButton('3x3 Cuby Glow');
+	setButton(CUBYGLOW3x3, "cubyglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Cuby Glow"); CUBYGLOW3x3.style('background-color', "#8ef5ee");});
 
 }
 function iddefault() {
