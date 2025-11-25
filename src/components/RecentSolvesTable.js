@@ -248,6 +248,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const movesParOld = document.getElementById('moves_par');
 	const movesHeader = document.getElementById('moves_header');
 	const ao5Header = document.getElementById('ao5_header');
+	const ao12Header = document.getElementById('ao12_header');
 	const mo5StatDiv = document.getElementById('mo5_stat').parentElement;
 	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
 	const timeHeader = document.getElementById('time_header');
@@ -256,10 +257,12 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	// Determine if we should show moves column (hide only when competing)
 	const showMoves = MODE !== "competing";
 	const showAo5 = showMoves && mo5.length >= 5;
+	const showAo12 = showMoves && mo5.length >= 12;
 	
-	// Show/hide moves and ao5 column headers
+	// Show/hide moves, ao5, and ao12 column headers
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
 	if (ao5Header) ao5Header.style.display = showAo5 ? '' : 'none';
+	if (ao12Header) ao12Header.style.display = showAo12 ? '' : 'none';
 	
 	// Hide Ao5 and Mo5 stats in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
@@ -377,17 +380,42 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 							const sortedTimes = [...validTimes].sort((a, b) => a - b);
 							// Remove best (first) and worst (last)
 							const middleTimes = sortedTimes.slice(1, -1);
-							const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
-							const ao5Value = Math.round((totalMiddle / middleTimes.length) * 100) / 100;
-							cellAo5.textContent = ao5Value + 's';
-						} else {
-							cellAo5.textContent = 'N/A';
-						}
+						const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+						const ao5Value = Math.round((totalMiddle / middleTimes.length) * 100) / 100;
+						cellAo5.textContent = ao5Value + 's';
 					} else {
-						cellAo5.textContent = 'N/A';
+						cellAo5.textContent = '';
+					}
+				} else {
+					cellAo5.textContent = '';
 					}
 				}
-			} else {
+				
+				// Ao12 column - calculate Ao12 for current solve
+				if (showAo12) {
+					const cellAo12 = row.insertCell(showAo5 ? 4 : 3);
+					
+					// Calculate Ao12 if we have at least 12 solves up to this point
+					if (solveNumber >= 12) {
+						// Get the 12 solves ending at this solve number
+						const twelveSolves = mo5.slice(solveNumber - 12, solveNumber);
+						const validTimes = twelveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+						
+					if (validTimes.length >= 10) {
+						const sortedTimes = [...validTimes].sort((a, b) => a - b);
+						// Remove best (first) and worst (last)
+						const middleTimes = sortedTimes.slice(1, -1);
+						const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+						const ao12Value = Math.round((totalMiddle / middleTimes.length) * 100) / 100;
+						cellAo12.textContent = ao12Value + 's';
+					} else {
+						cellAo12.textContent = '';
+					}
+				} else {
+					cellAo12.textContent = '';
+				}
+			}
+		} else {
 				// Empty row
 				const cellNum = row.insertCell(0);
 				cellNum.textContent = '';
@@ -405,6 +433,12 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				if (showAo5) {
 					const cellAo5 = row.insertCell(3);
 					cellAo5.textContent = '';
+				}
+				
+				// Ao12 column
+				if (showAo12) {
+					const cellAo12 = row.insertCell(showAo5 ? 4 : 3);
+					cellAo12.textContent = '';
 				}
 			}
 		}
@@ -426,6 +460,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			document.getElementById('ao5_stat').parentElement.style.display = 'none';
 			document.getElementById('mo5_stat').parentElement.style.display = 'none';
 			document.getElementById('best_ao5_div').style.display = 'none';
+			document.getElementById('best_ao12_div').style.display = 'none';
 			
 			// Update best time label to "Sum of Times" and show sum
 			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
@@ -485,12 +520,41 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			} else {
 				document.getElementById('best_ao5_div').style.display = 'none';
 			}
+			
+			// Calculate Best Ao12 from all possible Ao12s in mo5
+			let bestAo12 = 'N/A';
+			if (mo5.length >= 12) {
+				const allAo12s = [];
+				for (let i = 11; i < mo5.length; i++) {
+					const twelveSolves = mo5.slice(i - 11, i + 1);
+					const validTimes = twelveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+					if (validTimes.length >= 10) {
+						const sortedTimes = [...validTimes].sort((a, b) => a - b);
+						const middleTimes = sortedTimes.slice(1, -1);
+						const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+						const ao12Value = totalMiddle / middleTimes.length;
+						allAo12s.push(ao12Value);
+					}
+				}
+				if (allAo12s.length > 0) {
+					bestAo12 = Math.round(Math.min(...allAo12s) * 100) / 100;
+				}
+			}
+			
+			// Only show Best Ao12 if we have at least 12 solves
+			if (mo5.length >= 12) {
+				document.getElementById('best_ao12_stat').textContent = bestAo12 === 'N/A' ? bestAo12 : bestAo12 + 's';
+				document.getElementById('best_ao12_div').style.display = '';
+			} else {
+				document.getElementById('best_ao12_div').style.display = 'none';
+			}
 	} else {
 		// No solves yet - hide all stats
 		document.getElementById('ao5_stat').parentElement.style.display = 'none';
 		document.getElementById('mo5_stat').parentElement.style.display = 'none';
 		document.getElementById('best_time_stat').parentElement.style.display = 'none';
 		document.getElementById('best_ao5_div').style.display = 'none';
+		document.getElementById('best_ao12_div').style.display = 'none';
 	}		// Always show stats summary
 		statsSummary.style.display = 'block';
 	} else {
