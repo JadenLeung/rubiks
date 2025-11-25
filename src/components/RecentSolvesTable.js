@@ -425,6 +425,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			// Hide Ao5 and Mo5, show sum in best time
 			document.getElementById('ao5_stat').parentElement.style.display = 'none';
 			document.getElementById('mo5_stat').parentElement.style.display = 'none';
+			document.getElementById('best_ao5_div').style.display = 'none';
 			
 			// Update best time label to "Sum of Times" and show sum
 			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
@@ -439,6 +440,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			
 			// Restore best time label
 			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
+			bestTimeDiv.style.display = '';
 			const bestTimeLabel = bestTimeDiv.querySelector('strong');
 			if (bestTimeLabel) bestTimeLabel.textContent = 'Best Time:';
 			
@@ -453,16 +455,43 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			let bestTime = Math.min(...recentTimes.filter(t => t !== "DNF"));
 			if (bestTime == Infinity) bestTime = 'N/A';
 			
+			// Calculate Best Ao5 from all possible Ao5s in mo5
+			let bestAo5 = 'N/A';
+			if (mo5.length >= 5) {
+				const allAo5s = [];
+				for (let i = 4; i < mo5.length; i++) {
+					const fiveSolves = mo5.slice(i - 4, i + 1);
+					const validTimes = fiveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+					if (validTimes.length >= 3) {
+						const sortedTimes = [...validTimes].sort((a, b) => a - b);
+						const middleTimes = sortedTimes.slice(1, -1);
+						const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+						const ao5Value = totalMiddle / middleTimes.length;
+						allAo5s.push(ao5Value);
+					}
+				}
+				if (allAo5s.length > 0) {
+					bestAo5 = Math.round(Math.min(...allAo5s) * 100) / 100;
+				}
+			}
+			
 			document.getElementById('mo5_stat').textContent = mo5Value === 'N/A' ? mo5Value : mo5Value + 's';
 			document.getElementById('best_time_stat').textContent = bestTime === 'N/A' ? bestTime : bestTime + 's';
-		} else {
-			// No solves yet - show N/A for all stats
-			document.getElementById('ao5_stat').textContent = 'N/A';
-			document.getElementById('mo5_stat').textContent = 'N/A';
-			document.getElementById('best_time_stat').textContent = 'N/A';
-		}
-		
-		// Always show stats summary
+			
+			// Only show Best Ao5 if we have at least 5 solves
+			if (mo5.length >= 5) {
+				document.getElementById('best_ao5_stat').textContent = bestAo5 === 'N/A' ? bestAo5 : bestAo5 + 's';
+				document.getElementById('best_ao5_div').style.display = '';
+			} else {
+				document.getElementById('best_ao5_div').style.display = 'none';
+			}
+	} else {
+		// No solves yet - hide all stats
+		document.getElementById('ao5_stat').parentElement.style.display = 'none';
+		document.getElementById('mo5_stat').parentElement.style.display = 'none';
+		document.getElementById('best_time_stat').parentElement.style.display = 'none';
+		document.getElementById('best_ao5_div').style.display = 'none';
+	}		// Always show stats summary
 		statsSummary.style.display = 'block';
 	} else {
 		container.style.display = 'none';
