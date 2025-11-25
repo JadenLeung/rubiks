@@ -245,8 +245,8 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const timeHeader = document.getElementById('time_header');
 	
 	
-	// Determine if we should show moves column (hide in speed mode)
-	const showMoves = !["speed", "competing"].includes(MODE);
+	// Determine if we should show moves column (hide only when competing)
+	const showMoves = MODE !== "competing";
 	
 	// Show/hide moves column header and stat
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';

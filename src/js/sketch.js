@@ -8956,7 +8956,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(ao5, mo5, movesarr);
+		console.log(ao5, mo5, movesarr, MODE, MINIMODE);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
