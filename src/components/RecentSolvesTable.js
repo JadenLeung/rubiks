@@ -247,6 +247,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const timesParOld = document.getElementById('times_par');
 	const movesParOld = document.getElementById('moves_par');
 	const movesHeader = document.getElementById('moves_header');
+	const ao5Header = document.getElementById('ao5_header');
 	const mo5StatDiv = document.getElementById('mo5_stat').parentElement;
 	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
 	const timeHeader = document.getElementById('time_header');
@@ -254,9 +255,11 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	
 	// Determine if we should show moves column (hide only when competing)
 	const showMoves = MODE !== "competing";
+	const showAo5 = showMoves && mo5.length >= 5;
 	
-	// Show/hide moves column header and stat
+	// Show/hide moves and ao5 column headers
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
+	if (ao5Header) ao5Header.style.display = showAo5 ? '' : 'none';
 	
 	// Hide Ao5 and Mo5 stats in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
@@ -359,6 +362,31 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 						cellMoves.textContent = recentMoves[i] || 'N/A';
 					}
 				}
+				
+				// Ao5 column - calculate Ao5 for current solve
+				if (showAo5) {
+					const cellAo5 = row.insertCell(3);
+					
+					// Calculate Ao5 if we have at least 5 solves up to this point
+					if (solveNumber >= 5) {
+						// Get the 5 solves ending at this solve number
+						const fiveSolves = mo5.slice(solveNumber - 5, solveNumber);
+						const validTimes = fiveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+						
+						if (validTimes.length >= 3) {
+							const sortedTimes = [...validTimes].sort((a, b) => a - b);
+							// Remove best (first) and worst (last)
+							const middleTimes = sortedTimes.slice(1, -1);
+							const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+							const ao5Value = Math.round((totalMiddle / middleTimes.length) * 100) / 100;
+							cellAo5.textContent = ao5Value + 's';
+						} else {
+							cellAo5.textContent = 'N/A';
+						}
+					} else {
+						cellAo5.textContent = 'N/A';
+					}
+				}
 			} else {
 				// Empty row
 				const cellNum = row.insertCell(0);
@@ -371,6 +399,12 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				if (isCompeting || showMoves) {
 					const cellMoves = row.insertCell(2);
 					cellMoves.textContent = '';
+				}
+				
+				// Ao5 column
+				if (showAo5) {
+					const cellAo5 = row.insertCell(3);
+					cellAo5.textContent = '';
 				}
 			}
 		}
@@ -399,27 +433,14 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			if (bestTimeLabel) bestTimeLabel.textContent = 'Sum of Times:';
 			document.getElementById('best_time_stat').textContent = sumValue === 'N/A' ? sumValue : sumValue + 's';
 		} else if (recentTimes.length > 0) {
-			// Normal mode - show Ao5, Mo5, and Best Time
-			document.getElementById('ao5_stat').parentElement.style.display = '';
+			// Normal mode - hide Ao5 stat, show Mo5 and Best Time
+			document.getElementById('ao5_stat').parentElement.style.display = 'none';
 			document.getElementById('mo5_stat').parentElement.style.display = '';
 			
 			// Restore best time label
 			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
 			const bestTimeLabel = bestTimeDiv.querySelector('strong');
 			if (bestTimeLabel) bestTimeLabel.textContent = 'Best Time:';
-			
-			// Calculate Ao5: remove best and worst, then average the middle 3
-			let ao5Value = 'N/A';
-			if (recentTimes.length >= numRows) {
-				const validTimes = recentTimes.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
-				if (validTimes.length >= 3) {
-					const sortedTimes = [...validTimes].sort((a, b) => a - b);
-					// Remove best (first) and worst (last)
-					const middleTimes = sortedTimes.slice(1, -1);
-					const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
-					ao5Value = Math.round((totalMiddle / middleTimes.length) * 100) / 100;
-				}
-			}
 			
 			// Calculate Mo5 as mean of all valid solves (filter out N/A, undefined, null, DNF)
 			const allValidTimes = mo5.filter(t => t !== 'N/A' && t !== undefined && t !== null && t !== 'DNF' && !isNaN(t));
@@ -432,7 +453,6 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			let bestTime = Math.min(...recentTimes.filter(t => t !== "DNF"));
 			if (bestTime == Infinity) bestTime = 'N/A';
 			
-			document.getElementById('ao5_stat').textContent = ao5Value === 'N/A' ? ao5Value : ao5Value + 's';
 			document.getElementById('mo5_stat').textContent = mo5Value === 'N/A' ? mo5Value : mo5Value + 's';
 			document.getElementById('best_time_stat').textContent = bestTime === 'N/A' ? bestTime : bestTime + 's';
 		} else {
