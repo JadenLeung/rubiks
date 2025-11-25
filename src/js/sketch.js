@@ -8512,7 +8512,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, solvedata, competedata, socket.id, getOp());
+	updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, solvedata, competedata, socket.id, getOp(), ma_data);
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -8956,7 +8956,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(ao5, mo5, movesarr, MODE, MINIMODE);
+		console.log(ao5, mo5, movesarr, MODE, MINIMODE, ma_data);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

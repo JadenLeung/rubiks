@@ -1,5 +1,5 @@
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete) {
+function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete, mode) {
 	console.log("scramble is ", scramble, cubename);
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
@@ -32,7 +32,7 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 		<div id="solve-detail-content" style="margin: 20px 0; text-align: left;"></div>
 		<div style="display: flex; gap: 10px;">
 			${isAppleDevice ? '<button id="solve-detail-share-btn" class="btn btn-secondary" style="flex: 1;">Share</button>' : ''}
-			<button id="solve-detail-delete-btn" class="btn btn-danger" style="flex: 1;">Delete</button>
+			<button id="solve-detail-delete-btn" class="btn btn-danger" style="flex: 1; display: none;">Delete</button>
 			<button id="solve-detail-close-btn" class="btn btn-primary" style="flex: 1;">Close</button>
 		</div>
 	`;
@@ -91,26 +91,33 @@ if (isAppleDevice) {
 }
 }// Update delete button handler for this specific solve
 const deleteBtn = document.getElementById("solve-detail-delete-btn");
-deleteBtn.onclick = () => {
-	// Delete from arrays using removeSpecificTime (solveNumber is 1-indexed, arrays are 0-indexed)
-	const index = solveNumber - 1;	if (typeof window.removeSpecificTime === 'function') {
-		window.removeSpecificTime(index);
-	}
-	
-	// Close dialog
-	modal.style.display = "none";
-	backdrop.style.display = "none";
-	
-	// Restore canMan
-	if (window.canMan !== undefined) {
-		window.canMan = true;
-	}
-	
-	// Call onDelete callback to refresh the table
-	if (onDelete) {
-		onDelete();
-	}
-};
+
+// Show delete button only in normal, cube, or timed mode
+if (mode === "normal" || mode === "cube" || mode === "timed") {
+	deleteBtn.style.display = '';
+	deleteBtn.onclick = () => {
+		// Delete from arrays using removeSpecificTime (solveNumber is 1-indexed, arrays are 0-indexed)
+		const index = solveNumber - 1;	if (typeof window.removeSpecificTime === 'function') {
+			window.removeSpecificTime(index);
+		}
+		
+		// Close dialog
+		modal.style.display = "none";
+		backdrop.style.display = "none";
+		
+		// Restore canMan
+		if (window.canMan !== undefined) {
+			window.canMan = true;
+		}
+		
+		// Call onDelete callback to refresh the table
+		if (onDelete) {
+			onDelete();
+		}
+	};
+} else {
+	deleteBtn.style.display = 'none';
+}
 
 // Update share button handler for this specific solve (only on Apple devices)
 if (isAppleDevice) {
@@ -233,7 +240,7 @@ if (isAppleDevice) {
 	modal.style.display = "block";
 }
 
-export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId) {
+export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId, ma_data) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -290,7 +297,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		tbody.innerHTML = '';
 		
 		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
-		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : MODE == "competing" ? Math.min(5, competedata.data.dims.length): 5;
+		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : MODE == "competing" ? Math.min(5, competedata.data.dims.length): MINIMODE == "marathon" ? ma_data.cubes.length : 5;
 		
 		// Get last N solves (or fewer if less than N)
 		let recentTimes, recentMoves;
@@ -323,20 +330,17 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				const cellNum = row.insertCell(0);
 				cellNum.textContent = solveNumber;
 				
-				// Add click handler in normal mode (only on # column)
-				if (MODE === "normal" || MODE == "cube" || MODE == "timed") {
-					cellNum.style.cursor = "pointer";
-					cellNum.style.textDecoration = "underline";
-					cellNum.onclick = () => {
-						const timeText = cellTime.textContent;
-						const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
-						const curSolveData = solvedata[solveNumber - 1]
-						showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.solvestat, () => {
-							// Refresh the table after deletion
-							updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
-						});
-					};
-				}
+				cellNum.style.cursor = "pointer";
+				cellNum.style.textDecoration = "underline";
+				cellNum.onclick = () => {
+					const timeText = cellTime.textContent;
+					const movesText = isCompeting || showMoves ? row.cells[2].textContent : 'N/A';
+					const curSolveData = solvedata[solveNumber - 1]
+					showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.solvestat, () => {
+						// Refresh the table after deletion
+						updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
+					}, MODE);
+				};
 				
 				// Time/You column
 				const cellTime = row.insertCell(1);
