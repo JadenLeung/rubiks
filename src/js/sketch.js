@@ -8434,88 +8434,94 @@ function displayTimes()
 function displayAverage()
 {
 	// if(canMan == false) return;
-	let min = ao5[0];
-	let max = ao5[0];
+	
+	// Get last 5 solves from mo5 (or fewer if less than 5)
+	const last5 = mo5.slice(-5);
+	
+	let min = last5[0];
+	let max = last5[0];
 	let minpos = 0;
 	let maxpos = 0;
 	let display = "";
 	let displaymoves = "";
-	let actualao5 = [];
+	let actualao5 = 0;
 	let meano5 = 0; //not actually limited to 5
 	let meanmoves = 0;
-	if(ao5[ao5.length-1] == 0 && MODE != "moves")
-	ao5.pop();
+	
+	if(last5[last5.length-1] == 0 && MODE != "moves")
+		last5.pop();
 	if(movesarr.length > mo5.length)
-	movesarr.pop();
-	for(let i = 1; i < ao5.length; i++)
+		movesarr.pop();
+		
+	for(let i = 1; i < last5.length; i++)
 	{
-		if(ao5[i] > max)
+		if(last5[i] > max)
 		{
-			max = ao5[i];
+			max = last5[i];
 			maxpos = i;
 		}
-		if(ao5[i] < min)
+		if(last5[i] < min)
 		{
-			min = ao5[i];
+			min = last5[i];
 			minpos = i;
 		}
 	}
-	if(maxpos == minpos && ao5.length > 1)
+	if(maxpos == minpos && last5.length > 1)
 	{
 		maxpos = 0;
 		minpos = 1;
 	}
-	for(let i = 0; i < ao5.length; i++)
+	for(let i = 0; i < last5.length; i++)
 	{
 		if(i == minpos || i == maxpos)
-		display += "(";
+			display += "(";
 		else
-		actualao5 += ao5[i];
+			actualao5 += last5[i];
 		
-		display += ao5[i];
-		if(ao5[i] % 1 == 0)
-		display += ".0";
+		display += last5[i];
+		if(last5[i] % 1 == 0)
+			display += ".0";
 		
 		if(i == minpos || i == maxpos)
-		display += ")";
+			display += ")";
 		
 		display += " &nbsp;";
 	}
 	for(let i = 0; i < mo5.length; i++)
 	{
 		if(mo5[i] == 0)
-		mo5.splice(i, 1);
+			mo5.splice(i, 1);
 		meano5 += mo5[i];
 	}
-	if(ao5.length == 5 && mastep == 0)
-	display += "&nbsp;Ao5: " + (Math.round((actualao5/3.0)*100)/100);
+	if(last5.length == 5 && mastep == 0)
+		display += "&nbsp;Ao5: " + (Math.round((actualao5/3.0)*100)/100);
 	if(mastep > 0) 
-		display += "<br>&nbsp;Total: " + ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);;
+		display += "<br>&nbsp;Total: " + last5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
 	if(mo5.length > 2)
-	display += " &nbsp;&nbsp;Mo" + mo5.length + ": " + (Math.round((meano5/(mo5.length * 1.0))*100)/100);
-	if(ao5.length == 0)
-	display = "N/A";
+		display += " &nbsp;&nbsp;Mo" + mo5.length + ": " + (Math.round((meano5/(mo5.length * 1.0))*100)/100);
+	if(last5.length == 0)
+		display = "N/A";
 	if(MODE == "speed" && pllpracstep == 0)
 	{
 		display = "";
 		let total = 0;
-		for(let i in ao5)
+		for(let i in last5)
 		{
-			total += ao5[i];
-			display += (ao5[i] + " &nbsp;");
+			total += last5[i];
+			display += (last5[i] + " &nbsp;");
 		}
-		if(ao5.length == 0)
-		display = "N/A"
+		if(last5.length == 0)
+			display = "N/A"
 		total = Math.round(total * 100) / 100;
-		if(ao5.length > 1)
-		display += " &nbsp;Total: " + total; 
+		if(last5.length > 1)
+			display += " &nbsp;Total: " + total; 
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
 	updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, solvedata, competedata, socket.id, getOp(), ma_data);
 	let i = 0;
 	if(movesarr.length > 4) 
-	i = movesarr.length-5;
+		i = movesarr.length-5;
 	for(let j = 0; j < movesarr.length; j++)
 	{
 		meanmoves += movesarr[j];
