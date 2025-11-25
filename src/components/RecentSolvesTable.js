@@ -233,7 +233,7 @@ if (isAppleDevice) {
 	modal.style.display = "block";
 }
 
-export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId) {
+export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -260,7 +260,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	let isCompeting = false;
 	if (MODE === "competing" && competedata.data.type == "1v1")
 	{
-		competearr = ao5;
+		competearr = mo5;
 		opparr = competedata.solvedarr.map(obj => obj[opponentId]);
 	}
 
@@ -281,7 +281,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 	// console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
 	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
-		|| (!keymapShown && ["pracPLL", "OLL", "PLL", "easy", "medium"].includes(MINIMODE))
+		|| (!keymapShown && ["pracPLL", "OLL", "PLL", "easy", "medium", "marathon"].includes(MINIMODE))
 		|| (!keymapShown && ["competing"].includes(MODE))) {
 		container.style.display = 'block';
 		container.style.marginBottom = ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)) ? '0' : '16px';
@@ -300,9 +300,9 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			recentTimes = competearr.slice(startIndex);
 			recentMoves = opparr.slice(startIndex);
 		} else {
-			// Use ao5 for times in normal modes
-			const startIndex = Math.max(0, ao5.length - numRows);
-			recentTimes = ao5.slice(startIndex);
+			// Use mo5 for times
+			const startIndex = Math.max(0, mo5.length - numRows);
+			recentTimes = mo5.slice(startIndex);
 			recentMoves = movesarr.slice(Math.max(0, movesarr.length - numRows));
 		}
 		
@@ -333,7 +333,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 						const curSolveData = solvedata[solveNumber - 1]
 						showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.solvestat, () => {
 							// Refresh the table after deletion
-							updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
+							updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
 						});
 					};
 				}
@@ -372,7 +372,38 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 		}
 		
 		// Update statistics
-		if (recentTimes.length > 0) {
+		// Check if we're in PLL/OLL mode
+		const sumOfTimes = ["easy", "medium", "OLL", "PLL"].includes(MINIMODE);
+		
+		if (sumOfTimes) {
+			// Calculate sum of all valid times
+			const validTimes = recentTimes.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+			let sumValue = 'N/A';
+			if (validTimes.length > 0) {
+				const totalTime = validTimes.reduce((a, b) => a + b, 0);
+				sumValue = Math.round(totalTime * 100) / 100;
+			}
+			
+			// Hide Ao5 and Mo5, show sum in best time
+			document.getElementById('ao5_stat').parentElement.style.display = 'none';
+			document.getElementById('mo5_stat').parentElement.style.display = 'none';
+			
+			// Update best time label to "Sum of Times" and show sum
+			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
+			bestTimeDiv.style.display = '';
+			const bestTimeLabel = bestTimeDiv.querySelector('strong');
+			if (bestTimeLabel) bestTimeLabel.textContent = 'Sum of Times:';
+			document.getElementById('best_time_stat').textContent = sumValue === 'N/A' ? sumValue : sumValue + 's';
+		} else if (recentTimes.length > 0) {
+			// Normal mode - show Ao5, Mo5, and Best Time
+			document.getElementById('ao5_stat').parentElement.style.display = '';
+			document.getElementById('mo5_stat').parentElement.style.display = '';
+			
+			// Restore best time label
+			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
+			const bestTimeLabel = bestTimeDiv.querySelector('strong');
+			if (bestTimeLabel) bestTimeLabel.textContent = 'Best Time:';
+			
 			// Calculate Ao5: remove best and worst, then average the middle 3
 			let ao5Value = 'N/A';
 			if (recentTimes.length >= numRows) {
@@ -387,8 +418,7 @@ export function updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, keym
 			}
 			
 			// Calculate Mo5 as mean of all valid solves (filter out N/A, undefined, null, DNF)
-			const pickbigger = ao5.length > mo5.length ? ao5 : mo5;
-			const allValidTimes = pickbigger.filter(t => t !== 'N/A' && t !== undefined && t !== null && t !== 'DNF' && !isNaN(t));
+			const allValidTimes = mo5.filter(t => t !== 'N/A' && t !== undefined && t !== null && t !== 'DNF' && !isNaN(t));
 			let mo5Value = 'N/A';
 			if (allValidTimes.length > 0) {
 				const totalAllTimes = allValidTimes.reduce((a, b) => a + b, 0);

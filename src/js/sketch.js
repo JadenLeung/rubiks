@@ -138,7 +138,7 @@ export default function (p) {
 		"None": "No glow effect selected.",
 		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
 		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
-		"Side Glow": "Solve a side, to unlock the colors of the next.",
+		"Side Glow": "Solve a side, to unlock the colors of the next. In a shape-shifting cuby, you must also turn it back to cube shape to unlock the next step.",
 		"Cuby Glow": "Build the cube, cuby by cuby. Solving the glowing cubies unlocks two more."
 	}
 	let REGULAR;
@@ -1603,18 +1603,7 @@ setInterval(() => {
 		timer.stop();
 		setGlowColors();
 		flipmode2 = 0;
-		movesarr.push(moves);
-		if(ao5.length<5)
-		{
-			ao5.push(timeInSeconds);
-			mo5.push(timeInSeconds);
-		}
-		else
-		{
-			ao5.push(timeInSeconds);
-			mo5.push(timeInSeconds);
-			ao5.shift();
-		}
+		stopAndUpdateTimes();
 		if(race > 1){ //racedetect
 			console.log("racedetect");
 			if ((MINIMODE == "physical")) {
@@ -1630,19 +1619,15 @@ setInterval(() => {
 	{
 		if(isSolved() && easystep == 1)
 		{
-			timer.stop();
 			console.log("herer")
 			easystep++;
-			ao5 = [Math.round(timer.getTime() / 10)/100.0];
+			stopAndUpdateTimes();
 			easy();
 		}
 		else if(((numCross() == 4 && DIM == 50) || (cornerCross()[0] == 4 && DIM == 100)) && easystep == 3)
 		{
-			timer.stop();
+			stopAndUpdateTimes();
 			easystep++;
-			console.log("wefg")
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
 			easy();
 		}
 		else if(easystep == 5)
@@ -1654,9 +1639,7 @@ setInterval(() => {
 					if(layout[i][1][1][0] == "g" && layout[i][0][0][0] == layout[i][0][2][0] && layout[i][0][0][0] == layout[i][2][0][0] && 
 					layout[i][0][0][0] == layout[i][2][2][0])
 					{
-						timer.stop();
-						ao5.push(Math.round(timer.getTime() / 10)/100.0);
-						mo5.push(timer.roundedTime());
+						stopAndUpdateTimes();
 						easystep++;
 						easy();
 					}	
@@ -1664,10 +1647,7 @@ setInterval(() => {
 			}
 			else if(greenLayer() && DIM == 100)
 			{
-				timer.stop();
-				ao5.push(Math.round(timer.getTime() / 10)/100.0);
-				mo5.push(timer.roundedTime());
-				easystep++;
+				stopAndUpdateTimes();
 				easy();
 			}
 		}
@@ -1675,48 +1655,29 @@ setInterval(() => {
 		{
 			if((twoLines() && DIM == 50) || (isSolved() && DIM == 100))
 			{
-				timer.stop();
-				ao5.push(Math.round(timer.getTime() / 10)/100.0);
-				mo5.push(timer.roundedTime());
+				stopAndUpdateTimes();
 				easystep++;
 				easy();
 			}
 		}
 		else if(medstep == 1 && mostSolved() == 9 || medstep == 3 && isSolved() || medstep == 5 && oppositeCross() || medstep == 7 && twobytwo() >= 3)
 		{
-			timer.stop();
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(timer.roundedTime());
+			stopAndUpdateTimes();
 			medstep++;
 			medium();
 		}
 		else if(isSolved() && pllstep % 2 == 1)
 		{
-			timer.stop();
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(timer.roundedTime());
+			stopAndUpdateTimes();
 			pllstep++;
 			speedPLL();
 		} else if(((isSolved() && pracmode == "PLL") || (sideSolved(realtop) && pracmode == "OLL")) && pllpracstep % 2 == 1) {
-			timer.stop();
-			movesarr.push(moves);
-			if(ao5.length<5)
-			{
-				ao5.push(timeInSeconds);
-				mo5.push(timeInSeconds);
-			}
-			else
-			{
-				ao5.push(timeInSeconds);
-				mo5.push(timeInSeconds);
-				ao5.shift();
-			}
+			stopAndUpdateTimes();
 			pllpracstep++;
 			practicePLL();
 		} else if(sideSolved(realtop) && ollstep % 2 == 1) {
-			timer.stop();
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(timer.roundedTime());
+			stopAndUpdateTimes();
+			console.log("SIDE SOLVED OLL", mo5);
 			ollstep++;
 			speedOLL();
 		}
@@ -1725,10 +1686,8 @@ setInterval(() => {
 	else if(MODE == "moves")
 	{
 		if (mastep % 2 == 1 && isSolved()) {
-			timer.stop();
 			let value = ma_data.type == "blind" ? peeks : Math.round(timer.getTime() / 10)/100.0;
-			ao5.push(value);
-			mo5.push(timer.roundedTime());
+			stopAndUpdateTimes();
 			mastep++;
 			peeks = 0;
 			shapemarathon();
@@ -1745,12 +1704,12 @@ setInterval(() => {
 		}  
 		if(m_34step > 0 && m_34step % 2 == 1 && isSolved() && moves <= scramblemoves && moves > 0)
 		{
-			timer.stop();
 			m_pass++;
 			if(movesarr == 0)
 			movesarr = [moves];
 			else
 			movesarr.push(moves);
+			stopAndUpdateTimes();
 			m_34step++;
 			if(m_type == -1) m_points += 1;
 			if(m_type == 0) m_points += 2;
@@ -1761,12 +1720,8 @@ setInterval(() => {
 		}
 		else if(m_4step > 0 && m_4step % 2 == 1 && isSolved() && moves <= m_type && moves > 0)
 		{
-			timer.stop();
 			m_pass++;
-			if(movesarr == 0)
-			movesarr = [moves];
-			else
-			movesarr.push(moves);
+			stopAndUpdateTimes();
 			m_4step++;
 			m_points += parseInt(Math.pow(1.5, m_type));
 			setScore("m_medium", m_points, false);
@@ -1803,10 +1758,7 @@ setInterval(() => {
 		}
 		if (solveFunc()) {
 			comstep++;
-			timer.stop();
-			let time = timer.getTime() < 0 ? 0 : Math.round(timer.getTime() / 10)/100.0;
-			ao5.push(time);
-			mo5.push(time);
+			stopAndUpdateTimes();
 			console.log("time is ", time, timer.getTime());
 			socket.emit("progress-update", room, 100, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
 			if (competedata.data.type == "teamblind") {
@@ -1823,6 +1775,7 @@ setInterval(() => {
 			comstep++;
 			ao5.push("DNF");
 			mo5.push("DNF");
+			movesarr.push(moves);
 			socket.emit("solved", room, "DNF");
 			fadeInText(1, "DNF");
 			setTimeout(() => {fadeInText(0, "DNF")}, 400);
@@ -2789,19 +2742,7 @@ function stopTime(){
 	//alert(moves);
 	if(timer.isRunning && moves > 0)
 	{
-		timer.stop();
-		movesarr.push(moves);
-		if(ao5.length<5)
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-		}
-		else
-		{
-			ao5.push(Math.round(timer.getTime() / 10)/100.0);
-			mo5.push(Math.round(timer.getTime() / 10)/100.0);
-			ao5.shift()
-		}
+		stopAndUpdateTimes();
 		displayAverage();
 		setOriginalColor();
 	}
@@ -2832,6 +2773,7 @@ function giveUp()
 		if (competedata.data.type != "teamblind") {
 			ao5.push("DNF");
 			mo5.push("DNF");
+			movesarr.push(moves);
 		}
 		socket.emit("solved", room, "DNF");
 		fadeInText(1, "DNF");
@@ -4600,6 +4542,7 @@ function competeTimes(data, end = false) {
 			if (!end) {
 				str += ", progress: " + strarr[i][1] + "%";
 			}
+			console.log("strarr is ", strarr);
 			str += ", time: " + (strarr[i][2] >= DNF || strarr[i][2] == "DNF" ? "DNF" : (strarr[i][2] + "s"));
 			if (strarr[i][0] == socket.id) {
 				str += `</b>`;
@@ -4685,6 +4628,7 @@ function competeSolved(data) {
 		getEl("match_INSTRUCT2").innerHTML = "Time: " + blindtime;
 		if (blindTime() == "DNF") {
 			ao5 = ["DNF"];
+			mo5 = ["DNF"];
 		}
 		timer.stop();
 		if (blindTime() != "DNF") {
@@ -5783,6 +5727,7 @@ function shapemarathon() {
 	if (mastep == 0) {
 		showMarathon();
 		ao5 = [];
+		mo5 = [];
 	}
 	if (mastep % 2 == 0 && mastep / 2 < ma_data.cubes.length) {
 		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
@@ -6554,6 +6499,7 @@ function easy()
 	if(easystep == 0)
 	{
 		ao5 = [];
+		mo5 = [];
 		quickSolve();
 		reCam();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #1: Solve the Cube";
@@ -6751,6 +6697,7 @@ function medium(){
 		reCam();
 		showSpeed();
 		ao5 = [];
+		mo5 = [];
 		quickSolve();
 		timer.stop();
 		timer.reset();
@@ -6931,8 +6878,10 @@ function speedPLL()
 	if(pllstep % 2 == 0 && pllstep != 8)
 	{
 		timer.reset();
-		if(pllstep == 0)
-		ao5 = [];
+		if(pllstep == 0) {
+			ao5 = [];
+			mo5 = [];
+		}
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
 		showSpeed();
@@ -6985,8 +6934,10 @@ function speedOLL()
 	if(ollstep % 2 == 0 && ollstep != 8)
 	{
 		timer.reset();
-		if(ollstep == 0)
-		ao5 = [];
+		if(ollstep == 0) {
+			ao5 = [];
+			mo5 = [];
+		}
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (ollstep/2+1) + ": Solve the Top Layer";
 		showSpeed();
@@ -7022,6 +6973,13 @@ function speedOLL()
 		easystep = 8;
 		easy();
 	}
+}
+
+function stopAndUpdateTimes() {
+	timer.stop();
+	ao5.push(Math.round(timer.getTime() / 10)/100.0);
+	mo5.push(timer.roundedTime());
+	movesarr.push(moves);
 }
 
 document.getElementById("l_home").onclick = regular;
@@ -8558,7 +8516,7 @@ function displayAverage()
 	}
 	if (document.getElementById('ao5').innerHTML != display)
 		document.getElementById('ao5').innerHTML = display;
-	updateRecentSolvesTable(MODE, ao5, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, solvedata, competedata, socket.id, getOp());
+	updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, getEl("show_keyboard_map").checked, solvedata, competedata, socket.id, getOp());
 	let i = 0;
 	if(movesarr.length > 4) 
 	i = movesarr.length-5;
@@ -9002,7 +8960,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(DIM, DIM2);
+		console.log(ao5, mo5, movesarr);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
