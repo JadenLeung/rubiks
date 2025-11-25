@@ -1705,10 +1705,6 @@ setInterval(() => {
 		if(m_34step > 0 && m_34step % 2 == 1 && isSolved() && moves <= scramblemoves && moves > 0)
 		{
 			m_pass++;
-			if(movesarr == 0)
-			movesarr = [moves];
-			else
-			movesarr.push(moves);
 			stopAndUpdateTimes();
 			m_34step++;
 			if(m_type == -1) m_points += 1;
