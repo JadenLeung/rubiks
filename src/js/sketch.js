@@ -11,8 +11,8 @@ import { createCustomDialog } from '../components/GameDialog.js';
 import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-const socket = io("http://localhost:3003");
-// const socket = io("https://api.virtual-cube.net:3003/");
+// const socket = io("http://localhost:3003");
+const socket = io("https://api.virtual-cube.net:3003/");
 
 socket.on("connect_error", (err) => {
 	if (comstep > 0) {
