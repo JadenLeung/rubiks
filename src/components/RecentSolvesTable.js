@@ -460,7 +460,6 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			document.getElementById('ao5_stat').parentElement.style.display = 'none';
 			document.getElementById('mo5_stat').parentElement.style.display = 'none';
 			document.getElementById('best_ao5_div').style.display = 'none';
-			document.getElementById('best_ao12_div').style.display = 'none';
 			
 			// Update best time label to "Sum of Times" and show sum
 			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
@@ -520,41 +519,12 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			} else {
 				document.getElementById('best_ao5_div').style.display = 'none';
 			}
-			
-			// Calculate Best Ao12 from all possible Ao12s in mo5
-			let bestAo12 = 'N/A';
-			if (mo5.length >= 12) {
-				const allAo12s = [];
-				for (let i = 11; i < mo5.length; i++) {
-					const twelveSolves = mo5.slice(i - 11, i + 1);
-					const validTimes = twelveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
-					if (validTimes.length >= 10) {
-						const sortedTimes = [...validTimes].sort((a, b) => a - b);
-						const middleTimes = sortedTimes.slice(1, -1);
-						const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
-						const ao12Value = totalMiddle / middleTimes.length;
-						allAo12s.push(ao12Value);
-					}
-				}
-				if (allAo12s.length > 0) {
-					bestAo12 = Math.round(Math.min(...allAo12s) * 100) / 100;
-				}
-			}
-			
-			// Only show Best Ao12 if we have at least 12 solves
-			if (mo5.length >= 12) {
-				document.getElementById('best_ao12_stat').textContent = bestAo12 === 'N/A' ? bestAo12 : bestAo12 + 's';
-				document.getElementById('best_ao12_div').style.display = '';
-			} else {
-				document.getElementById('best_ao12_div').style.display = 'none';
-			}
 	} else {
 		// No solves yet - hide all stats
 		document.getElementById('ao5_stat').parentElement.style.display = 'none';
 		document.getElementById('mo5_stat').parentElement.style.display = 'none';
 		document.getElementById('best_time_stat').parentElement.style.display = 'none';
 		document.getElementById('best_ao5_div').style.display = 'none';
-		document.getElementById('best_ao12_div').style.display = 'none';
 	}		// Always show stats summary
 		statsSummary.style.display = 'block';
 	} else {

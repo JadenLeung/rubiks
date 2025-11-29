@@ -11,8 +11,8 @@ import { createCustomDialog } from '../components/GameDialog.js';
 import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3003");
-const socket = io("https://api.virtual-cube.net:3003/");
+const socket = io("http://localhost:3003");
+// const socket = io("https://api.virtual-cube.net:3003/");
 
 socket.on("connect_error", (err) => {
 	if (comstep > 0) {
@@ -1755,13 +1755,13 @@ setInterval(() => {
 		if (solveFunc()) {
 			comstep++;
 			stopAndUpdateTimes();
-			console.log("time is ", time, timer.getTime());
+			console.log("time is ", timer.getTime());
 			socket.emit("progress-update", room, 100, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
-				socket.emit("solved", room, time, blindTime());
+				socket.emit("solved", room, blindTime());
 			} else {
-				socket.emit("solved", room, time, timer.getTime());
+				socket.emit("solved", room, timer.roundedTime());
 			}
 			setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 			canMan = false;
@@ -8678,7 +8678,6 @@ function animateRotate(axis, dir) {
 	}
 }
 function animate(axis, rows, dir, timed, bcheck = true) {
-	console.log(axis, rows);
 	displayAverage();
 	rows = rows.sort((a, b) => a - b);
 	
@@ -8695,7 +8694,6 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 
 	if (rows.length == 1 && rows[0] != 0) {
 		let dx = CUBYESIZE * -(Math.sign(rows[0]));
-		console.log("dx is ", dx)
 		while (isRowEmpty(axis, rows[0])) {
 			if(rows[0] < -MAXX || rows[rows.length - 1] > MAXX || rows.length > (MAXX * 2 / CUBYESIZE + 1)) {
 				return false;
@@ -8962,7 +8960,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(ao5, mo5, movesarr, MODE, MINIMODE, ma_data);
+		console.log(competedata);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9282,7 +9280,6 @@ function multiple(nb, timed, use = "default") {
 			multiple(arr.length, timed, use);
 			return;
 		}
-		console.log("NOTATION", arr[nb], use);
 		notation(arr[nb], timed);
 		if (["default", "testalg"].includes(use)) {
 			let bad = -1;
@@ -9296,7 +9293,6 @@ function multiple(nb, timed, use = "default") {
 			}
 			if(timer.isRunning && MODE != "moves")
 			{
-				console.log("MOVING HERE");
 				moves++;
 			}
 			else if(MODE == "moves")
@@ -9353,7 +9349,6 @@ function waitForCondition(callback, use = "default") {
 		return;
 	}
     if (!isAnimating()) {
-		console.log(use);
 		let delay = DELAY;
 		if (CUBENAME.toLowerCase().includes("glow")) setGlowColors();
 		if (MINIMODE == "physical") {
@@ -9863,7 +9858,6 @@ function notation(move, timed){
 	setLayout();
 	const moveMap = getMove(MAXX, CUBYESIZE, SIZE)
 	if (moveMap.hasOwnProperty(move)) {
-		console.log("TRYNA ANIMATE", move)
 		animate(moveMap[move][0], moveMap[move][1], moveMap[move][2], timed);
 		return;
 	}
@@ -13245,7 +13239,6 @@ function strictlySolved(cubies = getOuterCubes()) {
 	let allcolors = new Set();
 	for (const dir of DIRARR) {
 		const sidecolors = colorsInSide(dir, cubies);
-		console.log("side colors is ", sidecolors);
 		if (sidecolors.size == 0) {
 			continue;
 		}
@@ -13399,21 +13392,22 @@ function setGlowColors() {
 		cubyShowColor(validcolors);
 	} else if (CUBENAME.includes("Cuby Glow")) {
 		let cubies = getOuterCubes();
+		let tryglowagain = false;
 		if (cubyglows.size == 0) {
 			cubyglows.add(cubies[0]);
 		}
 		let neighbors = p.shuffle(getOriginalOuterNeighborsFromCubyArr([...cubyglows]));
-		console.log("PREV", cubyglows, "Neihgbors is ", neighbors);
 		if (cubyglows.size == 1) {
 			for (let i = 0; i < Math.min(2, neighbors.length); i++) {
 				cubyglows.add(neighbors[i]);
 			}
-		} else if (strictlySolved([...cubyglows])) {
+		} else if (strictlySolved([...cubyglows]) && !isSolved()) {
 			let iterations = Math.min(2, neighbors.length);
 			for (let i = 0; i < iterations; i++) {
 				cubyglows.add(neighbors[i]);
 				neighbors = p.shuffle(getOriginalOuterNeighborsFromCubyArr([...cubyglows]));
 			}
+			tryglowagain = true;
 		}
 
 		cubies.forEach(cuby => {
@@ -13423,6 +13417,10 @@ function setGlowColors() {
 				CUBE[cuby].setColor(CUBE[cuby].colors.black, true);
 			}
 		})
+		if (tryglowagain) {
+			setGlowColors();
+			return;
+		}
 	}
 }
 

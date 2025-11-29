@@ -206,7 +206,6 @@ export default class Cuby {
     } 
     
     if(SIZE == 3 && custom && !["pluslite"].includes(this.cubysize)){
-      console.log(3);
       const cond = ([4,5].includes(size) || (Array.isArray(size) && [4,5].includes(size[3])))
       if(cond && (custom[this.index][0] == "y" || custom[this.index][0] == "b" || custom[this.index][0] == "o")) this.top = this.c[opposite[custom[this.index][0]]];
       else this.top = this.c[custom[this.index][0]];
