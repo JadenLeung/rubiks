@@ -253,6 +253,31 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
 	const timeHeader = document.getElementById('time_header');
 	
+	// Initialize table scroll offset if not exists
+	if (window.tableScrollOffset === undefined) {
+		window.tableScrollOffset = 0;
+	}
+	
+	// Setup scroll buttons
+	const scrollUpBtn = document.getElementById('table_scroll_up');
+	const scrollDownBtn = document.getElementById('table_scroll_down');
+	
+	if (scrollUpBtn && scrollDownBtn) {
+		scrollUpBtn.onclick = (e) => {
+			e.stopPropagation();
+			window.tableScrollOffset++;
+			updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId, ma_data);
+		};
+		
+		scrollDownBtn.onclick = (e) => {
+			e.stopPropagation();
+			if (window.tableScrollOffset > 0) {
+				window.tableScrollOffset--;
+				updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId, ma_data);
+			}
+		};
+	}
+	
 	
 	// Determine if we should show moves column (hide only when competing)
 	const showMoves = MODE !== "competing";
@@ -305,19 +330,32 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
 		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : MODE == "competing" ? Math.min(5, competedata.data.dims.length): MINIMODE == "marathon" ? ma_data.cubes.length : 5;
 		
-		// Get last N solves (or fewer if less than N)
+		// Calculate the actual data length
+		const totalSolves = isCompeting ? competearr.length : mo5.length;
+		
+		// Clamp offset to valid range
+		const maxOffset = Math.max(0, totalSolves - numRows);
+		window.tableScrollOffset = Math.max(0, Math.min(window.tableScrollOffset, maxOffset));
+		
+		// Get N solves based on offset
 		let recentTimes, recentMoves;
 		if (isCompeting) {
 			// Use competearr and opparr for competing mode
-			const startIndex = Math.max(0, competearr.length - numRows);
-			recentTimes = competearr.slice(startIndex);
-			recentMoves = opparr.slice(startIndex);
+			const endIndex = competearr.length - window.tableScrollOffset;
+			const startIndex = Math.max(0, endIndex - numRows);
+			recentTimes = competearr.slice(startIndex, endIndex);
+			recentMoves = opparr.slice(startIndex, endIndex);
 		} else {
 			// Use mo5 for times
-			const startIndex = Math.max(0, mo5.length - numRows);
-			recentTimes = mo5.slice(startIndex);
-			recentMoves = movesarr.slice(Math.max(0, movesarr.length - numRows));
+			const endIndex = mo5.length - window.tableScrollOffset;
+			const startIndex = Math.max(0, endIndex - numRows);
+			recentTimes = mo5.slice(startIndex, endIndex);
+			recentMoves = movesarr.slice(Math.max(0, movesarr.length - window.tableScrollOffset - numRows), Math.max(0, movesarr.length - window.tableScrollOffset));
 		}
+		
+		// Update button states
+		if (scrollUpBtn) scrollUpBtn.disabled = window.tableScrollOffset >= maxOffset;
+		if (scrollDownBtn) scrollDownBtn.disabled = window.tableScrollOffset === 0;
 		
 		// Always create exactly N rows
 		for (let i = 0; i < numRows; i++) {
@@ -325,11 +363,11 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			
 			if (i < Math.max(recentTimes.length, recentMoves.length)) {
 				// Row with data
-				// For cube mode, use mo5.length for numbering, otherwise use ao5.length
+				// Calculate solve number based on offset
 				const solveNumber = isCompeting 
-					? competearr.length - recentTimes.length + i + 1
+					? competearr.length - window.tableScrollOffset - recentTimes.length + i + 1
 					: mo5.length > 0 
-						? mo5.length - recentTimes.length + i + 1
+						? mo5.length - window.tableScrollOffset - recentTimes.length + i + 1
 						: i + 1;
 				
 				// # column

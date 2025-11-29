@@ -6979,6 +6979,10 @@ function stopAndUpdateTimes() {
 	ao5.push(Math.round(timer.getTime() / 10)/100.0);
 	mo5.push(timer.roundedTime());
 	movesarr.push(moves);
+	// Reset table scroll offset when new solve is added
+	if (window.tableScrollOffset !== undefined) {
+		window.tableScrollOffset = 0;
+	}
 }
 
 document.getElementById("l_home").onclick = regular;
