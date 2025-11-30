@@ -342,7 +342,10 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		// Clear existing rows
 		tbody.innerHTML = '';
 		
-		// Get ALL solves (no pagination needed since tbody is scrollable)
+		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
+		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : MODE == "competing" ? Math.min(5, competedata.data.dims.length): 5;
+		
+		// Show ALL solves (scrollable div will handle overflow)
 		let recentTimes, recentMoves;
 		if (isCompeting) {
 			recentTimes = competearr;
@@ -356,13 +359,16 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		if (scrollUpBtn) scrollUpBtn.style.display = 'none';
 		if (scrollDownBtn) scrollDownBtn.style.display = 'none';
 		
-		// Create rows for all solves
-		const numRows = recentTimes.length;
-		for (let i = 0; i < numRows; i++) {
+		// Calculate total rows to show (at least numRows, but can be more if there are more solves)
+		const totalRows = Math.max(numRows, recentTimes.length);
+		
+		// Create rows
+		for (let i = 0; i < totalRows; i++) {
 			const row = tbody.insertRow();
 			
-			// Calculate solve number (1-indexed)
-			const solveNumber = i + 1;
+			if (i < recentTimes.length) {
+				// Calculate solve number (1-indexed from the full array)
+				const solveNumber = i + 1;
 				
 				// # column
 				const cellNum = row.insertCell(0);
@@ -447,6 +453,32 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 					cellAo12.textContent = '';
 				}
 			}
+			} else {
+				// Empty row
+				const cellNum = row.insertCell(0);
+				cellNum.textContent = '';
+				
+				const cellTime = row.insertCell(1);
+				cellTime.textContent = '';
+				
+				// Moves/Opponent column (show for competing or when showMoves is true)
+				if (isCompeting || showMoves) {
+					const cellMoves = row.insertCell(2);
+					cellMoves.textContent = '';
+				}
+				
+				// Ao5 column
+				if (showAo5) {
+					const cellAo5 = row.insertCell(3);
+					cellAo5.textContent = '';
+				}
+				
+				// Ao12 column
+				if (showAo12) {
+					const cellAo12 = row.insertCell(showAo5 ? 4 : 3);
+					cellAo12.textContent = '';
+				}
+			}
 		}
 		
 		// Update statistics
@@ -525,13 +557,15 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			} else {
 				document.getElementById('best_ao5_div').style.display = 'none';
 			}
-	} else {
-		// No solves yet - hide all stats
-		document.getElementById('ao5_stat').parentElement.style.display = 'none';
-		document.getElementById('mo5_stat').parentElement.style.display = 'none';
-		document.getElementById('best_time_stat').parentElement.style.display = 'none';
-		document.getElementById('best_ao5_div').style.display = 'none';
-	}		// Always show stats summary
+		} else {
+			// No solves yet - hide all stats
+			document.getElementById('ao5_stat').parentElement.style.display = 'none';
+			document.getElementById('mo5_stat').parentElement.style.display = 'none';
+			document.getElementById('best_time_stat').parentElement.style.display = 'none';
+			document.getElementById('best_ao5_div').style.display = 'none';
+		}
+		
+		// Always show stats summary
 		statsSummary.style.display = 'block';
 	} else {
 		container.style.display = 'none';
@@ -540,4 +574,10 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
         if (timesParOld) timesParOld.style.display = 'none';
         if (movesParOld) movesParOld.style.display = 'none';
     }
+	
+	// Scroll to bottom of the table body
+	const scrollableDiv = document.querySelector('#recent_solves_container > div[style*="overflow-y"]');
+	if (scrollableDiv) {
+		scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+	}
 }
