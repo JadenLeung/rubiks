@@ -576,7 +576,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
     }
 	
 	// Scroll to bottom of the table body
-	const scrollableDiv = document.querySelector('#recent_solves_container > div[style*="overflow-y"]');
+	const scrollableDiv = document.querySelector('#recent_solves_container div[style*="overflow-y"]');
 	if (scrollableDiv) {
 		scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
 	}
