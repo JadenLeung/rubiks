@@ -513,26 +513,44 @@
 			<div>
 				<h5 id = "timeselect" style = "padding-top: 10px; margin-top: 16px; padding-bottom: 10px">Session <span id = "timeselectmini"></span></h5>
 				<div id="recent_solves_container" style="display: none; max-width: 600px; margin-top: 10px;">
-					<table id="recent_solves_table" style="width: auto; border-collapse: collapse; font-size: 14px;">
+					<table id="recent_solves_table" style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 14px;">
+						<colgroup>
+							<col style="width: 60px;">
+							<col id="time_col" style="width: 80px;">
+							<col id="moves_col" style="width: 60px;">
+							<col id="ao5_col" style="width: 80px;">
+							<col id="ao12_col" style="width: 80px;">
+						</colgroup>
 						<thead>
 							<tr style="background-color: rgba(10, 25, 112, 0.1);">
-								<th style="padding: 4px 8px; text-align: center; border: 1px solid; width: 60px;">
+								<th style="padding: 4px 8px; text-align: center; border: 1px solid;">
 									<div style="display: flex; align-items: center; justify-content: center; gap: 2px;">
 										<button id="table_scroll_up" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 12px; line-height: 1;" title="Scroll up">▲</button>
 										<span>#</span>
 										<button id="table_scroll_down" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 12px; line-height: 1;" title="Scroll down">▼</button>
 									</div>
 								</th>
-								<th id="time_header" style="padding: 4px 8px; text-align: center; border: 1px solid; width: 80px;">Time</th>
-								<th id="moves_header" style="padding: 4px 8px; text-align: center; border: 1px solid; width: 60px;">Moves</th>
-								<th id="ao5_header" style="padding: 4px 8px; text-align: center; border: 1px solid; width: 80px;">Ao5</th>
-								<th id="ao12_header" style="padding: 4px 8px; text-align: center; border: 1px solid; width: 80px;">Ao12</th>
+								<th id="time_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Time</th>
+								<th id="moves_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Moves</th>
+								<th id="ao5_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Ao5</th>
+								<th id="ao12_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Ao12</th>
 							</tr>
 						</thead>
-						<tbody id="recent_solves_body">
-							<!-- Rows will be dynamically added here -->
-						</tbody>
 					</table>
+					<div style="max-height: 162px; overflow-y: auto; border: 1px solid rgba(10, 25, 112, 0.2); border-top: none;">
+						<table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 14px;">
+							<colgroup>
+								<col style="width: 60px;">
+								<col id="time_col_body" style="width: 80px;">
+								<col id="moves_col_body" style="width: 60px;">
+								<col id="ao5_col_body" style="width: 80px;">
+								<col id="ao12_col_body" style="width: 80px;">
+							</colgroup>
+							<tbody id="recent_solves_body">
+								<!-- Rows will be dynamically added here -->
+							</tbody>
+						</table>
+					</div>
 					<div id="stats_summary" style="margin-top: 10px; font-size: 14px;">
 						<div style="display: flex; gap: 20px; flex-wrap: wrap;">
 							<div><strong>Ao5:</strong> <span id="ao5_stat">N/A</span></div>

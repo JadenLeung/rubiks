@@ -284,10 +284,25 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const showAo5 = showMoves && mo5.length >= 5;
 	const showAo12 = showMoves && mo5.length >= 12;
 	
-	// Show/hide moves, ao5, and ao12 column headers
+	// Show/hide moves, ao5, and ao12 column headers and colgroups
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
 	if (ao5Header) ao5Header.style.display = showAo5 ? '' : 'none';
 	if (ao12Header) ao12Header.style.display = showAo12 ? '' : 'none';
+	
+	// Also hide/show the colgroup columns
+	const movesCol = document.getElementById('moves_col');
+	const movesColBody = document.getElementById('moves_col_body');
+	const ao5Col = document.getElementById('ao5_col');
+	const ao5ColBody = document.getElementById('ao5_col_body');
+	const ao12Col = document.getElementById('ao12_col');
+	const ao12ColBody = document.getElementById('ao12_col_body');
+	
+	if (movesCol) movesCol.style.display = showMoves ? '' : 'none';
+	if (movesColBody) movesColBody.style.display = showMoves ? '' : 'none';
+	if (ao5Col) ao5Col.style.display = showAo5 ? '' : 'none';
+	if (ao5ColBody) ao5ColBody.style.display = showAo5 ? '' : 'none';
+	if (ao12Col) ao12Col.style.display = showAo12 ? '' : 'none';
+	if (ao12ColBody) ao12ColBody.style.display = showAo12 ? '' : 'none';
 	
 	// Hide Ao5 and Mo5 stats in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
@@ -327,48 +342,27 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		// Clear existing rows
 		tbody.innerHTML = '';
 		
-		// Determine number of rows based on mode (4 for OLL/PLL, 5 for others)
-		const numRows = ["OLL", "PLL", "easy", "medium"].includes(MINIMODE) ? 4 : MODE == "competing" ? Math.min(5, competedata.data.dims.length): MINIMODE == "marathon" ? ma_data.cubes.length : 5;
-		
-		// Calculate the actual data length
-		const totalSolves = isCompeting ? competearr.length : mo5.length;
-		
-		// Clamp offset to valid range
-		const maxOffset = Math.max(0, totalSolves - numRows);
-		window.tableScrollOffset = Math.max(0, Math.min(window.tableScrollOffset, maxOffset));
-		
-		// Get N solves based on offset
+		// Get ALL solves (no pagination needed since tbody is scrollable)
 		let recentTimes, recentMoves;
 		if (isCompeting) {
-			// Use competearr and opparr for competing mode
-			const endIndex = competearr.length - window.tableScrollOffset;
-			const startIndex = Math.max(0, endIndex - numRows);
-			recentTimes = competearr.slice(startIndex, endIndex);
-			recentMoves = opparr.slice(startIndex, endIndex);
+			recentTimes = competearr;
+			recentMoves = opparr;
 		} else {
-			// Use mo5 for times
-			const endIndex = mo5.length - window.tableScrollOffset;
-			const startIndex = Math.max(0, endIndex - numRows);
-			recentTimes = mo5.slice(startIndex, endIndex);
-			recentMoves = movesarr.slice(Math.max(0, movesarr.length - window.tableScrollOffset - numRows), Math.max(0, movesarr.length - window.tableScrollOffset));
+			recentTimes = mo5;
+			recentMoves = movesarr;
 		}
 		
-		// Update button states
-		if (scrollUpBtn) scrollUpBtn.disabled = window.tableScrollOffset >= maxOffset;
-		if (scrollDownBtn) scrollDownBtn.disabled = window.tableScrollOffset === 0;
+		// Hide scroll buttons since we're using native scrolling
+		if (scrollUpBtn) scrollUpBtn.style.display = 'none';
+		if (scrollDownBtn) scrollDownBtn.style.display = 'none';
 		
-		// Always create exactly N rows
+		// Create rows for all solves
+		const numRows = recentTimes.length;
 		for (let i = 0; i < numRows; i++) {
 			const row = tbody.insertRow();
 			
-			if (i < Math.max(recentTimes.length, recentMoves.length)) {
-				// Row with data
-				// Calculate solve number based on offset
-				const solveNumber = isCompeting 
-					? competearr.length - window.tableScrollOffset - recentTimes.length + i + 1
-					: mo5.length > 0 
-						? mo5.length - window.tableScrollOffset - recentTimes.length + i + 1
-						: i + 1;
+			// Calculate solve number (1-indexed)
+			const solveNumber = i + 1;
 				
 				// # column
 				const cellNum = row.insertCell(0);
@@ -450,32 +444,6 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 						cellAo12.textContent = '';
 					}
 				} else {
-					cellAo12.textContent = '';
-				}
-			}
-		} else {
-				// Empty row
-				const cellNum = row.insertCell(0);
-				cellNum.textContent = '';
-				
-				const cellTime = row.insertCell(1);
-				cellTime.textContent = '';
-				
-				// Moves/Opponent column (show for competing or when showMoves is true)
-				if (isCompeting || showMoves) {
-					const cellMoves = row.insertCell(2);
-					cellMoves.textContent = '';
-				}
-				
-				// Ao5 column
-				if (showAo5) {
-					const cellAo5 = row.insertCell(3);
-					cellAo5.textContent = '';
-				}
-				
-				// Ao12 column
-				if (showAo12) {
-					const cellAo12 = row.insertCell(showAo5 ? 4 : 3);
 					cellAo12.textContent = '';
 				}
 			}
