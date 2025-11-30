@@ -6095,7 +6095,7 @@ function accountmode() {
 	document.getElementById("l_title").innerHTML = "Create an Account";
 	document.getElementById("l_forgot").innerText = "Have an account?";
 	document.getElementById("l_link").innerText = "Log in";
-	setDisplay("none", ["test_alg_div", "timeselect"]);
+	setDisplay("none", ["test_alg_div", "timeselect", "show_keyboard"]);
 	setDisplay("block", ["loginform"]);
 	
 	var elements = document.getElementsByClassName('normal');
@@ -6123,7 +6123,7 @@ function loginmode() {
 	document.getElementById("l_title").innerHTML = "Enter your Login Credentials";
 	document.getElementById("l_forgot").innerText = "Don't have an account?";
 	document.getElementById("l_link").innerText = "Sign up";
-	setDisplay("none", ["test_alg_div", "timeselect"]);
+	setDisplay("none", ["test_alg_div", "timeselect", "show_keyboard"]);
 	setDisplay("block", ["loginform"]);
 	
 	var elements = document.getElementsByClassName('normal');
