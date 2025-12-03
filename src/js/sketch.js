@@ -5777,7 +5777,7 @@ function shapemarathon() {
 
 	}
 	if (mastep / 2 == ma_data.cubes.length) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2"]);
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2", "ma_list"]);
 		setDisplay("block", ["m_high"]);
 		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
@@ -9458,7 +9458,7 @@ function waitForCondition(callback, use = "default") {
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
-		if (MODE == "normal" && CUBENAME == "3x3") trackSolveProgress();
+		trackSolveProgress();
 		if (["solving", "testalg"].includes(use) && delay > 0) {
 			setTimeout(function() {
 				callback();
@@ -13529,6 +13529,9 @@ function setGlowColors() {
 }
 
 function trackSolveProgress(override) {
+	if (MODE != "normal" || CUBENAME != "3x3") {
+		return;
+	}
 	if (!override && (!cursolvestat.active || !timer.isRunning)) return;
 	if (!cursolvestat.cross && getSolvedByFunc(getCrossCubies)) {
 		cursolvestat.cross = timer.roundedTime();
