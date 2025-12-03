@@ -719,6 +719,7 @@ p.setup = () => {
 	SCRAM.option("Middle Slices");
 	SCRAM.option("Gearcube");
 	SCRAM.option("Gearcube II");
+	SCRAM.option("Preserve Cross")
 	SCRAM.option("Last Layer");
 	SCRAM.option("Pattern");
 
@@ -8169,6 +8170,27 @@ function shuffleCube(override = false) {
 			total = random[rnd];
 			changeArr(total);
 		}
+	}
+	if (SCRAM.value() == "Preserve Cross") {
+		possible = ["R", "L", "B", "F", "R'", "L'", "B'", "F'"];
+		let copy = [...possible];
+		const possible_down = ["D", "D'", "D2"]
+		for (let i = 0; i < 24; i++) {
+			if (possible.length === 0) {
+				possible = [...copy];
+			}
+			const index = Math.floor(Math.random() * possible.length);
+			const move = possible.splice(index, 1)[0];
+
+			total += move + " ";
+			total += p.random(possible_down) + " ";
+			total += Inverse(move) + " ";
+		}
+		changeArr(total);
+		competeshuffle = arr.join(" ");
+		document.getElementById("scramble").innerHTML = total;
+		multiple2("realscramble");
+		return;
 	}
 	let s = 18;
 	if(DIM == 7 && SCRAM.value() != "Middle Slices"){
