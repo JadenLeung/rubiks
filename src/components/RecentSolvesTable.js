@@ -334,7 +334,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	// console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
 	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
-		|| (!keymapShown && ["pracPLL", "OLL", "PLL", "easy", "medium", "marathon"].includes(MINIMODE))
+		|| (!keymapShown && ["pracPLL", "OLL", "PLL", "easy", "medium", "marathon", "practice"].includes(MINIMODE))
 		|| (!keymapShown && ["competing"].includes(MODE) && competedata.data.type != "teamblind")) {
 		container.style.display = 'block';
 		container.style.marginBottom = ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)) ? '0' : '16px';

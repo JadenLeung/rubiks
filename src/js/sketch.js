@@ -47,6 +47,11 @@ export default function (p) {
 	let compete_customarr = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
+	let practiceObj = {
+		shuffleFunc: null,
+		solvedFunc: null,
+		step: 0,
+	};
 	const mods = ["Shape and Color Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies", "Glow Cubes"];
 	const speeddata = {
 		0:0.28, 25: 0.25, 50:0.2, 75:0.16677, 100:0.116, 125:0.083, 150:0.033, 175:0.016667, 200:0.016667, 225: 0.016667
@@ -131,7 +136,7 @@ export default function (p) {
 	let m_4step = 0;
 	let ma_data = {};
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0, comstep = 0;
-	let OLL, PLL, PLLPRAC, OLLPRAC;
+	let OLL, PLL, PLLPRAC, OLLPRAC, F2LPRAC;
 	let competedata = {};
 	let competerooms = {};
 	const glow_instruct_obj = {
@@ -1369,11 +1374,21 @@ p.setup = () => {
 	const S_START = p.createButton('Start Practice');
 	setButton(S_START, "s_start", 'btn btn-success', 'font-size:25px;', practicePLL.bind(null, 0));
 
-	PLLPRAC = p.createButton('PLL Practice');
-	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), selectPLL.bind(null, "PLL"));
+	PLLPRAC = p.createButton('PLL');
+	setButton(PLLPRAC, "s_pllprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B", 119), selectPLL.bind(null, "PLL"));
 
-	OLLPRAC = p.createButton('OLL Practice');
-	setButton(OLLPRAC, "s_ollprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), selectPLL.bind(null, "OLL"));
+	OLLPRAC = p.createButton('OLL');
+	setButton(OLLPRAC, "s_ollprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B", 119), selectPLL.bind(null, "OLL"));
+
+	F2LPRAC = p.createButton('F2L');
+	setButton(F2LPRAC, "s_f2lprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B", 119), () => {
+		practiceObj.shuffleFunc = () => generatePreserveCrossScramble(false)
+		practiceObj.solvedFunc = () => getSolvedByFunc(getF2LCubies);
+		practiceObj.instruction = "Solve two layers.";
+		practiceObj.title = "F2L Practice";
+		practiceObj.shouldFlipCube = true;
+		practice()
+	});
 
 	const READYBOT = p.createButton('Ready');
 	setButton(READYBOT, "readybot", 'btn btn-success', 'font-size:25px;', speedRace2.bind(null, 0));
@@ -1684,6 +1699,10 @@ setInterval(() => {
 			console.log("SIDE SOLVED OLL", mo5);
 			ollstep++;
 			speedOLL();
+		} else if (MINIMODE == "practice" && practiceObj.solvedFunc() && practiceObj.step % 2 == 1) {
+			stopAndUpdateTimes();
+			practiceObj.step++;
+			practice();
 		}
 		
 	}
@@ -1826,10 +1845,7 @@ setInterval(() => {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
-	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL", "PLLprac", "OLLprac"].includes(MINIMODE)))
-		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
-	else
-		realtop = TOPWHITE.value()[0].toLowerCase();
+	realtop = getRealTop();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
 	special[4] = getEl("colorPicker4").value;
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -2144,6 +2160,12 @@ function to10(num) {
 	  total += addto;
 	}
 	return total;
+}
+function getRealTop() {
+	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL", "PLLprac", "OLLprac"].includes(MINIMODE) || (MINIMODE == "practice" && practiceObj.shouldFlipCube)))
+		return opposite[TOPWHITE.value()[0].toLowerCase()];
+	else
+		return TOPWHITE.value()[0].toLowerCase();
 }
 function getCubyFromPos(x, y, z) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
@@ -2631,11 +2653,10 @@ function speedSetup()
 	}
 	special[2] = savesetup;
 	quickSolve();
-	if (pllpracstep > 0) {
+	if (pllpracstep > 0 || MINIMODE == "practice") {
 		moves = 0;
 		timer.stop();
 		timer.reset();
-
 	}
 	//reSetup();
 }
@@ -3811,6 +3832,7 @@ function regular(nocustom){
 	m_34step = 0;
 	m_4step = 0;
 	bstep = 0;
+	practiceObj.step = 0;
 	roundresult = []
 	getEl("r_iframe").src = "about:blank";
 	getEl("show_keyboard").style.display = isthin ? "none" : "block";
@@ -6229,11 +6251,11 @@ function speedmode()
 	pllpracstep = 0;
 	if(DIM == 50) {
 		PLL.html("PLL Attack");
-		PLLPRAC.html("PLL Practice");
+		PLLPRAC.html("PLL");
 	}
 	else {
 		PLL.html("PBL Attack");
-		PLLPRAC.html("PBL Practice");
+		PLLPRAC.html("PBL");
 	}
 	INPUT.selected("Normal");
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -6812,6 +6834,35 @@ function selectPLL(mode) {
 		canMan = false;
 	}
 }
+
+// Need to change the shuffle function.
+function practice() {
+	undo = [];
+	redo = [];
+	MINIMODE = "practice";
+	realtop = getRealTop();
+	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+	if(practiceObj.step % 2 == 0) {
+		timer.reset();
+		if (practiceObj.step == 0) {
+			reCam();
+			resized();
+			ao5 = [];
+			mo5 = [];
+		}
+	}
+	showSpeed();
+	quickSolve();
+	practiceObj.shuffleFunc();
+	multipleGeneral(0, () => {
+		practiceObj.step++;
+	});
+	timer.stop();
+	timer.reset();
+	setDisplay("block", ["outermoves", "practiceskip"]);
+	document.getElementById("s_INSTRUCT").innerHTML = practiceObj.title;
+	document.getElementById("s_instruct").innerHTML = "<p style = 'font-size:15px;'>" + practiceObj.instruction + "</p>";
+}
 function practicePLL() {
 	undo = [];
 	redo = [];
@@ -6824,7 +6875,7 @@ function practicePLL() {
 			fullScreen(false);
 			document.getElementById("right").className = "col-xl-4 noselect";
 			reCam();
-			resized();
+			resized(); 
 			ao5 = [];
 			mo5 = [];
 		}
@@ -6867,10 +6918,7 @@ function practicePLL() {
 function speedPLL()
 {
 	MINIMODE = "PLL";
-	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL"].includes(MINIMODE)))
-		realtop = opposite[TOPWHITE.value()[0].toLowerCase()];
-	else
-		realtop = TOPWHITE.value()[0].toLowerCase();
+	realtop = getRealTop();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
 	undo = [];
 	redo = [];
@@ -7567,6 +7615,25 @@ function m_4()
 	}
 }
 
+function multipleGeneral(nb, solvedCallback) {
+	if (nb < arr.length) {
+		canMan = false;
+		shufflespeed = 2;
+		otherShuffling = true;
+		notation(arr[nb]);
+		waitForCondition(multipleGeneral.bind(null, nb + 1, solvedCallback), "other");
+	}
+	else
+	{
+		otherShuffling = false;
+		shufflespeed = 5;
+		setLayout();
+		savesetup = IDtoReal(IDtoLayout(decode(getID())));
+		solvedCallback();
+		canMan = true;
+	}
+}
+
 function multipleEasy(nb, dificil, mode = "") {
 	if (nb < arr.length) {
 		canMan = false;
@@ -8020,6 +8087,28 @@ function randomLL()
 	changeArr(InverseAll(plls[rnd][0]) + " " + auf + InverseAll(olls[rnd2][0]));
 	document.getElementById("scramble").innerHTML = (stringArray());
 }
+function generatePreserveCrossScramble(crossOnTop) {
+	let possible = ["R", "L", "B", "F", "R'", "L'", "B'", "F'"];
+	let copy = [...possible];
+	let total = "";
+	let possible_down = ["D", "D'", "D2"]
+	if (!crossOnTop) {
+		possible_down = ["U", "U'", "U2"]
+	}
+	for (let i = 0; i < 24; i++) {
+		if (possible.length === 0) {
+			possible = [...copy];
+		}
+		const index = Math.floor(Math.random() * possible.length);
+		const move = possible.splice(index, 1)[0];
+
+		total += move + " ";
+		total += p.random(possible_down) + " ";
+		total += Inverse(move) + " ";
+	}
+	document.getElementById("scramble").innerHTML = total;
+	changeArr(total);
+}
 function shufflePossible(len, total2, prev){
 	document.getElementById("scramble").innerHTML = total2;
 	console.log("total is " + total2);
@@ -8172,23 +8261,8 @@ function shuffleCube(override = false) {
 		}
 	}
 	if (SCRAM.value() == "Preserve Cross") {
-		possible = ["R", "L", "B", "F", "R'", "L'", "B'", "F'"];
-		let copy = [...possible];
-		const possible_down = ["D", "D'", "D2"]
-		for (let i = 0; i < 24; i++) {
-			if (possible.length === 0) {
-				possible = [...copy];
-			}
-			const index = Math.floor(Math.random() * possible.length);
-			const move = possible.splice(index, 1)[0];
-
-			total += move + " ";
-			total += p.random(possible_down) + " ";
-			total += Inverse(move) + " ";
-		}
-		changeArr(total);
+		generatePreserveCrossScramble(true);
 		competeshuffle = arr.join(" ");
-		document.getElementById("scramble").innerHTML = total;
 		multiple2("realscramble");
 		return;
 	}
@@ -9007,7 +9081,7 @@ p.keyPressed = (event) => {
 			if (ollstep > 0) func = speedOLL; 
 			if (easystep > 0) func = easy; 
 			if (medstep > 0) func = medium; 
-			if (pllpracstep > 0) {movesarr = []; mo5 = []; ao5 = [];}
+			if (pllpracstep > 0 || practiceObj.step > 0) {movesarr = []; mo5 = []; ao5 = [];}
 			if (func) {
 				speedmode();
 				func();
@@ -12169,7 +12243,7 @@ function removeSpecificTime(index){
 window.removeSpecificTime = removeSpecificTime;
 function removeTime()
 {
-	if(["normal","cube","timed"].includes(MODE) || pllpracstep > 0){
+	if(["normal","cube","timed"].includes(MODE) || pllpracstep > 0 || practiceObj.step > 0){
 		movesarr.pop();
 		mo5.pop();
 		ao5.pop();
@@ -13652,8 +13726,8 @@ function getColorIndexFromCubyAndFace(cuby, face) {
 	}
 }
 
-function MODEBUTTONSTYLE(bgColor) {
-	return `height:60px; width:${isthin ? 155 : 180}px; text-align:center; font-size:20px; background-color: ${bgColor}; border-color: black;`
+function MODEBUTTONSTYLE(bgColor, width) {
+	return `height:60px; width:${width ? width: isthin ? 155 : 180}px; text-align:center; font-size:20px; background-color: ${bgColor}; border-color: black;`
 }
 function getOp() {
 	if (!competedata?.userids) {
@@ -13681,12 +13755,12 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-	// competemode();
-	modnum = 4;
-    cubemode();
+	speedmode();
+	// modnum = 4;
+    // cubemode();
 	// CUBEMAP["2x3x5"]();
-	switchCube("3x3 Glow Cube");
-	GLOW3x3.style('background-color', "#8ef5ee");
+	// switchCube("3x3 Glow Cube");
+	// GLOW3x3.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {
@@ -13810,8 +13884,13 @@ document.getElementById('login').addEventListener('click', function() {
 
 getEl("practiceskip").addEventListener('click', function() {
 	if (!canMan) return;
-	pllpracstep = 2;
-	practicePLL();
+	if (MINIMODE == "pracPLL") {
+		pllpracstep = 2;
+		practicePLL();
+	} else {
+		practiceObj.step = 2;
+		practice();
+	}
 });
 
 getEl("competelink").addEventListener("click", function(event) {
