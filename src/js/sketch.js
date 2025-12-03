@@ -6244,6 +6244,7 @@ function speedmode()
 		elements[i].style.display='none';
 	}
 	if(DIM == 50) document.getElementById("s_medium").style.display = "inline";
+	getEl("s_f2lprac").style.display = DIM == 50 ? "inline" : "none";
 	easystep = 0;
 	medstep = 0;
 	ollstep = 0;
