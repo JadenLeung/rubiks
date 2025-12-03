@@ -10,6 +10,7 @@ import {modeData, getUserData, printUsers, putUsers, hasUser, putSuggestion} fro
 import { createCustomDialog } from '../components/GameDialog.js';
 import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
+import { showHighscoreModal, hideHighscoreModal } from '../components/HighscoreModal.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -3790,7 +3791,7 @@ function regular(nocustom){
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "mode5", "mode6", "mode8", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
-		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "highscore", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
@@ -5692,7 +5693,7 @@ function blindmode() {
 		bstep = 1;
 		setInput();
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-			 "highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher"]);
+			 "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
 		setDisplay("block", ["input", "peeks", "peek_container", "blind2"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
@@ -5709,7 +5710,7 @@ function blindmode() {
 }
 function showMarathon() {
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-		"highscore", "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
+		"s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
 	setDisplay("inline", ["speed", "slider_div", "undo", "redo", "reset2_div"]);
 	setDisplay("table", ["keymap"]);
 	setDisplay("block", ["times_par", "outertime", "marathon2", "scramble_par"]);
@@ -6357,7 +6358,7 @@ function showSpeed()
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", 
-		"highscore", "s_prac", "s_prac2","blind", "b_start", "marathon","ma_buttons"]);
+		"s_prac", "s_prac2","blind", "b_start", "marathon","ma_buttons"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 	getEl("times_desc").innerHTML = "Times:";
 
@@ -6476,9 +6477,10 @@ function setScore(mode, total, getlow = true) {
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
 	(MODE == "moves" && ((total > highscores && !getlow) || (total < highscores && getlow)))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceOct12('d')) || total < highscores))) {
-		if (localStorage.username != "signedout")
-			document.getElementById("highscore").style.display = "block";
-			localStorage[mode] = total;
+		if (localStorage.username != "signedout") {
+			showHighscoreModal();
+		}
+		localStorage[mode] = total;
 		if (["weekly", "daily"].includes(MODE)) {
 			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceOct12('d'));
 		}
@@ -6487,7 +6489,9 @@ function setScore(mode, total, getlow = true) {
 	if (["c_day", "c_day2"].includes(mode)) {
 		if (!localStorage[mode + "_bweek"] || localStorage[mode + "_bweek"] == "null" || 
 			JSON.parse(localStorage[mode + "_bweek"]).week != week || total < JSON.parse(localStorage[mode + "_bweek"]).score) {
-			document.getElementById("highscore").style.display = "block";
+			if (localStorage.username != "signedout") {
+				showHighscoreModal();
+			}
 			localStorage[mode + "_bweek"] = JSON.stringify({week: week, score: total});
 			updateScores();
 		}
@@ -6818,7 +6822,7 @@ function selectPLL(mode) {
 	MINIMODE = mode + "prac";
 	pracmode = mode;
 	moves = 0;
-	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "highscore", "s_prac"]);
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", "s_prac"]);
 	setDisplay("inline", ["s_prac2"]);
 	getEl("s_plltitle").innerHTML = mode == "OLL" ? "Select OLL Algorithms" : DIM == 50 ? "Select PLL Algorithms" : "Select PBL Algorithms" 
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message"]);
@@ -7053,7 +7057,10 @@ document.getElementById("show_keyboard_map").onchange = function() {
 	}
 };
 document.getElementById("savedata").onclick = () => saveData(localStorage.username, null, "POST", true);
-document.getElementById("savedata2").onclick = () => saveData(localStorage.username, null, "POST", true);
+
+// Make saveData globally accessible for HighscoreModal
+window.saveData = saveData;
+
 async function saveData(username, password, method, al) {
 	if (document.getElementById("logindesc").innerHTML == "")
 		document.getElementById("logindesc").innerHTML = "Saving data...";
@@ -7106,7 +7113,7 @@ async function saveData(username, password, method, al) {
 	console.log(data);
 	await repeatUntilSuccess(() => putUsers(data, method));
 	successSQL("Data saved");
-	document.getElementById("highscore").style.display = "none";
+	hideHighscoreModal();
 }
 
 
