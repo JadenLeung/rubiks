@@ -1551,10 +1551,7 @@ setInterval(() => {
 			timeInSeconds = competedata.data.time;
 		}
 	}
-	if (timeInSeconds != "DNF") {
-		timeInSeconds += "s";
-	}
-	document.getElementById('time').innerText = timeInSeconds;
+	document.getElementById('time').innerText = timeInSeconds + (timeInSeconds != "DNF" ? "s" : "");
 	document.getElementById('moves').innerText = moves + (window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? " m" : " moves");
 	document.getElementById('speed').innerText = Math.round(SPEED*100);
 	document.getElementById('delay2').innerText = DELAY;
