@@ -1,6 +1,6 @@
 // Highscore Modal Component
 
-export function showHighscoreModal() {
+export function showHighscoreModal(newScore, oldScore = null) {
 	let modal = document.getElementById("highscore-modal");
 	let backdrop = document.getElementById("highscore-backdrop");
 	
@@ -45,37 +45,58 @@ export function showHighscoreModal() {
 			color: "black",
 		});
 		
-		modal.innerHTML = `
-			<h5>You got a personal best!</h5>
-			<div style="display: flex; gap: 10px; margin-top: 20px;">
-				<button class="btn btn-primary" style="flex: 1; font-size: 18px;" id="highscore-save-btn">Save score</button>
-				<button class="btn btn-secondary" style="flex: 1; font-size: 18px;" id="highscore-close-btn">Close</button>
-			</div>
-		`;
 		document.body.appendChild(modal);
 		
 		// Prevent clicks on modal from propagating
 		modal.onclick = (e) => {
 			e.stopPropagation();
 		};
-		
-		// Setup close button handler
-		const closeBtn = document.getElementById("highscore-close-btn");
-		if (closeBtn) {
-			closeBtn.onclick = () => {
-				hideHighscoreModal();
-			};
-		}
-		
-		// Setup save button handler
-		const saveBtn = document.getElementById("highscore-save-btn");
-		if (saveBtn) {
-			saveBtn.onclick = () => {
-				if (window.saveData && localStorage.username) {
-					window.saveData(localStorage.username, null, "POST", true);
-				}
-			};
-		}
+	}
+	
+	// Update modal content with score information
+	let scoreHtml = '';
+	if (oldScore !== null && oldScore !== undefined && oldScore !== 'N/A' && oldScore !== -1) {
+		scoreHtml = `
+			<p style="margin: 15px 0 5px 0; font-size: 16px;">
+				<strong>New Score:</strong> ${newScore}
+			</p>
+			<p style="margin: 5px 0 15px 0; font-size: 14px; color: #666;">
+				Previous: ${oldScore}
+			</p>
+		`;
+	} else {
+		scoreHtml = `
+			<p style="margin: 15px 0; font-size: 16px;">
+				<strong>Score:</strong> ${newScore}
+			</p>
+		`;
+	}
+	
+	modal.innerHTML = `
+		<h5>You got a personal best!</h5>
+		${scoreHtml}
+		<div style="display: flex; gap: 10px; margin-top: 20px;">
+			<button class="btn btn-primary" style="flex: 1; font-size: 18px;" id="highscore-save-btn">Save score</button>
+			<button class="btn btn-secondary" style="flex: 1; font-size: 18px;" id="highscore-close-btn">Close</button>
+		</div>
+	`;
+	
+	// Setup close button handler
+	const closeBtn = document.getElementById("highscore-close-btn");
+	if (closeBtn) {
+		closeBtn.onclick = () => {
+			hideHighscoreModal();
+		};
+	}
+	
+	// Setup save button handler
+	const saveBtn = document.getElementById("highscore-save-btn");
+	if (saveBtn) {
+		saveBtn.onclick = () => {
+			if (window.saveData && localStorage.username) {
+				window.saveData(localStorage.username, null, "POST", true);
+			}
+		};
 	}
 	
 	// Get elements (they exist now)

@@ -6478,7 +6478,10 @@ function setScore(mode, total, getlow = true) {
 	(MODE == "moves" && ((total > highscores && !getlow) || (total < highscores && getlow)))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceOct12('d')) || total < highscores))) {
 		if (localStorage.username != "signedout") {
-			showHighscoreModal();
+			// Only show previous score if it's from the current week/day period
+			const isFromCurrentPeriod = ["weekly", "daily"].includes(MODE) ? 
+				localStorage[chalday[mode]] == (mode == "c_week" ? week : sinceOct12('d')) : true;
+			showHighscoreModal(total, isFromCurrentPeriod ? highscores : null);
 		}
 		localStorage[mode] = total;
 		if (["weekly", "daily"].includes(MODE)) {
@@ -6487,10 +6490,13 @@ function setScore(mode, total, getlow = true) {
 		updateScores();
 	}
 	if (["c_day", "c_day2"].includes(mode)) {
+		const oldWeeklyData = localStorage[mode + "_bweek"] && localStorage[mode + "_bweek"] != "null" ? JSON.parse(localStorage[mode + "_bweek"]) : null;
+		const isFromCurrentWeek = oldWeeklyData && oldWeeklyData.week == week;
+		const oldWeeklyScore = isFromCurrentWeek ? oldWeeklyData.score : null;
 		if (!localStorage[mode + "_bweek"] || localStorage[mode + "_bweek"] == "null" || 
 			JSON.parse(localStorage[mode + "_bweek"]).week != week || total < JSON.parse(localStorage[mode + "_bweek"]).score) {
 			if (localStorage.username != "signedout") {
-				showHighscoreModal();
+				showHighscoreModal(total, oldWeeklyScore);
 			}
 			localStorage[mode + "_bweek"] = JSON.stringify({week: week, score: total});
 			updateScores();
