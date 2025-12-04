@@ -7436,6 +7436,7 @@ function m_34()
 		giveups = obj.giveups;
 		m_type = obj.m_type;
 		m_points = obj.m_points;
+		m_scramble = obj.m_scramble;
 		savesetup = IDtoReal(IDtoLayout(decode(obj.savesetup)));
 		special[2] = savesetup;
 		quickSolve();
@@ -7510,7 +7511,7 @@ function m_34()
 	}
 }
 function localSetup(mode) {
-	localStorage[mode] = JSON.stringify({savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step, m_offset: m_offset});
+	localStorage[mode] = JSON.stringify({savesetup : getID(), giveups: giveups, m_points: m_points, m_type: m_type, m_34step: m_34step, m_4step: m_4step, m_offset: m_offset, m_scramble: m_scramble});
 }
 function m_4() 
 {
