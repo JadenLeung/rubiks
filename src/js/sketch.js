@@ -1782,7 +1782,7 @@ setInterval(() => {
 				competeSolved(competedata);
 				socket.emit("solved", room, blindTime());
 			} else {
-				socket.emit("solved", room, timer.roundedTime());
+				socket.emit("solved", room, Math.max(0, timer.roundedTime()));
 			}
 			setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 			canMan = false;
@@ -4563,7 +4563,7 @@ function competeTimes(data, end = false) {
 				str += ", progress: " + strarr[i][1] + "%";
 			}
 			console.log("strarr is ", strarr);
-			str += ", time: " + (strarr[i][2] >= DNF || strarr[i][2] == "DNF" ? "DNF" : (strarr[i][2] + "s"));
+			str += ", time: " + (strarr[i][2] >= DNF || strarr[i][2] == "DNF" ? "DNF" : (end ? Math.max(0, strarr[i][2]) : strarr[i][2]) + "s");
 			if (strarr[i][0] == socket.id) {
 				str += `</b>`;
 			}
@@ -7033,8 +7033,8 @@ function speedOLL()
 
 function stopAndUpdateTimes() {
 	timer.stop();
-	ao5.push(Math.round(timer.getTime() / 10)/100.0);
-	mo5.push(timer.roundedTime());
+	ao5.push(Math.max(0, timer.roundedTime()));
+	mo5.push(Math.max(0, timer.roundedTime()));
 	movesarr.push(moves);
 	// Reset table scroll offset when new solve is added
 	if (window.tableScrollOffset !== undefined) {
@@ -8604,8 +8604,6 @@ function displayAverage()
 	}
 	for(let i = 0; i < mo5.length; i++)
 	{
-		if(mo5[i] == 0)
-			mo5.splice(i, 1);
 		meano5 += mo5[i];
 	}
 	if(last5.length == 5 && mastep == 0)
