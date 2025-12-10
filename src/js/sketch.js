@@ -3298,6 +3298,7 @@ function changeSession() {
 	if (!SESSION) return;
 	session = SESSION.value() - 1;
 	({mo5, movesarr, ao5, scrambles: solvedata} = savetimes[session]);
+	displayAverage();
 }
 function changeInput()
 {
