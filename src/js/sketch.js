@@ -7034,6 +7034,7 @@ function speedOLL()
 
 function stopAndUpdateTimes() {
 	timer.stop();
+	setGlowColors();
 	ao5.push(Math.max(0, timer.roundedTime()));
 	mo5.push(Math.max(0, timer.roundedTime()));
 	movesarr.push(moves);
@@ -13454,13 +13455,16 @@ function setCubyAllColor(color) {
 }
 
 function setGlowColors() {
+	if (!CUBENAME.includes("Cuby Glow")) {
+		return;
+	}
 	if (isSolved()) {
 		for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 			CUBE[i].originalColor();
 		}
 	}
 
-	if (!CUBENAME.includes("Cuby Glow") && (!timer.isRunning || timer.getTime() <= 0)) {
+	if (!timer.isRunning || timer.getTime() <= 0) {
 		return;
 	}
 	setLayout();
