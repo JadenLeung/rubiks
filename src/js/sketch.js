@@ -13455,7 +13455,7 @@ function setCubyAllColor(color) {
 }
 
 function setGlowColors() {
-	if (!CUBENAME.includes("Cuby Glow")) {
+	if (!CUBENAME.includes("Glow")) {
 		return;
 	}
 	if (isSolved()) {
