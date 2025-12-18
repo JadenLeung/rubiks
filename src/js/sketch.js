@@ -152,7 +152,8 @@ export default function (p) {
 		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
 		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
 		"Side Glow": "Solve a side, to unlock the colors of the next. In a shape-shifting cuby, you must also turn it back to cube shape to unlock the next step.",
-		"Cuby Glow": "Build the cube, cuby by cuby. Solving the glowing cubies unlocks two more."
+		"Cuby Glow": "Build the cube, cuby by cuby. Solving the glowing cubies unlocks two more.",
+		"Fade Glow": "Cubies glow when they are correctly positioned, and gradually dim when they are not.",
 	}
 	let REGULAR;
 	let SPEEDMODE;
