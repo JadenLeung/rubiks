@@ -13483,7 +13483,7 @@ function setGlowColors() {
 		if (["x", "y", "z", "x'", "y'", "z'"].includes(recentMove())) {
 			return;
 		}
-		const DIMMING_LENGTH = 10;
+		const DIMMING_LENGTH = 15;
 		let cubies = getOuterCubes();
 		if (cubyglows.size == 0) {
 			cubyglows = Array.from({ length: SIZE * SIZE * SIZE }, () => 0);
