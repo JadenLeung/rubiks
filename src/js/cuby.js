@@ -131,22 +131,16 @@ export default class Cuby {
       green: p.color(18, 219, 31, 255),
       yellow: p.color(209, 219, 18, 255),
     }; */
-    let xmul = SIZE % 2 == 1 ? this.oldx*0.02 : (this.oldx - 25) * 0.02;
-    let ymul = SIZE % 2 == 1 ? this.oldy*0.02 : (this.oldy - 25) * 0.02;
-    let zmul = SIZE % 2 == 1 ? this.oldz*0.02 : (this.oldz - 25) * 0.02;
-    this.xmul = xmul;
-    this.ymul = ymul;
-    this.zmul = zmul;
 	 this.colors = {
-      def:   p.color(25 + xmul,  25 + ymul, 25 + zmul),
-      white: p.color(250 + xmul, 250 + ymul, 250 + zmul),
-      red:   p.color(219 + xmul, 25 + ymul,  25 + zmul),
-      blue:  p.color(25 + xmul,  105 + ymul, 219 + zmul),
-      orange:p.color(219 + xmul, 125 + ymul, 25 + zmul),
-      green: p.color(25 + xmul,  219 + ymul, 31 + zmul),
-      yellow:p.color(209 + xmul, 219 + ymul, 25 + zmul),
-      black:p.color(25 + xmul,  25 + ymul, 25 + zmul),
-      magenta:p.color(245 + xmul,  25 + ymul, 245 + zmul),
+      def:   p.color(25, 25, 25),
+      white: p.color(250, 250, 250),
+      red:   p.color(219, 25, 25),
+      blue:  p.color(25, 105, 219),
+      orange:p.color(219, 125, 25),
+      green: p.color(25, 219, 31),
+      yellow:p.color(209, 219, 25),
+      black:p.color(25, 25, 25),
+      magenta:p.color(245, 25, 245),
     };
     this.dimcolors = {
 
@@ -421,15 +415,15 @@ export default class Cuby {
 
   setDim(dim, color, dir, temporary) {
     const dimcolors = {
-      def:     this.p.color((25 + this.xmul) * dim,  (25 + this.ymul) * dim,  (25 + this.zmul) * dim),
-      w:   this.p.color((250 + this.xmul) * dim, (250 + this.ymul) * dim, (250 + this.zmul) * dim),
-      r:     this.p.color((219 + this.xmul) * dim, (25 + this.ymul) * dim,  (25 + this.zmul) * dim),
-      b:    this.p.color((25 + this.xmul) * dim,  (105 + this.ymul) * dim, (219 + this.zmul) * dim),
-      o:  this.p.color((219 + this.xmul) * dim, (125 + this.ymul) * dim, (25 + this.zmul) * dim),
-      g:   this.p.color((25 + this.xmul) * dim,  (219 + this.ymul) * dim, (31 + this.zmul) * dim),
-      y:  this.p.color((209 + this.xmul) * dim, (219 + this.ymul) * dim, (25 + this.zmul) * dim),
-      k:   this.p.color((25 + this.xmul) * dim,  (25 + this.ymul) * dim,  (25 + this.zmul) * dim),
-      m: this.p.color((245 + this.xmul) * dim, (25 + this.ymul) * dim,  (245 + this.zmul) * dim),
+      def:     this.p.color(25 * dim, 25 * dim, 25 * dim),
+      w:   this.p.color(250 * dim, 250 * dim, 250 * dim),
+      r:     this.p.color(219 * dim, 25 * dim, 25 * dim),
+      b:    this.p.color(25 * dim, 105 * dim, 219 * dim),
+      o:  this.p.color(219 * dim, 125 * dim, 25 * dim),
+      g:   this.p.color(25 * dim, 219 * dim, 31 * dim),
+      y:  this.p.color(209 * dim, 219 * dim, 25 * dim),
+      k:   this.p.color(25 * dim, 25 * dim, 25 * dim),
+      m: this.p.color(245 * dim, 25 * dim, 245 * dim),
     }
     this.setFaceColor(dimcolors[color], dir, temporary)
   }

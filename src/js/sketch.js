@@ -8883,7 +8883,7 @@ function startAction() {
 
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
 		const result = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
-		const cuby = result !== false ? result.cubyIndex : getCubyIndexByColor2(hoveredColor);
+		const cuby = result !== false ? result.cubyIndex : -1;
 		const face = result !== false ? result.faceIndex : null;
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
 		const dir = face !== null ? oppdirs[face] : null;
@@ -12630,13 +12630,13 @@ function dragAction()
 		const face = result !== false ? result.faceIndex : null;
 		if (cuby !== false) {
 			if (selectedCuby !== false) {
-				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, selectedMouseX, selectedMouseY, mouseXPos, mouseYPos, selectedFace, face))
+				if(dragCube(selectedCuby, cuby, selectedFace, face))
 					redo = [];
 			}
 		}
 	}
 }
-function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouseY2, face1, face2)
+function dragCube(cuby1, cuby2, face1, face2)
 {
 	if(!canMan)
 		return;
@@ -12645,7 +12645,6 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 		return;
 	if(Array.isArray(DIM) && DIM[0] == "adding") return; 
 	if (cuby1 == -1 || cuby2 == -1) return;
-	console.log("Drag that idiot", cuby1, color1, cuby2, color2);
 	let mid = mids[SIZE];
 	let setup = [CUBE[mid].x, CUBE[mid].y, CUBE[mid].z];
 	console.log("setup is ", setup)
@@ -12744,7 +12743,6 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 			let numzero = +(CUBE[cuby1].x == 0) + +(CUBE[cuby1].y == 0) + +(CUBE[cuby1].z == 0)
 			if (numzero > 1) {
 				[cuby1, cuby2] = [cuby2, cuby1];
-				[color1, color2] = [color2, color1];
 				[face1, face2] = [face2, face1];
 				willinverse = true;
 			}
@@ -12770,7 +12768,6 @@ function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouse
 				reald = db; 
 			}
 			if (face1 == face2) {
-				console.log("Same faces ", getFace(cuby2, mouseX2, mouseY2));
 				const BANNED = {
 					0: "z", 1: "z", 2: "x", 3: "x", 4: "y", 5: "y"
 				}
@@ -12887,20 +12884,6 @@ p.draw = () => {
 	
 	renderCube();
 }
-
-function getFaceOld(cuby1, color1)
-{
-	const dirs = {"left":3, "right":2, "top":5, "bottom":4, "front":1, "back":0}
-	let dir = null;
-	Object.keys(dirs).forEach((d) => {
-		if (!CUBE[cuby1] || !CUBE[cuby1].hasOwnProperty(d)) return;
-		if (getColor(CUBE[cuby1][d].levels) == getColor(color1)) {
-			dir = dirs[d];
-		}
-	})
-	return dir;
-}
-
 
 function sharedAxis(cuby1, cuby2) {
 	let obj = false;
