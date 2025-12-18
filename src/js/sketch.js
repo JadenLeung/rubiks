@@ -8004,6 +8004,165 @@ function getCubyByColor(arr1) {
 	}
 }
 
+function getCubyIndexByMousePosition(mouseX, mouseY) {
+	// Get projection matrices from renderer
+	const renderer = p._renderer;
+	const projMatrix = renderer.uPMatrix;
+	const mvMatrix = renderer.uMVMatrix;
+	
+	// Helper function to project a 3D point to screen coordinates
+	const projectToScreen = (x, y, z) => {
+		const pos = [x, y, z, 1];
+		
+		// Apply modelview matrix
+		const mv = [
+			mvMatrix.mat4[0] * pos[0] + mvMatrix.mat4[4] * pos[1] + mvMatrix.mat4[8] * pos[2] + mvMatrix.mat4[12] * pos[3],
+			mvMatrix.mat4[1] * pos[0] + mvMatrix.mat4[5] * pos[1] + mvMatrix.mat4[9] * pos[2] + mvMatrix.mat4[13] * pos[3],
+			mvMatrix.mat4[2] * pos[0] + mvMatrix.mat4[6] * pos[1] + mvMatrix.mat4[10] * pos[2] + mvMatrix.mat4[14] * pos[3],
+			mvMatrix.mat4[3] * pos[0] + mvMatrix.mat4[7] * pos[1] + mvMatrix.mat4[11] * pos[2] + mvMatrix.mat4[15] * pos[3]
+		];
+		
+		// Apply projection matrix
+		const clip = [
+			projMatrix.mat4[0] * mv[0] + projMatrix.mat4[4] * mv[1] + projMatrix.mat4[8] * mv[2] + projMatrix.mat4[12] * mv[3],
+			projMatrix.mat4[1] * mv[0] + projMatrix.mat4[5] * mv[1] + projMatrix.mat4[9] * mv[2] + projMatrix.mat4[13] * mv[3],
+			projMatrix.mat4[2] * mv[0] + projMatrix.mat4[6] * mv[1] + projMatrix.mat4[10] * mv[2] + projMatrix.mat4[14] * mv[3],
+			projMatrix.mat4[3] * mv[0] + projMatrix.mat4[7] * mv[1] + projMatrix.mat4[11] * mv[2] + projMatrix.mat4[15] * mv[3]
+		];
+		
+		// Perspective divide
+		if (clip[3] === 0) return null;
+		const ndc = [clip[0] / clip[3], clip[1] / clip[3], clip[2] / clip[3]];
+		
+		// Convert to screen coordinates
+		const screenX = (ndc[0] + 1) * p.width / 2;
+		const screenY = (1 - ndc[1]) * p.height / 2;
+		
+		return { x: screenX, y: screenY, depth: ndc[2] };
+	};
+	
+	// Helper to get face corners in 3D space
+	const getFaceCorners = (cuby, faceIndex, faceShifts) => {
+		const h = CUBYESIZE / 2;
+		const shift = faceShifts && faceShifts[["back", "front", "right", "left", "bottom", "top"][faceIndex]] || [0, 0, 0];
+		const sx = shift[0], sy = shift[1], sz = shift[2];
+		
+		switch(faceIndex) {
+			case 0: // back (z-)
+				return [
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
+				];
+			case 1: // front (z+)
+				return [
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
+				];
+			case 2: // right (x-)
+				return [
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
+				];
+			case 3: // left (x+)
+				return [
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz]
+				];
+			case 4: // bottom (y-)
+				return [
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz]
+				];
+			case 5: // top (y+)
+				return [
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
+					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
+				];
+		}
+	};
+	
+	// Helper to check if point is inside polygon using ray casting
+	const pointInPolygon = (point, polygon) => {
+		let inside = false;
+		for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+			const xi = polygon[i].x, yi = polygon[i].y;
+			const xj = polygon[j].x, yj = polygon[j].y;
+			
+			const intersect = ((yi > point.y) !== (yj > point.y))
+				&& (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+			if (intersect) inside = !inside;
+		}
+		return inside;
+	};
+	
+	// Get camera position to check which cubies are visible
+	const camPosArray = CAM.getPosition([]);
+	const camPos = p.createVector(camPosArray[0], camPosArray[1], camPosArray[2]);
+	
+	let closestCuby = null;
+	let minDepth = Infinity;
+	
+	const halfSize = CUBYESIZE / 2;
+	
+	// Check all cubies
+	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
+		const cuby = CUBE[i];
+		if (!cuby) continue;
+		
+		// Get face shifts for non-cubic puzzles
+		const faceShifts = cuby.getFaceShifts ? cuby.getFaceShifts(SIZE) : null;
+		
+		// Define all 6 faces with their centers and normals
+		const faces = [
+			{ index: 0, center: p.createVector(cuby.x + (faceShifts ? faceShifts.back[0] : 0), cuby.y + (faceShifts ? faceShifts.back[1] : 0), cuby.z - halfSize + (faceShifts ? faceShifts.back[2] : 0)), normal: p.createVector(0, 0, -1) },
+			{ index: 1, center: p.createVector(cuby.x + (faceShifts ? faceShifts.front[0] : 0), cuby.y + (faceShifts ? faceShifts.front[1] : 0), cuby.z + halfSize + (faceShifts ? faceShifts.front[2] : 0)), normal: p.createVector(0, 0, 1) },
+			{ index: 2, center: p.createVector(cuby.x - halfSize + (faceShifts ? faceShifts.right[0] : 0), cuby.y + (faceShifts ? faceShifts.right[1] : 0), cuby.z + (faceShifts ? faceShifts.right[2] : 0)), normal: p.createVector(-1, 0, 0) },
+			{ index: 3, center: p.createVector(cuby.x + halfSize + (faceShifts ? faceShifts.left[0] : 0), cuby.y + (faceShifts ? faceShifts.left[1] : 0), cuby.z + (faceShifts ? faceShifts.left[2] : 0)), normal: p.createVector(1, 0, 0) },
+			{ index: 4, center: p.createVector(cuby.x + (faceShifts ? faceShifts.bottom[0] : 0), cuby.y - halfSize + (faceShifts ? faceShifts.bottom[1] : 0), cuby.z + (faceShifts ? faceShifts.bottom[2] : 0)), normal: p.createVector(0, -1, 0) },
+			{ index: 5, center: p.createVector(cuby.x + (faceShifts ? faceShifts.top[0] : 0), cuby.y + halfSize + (faceShifts ? faceShifts.top[1] : 0), cuby.z + (faceShifts ? faceShifts.top[2] : 0)), normal: p.createVector(0, 1, 0) }
+		];
+		
+		// Check each visible face to see if mouse is within its projected bounds
+		for (let face of faces) {
+			const toCamera = p5.Vector.sub(camPos, face.center).normalize();
+			const visibility = p5.Vector.dot(face.normal, toCamera);
+			
+			// Skip faces not visible from camera
+			if (visibility <= 0) continue;
+			
+			// Get and project all four corners of this face
+			const corners3D = getFaceCorners(cuby, face.index, faceShifts);
+			const cornersScreen = corners3D.map(c => projectToScreen(c[0], c[1], c[2])).filter(c => c !== null);
+			
+			if (cornersScreen.length < 4) continue;
+			
+			// Check if mouse is within the face polygon
+			if (pointInPolygon({x: mouseX, y: mouseY}, cornersScreen)) {
+				// Mouse is inside this face - check if it's the closest to camera
+				const avgDepth = cornersScreen.reduce((sum, c) => sum + c.depth, 0) / cornersScreen.length;
+				if (avgDepth < minDepth) {
+					minDepth = avgDepth;
+					closestCuby = i;
+				}
+			}
+		}
+	}
+	
+	return closestCuby !== null ? closestCuby : false;
+}
+
 function getCubyIndexByColor2(arr1) //original
 {
 	// console.log(arr1);
@@ -8727,7 +8886,7 @@ function startAction() {
 		const face = getFace(cuby, mouseXPos, mouseYPos);
 		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
 
-		console.log("Color", hoveredColor, "Cuby", cuby, CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", cuby && dir && getColorByCubyDir(cuby, dir));
+		console.log("Color", hoveredColor, "Cuby", cuby, "Mousecubu", getCubyIndexByMousePosition(mouseXPos, mouseYPos), CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", cuby && dir && getColorByCubyDir(cuby, dir));
 		if (cuby !== false) {
 
 			if(customb == 1){
