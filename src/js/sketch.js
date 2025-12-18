@@ -11,6 +11,7 @@ import { createCustomDialog } from '../components/GameDialog.js';
 import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 import { showHighscoreModal, hideHighscoreModal } from '../components/HighscoreModal.js';
+import { speeddata } from '../data/speeddata.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -54,9 +55,6 @@ export default function (p) {
 		step: 0,
 	};
 	const mods = ["Shape and Color Mods", "Bandaged Mods", "Big Cubes", "Cubes for Babies", "Glow Cubes"];
-	const speeddata = {
-		0:0.28, 25: 0.25, 50:0.2, 75:0.16677, 100:0.116, 125:0.083, 150:0.033, 175:0.016667, 200:0.016667, 225: 0.016667
-	};
 	let CUBE = {};
 	const DNF = 99999999
 	let DIM = 50; //50 means 3x3, 100 means 2x2
@@ -124,7 +122,7 @@ export default function (p) {
 	let MODE = "normal";
 	let MINIMODE = "normal";
 	let INPUT, SESSION;
-	let SPEED = 0.01;
+	let SPEED = 0.1;
 	let DELAY = 0;
 	let shufflespeed = 5;
 	let easystep = 0;
@@ -608,11 +606,14 @@ p.setup = () => {
 		});
 		GAP_SLIDER.parent("gap");
 		
-		if (!localStorage.speed) {
-			SPEED_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
-		} else {
-			SPEED = localStorage.speed;
-			SPEED_SLIDER = p.createSlider(0.01, 2, SPEED, 0.01);
+		SPEED_SLIDER = p.createSlider(0.1, 1.6, 0.1, 0.1);
+		if (localStorage.speed) {
+			// Round to nearest 0.1 and clamp to range 0.1-1.6
+			console.log("localStorage speed is ", localStorage.speed);
+			let rawSpeed = parseFloat(localStorage.speed);
+			let roundedSpeed = Math.round(rawSpeed / 0.1) * 0.1;
+
+			SPEED = Math.max(0.1, Math.min(1.6, roundedSpeed));
 			SPEED_SLIDER.value(SPEED);
 		}
 		SPEED_SLIDER.input(sliderUpdate);
@@ -623,7 +624,7 @@ p.setup = () => {
 		DELAY_SLIDER.parent("delay");
 		DELAY_SLIDER.style('width', '100px');
 
-		RACE_SLIDER = p.createSlider(0.01, 2, 0.01, 0.01);
+		RACE_SLIDER = p.createSlider(0.1, 1.6, 0.1, 0.1);
 		RACE_SLIDER.parent("r_slider");
 		if (localStorage.racespeed) {
 			RACE_SLIDER.value(localStorage.racespeed);
@@ -1931,16 +1932,9 @@ setInterval(() => {
 	}
 	let speedval = RACE_SLIDER.value() * 100;
 	let delay = RACE_DELAY_SLIDER.value();
-	let estimate;
-	for (let x in speeddata) {
-		if (speedval - 25 < x) {
-			estimate = speeddata[x];
-			let offset = estimate - speeddata[+x + 25];
-			estimate -= ((speedval % 25) / 25) * offset;
-			break;
-		}
-	}
-	let avgmoves = 66;
+	const DIF = 10;
+	let estimate = speeddata[Math.floor(speedval / DIF) * DIF];
+	let avgmoves = 65.5;
 	if (DIM == 100) {
 		avgmoves = 30;
 	}
@@ -9031,12 +9025,12 @@ p.keyPressed = (event) => {
 	{
 		if (p.keyIsDown(p.SHIFT) && (getEl("mode3").style.display != "none" || getEl("mode6").style.display != "none")) {
 			timedmode();
-		} else if(SPEED != 2) {
-			SPEED_SLIDER.value(2);
-			SPEED = 2;
+		} else if(SPEED != 1.6) {
+			SPEED_SLIDER.value(1.6);
+			SPEED = 1.6;
 		} else {
-			SPEED_SLIDER.value(0.01);
-			SPEED = 0.01;
+			SPEED_SLIDER.value(0.1);
+			SPEED = 0.1;
 		}
 		return;
 	}
