@@ -77,6 +77,15 @@ export default function (p) {
 	let touchrotate = [];
 	const NOMOUSE = [13, "lasagna", "sandwich2x2"];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
+	const DIROBJ = [
+		{dir: "right", face: 2},
+		{dir: "top", face: 5},
+		{dir: "left", face: 3},
+		{dir: "bottom", face: 4},
+		{dir: "back", face: 0},
+		{dir: "front", face: 1},
+	]
+	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -181,7 +190,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -283,7 +292,8 @@ export default function (p) {
 		"2x2 Side Glow": switchSize.bind(null, 3, 100, 100),
 		"3x3 Side Glow": switchSize.bind(null, 3, 50, 50),
 		"2x2 Cuby Glow": switchSize.bind(null, 3, 100, 100),
-		"3x3 Cuby Glow": switchSize.bind(null, 3, 50, 50)
+		"3x3 Cuby Glow": switchSize.bind(null, 3, 50, 50),
+		"3x3 Fade Glow": switchSize.bind(null, 3, 50, 50),
 	};
 
 	// attach event
@@ -9069,7 +9079,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata);
+		console.log(isCubySolved(0));
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9433,7 +9443,7 @@ function multiple(nb, timed, use = "default") {
 			race = 2;
 		}
 		canMan = true;
-		if (use.includes("scramble") && CUBENAME.includes("Cuby Glow")) {
+		if (use.includes("scramble") && CUBENAME.includes("Glow")) {
 			cubyglows.clear();
 			setGlowColors();
 		}
@@ -9712,7 +9722,7 @@ function refreshButtons()
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
 		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3,
-		SIDEGLOW3x3, SIDEGLOW2x2, CUBYGLOW2x2, CUBYGLOW3x3
+		SIDEGLOW3x3, SIDEGLOW2x2, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3
 		];
 		
 		CUBE_BUTTONS.forEach(el => {el && el.remove()});
@@ -9916,6 +9926,9 @@ function refreshButtons()
 
 	CUBYGLOW3x3 = p.createButton('3x3 Cuby Glow');
 	setButton(CUBYGLOW3x3, "cubyglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Cuby Glow"); CUBYGLOW3x3.style('background-color', "#8ef5ee");});
+
+	FADEGLOW3x3 = p.createButton('3x3 Fade Glow');
+	setButton(FADEGLOW3x3, "fadeglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Fade Glow"); FADEGLOW3x3.style('background-color', "#8ef5ee");});
 
 }
 function iddefault() {
@@ -13323,7 +13336,6 @@ function isSolved()
 }
 
 function numSolved(cs = getOuterCubes()) {
-	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
 	let numsolved = 0;
 	DIRARR.forEach((dir) => {
 		const cubies = getCubiesInSide(dir, cs)
@@ -13343,8 +13355,6 @@ function numSolved(cs = getOuterCubes()) {
 
 
 function strictlySolved(cubies = getOuterCubes()) {
-	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
-
 	let allcolors = new Set();
 	for (const dir of DIRARR) {
 		const sidecolors = colorsInSide(dir, cubies);
@@ -13364,6 +13374,16 @@ function strictlySolved(cubies = getOuterCubes()) {
 	return true;
 }
 
+function isCubySolved(cuby) {
+	for (const obj of DIROBJ) {
+		let middleColor = getMiddleColor(obj.face);
+		console.log(obj.face, middleColor, getColorByCubyDir(cuby, obj.dir))
+		if (getColorByCubyDir(cuby, obj.dir) != middleColor && middleColor != "k" && getColorByCubyDir(cuby, obj.dir) != "k") {
+			return false;
+		}
+	}
+	return true;
+}
 
 function getOriginalSideColor(side) {
 	const SIDEOBJ = {
@@ -13387,15 +13407,7 @@ function colorsInSide(side, cubies) {
 }
 
 function sideWithOnlyColor(color) {
-	const DIRARR = [
-		{dir: "right", face: 2},
-		{dir: "left", face: 3},
-		{dir: "top", face: 5},
-		{dir: "bottom", face: 4},
-		{dir: "back", face: 0},
-		{dir: "front", face: 1},
-	]
-	for (const obj of DIRARR) {
+	for (const obj of DIROBJ) {
 		const cubies = getCubiesInSide(obj.dir);
 		if (cubies.every(cuby => getColorByCubyDir(cuby, obj.dir) == color)) {
 			return true;
@@ -13433,7 +13445,7 @@ function setGlowAnimateColor(i) {
 	if (!timer.isRunning || timer.getTime < 0 || ["Side Glow", "Cuby Glow"].some(name => CUBENAME.includes(name))) {
 		return;
 	}
-	CUBE[i].setColor(CUBE[i].colors.black, true);
+	// CUBE[i].setColor(CUBE[i].colors.black, true);
 }
 
 function setOriginalColor() {
@@ -13446,6 +13458,10 @@ function setCubyAllColor(color) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		CUBE[i].setColor(CUBE[i].colors[color], true);
 	}
+}
+
+function recentMove() {
+	return undo.length > 0 ? undo[undo.length - 1] : null;
 }
 
 function setGlowColors() {
@@ -13462,17 +13478,36 @@ function setGlowColors() {
 		return;
 	}
 	setLayout();
-	const DIRARR = [
-		{dir: "right", face: 2},
-		{dir: "top", face: 5},
-		{dir: "left", face: 3},
-		{dir: "bottom", face: 4},
-		{dir: "back", face: 0},
-		{dir: "front", face: 1},
-	]
 
-	if (["Glow Cube", "Anti-Glow"].some(c => CUBENAME.includes(c))) {
-		DIRARR.forEach((obj) => {
+	if (CUBENAME.includes("Fade Glow")) {
+		if (["x", "y", "z", "x'", "y'", "z'"].includes(recentMove())) {
+			return;
+		}
+		const DIMMING_LENGTH = 10;
+		let cubies = getOuterCubes();
+		if (cubyglows.size == 0) {
+			cubyglows = Array.from({ length: SIZE * SIZE * SIZE }, () => 0);
+			cubies.forEach(cuby => {
+				cubyglows[cuby] = DIMMING_LENGTH - 1;
+			});
+		}
+		cubies.forEach(cuby => {
+			if (isCubySolved(cuby)) {
+				cubyglows[cuby] = DIMMING_LENGTH;
+				CUBE[cuby].originalColor();
+			} else if (cubyglows[cuby] > 0) {
+				DIROBJ.forEach((obj) => {
+				const color = getColorByCubyDir(cuby, obj.dir);
+					const dim = (1 / DIMMING_LENGTH) * cubyglows[cuby];
+					CUBE[cuby].setDim(dim, color, obj.dir, true);
+				});
+				cubyglows[cuby]--;
+			} else {
+				CUBE[cuby].setColor(CUBE[cuby].colors.black, true);
+			}
+		});
+	} else if (["Glow Cube", "Anti-Glow"].some(c => CUBENAME.includes(c))) {
+		DIROBJ.forEach((obj) => {
 		let middleColor = getMiddleColor(obj.face);
 		const cubies = getCubiesInSide(obj.dir)
 		cubies.forEach(cuby => {
@@ -13486,7 +13521,7 @@ function setGlowColors() {
 			});
 		});
 	} else if (CUBENAME.includes("Side Glow")) {
-		const colors = DIRARR.map(obj => getOriginalSideColor(obj.dir));
+		const colors = DIROBJ.map(obj => getOriginalSideColor(obj.dir));
 		let solvestage = 0;
 		for (const color of colors) {
 			if (sideWithOnlyColor(color)) {

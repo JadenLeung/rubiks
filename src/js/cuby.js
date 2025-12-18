@@ -134,6 +134,9 @@ export default class Cuby {
     let xmul = SIZE % 2 == 1 ? this.oldx*0.02 : (this.oldx - 25) * 0.02;
     let ymul = SIZE % 2 == 1 ? this.oldy*0.02 : (this.oldy - 25) * 0.02;
     let zmul = SIZE % 2 == 1 ? this.oldz*0.02 : (this.oldz - 25) * 0.02;
+    this.xmul = xmul;
+    this.ymul = ymul;
+    this.zmul = zmul;
 	 this.colors = {
       def:   p.color(25 + xmul,  25 + ymul, 25 + zmul),
       white: p.color(250 + xmul, 250 + ymul, 250 + zmul),
@@ -145,16 +148,19 @@ export default class Cuby {
       black:p.color(25 + xmul,  25 + ymul, 25 + zmul),
       magenta:p.color(245 + xmul,  25 + ymul, 245 + zmul),
     };
+    this.dimcolors = {
+
+    };
     this.c = {
-      def:   p.color(25 + xmul,  25 + ymul, 25 + zmul,),
-      w: p.color(250 + xmul, 250 + ymul, 250 + zmul),
-      r:   p.color(219 + xmul, 25 + ymul,  25 + zmul),
-      b:  p.color(25 + xmul,  105 + ymul, 219 + zmul),
-      o: p.color(219 + xmul, 125 + ymul, 25 + zmul),
-      g: p.color(25 + xmul,  219 + ymul, 31 + zmul),
-      y: p.color(209 + xmul, 219 + ymul, 25 + zmul),
-      k: p.color(25 + xmul,  25 + ymul, 25 + zmul),
-      m: p.color(245 + xmul,  25 + ymul, 245 + zmul),
+      def:   this.colors.def,
+      w: this.colors.white,
+      r:   this.colors.red,
+      b:  this.colors.blue,
+      o: this.colors.orange,
+      g: this.colors.green,
+      y: this.colors.yellow,
+      k: this.colors.black,
+      m: this.colors.magenta,
     };
 	
     if (custom) {
@@ -411,6 +417,21 @@ export default class Cuby {
     }
     
     return shifts;
+  }
+
+  setDim(dim, color, dir, temporary) {
+    const dimcolors = {
+      def:     this.p.color((25 + this.xmul) * dim,  (25 + this.ymul) * dim,  (25 + this.zmul) * dim),
+      w:   this.p.color((250 + this.xmul) * dim, (250 + this.ymul) * dim, (250 + this.zmul) * dim),
+      r:     this.p.color((219 + this.xmul) * dim, (25 + this.ymul) * dim,  (25 + this.zmul) * dim),
+      b:    this.p.color((25 + this.xmul) * dim,  (105 + this.ymul) * dim, (219 + this.zmul) * dim),
+      o:  this.p.color((219 + this.xmul) * dim, (125 + this.ymul) * dim, (25 + this.zmul) * dim),
+      g:   this.p.color((25 + this.xmul) * dim,  (219 + this.ymul) * dim, (31 + this.zmul) * dim),
+      y:  this.p.color((209 + this.xmul) * dim, (219 + this.ymul) * dim, (25 + this.zmul) * dim),
+      k:   this.p.color((25 + this.xmul) * dim,  (25 + this.ymul) * dim,  (25 + this.zmul) * dim),
+      m: this.p.color((245 + this.xmul) * dim, (25 + this.ymul) * dim,  (245 + this.zmul) * dim),
+    }
+    this.setFaceColor(dimcolors[color], dir, temporary)
   }
 
   setChangingBlack(dx = 0) {
