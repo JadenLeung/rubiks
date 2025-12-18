@@ -8881,7 +8881,7 @@ function startAction() {
 	setLayout();
 
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
-		const cuby = getCubyIndexByColor2(hoveredColor);
+		const cuby = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
 		const face = getFace(cuby, mouseXPos, mouseYPos);
 		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
@@ -11708,9 +11708,7 @@ document.getElementById('colorPicker').addEventListener('input', (event) => {
 
 document.getElementById('colorPicker2').addEventListener('input', (event) => {
 	let hoveredColor = p.color(event.target.value).levels;
-	if (getCubyIndexByColor2(hoveredColor) == false) {
-		BACKGROUND_COLOR = event.target.value;
-	}
+	BACKGROUND_COLOR = event.target.value;
 	document.getElementById('colorPicker2').value = BACKGROUND_COLOR;
 	reSetup();
 });
@@ -12623,7 +12621,7 @@ function dragAction()
 		checkShouldRotate();
 	}
 	if (hoveredColor) {
-		const cuby = getCubyIndexByColor2(hoveredColor);
+		const cuby = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
 		if (cuby !== false) {
 			if (selectedCuby !== false) {
 				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, selectedMouseX, selectedMouseY, mouseXPos, mouseYPos))
