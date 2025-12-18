@@ -347,6 +347,7 @@ let selectedCuby = -1;
 let selectedColor = [];
 let selectedMouseX = -1;
 let selectedMouseY = -1;
+let selectedFace = -1;
 let dev = 0;
 let color = "lol";
 let colorTwo = "lmao";
@@ -8041,58 +8042,6 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 		return { x: screenX, y: screenY, depth: ndc[2] };
 	};
 	
-	// Helper to get face corners in 3D space
-	const getFaceCorners = (cuby, faceIndex, faceShifts) => {
-		const h = CUBYESIZE / 2;
-		const shift = faceShifts && faceShifts[["back", "front", "right", "left", "bottom", "top"][faceIndex]] || [0, 0, 0];
-		const sx = shift[0], sy = shift[1], sz = shift[2];
-		
-		switch(faceIndex) {
-			case 0: // back (z-)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
-				];
-			case 1: // front (z+)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
-				];
-			case 2: // right (x-)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
-				];
-			case 3: // left (x+)
-				return [
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz]
-				];
-			case 4: // bottom (y-)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz]
-				];
-			case 5: // top (y+)
-				return [
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
-				];
-		}
-	};
-	
 	// Helper to check if point is inside polygon using ray casting
 	const pointInPolygon = (point, polygon) => {
 		let inside = false;
@@ -8119,10 +8068,62 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 	// Check all cubies
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
 		const cuby = CUBE[i];
-		if (!cuby) continue;
+		if (!cuby || !cuby.shown) continue;
 		
 		// Get face shifts for non-cubic puzzles
 		const faceShifts = cuby.getFaceShifts ? cuby.getFaceShifts(SIZE) : null;
+		
+		// Helper to get face corners in 3D space for this cuby
+		const getFaceCorners = (faceIndex) => {
+			const h = halfSize;
+			const shift = faceShifts && faceShifts[["back", "front", "right", "left", "bottom", "top"][faceIndex]] || [0, 0, 0];
+			const sx = shift[0], sy = shift[1], sz = shift[2];
+			
+			switch(faceIndex) {
+				case 0: // back (z-)
+					return [
+						[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
+						[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
+					];
+				case 1: // front (z+)
+					return [
+						[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
+						[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+						[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+						[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
+					];
+				case 2: // right (x-)
+					return [
+						[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+						[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
+						[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz],
+						[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
+					];
+				case 3: // left (x+)
+					return [
+						[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+						[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+						[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz]
+					];
+				case 4: // bottom (y-)
+					return [
+						[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
+						[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz]
+					];
+				case 5: // top (y+)
+					return [
+						[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
+						[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
+						[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
+					];
+			}
+		};
 		
 		// Define all 6 faces with their centers and normals
 		const faces = [
@@ -8143,7 +8144,7 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 			if (visibility <= 0) continue;
 			
 			// Get and project all four corners of this face
-			const corners3D = getFaceCorners(cuby, face.index, faceShifts);
+			const corners3D = getFaceCorners(face.index);
 			const cornersScreen = corners3D.map(c => projectToScreen(c[0], c[1], c[2])).filter(c => c !== null);
 			
 			if (cornersScreen.length < 4) continue;
@@ -8154,7 +8155,7 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 				const avgDepth = cornersScreen.reduce((sum, c) => sum + c.depth, 0) / cornersScreen.length;
 				if (avgDepth < minDepth) {
 					minDepth = avgDepth;
-					closestCuby = i;
+					closestCuby = { cubyIndex: i, faceIndex: face.index };
 				}
 			}
 		}
@@ -8881,12 +8882,13 @@ function startAction() {
 	setLayout();
 
 	if (hoveredColor !== false && !arraysEqual(hoveredColor, p.color(BACKGROUND_COLOR).levels)) { 
-		const cuby = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
+		const result = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
+		const cuby = result !== false ? result.cubyIndex : getCubyIndexByColor2(hoveredColor);
+		const face = result !== false ? result.faceIndex : null;
 		const oppdirs = {3:"left", 2:"right", 5:"top", 4:"bottom", 1:"front", 0:"back"};
-		const face = getFace(cuby, mouseXPos, mouseYPos);
-		const dir = oppdirs[getFace(cuby, mouseXPos, mouseYPos)]
+		const dir = face !== null ? oppdirs[face] : null;
 
-		console.log("Color", hoveredColor, "Cuby", cuby, "Mousecubu", getCubyIndexByMousePosition(mouseXPos, mouseYPos), CUBE[cuby], "face", face, "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", cuby && dir && getColorByCubyDir(cuby, dir));
+		console.log("Color", hoveredColor, "Pos Cuby + Face", result, "Color cuby: ", cuby, CUBE[cuby], "dir", dir, "pos", CUBE[cuby] ? [CUBE[cuby].x, CUBE[cuby].y, CUBE[cuby].z] : "", "Original Color", cuby && dir && getColorByCubyDir(cuby, dir));
 		if (cuby !== false) {
 
 			if(customb == 1){
@@ -8909,12 +8911,14 @@ function startAction() {
 			selectedColor = hoveredColor;
 			selectedMouseX = mouseXPos;
 			selectedMouseY = mouseYPos;
+			selectedFace = face;
 		}
 	} else {
 		selectedCuby = -1;
 		selectedColor = [];
 		selectedMouseX = -1;
 		selectedMouseY = -1;
+		selectedFace = -1;
 		//cleanAllSelectedCubies();
 	}
 }
@@ -12621,21 +12625,21 @@ function dragAction()
 		checkShouldRotate();
 	}
 	if (hoveredColor) {
-		const cuby = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
+		const result = getCubyIndexByMousePosition(mouseXPos, mouseYPos);
+		const cuby = result !== false ? result.cubyIndex : false;
+		const face = result !== false ? result.faceIndex : null;
 		if (cuby !== false) {
 			if (selectedCuby !== false) {
-				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, selectedMouseX, selectedMouseY, mouseXPos, mouseYPos))
+				if(dragCube(selectedCuby, selectedColor, cuby, hoveredColor, selectedMouseX, selectedMouseY, mouseXPos, mouseYPos, selectedFace, face))
 					redo = [];
 			}
 		}
 	}
 }
-function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouseY2)
+function dragCube(cuby1, color1, cuby2, color2, mouseX1, mouseY1, mouseX2, mouseY2, face1, face2)
 {
 	if(!canMan)
 		return;
-	let face1 = getFace(cuby1, mouseX1, mouseY1);
-	let face2 = getFace(cuby2, mouseX2, mouseY2);
 	console.log(cuby1, cuby2, face1, face2)
 	if(cuby1 == cuby2 && face1 == face2)
 		return;
@@ -12882,186 +12886,6 @@ p.draw = () => {
 	CAM_PICKER.setState(CAM.getState(), 0);
 	
 	renderCube();
-}
-function getFace(cuby1, mouseX, mouseY)
-{
-	// Face indices: back:0, front:1, right:2, left:3, bottom:4, top:5
-	if (!CUBE[cuby1]) return null;
-	
-	const cuby = CUBE[cuby1];
-	
-	// Get face shifts for non-cubic puzzles
-	const faceShifts = cuby.getFaceShifts ? cuby.getFaceShifts(SIZE) : null;
-	
-	// Simple approach: project cuby face centers to screen space and find closest to mouse
-	const halfSize = CUBYESIZE / 2;
-	
-	const faces = [
-		{ index: 0, center: p.createVector(cuby.x + (faceShifts ? faceShifts.back[0] : 0), cuby.y + (faceShifts ? faceShifts.back[1] : 0), cuby.z - halfSize + (faceShifts ? faceShifts.back[2] : 0)), normal: p.createVector(0, 0, -1), name: "back" },
-		{ index: 1, center: p.createVector(cuby.x + (faceShifts ? faceShifts.front[0] : 0), cuby.y + (faceShifts ? faceShifts.front[1] : 0), cuby.z + halfSize + (faceShifts ? faceShifts.front[2] : 0)), normal: p.createVector(0, 0, 1), name: "front" },
-		{ index: 2, center: p.createVector(cuby.x - halfSize + (faceShifts ? faceShifts.right[0] : 0), cuby.y + (faceShifts ? faceShifts.right[1] : 0), cuby.z + (faceShifts ? faceShifts.right[2] : 0)), normal: p.createVector(-1, 0, 0), name: "right" },
-		{ index: 3, center: p.createVector(cuby.x + halfSize + (faceShifts ? faceShifts.left[0] : 0), cuby.y + (faceShifts ? faceShifts.left[1] : 0), cuby.z + (faceShifts ? faceShifts.left[2] : 0)), normal: p.createVector(1, 0, 0), name: "left" },
-		{ index: 4, center: p.createVector(cuby.x + (faceShifts ? faceShifts.bottom[0] : 0), cuby.y - halfSize + (faceShifts ? faceShifts.bottom[1] : 0), cuby.z + (faceShifts ? faceShifts.bottom[2] : 0)), normal: p.createVector(0, -1, 0), name: "bottom" },
-		{ index: 5, center: p.createVector(cuby.x + (faceShifts ? faceShifts.top[0] : 0), cuby.y + halfSize + (faceShifts ? faceShifts.top[1] : 0), cuby.z + (faceShifts ? faceShifts.top[2] : 0)), normal: p.createVector(0, 1, 0), name: "top" }
-	];
-	
-	// Get camera position to check which faces are visible
-	const camPosArray = CAM.getPosition([]);
-	const camPos = p.createVector(camPosArray[0], camPosArray[1], camPosArray[2]);
-	
-	// Get projection matrices from renderer
-	const renderer = p._renderer;
-	const projMatrix = renderer.uPMatrix;
-	const mvMatrix = renderer.uMVMatrix;
-	
-	// Helper function to project a 3D point to screen coordinates
-	const projectToScreen = (x, y, z) => {
-		const pos = [x, y, z, 1];
-		
-		// Apply modelview matrix
-		const mv = [
-			mvMatrix.mat4[0] * pos[0] + mvMatrix.mat4[4] * pos[1] + mvMatrix.mat4[8] * pos[2] + mvMatrix.mat4[12] * pos[3],
-			mvMatrix.mat4[1] * pos[0] + mvMatrix.mat4[5] * pos[1] + mvMatrix.mat4[9] * pos[2] + mvMatrix.mat4[13] * pos[3],
-			mvMatrix.mat4[2] * pos[0] + mvMatrix.mat4[6] * pos[1] + mvMatrix.mat4[10] * pos[2] + mvMatrix.mat4[14] * pos[3],
-			mvMatrix.mat4[3] * pos[0] + mvMatrix.mat4[7] * pos[1] + mvMatrix.mat4[11] * pos[2] + mvMatrix.mat4[15] * pos[3]
-		];
-		
-		// Apply projection matrix
-		const clip = [
-			projMatrix.mat4[0] * mv[0] + projMatrix.mat4[4] * mv[1] + projMatrix.mat4[8] * mv[2] + projMatrix.mat4[12] * mv[3],
-			projMatrix.mat4[1] * mv[0] + projMatrix.mat4[5] * mv[1] + projMatrix.mat4[9] * mv[2] + projMatrix.mat4[13] * mv[3],
-			projMatrix.mat4[2] * mv[0] + projMatrix.mat4[6] * mv[1] + projMatrix.mat4[10] * mv[2] + projMatrix.mat4[14] * mv[3],
-			projMatrix.mat4[3] * mv[0] + projMatrix.mat4[7] * mv[1] + projMatrix.mat4[11] * mv[2] + projMatrix.mat4[15] * mv[3]
-		];
-		
-		// Perspective divide
-		if (clip[3] === 0) return null;
-		const ndc = [clip[0] / clip[3], clip[1] / clip[3], clip[2] / clip[3]];
-		
-		// Convert to screen coordinates
-		const screenX = (ndc[0] + 1) * p.width / 2;
-		const screenY = (1 - ndc[1]) * p.height / 2;
-		
-		return { x: screenX, y: screenY, depth: ndc[2] };
-	};
-	
-	// Helper to get face corners in 3D space
-	const getFaceCorners = (face) => {
-		const h = halfSize;
-		const shift = faceShifts ? faceShifts[face.name] : [0, 0, 0];
-		const sx = shift[0], sy = shift[1], sz = shift[2];
-		
-		switch(face.index) {
-			case 0: // back (z-)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
-				];
-			case 1: // front (z+)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
-				];
-			case 2: // right (x-)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz]
-				];
-			case 3: // left (x+)
-				return [
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz]
-				];
-			case 4: // bottom (y-)
-				return [
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y - h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y - h + sy, cuby.z + h + sz]
-				];
-			case 5: // top (y+)
-				return [
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z - h + sz],
-					[cuby.x + h + sx, cuby.y + h + sy, cuby.z + h + sz],
-					[cuby.x - h + sx, cuby.y + h + sy, cuby.z + h + sz]
-				];
-		}
-	};
-	
-	// Helper to check if point is inside polygon using ray casting
-	const pointInPolygon = (point, polygon) => {
-		let inside = false;
-		for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-			const xi = polygon[i].x, yi = polygon[i].y;
-			const xj = polygon[j].x, yj = polygon[j].y;
-			
-			const intersect = ((yi > point.y) !== (yj > point.y))
-				&& (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
-			if (intersect) inside = !inside;
-		}
-		return inside;
-	};
-	
-	let bestFace = null;
-	let bestDepth = Infinity;
-	
-	for (let face of faces) {
-		// Check if face is visible (pointing towards camera)
-		const toCamera = p5.Vector.sub(camPos, face.center).normalize();
-		const visibility = p5.Vector.dot(face.normal, toCamera);
-		
-		// Skip faces not visible from camera
-		if (visibility <= 0) continue;
-		
-		// Get and project all four corners
-		const corners3D = getFaceCorners(face);
-		const cornersScreen = corners3D.map(c => projectToScreen(c[0], c[1], c[2])).filter(c => c !== null);
-		
-		if (cornersScreen.length < 4) continue;
-		
-		// Check if mouse is within the face bounds
-		if (pointInPolygon({x: mouseX, y: mouseY}, cornersScreen)) {
-			// If mouse is inside this face, pick the one closest to camera (smallest depth)
-			const avgDepth = cornersScreen.reduce((sum, c) => sum + c.depth, 0) / cornersScreen.length;
-			if (avgDepth < bestDepth) {
-				bestDepth = avgDepth;
-				bestFace = face.index;
-			}
-		}
-	}
-	
-	// If no face contains the mouse, fall back to closest face center
-	if (bestFace === null) {
-		let minDistance = Infinity;
-		for (let face of faces) {
-			const toCamera = p5.Vector.sub(camPos, face.center).normalize();
-			const visibility = p5.Vector.dot(face.normal, toCamera);
-			if (visibility <= 0) continue;
-			
-			const centerScreen = projectToScreen(face.center.x, face.center.y, face.center.z);
-			if (!centerScreen) continue;
-			
-			const dx = mouseX - centerScreen.x;
-			const dy = mouseY - centerScreen.y;
-			const distance = Math.sqrt(dx * dx + dy * dy);
-			
-			if (distance < minDistance) {
-				minDistance = distance;
-				bestFace = face.index;
-			}
-		}
-	}
-	
-	return bestFace;
 }
 
 function getFaceOld(cuby1, color1)
