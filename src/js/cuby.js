@@ -265,7 +265,7 @@ export default class Cuby {
       const directions = ["back", "front", "bottom", "top", "right", "left"];
       let colors = [];
       directions.forEach((dir) => {
-        colors.push(getColor(this[dir].levels))
+        colors.push(Cuby.getColor(this[dir].levels))
       });
       console.log(colors);
       if(colors.includes(c1)) a = this.colors.green;
@@ -340,8 +340,8 @@ export default class Cuby {
   }
 
   getColorBySide(side) {
-    if (this.savecolors[side]) return getColor(this.savecolors[side].levels);
-    return getColor(this[side].levels);
+    if (this.savecolors[side]) return Cuby.getColor(this.savecolors[side].levels);
+    return Cuby.getColor(this[side].levels);
   }
 
   // Get the actual face center positions accounting for shifts in non-cubic puzzles
@@ -889,44 +889,32 @@ export default class Cuby {
     this.p.pop();
     }
   }
-}
 
-
-function getColor(color)
-{
-	let cl = [];
-	cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
-	cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);
-	cl[2] = Math.abs(color[0] - 18) + Math.abs(color[1] - 105) + Math.abs(color[2] - 219);
-	cl[3] = Math.abs(color[0] - 219) + Math.abs(color[1] - 125) + Math.abs(color[2] - 18);
-	cl[4] = Math.abs(color[0] - 209) + Math.abs(color[1] - 219) + Math.abs(color[2] - 18);
-	cl[5] = Math.abs(color[0] - 18) + Math.abs(color[1] - 219) + Math.abs(color[2] - 31);
-	cl[6] = Math.abs(color[0] - 25) + Math.abs(color[1] - 25) + Math.abs(color[2] - 25);
-	cl[7] = Math.abs(color[0] - 245) + Math.abs(color[1] - 25) + Math.abs(color[2] - 245);
-	let minpos = 0;
-	for(let i = 0; i < 8; i++)
-	{
-		if(cl[i] < cl[minpos])
-		{
-			minpos = i
-		}
-	}
-	if(minpos == 0)
-	return "w";
-	if(minpos == 1)
-	return "r";
-	if(minpos == 2)
-	return "b";
-	if(minpos == 3)
-	return "o";
-	if(minpos == 4)
-	return "y";
-	if(minpos == 5)
-	return "g";
-	if(minpos == 6)
-	return "k";
-	if(minpos == 7)
-	return "m"
+  static getColor(color) {
+    let cl = [];
+    cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
+    cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);
+    cl[2] = Math.abs(color[0] - 18) + Math.abs(color[1] - 105) + Math.abs(color[2] - 219);
+    cl[3] = Math.abs(color[0] - 219) + Math.abs(color[1] - 125) + Math.abs(color[2] - 18);
+    cl[4] = Math.abs(color[0] - 209) + Math.abs(color[1] - 219) + Math.abs(color[2] - 18);
+    cl[5] = Math.abs(color[0] - 18) + Math.abs(color[1] - 219) + Math.abs(color[2] - 31);
+    cl[6] = Math.abs(color[0] - 25) + Math.abs(color[1] - 25) + Math.abs(color[2] - 25);
+    cl[7] = Math.abs(color[0] - 245) + Math.abs(color[1] - 25) + Math.abs(color[2] - 245);
+    let minpos = 0;
+    for(let i = 0; i < 8; i++) {
+      if(cl[i] < cl[minpos]) {
+        minpos = i
+      }
+    }
+    if(minpos == 0) return "w";
+    if(minpos == 1) return "r";
+    if(minpos == 2) return "b";
+    if(minpos == 3) return "o";
+    if(minpos == 4) return "y";
+    if(minpos == 5) return "g";
+    if(minpos == 6) return "k";
+    if(minpos == 7) return "m";
+  }
 }
 
 function decodeCubies() {

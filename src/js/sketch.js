@@ -1905,7 +1905,7 @@ setInterval(() => {
 					})
 					CUBE[i].setChangingBlack((index * 15) % 150);
 					// CUBE[i].setColor(CUBE[key].colors.black, true);
-			} else if (!DIM[1].includes(i) && getColor(CUBE[i].right.levels) == "m") {
+			} else if (!DIM[1].includes(i) && Cuby.getColor(CUBE[i].right.levels) == "m") {
 				CUBE[i].originalColor();
 			}
 			// CUBE[i].setColor(CUBE[i].colors.black, true);
@@ -12251,22 +12251,7 @@ function setLayout(){
 	
 }
 function getColorByCubyDir(cuby, dir) {
-	return getColor((CUBE[cuby]?.savecolors[dir]?.levels ?? CUBE[cuby][dir]?.levels))
-}
-function getColor(colorLevels)
-{
-	if (!colorLevels) return null;
-	
-	const colorStr = JSON.stringify(colorLevels);
-	
-	// Check each color in Cuby.c
-	for (const [key, colorObj] of Object.entries(Cuby.c)) {
-		if (JSON.stringify(colorObj.levels) === colorStr) {
-			return key;
-		}
-	}
-	
-	return null; // Color not found
+	return Cuby.getColor((CUBE[cuby]?.savecolors[dir]?.levels ?? CUBE[cuby][dir]?.levels))
 }
 function showCnvDiv() {
 	document.getElementById("cnv_div").style.display = "block";
