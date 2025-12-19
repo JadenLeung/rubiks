@@ -121,41 +121,33 @@ export default class Cuby {
       this.shown = true;
     }
 
-	/*
-    this.colors = {
-      def: p.color(25, 25, 25, 255),
-      white: p.color(250, 250, 250, 255),
-      red: p.color(219, 18, 18, 255),
-      blue: p.color(18, 105, 219, 255),
-      orange: p.color(219, 125, 18, 255),
-      green: p.color(18, 219, 31, 255),
-      yellow: p.color(209, 219, 18, 255),
-    }; */
-	 this.colors = {
-      def:   p.color(25, 25, 25),
-      white: p.color(250, 250, 250),
-      red:   p.color(219, 25, 25),
-      blue:  p.color(25, 105, 219),
-      orange:p.color(219, 125, 25),
-      green: p.color(25, 219, 31),
-      yellow:p.color(209, 219, 25),
-      black:p.color(25, 25, 25),
-      magenta:p.color(245, 25, 245),
-    };
-    this.dimcolors = {
-
-    };
-    this.c = {
-      def:   this.colors.def,
-      w: this.colors.white,
-      r:   this.colors.red,
-      b:  this.colors.blue,
-      o: this.colors.orange,
-      g: this.colors.green,
-      y: this.colors.yellow,
-      k: this.colors.black,
-      m: this.colors.magenta,
-    };
+	 // Initialize static colors once
+	 if (!Cuby.colors) {
+	   Cuby.colors = {
+	     def:   p.color(25, 25, 25),
+	     white: p.color(250, 250, 250),
+	     red:   p.color(219, 25, 25),
+	     blue:  p.color(25, 105, 219),
+	     orange:p.color(219, 125, 25),
+	     green: p.color(25, 219, 31),
+	     yellow:p.color(209, 219, 25),
+	     black:p.color(25, 25, 25),
+	     magenta:p.color(245, 25, 245),
+	   };
+	   Cuby.c = {
+	     def:   Cuby.colors.def,
+	     w: Cuby.colors.white,
+	     r:   Cuby.colors.red,
+	     b:  Cuby.colors.blue,
+	     o: Cuby.colors.orange,
+	     g: Cuby.colors.green,
+	     y: Cuby.colors.yellow,
+	     k: Cuby.colors.black,
+	     m: Cuby.colors.magenta,
+	   };
+	 }
+	 this.colors = Cuby.colors;
+	 this.c = Cuby.c;
 	
     if (custom) {
       this.back = this.c[this.custom[0][3]];
@@ -414,18 +406,22 @@ export default class Cuby {
   }
 
   setDim(dim, color, dir, temporary) {
-    const dimcolors = {
-      def:     this.p.color(25 * dim, 25 * dim, 25 * dim),
-      w:   this.p.color(250 * dim, 250 * dim, 250 * dim),
-      r:     this.p.color(219 * dim, 25 * dim, 25 * dim),
-      b:    this.p.color(25 * dim, 105 * dim, 219 * dim),
-      o:  this.p.color(219 * dim, 125 * dim, 25 * dim),
-      g:   this.p.color(25 * dim, 219 * dim, 31 * dim),
-      y:  this.p.color(209 * dim, 219 * dim, 25 * dim),
-      k:   this.p.color(25 * dim, 25 * dim, 25 * dim),
-      m: this.p.color(245 * dim, 25 * dim, 245 * dim),
+    // Cache dimcolors for this dim value
+    const cacheKey = `dim_${dim}`;
+    if (!Cuby[cacheKey]) {
+      Cuby[cacheKey] = {
+        def:     this.p.color(25 * dim, 25 * dim, 25 * dim),
+        w:   this.p.color(250 * dim, 250 * dim, 250 * dim),
+        r:     this.p.color(219 * dim, 25 * dim, 25 * dim),
+        b:    this.p.color(25 * dim, 105 * dim, 219 * dim),
+        o:  this.p.color(219 * dim, 125 * dim, 25 * dim),
+        g:   this.p.color(25 * dim, 219 * dim, 31 * dim),
+        y:  this.p.color(209 * dim, 219 * dim, 25 * dim),
+        k:   this.p.color(25 * dim, 25 * dim, 25 * dim),
+        m: this.p.color(245 * dim, 25 * dim, 245 * dim),
+      };
     }
-    this.setFaceColor(dimcolors[color], dir, temporary)
+    this.setFaceColor(Cuby[cacheKey][color], dir, temporary)
   }
 
   setChangingBlack(dx = 0) {

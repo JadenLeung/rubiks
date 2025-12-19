@@ -1895,7 +1895,7 @@ setInterval(() => {
 		for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 			const key = +Object.entries(mapCuby()).find(([key, value]) => value == i)?.[0];
 			if (DIM[1].includes(i) && !CUBE[i].adjustedColor) {
-				CUBE[i].setColor(CUBE[i].colors.magenta, true);
+				CUBE[i].setColor(Cuby.colors.magenta, true);
 			} else if(DIM[2].flat().includes(i) && !CUBE[i].adjustedColor) {
 					let index = 0;
 					DIM[2].forEach((group, j) => {
@@ -3977,7 +3977,7 @@ function paintmode() {
 	canMan = false;
 	colorindex = 0;
 	let obj = getColoredCuby(0);
-	CUBE[obj.cuby].setFaceColor(CUBE[obj.cuby].colors["magenta"], obj.face, true);
+	CUBE[obj.cuby].setFaceColor(Cuby.colors["magenta"], obj.face, true);
 }
 function paintit(color, dx = 1) {
 	if (MODE != "paint") return;
@@ -3999,7 +3999,7 @@ function paintit(color, dx = 1) {
 		obj = getColoredCuby(colorindex);
 	 	colormap = +Object.entries(mapCuby()).find(([key, value]) => value == obj.cuby)?.[0];
 		if (color != "original") {
-			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors[color], obj.face, false);
+			CUBE[obj.cuby].setFaceColor(Cuby.colors[color], obj.face, false);
 		} else {
 			CUBE[obj.cuby].originalFaceColor(obj.face);
 		}
@@ -4036,11 +4036,11 @@ function paintit(color, dx = 1) {
 
 	if (arr.length > 0) {
 		setTimeout(() => {
-			CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face, true);
+			CUBE[obj.cuby].setFaceColor(Cuby.colors["magenta"], obj.face, true);
 			canMan = false;
 		}, 40);
 	} else {
-		CUBE[obj.cuby].setFaceColor(CUBE[colormap].colors["magenta"], obj.face, true);
+		CUBE[obj.cuby].setFaceColor(Cuby.colors["magenta"], obj.face, true);
 	}
 }
 function finishpaint() {
@@ -6417,7 +6417,7 @@ function setBlackInterior() {
 	for (let i = 0; i < SIZE * SIZE * SIZE; ++i) {
 		sides.forEach((side) => {
 			if (isInnerSide(i, side)) {
-				CUBE[i].setFaceColor(HOLLOW?.checked() ? "" : CUBE[i].colors.black, side, true);
+				CUBE[i].setFaceColor(HOLLOW?.checked() ? "" : Cuby.colors.black, side, true);
 			} else {
 				CUBE[i].originalFaceColor(side);
 			}
@@ -7986,21 +7986,21 @@ function cleanAllSelectedCubies() {
 
 function getCubyByColor(arr1) {
 	for(let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.white.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.white.levels))
 		return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.yellow.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.yellow.levels))
 		return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.green.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.green.levels))
 		return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.blue.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.blue.levels))
 		return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.orange.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.orange.levels))
 		return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.red.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.red.levels))
 		return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.magenta.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.magenta.levels))
 			return CUBE[i];
-		if(JSON.stringify(arr1) == JSON.stringify(CUBE[i].colors.black.levels))
+		if(JSON.stringify(arr1) == JSON.stringify(Cuby.colors.black.levels))
 			return CUBE[i];
 	}
 }
@@ -8162,59 +8162,6 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 	}
 	
 	return closestCuby !== null ? closestCuby : false;
-}
-
-function getCubyIndexByColor2(arr1) //original
-{
-	// console.log(arr1);
-	let realcolor = getColor(arr1);
-	// if (realcolor == "k") return false;
-	//console.log(realcolor);
-	let allcolors = [];
-	let adder = SIZE % 2 == 0 ? MAXX + 25 : MAXX;
-	allcolors["w"] = [250-adder*0.02, 250-adder*0.02, 250-adder*0.02];
-	allcolors["r"] = [219-adder*0.02, 25-adder*0.02, 25-adder*0.02];
-	allcolors["b"] = [25-adder*0.02, 105-adder*0.02, 219-adder*0.02];
-	allcolors["o"] = [219-adder*0.02, 125-adder*0.02, 25-adder*0.02];
-	allcolors["g"] = [25-adder*0.02, 219-adder*0.02, 31-adder*0.02];
-	allcolors["y"] = [209-adder*0.02, 219-adder*0.02, 25-adder*0.02];
-	allcolors["k"] = [25-adder*0.02, 25-adder*0.02, 25-adder*0.02];
-	allcolors["m"] = [245-adder*0.02, 25-adder*0.02, 245-adder*0.02];
-
-	if(true || customb == 1 || allcubies)
-	{
-		let distcolor = [];
-		distcolor[0] = arr1[0] - allcolors[realcolor][0];
-		distcolor[1] = arr1[1] - allcolors[realcolor][1];
-		distcolor[2] = arr1[2] - allcolors[realcolor][2];
-		let res = distcolor[0] * SIZE * SIZE + distcolor[1] * SIZE + distcolor[2];
-		if(res >= 0 && res < SIZE * SIZE * SIZE) return res;
-		return false;
-	}
-
-	// const lookup = {
-	// 	"[218,124,24,255]": 0, "[218,125,24,255]": 3, "[218,126,24,255]": 6,
-	// 	"[219,124,24,255]": 9, "[219,125,24,255]": 12, "[219,126,24,255]": 15,
-	// 	"[220,124,24,255]": 18, "[220,125,24,255]": 21, "[220,126,24,255]": 24,
-	// 	"[249,251,249,255]": 6, "[249,251,250,255]": 7, "[249,251,251,255]": 8,
-	// 	"[250,251,249,255]": 15, "[250,251,250,255]": 16, "[250,251,251,255]": 17,
-	// 	"[251,251,249,255]": 24, "[251,251,250,255]": 25, "[251,251,251,255]": 26,
-	// 	"[24,104,218,255]": 0, "[24,104,219,255]": 1, "[24,104,220,255]": 2,
-	// 	"[24,105,218,255]": 3, "[24,105,219,255]": 4, "[24,105,220,255]": 5,
-	// 	"[24,106,218,255]": 6, "[24,106,219,255]": 7, "[24,106,220,255]": 8,
-	// 	"[218,26,26,255]": 8, "[218,25,26,255]": 5, "[218,24,26,255]": 2,
-	// 	"[219,26,26,255]": 17, "[219,25,26,255]": 14, "[219,24,26,255]": 11,
-	// 	"[220,26,26,255]": 26, "[220,25,26,255]": 23, "[220,24,26,255]": 20,
-	// 	"[26,220,30,255]": 24, "[26,220,31,255]": 25, "[26,220,32,255]": 26,
-	// 	"[26,219,30,255]": 21, "[26,219,31,255]": 22, "[26,219,32,255]": 23,
-	// 	"[26,218,30,255]": 18, "[26,218,31,255]": 19, "[26,218,32,255]": 20,
-	// 	"[208,218,26,255]": 2, "[208,218,25,255]": 1, "[208,218,24,255]": 0,
-	// 	"[209,218,26,255]": 11, "[209,218,25,255]": 10, "[209,218,24,255]": 9,
-	// 	"[210,218,26,255]": 20, "[210,218,25,255]": 19, "[210,218,24,255]": 18
-	// };
-
-	return lookup[JSON.stringify(arr1)] ?? false;
-	//if(JSON.stringify(arr1) == "[0,0,0,255]")
 }
 
 function getActionStartCuby() {
@@ -8843,22 +8790,6 @@ function getIndex(cuby)
 function arraysEqual(arr1, arr2) {
     return arr1.length === arr2.length && arr1.every((value, index) => value == arr2[index]);
 }
-// function canMouse() {
-// 	let cubies = shownCubies();
-// 	const sides = ["front", "back", "left", "right", "top", "bottom"];
-// 	for (let i = 0; i < cubies.length; ++i) {
-// 		let set = new Set();
-// 		for (let j = 0; j < sides.length; ++j) {
-// 			const color = getColor(CUBE[i][sides[j]].levels);
-// 			if (color == "k") {
-// 				return false;
-// 			}
-// 			if (set.has(color)) return false;
-// 			set.add(color);
-// 		}
-// 	}
-// 	return true;
-// }
 
 function startAction() {	
 	if(timer.isRunning && race > 1 && Math.round(timer.getTime() / 10)/100.0 >= 0.5 && MINIMODE == "physical"){ //racedetect
@@ -12322,57 +12253,20 @@ function setLayout(){
 function getColorByCubyDir(cuby, dir) {
 	return getColor((CUBE[cuby]?.savecolors[dir]?.levels ?? CUBE[cuby][dir]?.levels))
 }
-function getColor(color)
+function getColor(colorLevels)
 {
-	/*
-	if(color[0] == 250)
-	return "w";
-	if(color[1] == 18)
-	return "r";
-	if(color[2] == 219)
-	return "b";
-	if(color[1] == 125)
-	return "o";
-	if(color[0] == 209)
-	return "y";
-	return "g";
-	*/
-	if (!color) {
-		return false;
-	}
-	let cl = [];
-	cl[0] = Math.abs(color[0] - 250) + Math.abs(color[1] - 250) + Math.abs(color[2] - 250);
-	cl[1] = Math.abs(color[0] - 219) + Math.abs(color[1] - 18) + Math.abs(color[2] - 18);
-	cl[2] = Math.abs(color[0] - 18) + Math.abs(color[1] - 105) + Math.abs(color[2] - 219);
-	cl[3] = Math.abs(color[0] - 219) + Math.abs(color[1] - 125) + Math.abs(color[2] - 18);
-	cl[4] = Math.abs(color[0] - 209) + Math.abs(color[1] - 219) + Math.abs(color[2] - 18);
-	cl[5] = Math.abs(color[0] - 18) + Math.abs(color[1] - 219) + Math.abs(color[2] - 31);
-	cl[6] = Math.abs(color[0] - 25) + Math.abs(color[1] - 25) + Math.abs(color[2] - 25);
-	cl[7] = Math.abs(color[0] - 245) + Math.abs(color[1] - 25) + Math.abs(color[2] - 245);
-	let minpos = 0;
-	for(let i = 0; i < 8; i++)
-	{
-		if(cl[i] < cl[minpos])
-		{
-			minpos = i
+	if (!colorLevels) return null;
+	
+	const colorStr = JSON.stringify(colorLevels);
+	
+	// Check each color in Cuby.c
+	for (const [key, colorObj] of Object.entries(Cuby.c)) {
+		if (JSON.stringify(colorObj.levels) === colorStr) {
+			return key;
 		}
 	}
-	if(minpos == 0)
-	return "w";
-	if(minpos == 1)
-	return "r";
-	if(minpos == 2)
-	return "b";
-	if(minpos == 3)
-	return "o";
-	if(minpos == 4)
-	return "y";
-	if(minpos == 5)
-	return "g";
-	if(minpos == 6)
-	return "k";
-	if(minpos == 7)
-	return "m"
+	
+	return null; // Color not found
 }
 function showCnvDiv() {
 	document.getElementById("cnv_div").style.display = "block";
@@ -13400,7 +13294,7 @@ function cubyShowColor(colors) {
 			if (colors.includes(getColorByCubyDir(cuby, side))) {
 				CUBE[cuby].originalFaceColor(side); 
 			} else {
-				CUBE[cuby].setFaceColor(CUBE[cuby].colors.black, side, true);
+				CUBE[cuby].setFaceColor(Cuby.colors.black, side, true);
 			}
 		});
 	})
@@ -13421,7 +13315,7 @@ function setOriginalColor() {
 
 function setCubyAllColor(color) {
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
-		CUBE[i].setColor(CUBE[i].colors[color], true);
+		CUBE[i].setColor(Cuby.colors[color], true);
 	}
 }
 
@@ -13468,7 +13362,7 @@ function setGlowColors() {
 				});
 				cubyglows[cuby]--;
 			} else {
-				CUBE[cuby].setColor(CUBE[cuby].colors.black, true);
+				CUBE[cuby].setColor(Cuby.colors.black, true);
 			}
 		});
 	} else if (["Glow Cube", "Anti-Glow"].some(c => CUBENAME.includes(c))) {
@@ -13481,7 +13375,7 @@ function setGlowColors() {
 			|| (CUBENAME.includes("Anti-Glow") && getColorByCubyDir(cuby, obj.dir) != middleColor)) {
 				CUBE[cuby].originalFaceColor(obj.dir);
 			} else {
-				CUBE[cuby].setFaceColor(CUBE[oldcuby].colors.black, obj.dir, true);
+				CUBE[cuby].setFaceColor(Cuby.colors.black, obj.dir, true);
 				}
 			});
 		});
@@ -13526,7 +13420,7 @@ function setGlowColors() {
 			if (cubyglows.has(cuby)) {
 				CUBE[cuby].originalColor();
 			} else {
-				CUBE[cuby].setColor(CUBE[cuby].colors.black, true);
+				CUBE[cuby].setColor(Cuby.colors.black, true);
 			}
 		})
 		if (tryglowagain) {
