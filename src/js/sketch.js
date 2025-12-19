@@ -76,6 +76,7 @@ export default function (p) {
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
+	let recentmove = "";
 	const NOMOUSE = [13, "lasagna", "sandwich2x2"];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	const DIROBJ = [
@@ -2028,6 +2029,7 @@ function reSetup(rot) {
 	arr = [];
 	undo = [];
 	redo = [];
+	recentmove = "";
 	canMan = true;
 	MAXX = (SIZE - 1) * 25;
 	flipmode = 0;
@@ -10084,6 +10086,7 @@ function notation(move, timed){
 		move = flipper[move];
 	}
 	undo.push(move);
+	recentmove = move;
 	setLayout();
 	const moveMap = getMove(MAXX, CUBYESIZE, SIZE)
 	if (moveMap.hasOwnProperty(move)) {
@@ -13316,10 +13319,6 @@ function setCubyAllColor(color) {
 	}
 }
 
-function recentMove() {
-	return undo.length > 0 ? undo[undo.length - 1] : null;
-}
-
 function setGlowColors() {
 	if (!CUBENAME.includes("Glow")) {
 		return;
@@ -13336,7 +13335,7 @@ function setGlowColors() {
 	setLayout();
 
 	if (CUBENAME.includes("Fade Glow")) {
-		if (["x", "y", "z", "x'", "y'", "z'"].includes(recentMove())) {
+		if (["x", "y", "z", "x'", "y'", "z'"].includes(recentmove)) {
 			return;
 		}
 		const DIMMING_LENGTH = 15;
@@ -13658,12 +13657,12 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-	speedmode();
-	// modnum = 4;
-    // cubemode();
+	// speedmode();
+	modnum = 4;
+    cubemode();
 	// CUBEMAP["2x3x5"]();
-	// switchCube("3x3 Glow Cube");
-	// GLOW3x3.style('background-color', "#8ef5ee");
+	switchCube("3x3 Fade Glow");
+	FADEGLOW3x3.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {
