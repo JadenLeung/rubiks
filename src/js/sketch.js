@@ -7048,6 +7048,14 @@ function stopAndUpdateTimes() {
 	ao5.push(Math.max(0, timer.roundedTime()));
 	mo5.push(Math.max(0, timer.roundedTime()));
 	movesarr.push(moves);
+	solvedata.push(
+	{
+		scramble: document.getElementById('scramble').innerText, 
+		cubename: CUBENAME,
+		inputtype: INPUT.value(),
+		scrambletype: SCRAM.value(),
+		solvestat: cursolvestat,
+	});
 	// Reset table scroll offset when new solve is added
 	if (window.tableScrollOffset !== undefined) {
 		window.tableScrollOffset = 0;
@@ -9178,7 +9186,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(isCubySolved(0));
+		console.log(document.getElementById('scramble').innerText);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
