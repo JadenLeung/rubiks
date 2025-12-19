@@ -72,6 +72,7 @@ export default function (p) {
 	let saveCompeteSettings = {};
 	let isShuffling = false;
 	let otherShuffling = false;
+	let isBlinded = false;
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
@@ -1344,7 +1345,7 @@ p.setup = () => {
 	});
 
 	const PEEK = p.createButton('Peek');
-	setButton(PEEK, "peekbutton", 'btn btn-primary', 'font-size: 30px', () => {toggleOverlay(false);});
+	setButton(PEEK, "peekbutton", 'btn btn-primary', 'font-size: 30px', () => {toggleBlind(false);});
 
 	const COMPETESWITCH = p.createButton('Switch Blindfold');
 	setButton(COMPETESWITCH, "competeswitch", 'btn btn-primary', ' font-size:20px;', switchBlindfold);
@@ -1875,8 +1876,7 @@ setInterval(() => {
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	if (MODE == "moves") {
-		getEl("wannapeek").style.display = getEl("overlay").style.display;
-		getEl("peekbutton").style.display = getEl("overlay").style.display;
+		setDisplay(isBlinded ? "block" : "none", ["wannapeek", "peekbutton"]);
 	} else {
 		setDisplay("none", ["wannapeek", "peekbutton"])
 	}
@@ -3843,6 +3843,7 @@ function regular(nocustom){
 	getEl("show_keyboard").style.display = isthin ? "none" : "block";
 	juststarted = false;
 	isShuffling = false;
+	isBlinded = false;
 	ma_data.type = "";
 	compete_cube = previouschatid = ""
 	pracmode = "none";
@@ -4648,7 +4649,7 @@ function competeSolved(data) {
 	canMan = false;
 	competedata = data;
 	if (data.data.type == "teamblind") {
-		toggleOverlay(false);
+		toggleBlind(false);
 		getEl("competeswitch").style.display = "none";
 		getEl("compete_group_container").style.display = "none";
 		let blindtime = data.data.time;
@@ -5608,10 +5609,10 @@ socket.on("switched-blindfold", (data) => {
 function toggleBlindfold(blinded) {
 	getEl("competeswitch").style.display = "none";
 	if (blinded) {
-		toggleOverlay(true);
+		toggleBlind(true);
 		canMan = true;
 	} else {
-		toggleOverlay(false);
+		toggleBlind(false);
 		canMan = false;
 	}
 }
@@ -5777,7 +5778,7 @@ function shapemarathon() {
 		setTimeout(() => {
 			shuffleCube();
 			waitStopTurning(false, ma_data.type);
-			toggleOverlay(false, false);
+			toggleBlind(false, false);
 		}, 50)
 
 	}
@@ -5984,11 +5985,14 @@ function endchallenge(passed = true) {
 	}
 	dstep = false;
 }
-function toggleOverlay(show, p = true) {
+function toggleBlind(show, p = true) {
+	isBlinded = show;
 	if (show) {
-		setDisplay("block", ["overlay"]);
+		setCubyAllColor("black");
+		// setDisplay("block", ["overlay"]);
 	} else {
-		setDisplay("none", ["overlay"]);
+		setOriginalColor();
+		// setDisplay("none", ["overlay"]);
 		if (p) peeks++;
 	}
 	if (MODE != "competing") {
@@ -5997,7 +6001,7 @@ function toggleOverlay(show, p = true) {
 	} else {
 		setDisplay("none", ["wannapeek", "peekbutton"]);
 	}
-	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
+	// getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 }
 function fullScreen(isfull) {
 	if (document.getElementById("cnv_div").style.display == "none") return;
@@ -8898,7 +8902,7 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	if(isAnimating()) return false;
 	if (blinded() || (MODE == "competing" && competedata.data.type == "teamblind" 
 		&& moves == 0 && competedata.data.blinded == socket.id && !isShuffling)) {
-		toggleOverlay(true);
+		toggleBlind(true);
 	}
 	let total = 0;
 	let cuthrough = false;
@@ -13756,7 +13760,7 @@ document.onkeydown = function(event) {
 		} else if (getEl("competeswitch").style.display == "block") {
 			switchBlindfold();
 		} else if (getEl("peekbutton").style.display == "block") {
-			toggleOverlay(false);
+			toggleBlind(false);
 		} else if (getEl("s_RACE2").style.display == "block") {
 			speedRace2();
 		}
