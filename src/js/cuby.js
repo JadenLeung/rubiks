@@ -226,7 +226,7 @@ export default class Cuby {
         const opposite = {o:"r", r:"o", g:"b", b:"g", g:"b", y:"w", w:"y", k:"k"};
         let s = "";
         directions.forEach((dir) => {
-          s += getColor(this[dir].levels);
+          s += Cuby.getColor(this[dir].levels);
         });
 
         const possible = [

@@ -5718,10 +5718,10 @@ function blindmode() {
 }
 function showMarathon() {
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-		"s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons"]);
+		"s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "scramble_par"]);
 	setDisplay("inline", ["speed", "slider_div", "undo", "redo", "reset2_div"]);
 	setDisplay("table", ["keymap"]);
-	setDisplay("block", ["times_par", "outertime", "marathon2", "scramble_par"]);
+	setDisplay("block", ["times_par", "outertime", "marathon2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 	if (ma_data.type == "blind") {
 		setDisplay("block", ["peeks","times_par"]);
