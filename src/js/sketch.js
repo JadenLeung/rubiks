@@ -1877,9 +1877,9 @@ setInterval(() => {
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	if (MODE == "moves") {
-		setDisplay(isBlinded ? "block" : "none", ["wannapeek", "peekbutton"]);
+		setDisplay(isBlinded ? "block" : "none", ["peekbutton"]);
 	} else {
-		setDisplay("none", ["wannapeek", "peekbutton"])
+		setDisplay("none", ["peekbutton"])
 	}
 	getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 	getEl("switcher").style.display = (getEl("blind").style.display == "block" || (getEl("s_prac").style.display != "none")) ? "block" : "none";
@@ -3806,7 +3806,7 @@ function regular(nocustom){
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
-		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow"]);
+		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -5705,7 +5705,7 @@ function blindmode() {
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
-		setDisplay("block", ["input", "peeks", "peek_container", "blind2"]);
+		setDisplay("block", ["input", "peeks", "peek_container", "blind2", "wannapeek"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 		getEl("times_desc").innerHTML = "Times:";
 		reSetup();
@@ -5998,10 +5998,9 @@ function toggleBlind(show, p = true) {
 		if (p) peeks++;
 	}
 	if (MODE != "competing") {
-		getEl("wannapeek").style.display = show ? "block" : "none";
 		getEl("peekbutton").style.display = show ? "block" : "none";
 	} else {
-		setDisplay("none", ["wannapeek", "peekbutton"]);
+		setDisplay("none", ["peekbutton"]);
 	}
 	// getEl("overlay").style.backgroundColor = BACKGROUND_COLOR;
 }

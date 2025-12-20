@@ -480,6 +480,9 @@ button:hover {
     #practice_container {
         top: 30px;
     }
+    #peek_container {
+        top: 10px;
+    }
 }
 
 #recent_solves_body td {
