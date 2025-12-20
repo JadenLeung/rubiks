@@ -240,7 +240,7 @@ if (isAppleDevice) {
 	modal.style.display = "block";
 }
 
-export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId, ma_data) {
+export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId, ma_data, isthin) {
 	const container = document.getElementById('recent_solves_container');
 	const tbody = document.getElementById('recent_solves_body');
 	const statsSummary = document.getElementById('stats_summary');
@@ -282,7 +282,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	// Determine if we should show moves column (hide only when competing)
 	const showMoves = MODE !== "competing";
 	const showAo5 = showMoves && mo5.length >= 5;
-	const showAo12 = showMoves && mo5.length >= 12;
+	const showAo12 = showMoves && mo5.length >= 12 && !isthin;
 	
 	// Show/hide moves, ao5, and ao12 column headers and colgroups
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
