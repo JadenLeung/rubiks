@@ -12980,33 +12980,19 @@ socket.on("left_room", (room, id, names, image) => {
 	sendMessage("left", {room : room, id : id, name : names[id]}, image)
 })
 
-$(document).on("keypress", "#test_alg_div", function(e){ //enter
-	if(e.which == 13){
-		testAlg();
-	}
-});
-$(document).on("keypress", "#test_alg_div", function(e){ //enter
-	if(e.which == 13){
-		testAlg();
-	}
-});
-$(document).on("keypress", "#timegone4", function(e){ //enter
-	if(e.which == 13){
-		removeSpecificTime();
-	}
-});
-$(document).on("keypress", "#password", function(e){
-	if(e.which == 13){
-		document.getElementById('l_submit').click();
-	}
-});
-$(document).on("keypress", "#message-input", function(e){
-	if (e.which == 13)
-		document.getElementById('send-btn').click();
-});
-$(document).on("keypress", "#suggest_input", function(e){
-	if (e.which == 13)
-		submitSuggestion();
+const enterActions = {
+  "#test_alg_div": testAlg,
+  "#timegone4": removeSpecificTime,
+  "#password": () => document.getElementById("l_submit").click(),
+  "#message-input": () => document.getElementById("send-btn").click(),
+  "#suggest_input": submitSuggestion,
+  "#join_input": joinRoom,
+};
+
+$(document).on("keypress", Object.keys(enterActions).join(","), function (e) {
+  if (e.which === 13) {
+    enterActions["#" + this.id]();
+  }
 });
 
 getEl("send-btn").onclick = () => {
