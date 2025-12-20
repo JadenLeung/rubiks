@@ -81,12 +81,12 @@ export default function (p) {
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	// dir is the string, side is the number
 	const DIROBJ = {
-		right: 2,
 		top: 5,
-		left: 3,
 		bottom: 4,
-		back: 0,
+		left: 3,
+		right: 2,
 		front: 1,
+		back: 0,
 	};
 	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
 	let pracalgs = [];
@@ -185,7 +185,7 @@ export default function (p) {
 	let pbls = [];
 	let olls = [];
 	let CONTINUEMATCH;
-	let sideglowstage = 0;
+	let maxglowstage = 0;
 	let cubyglows = new Set([]);
 	let m_points = 0;
 	let link1 = document.getElementById("link1");
@@ -2038,7 +2038,7 @@ function reSetup(rot) {
 	flipmode2 = 0;
 	easystep = 0;
 	medstep = 0;
-	sideglowstage = 0;
+	maxglowstage = 0;
 	cubyglows = new Set([]);
 	cursolvestat = {};
 	//bruh = 0;
@@ -8372,7 +8372,7 @@ function shuffleCube(override = false) {
 	let mid = mids[SIZE];
 	cursolvestat = {};
 	cursolvestat.active = true;
-	sideglowstage = 0;
+	maxglowstage = 0;
 	cubyglows = new Set([]);
 	if (CUBENAME.toLowerCase().includes("glow")) {
 		setOriginalColor();
@@ -9189,7 +9189,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(document.getElementById('scramble').innerText);
+		console.log(maxglowstage);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -11836,9 +11836,12 @@ function InverseAll(str) {
 }
 
 // side is top, bottom, etc.
-function getCrossCubies(side) {
+function getCrossCubies(side, includeMidCenters) {
 	let cubies = getCubiesInSide(side); 
-	cubies = cubies.filter(cuby => Math.abs(CUBE[cuby].x) != MAXX || Math.abs(CUBE[cuby].y) != MAXX || Math.abs(CUBE[cuby].z) != MAXX); 
+	cubies = cubies.filter(cuby => isCrossCuby(cuby)); 
+	if (!includeMidCenters) {
+		return cubies;
+	}
 	const CROSS_OBJ = {
 		left: [10, 12, 14, 16],
 		right: [10, 12, 14, 16],
@@ -11848,6 +11851,10 @@ function getCrossCubies(side) {
 		bottom: [4, 12, 14, 22],
 	}
 	return [...cubies, ...CROSS_OBJ[side]];
+}
+
+function isCrossCuby(cuby) {
+	return Math.abs(CUBE[cuby].x) != MAXX || Math.abs(CUBE[cuby].y) != MAXX || Math.abs(CUBE[cuby].z) != MAXX
 }
 
 function getF2LCubies(side) {
@@ -13254,6 +13261,16 @@ function colorsInSide(side, cubies) {
 	return colors;
 }
 
+// Assumes 3x3
+function crossColorsInSide(side) {
+	let colors = new Set();
+	const cubies = getCrossCubies(side, false);
+	cubies.forEach(cuby => {
+		colors.add(getColorByCubyDir(cuby, side));
+	});
+	return colors;
+}
+
 function sideWithOnlyColor(color) {
 	for (const dir in DIROBJ) {
 		const cubies = getCubiesInSide(dir);
@@ -13275,14 +13292,14 @@ function cubyHasColor(cuby, color) {
 	return hasit;
 }
 
-function cubyShowColor(colors) {
+function cubyShowColor(colors, conditionFunc = null, overrideblack = true) {
 	const sides = ["front", "back", "left", "right", "top", "bottom"];
 	sides.forEach((side) => {
 		const cubies = getCubiesInSide(side);
 		cubies.forEach(cuby => {
-			if (colors.includes(getColorByCubyDir(cuby, side))) {
+			if (colors.includes(getColorByCubyDir(cuby, side)) && (conditionFunc == null || conditionFunc(cuby))) {
 				CUBE[cuby].originalFaceColor(side); 
-			} else {
+			} else if (overrideblack) {
 				CUBE[cuby].setFaceColor(Cuby.colors.black, side, true);
 			}
 		});
@@ -13290,7 +13307,7 @@ function cubyShowColor(colors) {
 }
 
 function setGlowAnimateColor(i) {
-	if (!timer.isRunning || timer.getTime < 0 || ["Side Glow", "Cuby Glow"].some(name => CUBENAME.includes(name))) {
+	if (!timer.isRunning || timer.getTime < 0 || !["Glow Cube", "Anti-Glow"].some(name => CUBENAME.includes(name))) {
 		return;
 	}
 	CUBE[i].setColor(CUBE[i].colors.black, true);
@@ -13374,17 +13391,54 @@ function setGlowColors() {
 			}
 		}
 
-		if (solvestage > sideglowstage) {
-			sideglowstage = solvestage;
+		if (solvestage > maxglowstage) {
+			maxglowstage = solvestage;
 		}
 
-		const validcolors = colors.slice(0, sideglowstage + 1);
+		const validcolors = colors.slice(0, maxglowstage + 1);
 		cubyShowColor(validcolors);
 	} else if (CUBENAME.includes("Cross Glow")) {
-		const colors = DIRARR.map(dir => getOriginalSideColor(dir));
-		// 0 = green blue cross, 1 = top bottom corners and so on
+		const DIRORDER = ["right", "left", "top", "bottom", "front", "back"];
+		const colors = DIRORDER.map(dir => getOriginalSideColor(dir));
 		let solvestage = 0;
+		for (let i = 0; i < colors.length; i += 2) {
+			let color1 = colors[i];
+			let color2 = colors[i + 1];
+			let hasColor = new Set();
+			for (let dir of DIRORDER) {
+				const crossColors = crossColorsInSide(dir);
+				if (crossColors.size > 1) {
+					continue;
+				}
+				if (crossColors.has(color1)) {
+					hasColor.add(color1);
+				}
+				if (crossColors.has(color2)) {
+					hasColor.add(color2);
+				}
+			}
+			if (hasColor.size != 2) {
+				break;
+			}
+			solvestage += 1;
+			maxglowstage = Math.max(maxglowstage, solvestage);
 
+			if (!(sideWithOnlyColor(color1) && sideWithOnlyColor(color2))) {
+				break;
+			}
+			solvestage++;
+			maxglowstage = Math.max(maxglowstage, solvestage);
+		}
+		for (let i = 0; i < colors.length; i += 2) {
+			let color1 = colors[i];
+			let color2 = colors[i + 1];
+			if (i <= maxglowstage) {
+				cubyShowColor([color1, color2], isCrossCuby, i == 0);
+			}
+			if (i + 1 <= maxglowstage) {
+				cubyShowColor([color1, color2], null, false);
+			}
+		}
 	} else if (CUBENAME.includes("Cuby Glow")) {
 		let cubies = getOuterCubes();
 		let tryglowagain = false;
@@ -13424,7 +13478,7 @@ function trackSolveProgress(override) {
 		return;
 	}
 	if (!override && (!cursolvestat.active || !timer.isRunning)) return;
-	if (!cursolvestat.cross && isSolvedByFunc(getCrossCubies)) {
+	if (!cursolvestat.cross && isSolvedByFunc((side) => getCrossCubies(side, true))) {
 		cursolvestat.cross = timer.roundedTime();
 		cursolvestat.crossmoves = moves;
 	}
