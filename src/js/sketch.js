@@ -8090,7 +8090,10 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 		
 		// Helper to get face corners in 3D space for this cuby
 		const getFaceCorners = (faceIndex) => {
-			const h = halfSize;
+			// Use the actual cuby size, not the constant CUBYESIZE
+			// For 2x2 (cubysize = 100), halfSize should be 50
+			const actualSize = typeof cuby.cubysize === 'number' ? cuby.cubysize : CUBYESIZE;
+			const h = actualSize / 2;
 			const shift = faceShifts && faceShifts[["back", "front", "right", "left", "bottom", "top"][faceIndex]] || [0, 0, 0];
 			const sx = shift[0], sy = shift[1], sz = shift[2];
 			
@@ -8140,14 +8143,18 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 			}
 		};
 		
+		// Use the actual cuby size for face centers
+		const actualSize = typeof cuby.cubysize === 'number' ? cuby.cubysize : CUBYESIZE;
+		const h = actualSize / 2;
+		
 		// Define all 6 faces with their centers and normals
 		const faces = [
-			{ index: 0, center: p.createVector(cuby.x + (faceShifts ? faceShifts.back[0] : 0), cuby.y + (faceShifts ? faceShifts.back[1] : 0), cuby.z - halfSize + (faceShifts ? faceShifts.back[2] : 0)), normal: p.createVector(0, 0, -1) },
-			{ index: 1, center: p.createVector(cuby.x + (faceShifts ? faceShifts.front[0] : 0), cuby.y + (faceShifts ? faceShifts.front[1] : 0), cuby.z + halfSize + (faceShifts ? faceShifts.front[2] : 0)), normal: p.createVector(0, 0, 1) },
-			{ index: 2, center: p.createVector(cuby.x - halfSize + (faceShifts ? faceShifts.right[0] : 0), cuby.y + (faceShifts ? faceShifts.right[1] : 0), cuby.z + (faceShifts ? faceShifts.right[2] : 0)), normal: p.createVector(-1, 0, 0) },
-			{ index: 3, center: p.createVector(cuby.x + halfSize + (faceShifts ? faceShifts.left[0] : 0), cuby.y + (faceShifts ? faceShifts.left[1] : 0), cuby.z + (faceShifts ? faceShifts.left[2] : 0)), normal: p.createVector(1, 0, 0) },
-			{ index: 4, center: p.createVector(cuby.x + (faceShifts ? faceShifts.bottom[0] : 0), cuby.y - halfSize + (faceShifts ? faceShifts.bottom[1] : 0), cuby.z + (faceShifts ? faceShifts.bottom[2] : 0)), normal: p.createVector(0, -1, 0) },
-			{ index: 5, center: p.createVector(cuby.x + (faceShifts ? faceShifts.top[0] : 0), cuby.y + halfSize + (faceShifts ? faceShifts.top[1] : 0), cuby.z + (faceShifts ? faceShifts.top[2] : 0)), normal: p.createVector(0, 1, 0) }
+			{ index: 0, center: p.createVector(cuby.x + (faceShifts ? faceShifts.back[0] : 0), cuby.y + (faceShifts ? faceShifts.back[1] : 0), cuby.z - h + (faceShifts ? faceShifts.back[2] : 0)), normal: p.createVector(0, 0, -1) },
+			{ index: 1, center: p.createVector(cuby.x + (faceShifts ? faceShifts.front[0] : 0), cuby.y + (faceShifts ? faceShifts.front[1] : 0), cuby.z + h + (faceShifts ? faceShifts.front[2] : 0)), normal: p.createVector(0, 0, 1) },
+			{ index: 2, center: p.createVector(cuby.x - h + (faceShifts ? faceShifts.right[0] : 0), cuby.y + (faceShifts ? faceShifts.right[1] : 0), cuby.z + (faceShifts ? faceShifts.right[2] : 0)), normal: p.createVector(-1, 0, 0) },
+			{ index: 3, center: p.createVector(cuby.x + h + (faceShifts ? faceShifts.left[0] : 0), cuby.y + (faceShifts ? faceShifts.left[1] : 0), cuby.z + (faceShifts ? faceShifts.left[2] : 0)), normal: p.createVector(1, 0, 0) },
+			{ index: 4, center: p.createVector(cuby.x + (faceShifts ? faceShifts.bottom[0] : 0), cuby.y - h + (faceShifts ? faceShifts.bottom[1] : 0), cuby.z + (faceShifts ? faceShifts.bottom[2] : 0)), normal: p.createVector(0, -1, 0) },
+			{ index: 5, center: p.createVector(cuby.x + (faceShifts ? faceShifts.top[0] : 0), cuby.y + h + (faceShifts ? faceShifts.top[1] : 0), cuby.z + (faceShifts ? faceShifts.top[2] : 0)), normal: p.createVector(0, 1, 0) }
 		];
 		
 		// Check each visible face to see if mouse is within its projected bounds
