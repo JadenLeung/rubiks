@@ -79,14 +79,15 @@ export default function (p) {
 	let recentmove = "";
 	const NOMOUSE = [13, "lasagna", "sandwich2x2"];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
-	const DIROBJ = [
-		{dir: "right", face: 2},
-		{dir: "top", face: 5},
-		{dir: "left", face: 3},
-		{dir: "bottom", face: 4},
-		{dir: "back", face: 0},
-		{dir: "front", face: 1},
-	]
+	// dir is the string, side is the number
+	const DIROBJ = {
+		right: 2,
+		top: 5,
+		left: 3,
+		bottom: 4,
+		back: 0,
+		front: 1,
+	};
 	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
@@ -193,7 +194,7 @@ export default function (p) {
 	let m_pass = 0;
 	let inspect = false;
 	let giveups = 0;
-	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3;
+	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CROSSGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3;
 	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
@@ -294,6 +295,7 @@ export default function (p) {
 		"3x3 Anti-Glow": switchSize.bind(null, 3,  50, 50),
 		"2x2 Side Glow": switchSize.bind(null, 3, 100, 100),
 		"3x3 Side Glow": switchSize.bind(null, 3, 50, 50),
+		"3x3 Cross Glow": switchSize.bind(null, 3, 50, 50),
 		"2x2 Cuby Glow": switchSize.bind(null, 3, 100, 100),
 		"3x3 Cuby Glow": switchSize.bind(null, 3, 50, 50),
 		"3x3 Fade Glow": switchSize.bind(null, 3, 50, 50),
@@ -1399,7 +1401,7 @@ p.setup = () => {
 	F2LPRAC = p.createButton('F2L');
 	setButton(F2LPRAC, "s_f2lprac", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B", 119), () => {
 		practiceObj.shuffleFunc = () => generatePreserveCrossScramble(false)
-		practiceObj.solvedFunc = () => getSolvedByFunc(getF2LCubies);
+		practiceObj.solvedFunc = () => isSolvedByFunc(getF2LCubies);
 		practiceObj.instruction = "Solve two layers.";
 		practiceObj.title = "F2L Practice";
 		practiceObj.shouldFlipCube = true;
@@ -9830,7 +9832,7 @@ function refreshButtons()
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
 		CUBE12, CUBE13, CUBE14, CUBE15, CUBE16, FOURPLUS, ONEBYTWOBYTWO,
 		ONEBYTWOBYTHREE, SANDWICH2, PLUSLITE, PLUS3x3x2, SNAKE_EYE, GLOW3x3, ANTIGLOW3x3,
-		SIDEGLOW3x3, SIDEGLOW2x2, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3
+		SIDEGLOW3x3, SIDEGLOW2x2, CROSSGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3
 		];
 		
 		CUBE_BUTTONS.forEach(el => {el && el.remove()});
@@ -10028,6 +10030,9 @@ function refreshButtons()
 
 	SIDEGLOW2x2 = p.createButton('2x2 Side Glow');
 	setButton(SIDEGLOW2x2, "sideglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Side Glow"); SIDEGLOW2x2.style('background-color', "#8ef5ee");});
+
+	CROSSGLOW3x3 = p.createButton('3x3 Cross Glow');
+	setButton(CROSSGLOW3x3, "crossglow3x3", 'btn btn-info', allcubestyle, () => {switchCube("3x3 Cross Glow"); CROSSGLOW3x3.style('background-color', "#8ef5ee");});
 
 	CUBYGLOW2x2 = p.createButton('2x2 Cuby Glow');
 	setButton(CUBYGLOW2x2, "cubyglow2x2", 'btn btn-info', allcubestyle, () => {switchCube("2x2 Cuby Glow"); CUBYGLOW2x2.style('background-color', "#8ef5ee");});
@@ -11859,11 +11864,11 @@ function getF2LCubies(side) {
 	return cubies.filter(cuby => !avoidcubies.has(cuby));
 }
 
-function getSolvedByFunc(func) {
+function isSolvedByFunc(func) {
 	const directions = ["top", "bottom", "front", "back", "left", "right"];
 	for (let dir of directions) {
-		const crosscubies = func(dir);
-		if (numSolved(crosscubies) == 6) {
+		const cubies = func(dir);
+		if (numSolved(cubies) == 6) {
 			return true;
 		}
 	}
@@ -13219,10 +13224,9 @@ function strictlySolved(cubies = getOuterCubes()) {
 }
 
 function isCubySolved(cuby) {
-	for (const obj of DIROBJ) {
-		let middleColor = getMiddleColor(obj.face);
-		console.log(obj.face, middleColor, getColorByCubyDir(cuby, obj.dir))
-		if (getColorByCubyDir(cuby, obj.dir) != middleColor && middleColor != "k" && getColorByCubyDir(cuby, obj.dir) != "k") {
+	for (const dir of DIRARR) {
+		let middleColor = getMiddleColor(DIROBJ[dir]);
+		if (getColorByCubyDir(cuby, dir) != middleColor && middleColor != "k" && getColorByCubyDir(cuby, dir) != "k") {
 			return false;
 		}
 	}
@@ -13251,9 +13255,9 @@ function colorsInSide(side, cubies) {
 }
 
 function sideWithOnlyColor(color) {
-	for (const obj of DIROBJ) {
-		const cubies = getCubiesInSide(obj.dir);
-		if (cubies.every(cuby => getColorByCubyDir(cuby, obj.dir) == color)) {
+	for (const dir in DIROBJ) {
+		const cubies = getCubiesInSide(dir);
+		if (cubies.every(cuby => getColorByCubyDir(cuby, dir) == color)) {
 			return true;
 		}
 	}
@@ -13289,7 +13293,7 @@ function setGlowAnimateColor(i) {
 	if (!timer.isRunning || timer.getTime < 0 || ["Side Glow", "Cuby Glow"].some(name => CUBENAME.includes(name))) {
 		return;
 	}
-	// CUBE[i].setColor(CUBE[i].colors.black, true);
+	CUBE[i].setColor(CUBE[i].colors.black, true);
 }
 
 function setOriginalColor() {
@@ -13336,10 +13340,10 @@ function setGlowColors() {
 				cubyglows[cuby] = DIMMING_LENGTH;
 				CUBE[cuby].originalColor();
 			} else if (cubyglows[cuby] > 0) {
-				DIROBJ.forEach((obj) => {
-				const color = getColorByCubyDir(cuby, obj.dir);
+				DIRARR.forEach((dir) => {
+				const color = getColorByCubyDir(cuby, dir);
 					const dim = (1 / DIMMING_LENGTH) * cubyglows[cuby];
-					CUBE[cuby].setDim(dim, color, obj.dir, true);
+					CUBE[cuby].setDim(dim, color, dir, true);
 				});
 				cubyglows[cuby]--;
 			} else {
@@ -13347,21 +13351,20 @@ function setGlowColors() {
 			}
 		});
 	} else if (["Glow Cube", "Anti-Glow"].some(c => CUBENAME.includes(c))) {
-		DIROBJ.forEach((obj) => {
-		let middleColor = getMiddleColor(obj.face);
-		const cubies = getCubiesInSide(obj.dir)
+		DIRARR.forEach((dir) => {
+		let middleColor = getMiddleColor(DIROBJ[dir]);
+		const cubies = getCubiesInSide(dir)
 		cubies.forEach(cuby => {
-			const oldcuby = cuby
-			if ((CUBENAME.includes("Glow Cube") && getColorByCubyDir(cuby, obj.dir) == middleColor)
-			|| (CUBENAME.includes("Anti-Glow") && getColorByCubyDir(cuby, obj.dir) != middleColor)) {
-				CUBE[cuby].originalFaceColor(obj.dir);
+			if ((CUBENAME.includes("Glow Cube") && getColorByCubyDir(cuby, dir) == middleColor)
+			|| (CUBENAME.includes("Anti-Glow") && getColorByCubyDir(cuby, dir) != middleColor)) {
+				CUBE[cuby].originalFaceColor(dir);
 			} else {
-				CUBE[cuby].setFaceColor(Cuby.colors.black, obj.dir, true);
+				CUBE[cuby].setFaceColor(Cuby.colors.black, dir, true);
 				}
 			});
 		});
 	} else if (CUBENAME.includes("Side Glow")) {
-		const colors = DIROBJ.map(obj => getOriginalSideColor(obj.dir));
+		const colors = ["right", "top", "left", "bottom", "back", "front"].map(dir => getOriginalSideColor(dir));
 		let solvestage = 0;
 		for (const color of colors) {
 			if (sideWithOnlyColor(color)) {
@@ -13377,6 +13380,11 @@ function setGlowColors() {
 
 		const validcolors = colors.slice(0, sideglowstage + 1);
 		cubyShowColor(validcolors);
+	} else if (CUBENAME.includes("Cross Glow")) {
+		const colors = DIRARR.map(dir => getOriginalSideColor(dir));
+		// 0 = green blue cross, 1 = top bottom corners and so on
+		let solvestage = 0;
+
 	} else if (CUBENAME.includes("Cuby Glow")) {
 		let cubies = getOuterCubes();
 		let tryglowagain = false;
@@ -13416,15 +13424,15 @@ function trackSolveProgress(override) {
 		return;
 	}
 	if (!override && (!cursolvestat.active || !timer.isRunning)) return;
-	if (!cursolvestat.cross && getSolvedByFunc(getCrossCubies)) {
+	if (!cursolvestat.cross && isSolvedByFunc(getCrossCubies)) {
 		cursolvestat.cross = timer.roundedTime();
 		cursolvestat.crossmoves = moves;
 	}
-	if (!cursolvestat.side && getSolvedByFunc(getCubiesInSide)) {
+	if (!cursolvestat.side && isSolvedByFunc(getCubiesInSide)) {
 		cursolvestat.side = timer.roundedTime();
 		cursolvestat.sidemoves = moves;
 	}
-	if (!cursolvestat.f2l && getSolvedByFunc(getF2LCubies)) {
+	if (!cursolvestat.f2l && isSolvedByFunc(getF2LCubies)) {
 		cursolvestat.f2l = timer.roundedTime();
 		cursolvestat.f2lmoves = moves;
 	}
@@ -13646,8 +13654,8 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
 	modnum = 4;
     cubemode();
 	// CUBEMAP["2x3x5"]();
-	switchCube("3x3 Fade Glow");
-	FADEGLOW3x3.style('background-color', "#8ef5ee");
+	switchCube("3x3 Cross Glow");
+	CROSSGLOW3x3.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {
