@@ -5443,7 +5443,7 @@ function finishCompeteSelect(dim) {
 		console.log("HERE", dim);
 		if (COMPETE_ADVANCED.checked()) {
 			let customarrobj = JSON.parse(compete_customarr[focused_competeobj.round][focused_competeobj.player]);
-			if ((["Gearcube", "Last Layer"].includes(customarrobj.scramble) && !DIMS_OBJ[dim].type.includes("NxN"))
+			if ((["Gearcube", "Last Layer", "Glow"].includes(customarrobj.scramble) && !DIMS_OBJ[dim].type.includes("NxN"))
 			|| (["Preserve Cross"].includes(customarrobj.scramble) && dim != "3x3")) {
 				compete_customarr[focused_competeobj.round][focused_competeobj.player] = defaultShuffleData;
 				focused_competeobj.optionText.textContent = "";

@@ -329,13 +329,29 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	
 	// Update header text based on mode
 	if (timeHeader) {
+		// Get column definitions
+		const timeCol = document.getElementById('time_col');
+		const timeColBody = document.getElementById('time_col_body');
+		const movesColHeader = document.getElementById('moves_col');
+		const movesColBodyElem = document.getElementById('moves_col_body');
+		
 		if (isCompeting) {
 			timeHeader.textContent = 'You';
 			movesHeader.textContent = 'Opponent';
 			movesHeader.style.display = ''; // Show opponent column in competing mode
+			// Set equal widths for competing mode on column definitions
+			if (timeCol) timeCol.style.width = '50%';
+			if (timeColBody) timeColBody.style.width = '50%';
+			if (movesColHeader) movesColHeader.style.width = '50%';
+			if (movesColBodyElem) movesColBodyElem.style.width = '50%';
 		} else {
 			timeHeader.textContent = 'Time';
 			movesHeader.textContent = 'Moves';
+			// Reset widths for normal mode
+			if (timeCol) timeCol.style.width = '80px';
+			if (timeColBody) timeColBody.style.width = '80px';
+			if (movesColHeader) movesColHeader.style.width = '60px';
+			if (movesColBodyElem) movesColBodyElem.style.width = '60px';
 		}
 	}
 	
@@ -398,22 +414,20 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				const cellTime = row.insertCell(1);
 				if (isCompeting) {
 					cellTime.textContent = recentTimes[i] === undefined ? '' : (recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's'));
-				} else {
-					cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
+			} else {
+				cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
+			}
+			
+			// Moves/Opponent column (show for competing or when showMoves is true)
+			if (isCompeting || showMoves) {
+				const cellMoves = row.insertCell(2);
+				if (isCompeting) {
+					cellMoves.textContent = recentMoves[i] === undefined ? '' : (recentMoves[i] + (recentMoves[i] == "DNF" ? "" : 's'));				} else {
+					cellMoves.textContent = recentMoves[i] || 'N/A';
 				}
-				
-				// Moves/Opponent column (show for competing or when showMoves is true)
-				if (isCompeting || showMoves) {
-					const cellMoves = row.insertCell(2);
-					if (isCompeting) {
-						cellMoves.textContent = recentMoves[i] === undefined ? '' : (recentMoves[i] + (recentMoves[i] == "DNF" ? "" : 's'));
-					} else {
-						cellMoves.textContent = recentMoves[i] || 'N/A';
-					}
-				}
-				
-				// Ao5 column - calculate Ao5 for current solve
-				if (showAo5) {
+			}			
+			// Ao5 column - calculate Ao5 for current solve
+			if (showAo5) {
 					const cellAo5 = row.insertCell(3);
 					
 					// Calculate Ao5 if we have at least 5 solves up to this point
@@ -468,8 +482,8 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				const peeksValue = solvedata[i].peeks;
 				cellPeeks.textContent = peeksValue !== undefined && peeksValue !== null ? peeksValue : 'N/A';
 			}
-			} else {
-				// Empty row
+		} else {
+			// Empty row
 				const cellNum = row.insertCell(0);
 				cellNum.textContent = '';
 				
