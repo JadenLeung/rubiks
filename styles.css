@@ -259,6 +259,13 @@ button:hover {
     font-family: 'Orbitron';
     font-size: 30px;
 }
+#compete_difficulty {
+    position: absolute;
+    top: 65px;
+    right: 1%;
+    text-align: right;
+    z-index:2;
+}
 #peek_container {
     position: absolute;
     top: 65px;
