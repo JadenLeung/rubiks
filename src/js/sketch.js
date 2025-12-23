@@ -16,12 +16,6 @@ import { speeddata } from '../data/speeddata.js';
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
 
-socket.on("connect_error", (err) => {
-	if (comstep > 0) {
-		alert("You have been disconnected from the server.");
-	}
-  });
-
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
 	const CUBYESIZE = 50;
@@ -147,6 +141,11 @@ export default function (p) {
 	let m_4step = 0;
 	let ma_data = {};
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0, comstep = 0;
+	socket.on("connect_error", (err) => {
+		if (comstep > 0) {
+			alert("You have been disconnected from the server.");
+		}
+	});
 	let OLL, PLL, PLLPRAC, OLLPRAC, F2LPRAC;
 	let competedata = {};
 	let competerooms = {};
@@ -5426,7 +5425,8 @@ function finishCompeteSelect(dim) {
 		console.log("HERE", dim);
 		if (COMPETE_ADVANCED.checked()) {
 			let customarrobj = JSON.parse(compete_customarr[focused_competeobj.round][focused_competeobj.player]);
-			if (["Gearcube", "Last Layer"].includes(customarrobj.scramble) && !DIMS_OBJ[dim].type.includes("NxN")) {
+			if ((["Gearcube", "Last Layer"].includes(customarrobj.scramble) && !DIMS_OBJ[dim].type.includes("NxN"))
+			|| (["Preserve Cross"].includes(customarrobj.scramble) && dim != "3x3")) {
 				compete_customarr[focused_competeobj.round][focused_competeobj.player] = defaultShuffleData;
 				focused_competeobj.optionText.textContent = "";
 			}
@@ -5710,7 +5710,7 @@ function blindmode() {
 		bstep = 1;
 		setInput();
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-			 "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher"]);
+			 "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher", "show_marathon"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
 		setDisplay("block", ["input", "peeks", "peek_container", "blind2", "wannapeek"]);
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
@@ -5719,8 +5719,9 @@ function blindmode() {
 		shuffleCube();
 		waitStopTurning(false);
 	} else if (bstep == 3) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "input2"]);
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "input2", "wannapeek"]);
 		setDisplay("block", ["b_win", "b_start","m_high"]);
+		toggleBlind(false);
 		getEl("b_win").innerHTML = "You did it! You solved the cube in " + peeks + " peek" + (peeks == 1 ? "." : "s. <br> Play again?");
 		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks);
 	}
@@ -5804,8 +5805,9 @@ function shapemarathon() {
 
 	}
 	if (mastep / 2 == ma_data.cubes.length) {
-		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2", "ma_list"]);
+		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2"]);
 		setDisplay("block", ["ma_highscores"]);
+		setInnerHTML(["ma_list"]);
 		let score;
 		if (ma_data.type == "blind") {
 			score = solvedata.reduce((acc, curr) => acc + curr.peeks, 0).toFixed(2);
@@ -6009,10 +6011,8 @@ function toggleBlind(show, p = true) {
 	isBlinded = show;
 	if (show) {
 		setCubyAllColor("black");
-		// setDisplay("block", ["overlay"]);
 	} else {
 		setOriginalColor();
-		// setDisplay("none", ["overlay"]);
 		if (p) peeks++;
 	}
 	if (MODE != "competing") {
@@ -8432,12 +8432,11 @@ function shuffleCube(override = false) {
 		multiple2("realscramble");
 		return;
 	}
-	let s = 18;
+	let s = 20;
 	if(DIM == 7 && SCRAM.value() != "Middle Slices"){
 		quickSolve();
 		possible = ["E", "D", "B"];
 	}
-	console.log("s iISs", s)
 	if(DIM4 == 2)
 		s = 10;
 	if (SIZE == 4) s = 30;
@@ -8446,7 +8445,7 @@ function shuffleCube(override = false) {
 	const scramble_obj = {
 		1: 4,
 		2: 10,
-		3: 18,
+		3: 20,
 		4: 45,
 		5: 60,
 	}

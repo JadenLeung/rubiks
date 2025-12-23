@@ -14,6 +14,10 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
         inputOptions.push("Gearcube");
     }
 
+    if (["3x3", "Xmas 3x3"].includes(cube)) {
+        scrambleOptions.push("Preserve Cross");
+    }
+
     if (DIMS_OBJ[cube].type.includes("Shapeshift")) {
         goalOptions.push("Make Cubic Shape");
     }
