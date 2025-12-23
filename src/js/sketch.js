@@ -4158,6 +4158,7 @@ function formatCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
 		if (["Default", "None"].includes(customobj[key]) == false && !(key == "scramble" && customobj["input"] != "Default")) {
+			if (["glow"].includes(key)) return;
 			if (key == "goal") {
 				strarr.push(customobj[key])
 			} else {
@@ -4242,14 +4243,16 @@ function enterLobby(data, r) {
 	if (data.data.type == "1v1") {
 		const OP_NAME = data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent";
 		data.data.dims.forEach((cube, x) => {
+			let player1cube = (competeProperty("glow", "None", x, 0) != "None" ? " " + competeProperty("glow", "None", x, 0) : "");
+			let player2cube = (competeProperty("glow", "None", x, 1) != "None" ? " " + competeProperty("glow", "None", x, 1) : "");
 			str += `${x + 1})`
 			// if (data.data.shufflearr.length > 0) {
 			// 	str += `<br>&ensp;`
 			// }
 			if (data.data.leader == socket.id) {
-				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0]}</b>`;
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0] + player1cube}</b>`;
 			} else {
-				str += ` ${OP_NAME}: ${cube[0]}`;
+				str += ` ${OP_NAME}: ${cube[0] + player1cube}`;
 			}
 			if (data.data.customarr.length > 0) {
 				str += `${formatCustom(data.data.customarr[x][0])}<br>&ensp;&ensp;`;
@@ -4257,9 +4260,9 @@ function enterLobby(data, r) {
 				str += ","
 			}
 			if (data.data.leader == socket.id) {
-				str += ` ${OP_NAME}: ${cube[1]}`;
+				str += ` ${OP_NAME}: ${cube[1] + player2cube}`;
 			} else {
-				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1]}</b>`;
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1] + player2cube}</b>`;
 			}
 			if (data.data.shufflearr.length > 0) {
 				str += `${formatCustom(data.data.customarr[x][1])}&ensp;`;
@@ -4268,7 +4271,7 @@ function enterLobby(data, r) {
 		})
 	} else {
 		data.data.dims.forEach((cube, x) => {
-			str += `Round ${x + 1}): ${cube[0]}`
+			str += `Round ${x + 1}): ${cube[0] + (competeProperty("glow", "None", x) != "None" ? " " + competeProperty("glow", "None", x) : "")}`
 			if (data.data.shufflearr.length > 0) {
 				str += `${formatCustom(data.data.customarr[x][0])}`;
 			}
@@ -4524,9 +4527,9 @@ function competeGoal() {
 	return "Default"
 }
 
-function competeProperty(prop, defaultValue = "Default") {
-	if (competedata.data.customarr && competedata.data.customarr.length > 0 && competedata.data.customarr[competedata.round][playerIndex()][prop]) {
-		return competedata.data.customarr[competedata.round][playerIndex()][prop];
+function competeProperty(prop, defaultValue = "Default", round = competedata.round, index = playerIndex()) {
+	if (competedata.data.customarr && competedata.data.customarr.length > 0 && competedata.data.customarr[round][index][prop]) {
+		return competedata.data.customarr[round][index][prop];
 	}
 	return defaultValue;
 }
@@ -9229,7 +9232,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(CUBENAME);
+		console.log(competedata);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
