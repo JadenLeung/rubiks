@@ -522,6 +522,7 @@
 								<col id="moves_col" style="width: 60px;">
 								<col id="ao5_col" style="width: 80px;">
 								<col id="ao12_col" style="width: 80px;">
+								<col id="peeks_col" style="width: 80px;">
 							</colgroup>
 							<thead>
 								<tr style="background-color: rgba(10, 25, 112, 0.1);">
@@ -536,6 +537,7 @@
 									<th id="moves_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Moves</th>
 									<th id="ao5_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Ao5</th>
 									<th id="ao12_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Ao12</th>
+									<th id="peeks_header" style="padding: 4px 8px; text-align: center; border: 1px solid;">Peeks</th>
 								</tr>
 							</thead>
 						</table>
@@ -547,6 +549,7 @@
 									<col id="moves_col_body" style="width: 60px;">
 									<col id="ao5_col_body" style="width: 80px;">
 									<col id="ao12_col_body" style="width: 80px;">
+									<col id="peeks_col_body" style="width: 80px;">
 								</colgroup>
 								<tbody id="recent_solves_body">
 									<!-- Rows will be dynamically added here -->
@@ -824,19 +827,27 @@
 				<p id = "ma_small"></p>
 				<p id = "ma_list"></p>
 			</div>
+			<p id = "show_marathon"></p>
 			<div id = "ma_buttons">
-				<p id = "ma_start" style = "display: inline"></p>
-				<p id = "ma_start2"  style = "display: inline"></p>
-				<p id = "ma_start3"  style = "display: inline"></p>
-				<p id = "ma_start4"  style = "display: inline"></p>
+				<h5 style="margin-bottom: 20px;">Select A Marathon</h5>
+				<div>
+					<p id = "ma_start" style = "display: inline"></p>
+					<p id = "ma_start2"  style = "display: inline"></p>
+				</div>
+				<div style = "margin-top:5px;">
+					<p id = "ma_start3"  style = "display: inline"></p>
+					<p id = "ma_start4"  style = "display: inline"></p>
+				</div>
+				<div style = "margin-top:5px;">
+									<p id = "b_marathon" style = "display: inline"></p>
+				</div>
 			</div>
-			<div id = "blind" style = "padding-top: 20px;">
+			<div id = "blind" style = "padding-top: 10px;">
 				<h5 id = "b_INSTRUCT" class = "noselect">Blind Challenge</h5>
 				<p id = "b_instruct" class = "noselect">Solve the cube in as fewest "peeks" as possible.</p>
 			</div>
 			<div id = "b_start">
 				<p id = "b_regular" style = "display: inline"></p>
-				<p id = "b_marathon" style = "display: inline"></p>
 			</div>
 			<div style = "padding-top: 10px;">
 				<p style = "display: inline;" id = "s_OLL"></p>
@@ -846,12 +857,15 @@
 				<h5 style = "margin-top:10px;">Your Best Scores</h5>
 				<p id = "m_easyscore" class = "skinnyscore">Easy: N/A</p>
 				<p id = "m_mediumscore" class = "skinnyscore">Medium: N/A</p>
+				<p id = "blind2x2score" class = "skinnyscore">Blind 2x2: N/A</p>
+				<p id = "blind3x3score" class = "skinnyscore">Blind 3x3: N/A</p>
+			</div>
+			<div id = "ma_highscores" style = "padding-top: 20px;">
+				<h5>Marathon High Scores</h5>
 				<p id = "marathonscore" class = "skinnyscore">Shape Marathon: N/A</p>
 				<p id = "marathon2score" class = "skinnyscore">Bandage Marathon: N/A</p>
 				<p id = "marathon4score" class = "skinnyscore">Cuboid Marathon: N/A</p>
 				<p id = "marathon5score" class = "skinnyscore">Baby Marathon: N/A</p>
-				<p id = "blind2x2score" class = "skinnyscore">Blind 2x2: N/A</p>
-				<p id = "blind3x3score" class = "skinnyscore">Blind 3x3: N/A</p>
 				<p id = "marathon3score" class = "skinnyscore">Blind Marathon: N/A</p>
 			</div>
 			<div id = "c_week">

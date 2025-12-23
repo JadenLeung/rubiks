@@ -1429,17 +1429,20 @@ p.setup = () => {
 	const STARTBLIND2 = p.createButton('Blind Marathon');
 	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); startMarathon("blind")});
 
+	const SHOWMARATHON = p.createButton('Start Marathon');
+	setButton(SHOWMARATHON, "show_marathon", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {showMarathons()});
+
 	const STARTMARATHON = p.createButton('Shape');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', 'height:50px; width:80px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("shape")});
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("shape")});
 	
 	const STARTMARATHON2 = p.createButton('Bandage');
-	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', 'height:50px; width:100px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("bandage")});
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("bandage")});
 
 	const STARTMARATHON3 = p.createButton('Cuboid');
-	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', 'height:50px; width:100px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("cuboid")});
+	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("cuboid")});
 
 	const STARTMARATHON4 = p.createButton('Baby');
-	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', 'height:50px; width:80px; text-align:center; font-size:20px; background-color: #ffb163; border-color: black;', () => {startMarathon("baby")});
+	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("baby")});
 
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
@@ -3808,7 +3811,7 @@ function regular(nocustom){
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
-		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek"]);
+		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -5722,7 +5725,7 @@ function blindmode() {
 }
 function showMarathon() {
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
-		"s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "scramble_par"]);
+		"s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "scramble_par", "show_marathon", "ma_highscores"]);
 	setDisplay("inline", ["speed", "slider_div", "undo", "redo", "reset2_div"]);
 	setDisplay("table", ["keymap"]);
 	setDisplay("block", ["times_par", "outertime", "marathon2"]);
@@ -5735,6 +5738,15 @@ function showMarathon() {
 		getEl("times_desc").innerHTML = "Times:";
 	}
 }
+
+function showMarathons() {
+	MINIMODE = "marathon_select"
+	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
+		"s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "scramble_par", "show_marathon", "marathon2"]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
+	setDisplay("block", ["ma_buttons", "ma_highscores"]);
+}
+
 function startMarathon(type) {
 	reSetup();
 	MINIMODE = "marathon"
@@ -5747,6 +5759,8 @@ function startMarathon(type) {
 		ma_data.cubes = ["Cube Bandage", "Slice Bandage", "Bandaged 2x2", "Bandaged 3x3x2", "Pillars", "Triple Quad", "Z Perm", "T Perm"];
 	} else if (type == "baby") {
 		ma_data.cubes = ["1x2x2", "1x2x3", "Plus Lite", "3x3x2 Plus Cube", "Snake Eyes", "1x4x4", "1x5x5"];
+	} else if (type == "glow") {
+		ma_data.cubes = ["3x3 Glow Cube", "3x3 Anti-Glow", "2x2 Side Glow", "3x3 Cross Glow", "2x2 Cuby Glow", "3x3 Fade Glow"];
 	}
 
 	if (type == "blind") {
@@ -5788,15 +5802,11 @@ function shapemarathon() {
 	}
 	if (mastep / 2 == ma_data.cubes.length) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2", "ma_list"]);
-		setDisplay("block", ["m_high"]);
-		let score = ao5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+		setDisplay("block", ["ma_highscores"]);
+		let score = solvedata.reduce((acc, curr) => acc + curr.peeks, 0).toFixed(2);
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
 		getEl("ma_small").innerHTML = "Play again?";
-		if (ma_data.type == "blind") {
-			setDisplay("block", ["b_start"]);
-		} else {
-			setDisplay("block", ["ma_buttons"]);
-		}
+		setDisplay("block", ["show_marathon"]);
 		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5"};
 		setScore(map[ma_data.type], score, true);
 	}
@@ -5809,7 +5819,6 @@ function isBot() {
 }
 function waitStopTurning(timed = true, mode = "wtev", start = false) {
 	const interval = setInterval(() => {
-	console.log("canMan?" + canMan)
 	  if (canMan) {
 		if (!isBot() && MODE != "competing" && !isSolved()) {
 			launchGoMessage();
@@ -6302,7 +6311,7 @@ function movesmode()
 	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
 		"solve", "input", "input2", "scram", "timeselect", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("inline", ["m_34", "m_4"]);
-	setDisplay("block", ["m_high", "blind","b_start","marathon","ma_buttons"]);
+	setDisplay("block", ["m_high", "blind","b_start","marathon", "show_marathon", "marathon"]);
 
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "center" });
 	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Fewest Moves Challenge" : "2x2 Fewest Moves Challenge";
@@ -6372,7 +6381,7 @@ function showSpeed()
 	canMan = false;
 	document.getElementById("s_difficulty").innerHTML = "";
 	setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE", 
-		"s_prac", "s_prac2","blind", "b_start", "marathon","ma_buttons"]);
+		"s_prac", "s_prac2","blind", "b_start", "marathon","ma_buttons","show_marathon"]);
 	setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo"]);
 	getEl("times_desc").innerHTML = "Times:";
 
@@ -7058,6 +7067,7 @@ function stopAndUpdateTimes() {
 		inputtype: INPUT.value(),
 		scrambletype: SCRAM.value(),
 		solvestat: cursolvestat,
+		peeks: peeks,
 	});
 	// Reset table scroll offset when new solve is added
 	if (window.tableScrollOffset !== undefined) {
@@ -9196,7 +9206,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(maxglowstage);
+		// console.log("bruh", solvedata)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -9293,8 +9303,6 @@ p.keyPressed = (event) => {
 		if (more[p.key]) p.key = more[p.key]
 		if (keyMoveMap.unshifted[p.key.toLowerCase()] || keyMoveMap.shifted[p.key.toLowerCase()]) {
 			p.keyIsDown(p.SHIFT) && keyMoveMap.shifted[p.key.toLowerCase()] ? changeArr(keyMoveMap.shifted[p.key.toLowerCase()]) : changeArr(keyMoveMap.unshifted[p.key.toLowerCase()]);
-			console.log(arr)
-
 			if (p.keyIsDown(p.ENTER)) {
 				if (arr[0].includes("M") || arr[0].includes("S") || arr[0].includes("E")) {
 					if (arr[0].includes("'"))
@@ -9639,7 +9647,6 @@ function changeArr(str)
 	let end  = 1;
 	while(str != "")
 	{
-		console.log(str, arr);
 		end = 1;
 		temp = "";
 		let extra = "";

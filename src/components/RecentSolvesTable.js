@@ -249,6 +249,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const movesHeader = document.getElementById('moves_header');
 	const ao5Header = document.getElementById('ao5_header');
 	const ao12Header = document.getElementById('ao12_header');
+	const peeksHeader = document.getElementById('peeks_header');
 	const mo5StatDiv = document.getElementById('mo5_stat').parentElement;
 	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
 	const timeHeader = document.getElementById('time_header');
@@ -283,11 +284,13 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const showMoves = MODE !== "competing";
 	const showAo5 = showMoves && mo5.length >= 5;
 	const showAo12 = showMoves && mo5.length >= 12 && !isthin;
+	const showPeeks = MINIMODE == "marathon" && ma_data?.type == "blind";
 	
 	// Show/hide moves, ao5, and ao12 column headers and colgroups
 	if (movesHeader) movesHeader.style.display = showMoves ? '' : 'none';
 	if (ao5Header) ao5Header.style.display = showAo5 ? '' : 'none';
 	if (ao12Header) ao12Header.style.display = showAo12 ? '' : 'none';
+	if (peeksHeader) peeksHeader.style.display = showPeeks ? '' : 'none';
 	
 	// Also hide/show the colgroup columns
 	const movesCol = document.getElementById('moves_col');
@@ -296,6 +299,8 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const ao5ColBody = document.getElementById('ao5_col_body');
 	const ao12Col = document.getElementById('ao12_col');
 	const ao12ColBody = document.getElementById('ao12_col_body');
+	const peeksCol = document.getElementById('peeks_col');
+	const peeksColBody = document.getElementById('peeks_col_body');
 	
 	if (movesCol) movesCol.style.display = showMoves ? '' : 'none';
 	if (movesColBody) movesColBody.style.display = showMoves ? '' : 'none';
@@ -303,6 +308,8 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	if (ao5ColBody) ao5ColBody.style.display = showAo5 ? '' : 'none';
 	if (ao12Col) ao12Col.style.display = showAo12 ? '' : 'none';
 	if (ao12ColBody) ao12ColBody.style.display = showAo12 ? '' : 'none';
+	if (peeksCol) peeksCol.style.display = showPeeks ? '' : 'none';
+	if (peeksColBody) peeksColBody.style.display = showPeeks ? '' : 'none';
 	
 	// Hide Ao5 and Mo5 stats in competing mode
 	if (ao5StatDiv) ao5StatDiv.style.display = MODE === "competing" ? 'none' : '';
@@ -453,6 +460,13 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 					cellAo12.textContent = '';
 				}
 			}
+			
+			// Peeks column
+			if (showPeeks) {
+				const cellPeeks = row.insertCell(showAo12 ? (showAo5 ? 5 : 4) : (showAo5 ? 4 : 3));
+				const peeksValue = solvedata[i].peeks;
+				cellPeeks.textContent = peeksValue !== undefined && peeksValue !== null ? peeksValue : 'N/A';
+			}
 			} else {
 				// Empty row
 				const cellNum = row.insertCell(0);
@@ -478,6 +492,12 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 					const cellAo12 = row.insertCell(showAo5 ? 4 : 3);
 					cellAo12.textContent = '';
 				}
+
+				// Peeks column
+				if (showPeeks) {
+					const cellPeeks = row.insertCell(showAo5 ? 4 : 3);
+					cellPeeks.textContent = '';
+				}
 			}
 		}
 		
@@ -485,7 +505,26 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		// Check if we're in PLL/OLL mode
 		const sumOfTimes = ["easy", "medium", "OLL", "PLL"].includes(MINIMODE);
 		
-		if (sumOfTimes) {
+		if (showPeeks) {
+			// Calculate total peeks
+			const validPeeks = solvedata.filter(s => s && s.peeks !== undefined && s.peeks !== null && !isNaN(s.peeks));
+			let totalPeeks = 0;
+			if (validPeeks.length > 0) {
+				totalPeeks = validPeeks.reduce((a, b) => a + b.peeks, 0);
+			}
+			
+			// Hide Ao5 and Mo5 stats, show Total Peeks in best time
+			document.getElementById('ao5_stat').parentElement.style.display = 'none';
+			document.getElementById('mo5_stat').parentElement.style.display = 'none';
+			document.getElementById('best_ao5_div').style.display = 'none';
+			
+			// Update best time label to "Total Peeks:" and show total
+			const bestTimeDiv = document.getElementById('best_time_stat').parentElement;
+			bestTimeDiv.style.display = '';
+			const bestTimeLabel = bestTimeDiv.querySelector('strong');
+			if (bestTimeLabel) bestTimeLabel.textContent = 'Total Peeks:';
+			document.getElementById('best_time_stat').textContent = totalPeeks;
+		} else if (sumOfTimes) {
 			// Calculate sum of all valid times
 			const validTimes = recentTimes.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
 			let sumValue = 'N/A';
