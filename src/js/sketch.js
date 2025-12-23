@@ -5763,7 +5763,7 @@ function startMarathon(type) {
 	} else if (type == "baby") {
 		ma_data.cubes = ["1x2x2", "1x2x3", "Plus Lite", "3x3x2 Plus Cube", "Snake Eyes", "1x4x4", "1x5x5"];
 	} else if (type == "glow") {
-		ma_data.cubes = ["3x3 Glow Cube", "3x3 Anti-Glow", "2x2 Side Glow", "3x3 Cross Glow", "2x2 Cuby Glow", "3x3 Fade Glow"];
+		ma_data.cubes = ["3x3 Glow Cube", "3x3 Anti-Glow", "2x2 Side Glow", "3x3 Side Glow", "3x3 Cross Glow", "2x2 Cuby Glow", "3x3 Fade Glow"];
 	}
 
 	if (type == "blind") {
