@@ -8,6 +8,7 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
     let scrambleOptions = ["Default", "3x3x2", "Double Turns"];
     let inputOptions = ["Default", "3x3x2", "Double Turns"];
     let goalOptions = ["Default", "Solve 1 Side"];
+    let glowOptions = ["None", "Glow Cube", "Anti-Glow", "Side Glow", "Cuby Glow", "Fade Glow"];
 
     if (DIMS_OBJ[cube].type.includes("NxN")) {
         scrambleOptions.push("Gearcube", "Last Layer");
@@ -57,6 +58,11 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-weight: bold; margin-bottom: 5px;">Win Condition</label>
                 <div id="dialog-buttons-3" class="button-group"></div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Glow</label>
+                <div id="dialog-buttons-4" class="button-group"></div>
             </div>
 
             <div style="display: flex; justify-content: space-between;">
@@ -111,10 +117,12 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
     const scrambleContainer = document.getElementById("dialog-buttons-1");
     const inputContainer = document.getElementById("dialog-buttons-2");
     const goalContainer = document.getElementById("dialog-buttons-3");
+    const glowContainer = document.getElementById("dialog-buttons-4");
 
     scrambleContainer.innerHTML = "";
     inputContainer.innerHTML = "";
     goalContainer.innerHTML = "";
+    glowContainer.innerHTML = "";
 
     function makeButtonGroup(container, options, selectedValue, onClick) {
         options.forEach(opt => {
@@ -156,6 +164,15 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
 
     makeButtonGroup(goalContainer, goalOptions, original.goal);
 
+    // Only show glow options for NxN cubes
+    const glowDiv = glowContainer.parentElement;
+    if (DIMS_OBJ[cube].type.includes("NxN")) {
+        glowDiv.style.display = "";
+        makeButtonGroup(glowContainer, glowOptions, original.glow || "None");
+    } else {
+        glowDiv.style.display = "none";
+    }
+
     function confirm(applyOpponent) {
         const value1 = scrambleContainer.querySelector(".selected")?.textContent || "Default";
         const value2 = inputContainer.querySelector(".selected")?.textContent || "Default";
@@ -165,6 +182,13 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
         backdrop.style.display = "none";
 
         const customobj = { scramble: value1, input: value2, goal: value3 };
+        
+        // Only include glow for NxN cubes
+        if (DIMS_OBJ[cube].type.includes("NxN")) {
+            const value4 = glowContainer.querySelector(".selected")?.textContent || "None";
+            customobj.glow = value4;
+        }
+        
         if (onConfirm) onConfirm(JSON.stringify(customobj), applyOpponent);
     };
 

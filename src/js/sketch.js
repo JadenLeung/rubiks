@@ -2810,6 +2810,7 @@ function giveUp()
 		}
 		socket.emit("solved", room, "DNF");
 		fadeInText(1, "DNF");
+		setOriginalColor();
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
 		canMan = false;
 		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
@@ -3813,7 +3814,7 @@ function regular(nocustom){
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
 		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon"]);
-	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container",]);
+	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container","compete_difficulty"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
 		setDisplay("none", ["or_instruct", "or_instruct2"]);
@@ -4156,7 +4157,7 @@ function capital(str) {
 function formatCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
-		if (customobj[key] != "Default" && !(key == "scramble" && customobj["input"] != "Default")) {
+		if (["Default", "None"].includes(customobj[key]) == false && !(key == "scramble" && customobj["input"] != "Default")) {
 			if (key == "goal") {
 				strarr.push(customobj[key])
 			} else {
@@ -4170,7 +4171,7 @@ function formatCustom(customobj) {
 function formatSettingsCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
-		if (customobj[key] != "Default") {
+		if (["Default", "None"].includes(customobj[key]) == false) {
 			if (key == "goal") {
 				strarr.push(`Goal: ${customobj[key]}`)
 			} else {
@@ -4309,7 +4310,7 @@ function finishMatch() {
 		alert("Please enter an integer greater than 1");
 		return;
 	}
-	setDisplay("none", ["creating_match"]);
+	setDisplay("none", ["creating_match", "compete_difficulty"]);
 	setDisplay("block", ["waitingroom"]);
 	let senddata = {rounds: dimarr.length, dims: dimarr, type: compete_type, 
 		leader: socket.id, shufflearr, customarr,
@@ -4437,9 +4438,13 @@ function startRound(data, scramble) {
 	competedata = data;
 	let scram_value = "Default";
 	let cube = "";
+	let glow = competeProperty("glow", "None");
 	if (data.data.type != "1v1" || data.data.leader == socket.id) {
 		cube = data.data.dims[data.round][0];
 		switchCube(cube);
+		if (glow != "None") {
+			CUBENAME += " " + glow;
+		}
 		if (data.data.customarr && data.data.customarr.length > 0) {
 			if (data.data.customarr[data.round][0].input) {
 				INPUT.selected(data.data.customarr[data.round][0].input);
@@ -4451,6 +4456,9 @@ function startRound(data, scramble) {
 	} else {
 		cube = data.data.dims[data.round][1];
 		switchCube(cube);
+		if (glow != "None") {
+			CUBENAME += " " + glow;
+		}
 		if (data.data.customarr) {
 			if (data.data.customarr[data.round][1].input) {
 				INPUT.selected(data.data.customarr[data.round][1].input);
@@ -4514,6 +4522,13 @@ function competeGoal() {
 		return competedata.data.customarr[competedata.round][playerIndex()].goal;
 	}
 	return "Default"
+}
+
+function competeProperty(prop, defaultValue = "Default") {
+	if (competedata.data.customarr && competedata.data.customarr.length > 0 && competedata.data.customarr[competedata.round][playerIndex()][prop]) {
+		return competedata.data.customarr[competedata.round][playerIndex()][prop];
+	}
+	return defaultValue;
 }
 
 function blindTime() {
@@ -9214,7 +9229,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 16){ //shift
 		// quickSolve();
-		console.log(MODE);
+		console.log(CUBENAME);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
