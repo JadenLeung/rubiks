@@ -1426,8 +1426,8 @@ p.setup = () => {
 	STARTBLIND = p.createButton('Blind 3x3');
 	setButton(STARTBLIND, "b_regular", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); blindmode()});
 
-	const STARTBLIND2 = p.createButton('Blind Marathon');
-	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); startMarathon("blind")});
+	const STARTBLIND2 = p.createButton('Blind');
+	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {movesmode(); startMarathon("blind")});
 
 	const SHOWMARATHON = p.createButton('Start Marathon');
 	setButton(SHOWMARATHON, "show_marathon", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {showMarathons()});
@@ -1443,6 +1443,9 @@ p.setup = () => {
 
 	const STARTMARATHON4 = p.createButton('Baby');
 	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("baby")});
+
+	const GLOWMARATHON = p.createButton('Glow');
+	setButton(GLOWMARATHON, "ma_startglow", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("glow")});
 
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
@@ -1727,7 +1730,6 @@ setInterval(() => {
 	else if(MODE == "moves")
 	{
 		if (mastep % 2 == 1 && isSolved()) {
-			let value = ma_data.type == "blind" ? peeks : Math.round(timer.getTime() / 10)/100.0;
 			stopAndUpdateTimes();
 			mastep++;
 			peeks = 0;
@@ -5751,6 +5753,7 @@ function startMarathon(type) {
 	reSetup();
 	MINIMODE = "marathon"
 	ma_data.type = type;
+	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow"};
 	if (type == "cuboid") {
 		ma_data.cubes = ["2x2x4", "2x3x4", "3x3x4", "3x3x5", "4x4 Plus Cube"];
 	} else if (type == "shape" || type == "blind") {
@@ -5803,12 +5806,16 @@ function shapemarathon() {
 	if (mastep / 2 == ma_data.cubes.length) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2", "ma_list"]);
 		setDisplay("block", ["ma_highscores"]);
-		let score = solvedata.reduce((acc, curr) => acc + curr.peeks, 0).toFixed(2);
+		let score;
+		if (ma_data.type == "blind") {
+			score = solvedata.reduce((acc, curr) => acc + curr.peeks, 0).toFixed(2);
+		} else {
+			score = mo5.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+		}
 		getEl("ma_cube").innerHTML = "Marathon Complete! Your score: " + score + (ma_data.type == "blind" ? (peeks == 1 ? " peek" : " peeks") : "");
 		getEl("ma_small").innerHTML = "Play again?";
 		setDisplay("block", ["show_marathon"]);
-		const map = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5"};
-		setScore(map[ma_data.type], score, true);
+		setScore(ma_data.maphighscore[ma_data.type], score, true);
 	}
 }
 
@@ -5865,7 +5872,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 				canMan = competedata.data.blinded == socket.id;
 			}
 		}
-		if (getEl("marathon2").style.display == "block" && (["shape", "bandage", "blind", "cuboid", "baby"].includes(mode))) mastep++;
+		if (getEl("marathon2").style.display == "block" && MINIMODE == "marathon") mastep++;
 		if ((savesetupdim.includes(DIM) && SIZE == 3) && comstep == 0 && mode != "cuboid") {
 			const interval2 = setInterval(() => {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
@@ -6481,7 +6488,7 @@ function updateScores() {
 	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly #" + (sinceNov3() + 1) +  "", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
-			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon"};
+			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon"};
 	Object.keys(display).forEach((mode) => {
 		const score  = localStorage[mode];
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
@@ -7147,6 +7154,7 @@ async function saveData(username, password, method, al) {
 		race3x3: localStorage.race3x3 ?? -1,
 		marathon4: localStorage.marathon4 ?? -1,
 		marathon5: localStorage.marathon5 ?? -1,
+		marathonglow: localStorage.marathonglow ?? -1,
 		keymappings: localStorage.keymappings,
 	};
 	console.log(data);
@@ -7187,7 +7195,7 @@ async function loadData(times) {
 	console.log("Userdata is ", userdata);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
-			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5"];
+			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5","marathonglow"];
 		params.forEach((param) => {
 			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
 				localStorage[param] = userdata[param];
@@ -9206,7 +9214,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// console.log("bruh", solvedata)
+		// quickSolve();
+		console.log(MODE);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 

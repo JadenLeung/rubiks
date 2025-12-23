@@ -55,7 +55,7 @@ export function showHighscoreModal(newScore, oldScore = null) {
 	
 	// Update modal content with score information
 	let scoreHtml = '';
-	if (oldScore !== null && oldScore !== undefined && oldScore !== 'N/A' && oldScore !== -1) {
+	if (oldScore != NaN && oldScore !== null && oldScore !== undefined && oldScore !== 'N/A' && oldScore !== -1) {
 		scoreHtml = `
 			<p style="margin: 15px 0 5px 0; font-size: 16px;">
 				<strong>New Score:</strong> ${newScore}

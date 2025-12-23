@@ -282,8 +282,9 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	
 	// Determine if we should show moves column (hide only when competing)
 	const showMoves = MODE !== "competing";
-	const showAo5 = showMoves && mo5.length >= 5;
-	const showAo12 = showMoves && mo5.length >= 12 && !isthin;
+	const isMarathonNonBlind = MINIMODE == "marathon" && ma_data?.type != "blind";
+	const showAo5 = showMoves && mo5.length >= 5 && !isMarathonNonBlind;
+	const showAo12 = showMoves && mo5.length >= 12 && !isthin && !isMarathonNonBlind;
 	const showPeeks = MINIMODE == "marathon" && ma_data?.type == "blind";
 	
 	// Show/hide moves, ao5, and ao12 column headers and colgroups
@@ -502,8 +503,8 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		}
 		
 		// Update statistics
-		// Check if we're in PLL/OLL mode
-		const sumOfTimes = ["easy", "medium", "OLL", "PLL"].includes(MINIMODE);
+		// Check if we're in PLL/OLL mode or marathon non-blind mode
+		const sumOfTimes = ["easy", "medium", "OLL", "PLL"].includes(MINIMODE) || isMarathonNonBlind;
 		
 		if (showPeeks) {
 			// Calculate total peeks
