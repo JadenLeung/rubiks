@@ -67,6 +67,7 @@ export default function (p) {
 	let isShuffling = false;
 	let otherShuffling = false;
 	let isBlinded = false;
+	let fadearr = [];
 	let competeprogress = 0;
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
@@ -1176,7 +1177,7 @@ p.setup = () => {
 	setButton(COMPETE_AGAIN, "compete_again", 'btn btn-primary', 'font-size: 15px; ', competeAgain);
 
 	const COMPETEHOME = p.createButton("Home");
-	setButton(COMPETEHOME, "compete_home", 'btn btn-secondary', 'font-size: 25px;', competemode);
+	setButton(COMPETEHOME, "compete_home", 'btn btn-secondary', 'font-size: 15px;', competemode);
 
 	const SWAPLEADER = p.createButton("Switch Host");
 	setButton(SWAPLEADER, "swapleader", 'btn btn-secondary', 'font-size: 15px; margin-left: 5px; ', () => socket.emit("swap-leader", room));
@@ -6109,6 +6110,11 @@ function halfScreen(isfull) {
 	resized();
 }
 async function fadeInText(o, text, color = "red", el = "dnf", time = 600, fontSize = 80) {
+	fadearr.forEach(element => {
+		const dnfElement = document.getElementById(element);
+		dnfElement.style.display='none';
+	});
+	fadearr = [];
 	const dnfElement = document.getElementById(el);
 	dnfElement.style.display='block';
 	dnfElement.innerHTML = text;
@@ -6118,9 +6124,11 @@ async function fadeInText(o, text, color = "red", el = "dnf", time = 600, fontSi
 		fontSize /= 2;
 	}
 	dnfElement.style.fontSize = `${fontSize}px`;
+	fadearr.push(el);
 
 	if (o === 0) {
         setTimeout(() => {
+			fadearr = fadearr.filter(e => e !== el);
             dnfElement.style.display = 'none'; // Hide after fade out
         }, time); // Match timeout with fade duration
     }
