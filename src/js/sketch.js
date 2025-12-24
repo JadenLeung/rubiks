@@ -124,6 +124,7 @@ export default function (p) {
 	let custom = 0;
 	let peeks = 0;
 	let inp;
+	let COMPETE_AGAIN;
 	let numshuffle = 0;
 	let MODE = "normal";
 	let MINIMODE = "normal";
@@ -1171,11 +1172,11 @@ p.setup = () => {
 	const JOINROOM = p.createButton("Join Room");
 	setButton(JOINROOM, "joinroom", 'btn btn-primary', 'font-size: 25px; width:180px;', joinRoom);
 	
-	const COMPETE_AGAIN = p.createButton("Play Again");
-	setButton(COMPETE_AGAIN, "compete_again", 'btn btn-light', 'font-size: 25px; width:180px;  border-color: black; ', competeAgain);
+	COMPETE_AGAIN = p.createButton("Play Again");
+	setButton(COMPETE_AGAIN, "compete_again", 'btn btn-primary', 'font-size: 15px; ', competeAgain);
 
 	const COMPETEHOME = p.createButton("Home");
-	setButton(COMPETEHOME, "compete_home", 'btn btn-light', 'font-size: 25px; width:180px; border-color: black; ', competemode);
+	setButton(COMPETEHOME, "compete_home", 'btn btn-secondary', 'font-size: 25px;', competemode);
 
 	const SWAPLEADER = p.createButton("Switch Host");
 	setButton(SWAPLEADER, "swapleader", 'btn btn-secondary', 'font-size: 15px; margin-left: 5px; ', () => socket.emit("swap-leader", room));
@@ -4107,6 +4108,11 @@ socket.on("connect", () => {
 	console.log("Youre are connected with id: ", socket.id)
 });
 
+socket.on("restart_available", () => {
+	COMPETE_AGAIN.html("Play Again");
+	COMPETE_AGAIN.removeAttribute('disabled');
+})
+
 socket.on("refresh_rooms", (data, r) => {
 	if (MODE == "compete" || MODE == "competing") {
 		competedata = data;
@@ -4416,8 +4422,12 @@ function startMatch() {
 }
 
 function competeAgain() {
-	socket.emit("restart-game", room, competedata, (err) => {
-		successSQL(err, "final_warn");
+	socket.emit("restart-game", room, competedata, (success, errormsg) => {
+		if (success) {
+			setDisplay("none", ["final_tally", "finish_match"]);
+		} else {
+			successSQL("Unable to join; host most likely quit", "final_warn");
+		}
 	});
 }
 
@@ -4745,6 +4755,13 @@ function continueMatch() {
 		let myrank = competePoints(competedata, "final_points");
 		getEl("match_rank").innerHTML = `You ranked #${myrank}. Good job!`;
 		setDisplay("block", ["final_tally"]);
+		if (competedata.data.leader != socket.id) {
+			COMPETE_AGAIN.html("Waiting for Host to Play Again");
+			COMPETE_AGAIN.attribute('disabled', '');
+		} else {
+			COMPETE_AGAIN.html("Play Again");
+			COMPETE_AGAIN.removeAttribute('disabled');
+		}
 		setDisplay(competedata.data.type == "teamblind" ? "block" : "none", ["teamblind_leaderboard"]);
 		setDisplay(competedata.data.type != "teamblind" ? "block" : "none", ["final_leaderboard"]);
 		getEl("teamblind_times").innerHTML = `Final Time: ${competedata.data.time}`;
@@ -9245,7 +9262,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(canMan);
+		socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
