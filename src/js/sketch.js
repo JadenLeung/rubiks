@@ -4192,6 +4192,13 @@ function enterLobby(data, r) {
 	}
 	compete_type = data.data.type;
 	compete_dims = JSON.parse(JSON.stringify(data.data.dims));
+	compete_customarr = Array.from({length: data.data.customarr.length}, () => []);
+	for (let i = 0; i < data.data.customarr.length; i++) {
+		for (let j = 0; j < data.data.customarr[i].length; j++) {
+			compete_customarr[i].push(JSON.stringify(data.data.customarr[i][j]));
+		}
+	}
+	COMPETE_ADVANCED.checked(compete_customarr.length > 0);
 	MODE = "compete";
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("inline", ["outertime", "reset_div"]);
@@ -9235,7 +9242,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(compete_dims, competedata.data.dims)
+		console.log(compete_customarr, competedata.data.customarr)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
