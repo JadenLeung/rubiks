@@ -4442,7 +4442,7 @@ function startRound(data, scramble) {
 	if (MODE != "competing") {
 		return;
 	}
-	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div", "reset_div"])
+	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div", "reset_div", "scramble_par"])
 	setDisplay("block", ["cnv_div", "chat-container", "chat_instruct"]);
 	setDisplay("flex", ["competeinput"]);
 	getEl("input").disabled = true;
