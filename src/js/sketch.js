@@ -1177,6 +1177,8 @@ p.setup = () => {
 	const COMPETEHOME = p.createButton("Home");
 	setButton(COMPETEHOME, "compete_home", 'btn btn-light', 'font-size: 25px; width:180px; border-color: black; ', competemode);
 
+	const SWAPLEADER = p.createButton("Switch Host");
+	setButton(SWAPLEADER, "swapleader", 'btn btn-secondary', 'font-size: 15px; margin-left: 5px; ', () => socket.emit("swap-leader", room));
 
 	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
@@ -4189,6 +4191,7 @@ function enterLobby(data, r) {
 		return;
 	}
 	compete_type = data.data.type;
+	compete_dims = JSON.parse(JSON.stringify(data.data.dims));
 	MODE = "compete";
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("inline", ["outertime", "reset_div"]);
@@ -4232,6 +4235,7 @@ function enterLobby(data, r) {
 	})
 	getEl("waitingroomdata").innerHTML = str;
 	getEl("competerules2").innerHTML = competeText();
+	getEl("swapleader").style.display = data.data.leader == socket.id && data.data.type != "group" && data.userids.length > 1 ? "block" : "none";
 	const title = {
 		"1v1": "2 Player Battle Rules",
 		"group": "Group Battle Rules",
@@ -9231,8 +9235,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		// quickSolve();
-		console.log(competedata);
+		console.log(compete_dims, competedata.data.dims)
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -13658,7 +13661,6 @@ getEl("compete_rounds").addEventListener("input", function () {
     }
 	if (this.value != "") {
 		competeSettings();
-		competeSettings();
 	}
 });
 function arrowPaint(dir) {
@@ -13894,6 +13896,7 @@ getEl("competelink").addEventListener("click", function(event) {
 getEl("editcompete").addEventListener("click", function(event) {
     event.preventDefault();
 	createMatch(false);
+	competeSettings(competedata.data.type);
 });
 
 getEl("keyboards").addEventListener("change", function() {
