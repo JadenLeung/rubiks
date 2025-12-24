@@ -4487,6 +4487,7 @@ function startRound(data, scramble) {
 	}
 	progressUpdate();
 	SCRAM.selected(scram_value == "Default" ? DIMS_OBJ[cube].scramble : scram_value);
+	canMan = false;
 	setTimeout(() => {
 		setInput();
 		setDisplay("block", ["input"]);
