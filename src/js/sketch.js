@@ -4901,6 +4901,9 @@ function competeSettings(num = compete_type) {
 
         plusBtn.addEventListener("click", (e) => {
             e.preventDefault();
+            const opponentCube = (num === "1v1" && compete_dims[roundIndex] && compete_dims[roundIndex][1 - playerIndex]) 
+                ? compete_dims[roundIndex][1 - playerIndex] 
+                : null;
             const modal = createCustomDialog((finalValue, applyOpponent) => {
                 try {
                     const parsed = JSON.parse(finalValue);
@@ -4913,7 +4916,7 @@ function competeSettings(num = compete_type) {
 					}
 					handleCompeteSettingsChange();
                 } catch (err) { console.error("Invalid JSON:", err); }
-            }, puzzleSelect.value, JSON.parse(compete_customarr[roundIndex][playerIndex]), num === "1v1");
+            }, puzzleSelect.value, JSON.parse(compete_customarr[roundIndex][playerIndex]), num === "1v1", opponentCube);
             modal.style.display = "block";
         });
         

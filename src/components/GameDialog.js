@@ -1,6 +1,6 @@
 import { DIMS_OBJ } from "../data/dims.js";
 
-export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
+export function createCustomDialog(onConfirm, cube, original, is1v1mode, opponentCube = null) {
     console.log(is1v1mode)
     let modal = document.getElementById("custom-dialog");
     let backdrop = document.getElementById("custom-dialog-backdrop");
@@ -110,8 +110,12 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode) {
     if (!backdrop) backdrop = document.getElementById("custom-dialog-backdrop");
 
     const okBtn = document.getElementById("dialog-ok-btn");
-    let applyAllBtn = document.getElementById("dialog-applyall-btn");;
-    applyAllBtn.style.display = is1v1mode ? "block" : "none";
+    let applyAllBtn = document.getElementById("dialog-applyall-btn");
+    
+    // Only show "Apply to both players" if both cubes are the same
+    const shouldShowApplyAll = is1v1mode && opponentCube && cube === opponentCube;
+    applyAllBtn.style.display = shouldShowApplyAll ? "block" : "none";
+    
     const cancelBtn = document.getElementById("dialog-cancel-btn");
 
     const scrambleContainer = document.getElementById("dialog-buttons-1");
