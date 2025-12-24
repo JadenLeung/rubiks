@@ -4447,7 +4447,6 @@ function startRound(data, scramble) {
 	setDisplay("flex", ["competeinput"]);
 	getEl("input").disabled = true;
 	getEl("ss_container").src = "";
-	canMan = true;
 	getEl("match_INSTRUCT").innerHTML = "Solve the cube faster than your opponent!";
 	getEl("match_INSTRUCT3").innerHTML = "";
 	getEl("match_INSTRUCT4").innerHTML = "";
@@ -4611,7 +4610,6 @@ function competeTimes(data, end = false) {
 			if (!end) {
 				str += ", progress: " + strarr[i][1] + "%";
 			}
-			console.log("strarr is ", strarr);
 			str += ", time: " + (strarr[i][2] >= DNF || strarr[i][2] == "DNF" ? "DNF" : (end ? Math.max(0, strarr[i][2]) : strarr[i][2]) + "s");
 			if (strarr[i][0] == socket.id) {
 				str += `</b>`;
@@ -4729,6 +4727,7 @@ function continueMatch() {
 	if (MODE != "competing") {
 		return;
 	}
+	canMan = false;
 	setDisplay("none", ["continuematch", "scramble_par"]);
 	if (competedata.round < competedata.data.dims.length - 1) {
 		console.log("emitting")
@@ -4742,7 +4741,6 @@ function continueMatch() {
 		for (var i = 0; i < elements.length; i++) {
 			elements[i].style.display = 'none';
 		}
-		canMan = true;
 		let myrank = competePoints(competedata, "final_points");
 		getEl("match_rank").innerHTML = `You ranked #${myrank}. Good job!`;
 		setDisplay("block", ["final_tally"]);
@@ -9246,7 +9244,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(compete_customarr, competedata.data.customarr)
+		console.log(canMan);
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
