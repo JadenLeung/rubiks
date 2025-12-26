@@ -4517,6 +4517,7 @@ function startRound(data, scramble) {
 			multiple2("scramble");
 			getEl("scramble").innerHTML = scramble;
 		} else {
+			canMan = true;
 			shuffleCube();
 		}
 		competeprogress = 0;
@@ -9665,7 +9666,7 @@ function waitForCondition(callback, use = "default") {
 		if (MINIMODE == "physical") {
 			delay = RACE_DELAY_SLIDER.value();
 		}
-		trackSolveProgress();
+		setTimeout(trackSolveProgress, 100);
 		if (["solving", "testalg"].includes(use) && delay > 0) {
 			setTimeout(function() {
 				callback();
