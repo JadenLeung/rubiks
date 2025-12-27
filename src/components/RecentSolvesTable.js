@@ -155,11 +155,14 @@ if (isAppleDevice) {
 	// If solve object (from global solvedata) contains solvestat and it's active, show a Solve Stat breakdown
 	try {
 		const stat = solvestat;
-		if (stat && stat.active && (stat.cross || stat.f2l || stat.oll)) {
-			// Parse the displayed total time to a numeric value (strip trailing 's' if present)
+		const totalTime = typeof time === 'number' ? time : (typeof time === 'string' ? parseFloat(time) : NaN);
+		const totalMoves = typeof moves === 'number' ? moves : (typeof moves === 'string' ? parseInt(moves, 10) : NaN);
+		const fmtTime = (n) => (isNaN(n) ? 'N/A' : (Math.round(n * 100) / 100) + 's');
+		const fmtMoves = (n) => (isNaN(n) ? 'N/A' : n);
+		
+		// 3x3 solve statistics
+		if (cubename === "3x3" && stat && stat.active && (stat.cross || stat.f2l || stat.oll)) {
 			let solvemethod = "CFOP";
-			const totalTime = typeof time === 'number' ? time : (typeof time === 'string' ? parseFloat(time) : NaN);
-			const totalMoves = typeof moves === 'number' ? moves : (typeof moves === 'string' ? parseInt(moves, 10) : NaN);
 			if (stat.side && stat.f2lmoves - stat.sidemoves >= 15) {
 				solvemethod = "Beginner's Method";
 			}
@@ -170,9 +173,6 @@ if (isAppleDevice) {
 			const f2lMoves = stat.f2lmoves !== undefined ? Number(stat.f2lmoves) : NaN;
 			const oll = typeof stat.oll === 'number' ? stat.oll : (stat.oll ? parseFloat(stat.oll) : NaN);
 			const ollMoves = stat.ollmoves !== undefined ? Number(stat.ollmoves) : NaN;
-
-			const fmtTime = (n) => (isNaN(n) ? 'N/A' : (Math.round(n * 100) / 100) + 's');
-			const fmtMoves = (n) => (isNaN(n) ? 'N/A' : n);
 
 			let f2lPairing = (!isNaN(f2l) && !isNaN(cross)) ? f2l - cross : NaN;
 			let f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(crossMoves)) ? f2lMoves - crossMoves : NaN;
@@ -200,6 +200,72 @@ if (isAppleDevice) {
 			`;
 
 			content.innerHTML += statHtml;
+		}
+		
+		// 2x2 solve statistics
+		if (cubename === "2x2" && stat && stat.active && stat.firstlayer && stat.oll) {
+			const firstlayer = typeof stat.firstlayer === 'number' ? stat.firstlayer : parseFloat(stat.firstlayer);
+			const side = typeof stat.side === 'number' ? stat.side : parseFloat(stat.side);
+			const oll = typeof stat.oll === 'number' ? stat.oll : parseFloat(stat.oll);
+			const firstlayerMoves = stat.firstlayermoves !== undefined ? Number(stat.firstlayermoves) : NaN;
+			const sideMoves = stat.sidemoves !== undefined ? Number(stat.sidemoves) : NaN;
+			const ollMoves = stat.ollmoves !== undefined ? Number(stat.ollmoves) : NaN;
+			
+			// Check if firstlayer == side (in time)
+			if (!isNaN(firstlayer) && !isNaN(side) && !isNaN(oll) && !isNaN(ollMoves) && !isNaN(totalMoves) &&
+			    Math.abs(firstlayer - side) < 0.01) {
+				
+				// Determine method based on move count
+				if (ollMoves + 4 < totalMoves) {
+					// Beginner's Method: show First Layer, OLL, PLL
+					const ollSegment = oll - firstlayer;
+					const ollSegmentMoves = (!isNaN(ollMoves) && !isNaN(firstlayerMoves)) ? ollMoves - firstlayerMoves : NaN;
+					const pllSegment = totalTime - oll;
+					const pllSegmentMoves = (!isNaN(totalMoves) && !isNaN(ollMoves)) ? totalMoves - ollMoves : NaN;
+					
+					const statHtml = `
+						<div id="solve-stat" style="margin-top: 12px; text-align: left;">
+							<h5 style="margin-top: 40px;">Beginner's Method Solve Statistics</h5>
+							<p style="margin:4px 0;"><strong>First Layer:</strong> ${fmtTime(firstlayer)} &nbsp; (${fmtMoves(firstlayerMoves)} moves)</p>
+							<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
+							<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>
+						</div>
+					`;
+					
+					content.innerHTML += statHtml;
+				} else {
+					// CLL Method: show First Layer, Last Layer
+					const lastLayerSegment = totalTime - firstlayer;
+					const lastLayerSegmentMoves = (!isNaN(totalMoves) && !isNaN(firstlayerMoves)) ? totalMoves - firstlayerMoves : NaN;
+					
+					const statHtml = `
+						<div id="solve-stat" style="margin-top: 12px; text-align: left;">
+							<h5 style="margin-top: 40px;">CLL Method Solve Statistics</h5>
+							<p style="margin:4px 0;"><strong>First Layer:</strong> ${fmtTime(firstlayer)} &nbsp; (${fmtMoves(firstlayerMoves)} moves)</p>
+							<p style="margin:4px 0;"><strong>Last Layer:</strong> ${fmtTime(lastLayerSegment)} &nbsp; (${fmtMoves(lastLayerSegmentMoves)} moves)</p>
+						</div>
+					`;
+					
+					content.innerHTML += statHtml;
+				}
+			} else if (!isNaN(firstlayer) && !isNaN(side) && !isNaN(oll) && !isNaN(sideMoves) && !isNaN(ollMoves) && !isNaN(totalMoves)) {
+				// Ortega Method: side != firstlayer
+				const ollSegment = oll - side;
+				const ollSegmentMoves = (!isNaN(ollMoves) && !isNaN(sideMoves)) ? ollMoves - sideMoves : NaN;
+				const pblSegment = totalTime - oll;
+				const pblSegmentMoves = (!isNaN(totalMoves) && !isNaN(ollMoves)) ? totalMoves - ollMoves : NaN;
+				
+				const statHtml = `
+					<div id="solve-stat" style="margin-top: 12px; text-align: left;">
+						<h5 style="margin-top: 40px;">Ortega Method Solve Statistics</h5>
+						<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(side)} &nbsp; (${fmtMoves(sideMoves)} moves)</p>
+						<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
+						<p style="margin:4px 0;"><strong>PBL:</strong> ${fmtTime(pblSegment)} &nbsp; (${fmtMoves(pblSegmentMoves)} moves)</p>
+					</div>
+				`;
+				
+				content.innerHTML += statHtml;
+			}
 		}
 	} catch (e) {
 		console.warn('Failed to render solve stat', e);

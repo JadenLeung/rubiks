@@ -9299,7 +9299,8 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		socket.emit("debug");
+		console.log(cursolvestat);
+		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
 		if (p.keyIsDown(p.SHIFT)) 
@@ -13581,25 +13582,43 @@ function setGlowColors() {
 }
 
 function trackSolveProgress(override) {
-	if (MODE != "normal" || CUBENAME != "3x3") {
+	if (MODE != "normal" || (!["3x3", "2x2"].includes(CUBENAME))) {
 		return;
 	}
 	if (!override && (!cursolvestat.active || !timer.isRunning)) return;
-	if (!cursolvestat.cross && isSolvedByFunc((side) => getCrossCubies(side, true))) {
-		cursolvestat.cross = timer.roundedTime();
-		cursolvestat.crossmoves = moves;
-	}
-	if (!cursolvestat.side && isSolvedByFunc(getCubiesInSide)) {
-		cursolvestat.side = timer.roundedTime();
-		cursolvestat.sidemoves = moves;
-	}
-	if (!cursolvestat.f2l && isSolvedByFunc(getF2LCubies)) {
-		cursolvestat.f2l = timer.roundedTime();
-		cursolvestat.f2lmoves = moves;
-	}
-	if (!cursolvestat.oll && isOLLSolved()) {
-		cursolvestat.oll = timer.roundedTime();
-		cursolvestat.ollmoves = moves;
+	if (CUBENAME == "3x3") {
+		if (!cursolvestat.cross && isSolvedByFunc((side) => getCrossCubies(side, true))) {
+			cursolvestat.cross = timer.roundedTime();
+			cursolvestat.crossmoves = moves;
+		}
+		if (!cursolvestat.side && isSolvedByFunc(getCubiesInSide)) {
+			cursolvestat.side = timer.roundedTime();
+			cursolvestat.sidemoves = moves;
+		}
+		if (!cursolvestat.f2l && isSolvedByFunc(getF2LCubies)) {
+			cursolvestat.f2l = timer.roundedTime();
+			cursolvestat.f2lmoves = moves;
+		}
+		if (!cursolvestat.oll && isOLLSolved()) {
+			cursolvestat.oll = timer.roundedTime();
+			cursolvestat.ollmoves = moves;
+		}
+	} else if (CUBENAME == "2x2") {
+		if (!cursolvestat.side && numSolved() >= 1) {
+			cursolvestat.side = timer.roundedTime();
+			cursolvestat.sidemoves = moves;
+		}
+		if (!cursolvestat.firstlayer && isSolvedByFunc(getCubiesInSide)) {
+			cursolvestat.firstlayer = timer.roundedTime();
+			cursolvestat.firstlayermoves = moves;
+		}
+		const sidepairarr = [{side: 0, oppside: 1}, {side: 2, oppside: 3}, {side: 4, oppside: 5}];
+		for (const obj of sidepairarr) {
+			if (!cursolvestat.oll && sideSolved(layout[obj.side][1][1][0]) && sideSolved(layout[obj.oppside][1][1][0])) {
+				cursolvestat.oll = timer.roundedTime();
+				cursolvestat.ollmoves = moves;
+			}
+		}
 	}
 }
 
