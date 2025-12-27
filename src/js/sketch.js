@@ -146,6 +146,7 @@ export default function (p) {
 	socket.on("connect_error", (err) => {
 		if (comstep > 0) {
 			alert("You have been disconnected from the server.");
+			regular();
 		}
 	});
 	let OLL, PLL, PLLPRAC, OLLPRAC, F2LPRAC;
@@ -2325,7 +2326,16 @@ function singleTurnDir(move) {
 	if (dimarr.filter(x => x == 1).length >= 2) {
 		return true;
 	} else if (dimarr.includes(1)) {
-		return false;
+		const cubies = getOuterCubes();
+		if (cubies.every(c => CUBE[c].x == CUBE[cubies[0]].x)) {
+			checkmove = "x";
+		}
+		if (cubies.every(c => CUBE[c].y == CUBE[cubies[0]].y)) {
+			checkmove = "y";
+		}
+		if (cubies.every(c => CUBE[c].z == CUBE[cubies[0]].z)) {
+			checkmove = "z";
+		}
 	} else {
 		let topcolor = getOriginalSideColor(["right", "top", "front"][badindex]);
 		if(getColorByCubyDir(mid, "right") == topcolor || getColorByCubyDir(mid, "left") == topcolor) { //top
@@ -9158,7 +9168,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 32){  //space
 		console.log(getOuterCubes());
 		console.log(DIM, DIM2, special, MODE);
-		console.log("bandaged, mapped", bandaged, JSON.stringify(mapBandaged(bandaged)));
+		console.log(CUBE);
 		setLayout();
 		console.log(layout)
 		if (canMan == false && (MODE == "normal" || MODE == "timed")) {
