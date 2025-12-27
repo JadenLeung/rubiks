@@ -203,7 +203,7 @@ if (isAppleDevice) {
 		}
 		
 		// 2x2 solve statistics
-		if (cubename === "2x2" && stat && stat.active && stat.firstlayer && stat.oll) {
+		if (cubename === "2x2" && stat && stat.active && stat.side) {
 			const firstlayer = typeof stat.firstlayer === 'number' ? stat.firstlayer : parseFloat(stat.firstlayer);
 			const side = typeof stat.side === 'number' ? stat.side : parseFloat(stat.side);
 			const oll = typeof stat.oll === 'number' ? stat.oll : parseFloat(stat.oll);
@@ -212,11 +212,11 @@ if (isAppleDevice) {
 			const ollMoves = stat.ollmoves !== undefined ? Number(stat.ollmoves) : NaN;
 			
 			// Check if firstlayer == side (in time)
-			if (!isNaN(firstlayer) && !isNaN(side) && !isNaN(oll) && !isNaN(ollMoves) && !isNaN(totalMoves) &&
+			if (!isNaN(firstlayer) && !isNaN(side) && !isNaN(totalMoves) &&
 			    Math.abs(firstlayer - side) < 0.01) {
 				
 				// Determine method based on move count
-				if (ollMoves + 4 < totalMoves) {
+				if (!isNaN(oll) && ollMoves + 4 < totalMoves) {
 					// Beginner's Method: show First Layer, OLL, PLL
 					const ollSegment = oll - firstlayer;
 					const ollSegmentMoves = (!isNaN(ollMoves) && !isNaN(firstlayerMoves)) ? ollMoves - firstlayerMoves : NaN;

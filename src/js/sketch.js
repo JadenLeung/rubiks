@@ -3935,7 +3935,7 @@ function idmode()
 	DIM = DIM2;
 	//reSetup();
 	stopMoving();
-
+	inp.value("");
 	refreshButtons();
 	REGULAR.style('background-color', '#10caf0');
 	IDMODE.style('background-color', '#8ef5ee');
