@@ -348,12 +348,7 @@ export default class Cuby {
   getFaceShifts(SIZE = 3) {
     const shifts = { back: [0, 0, 0], front: [0, 0, 0], bottom: [0, 0, 0], top: [0, 0, 0], right: [0, 0, 0], left: [0, 0, 0] };
     
-    // Handle 2x2 (DIM = 100) - no shifts needed, cubies are already enlarged and positioned correctly
-    if (this.cubysize === 100 || this.special[6] === 100) {
-      return shifts;
-    }
-    
-    // Check if this is a special shifted cube
+    // Check if this is a special shifted cube (cuboids)
     if ([2, 15, "4x3x3", "1x4x4", "3x2x4", "2x3x5", "1x3x2", "1x5x5", "1x2x2"].includes(this.special[6]) || this.cubysize == "cuboid") {
       let c1 = this.custom[4][5];
       let c2 = this.custom[22][4];

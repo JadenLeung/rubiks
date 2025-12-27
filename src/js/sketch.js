@@ -8179,9 +8179,14 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 		
 		// Helper to get face corners in 3D space for this cuby
 		const getFaceCorners = (faceIndex) => {
-			// Use the actual cuby size, not the constant CUBYESIZE
-			// For 2x2 (cubysize = 100), halfSize should be 50
-			const actualSize = typeof cuby.cubysize === 'number' ? cuby.cubysize : CUBYESIZE;
+			// Determine actual cuby size - special cubysize values (1,2,3,5,6,etc) use CUBYESIZE=50, 
+			// only 100 (2x2) and explicit sizes use their value
+			let actualSize;
+			if (cuby.cubysize === 100) {
+				actualSize = 100;
+			} else {
+				actualSize = CUBYESIZE;
+			}
 			const h = actualSize / 2;
 			const shift = faceShifts && faceShifts[["back", "front", "right", "left", "bottom", "top"][faceIndex]] || [0, 0, 0];
 			const sx = shift[0], sy = shift[1], sz = shift[2];
@@ -8233,7 +8238,17 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 		};
 		
 		// Use the actual cuby size for face centers
-		const actualSize = typeof cuby.cubysize === 'number' ? cuby.cubysize : CUBYESIZE;
+		let actualSize;
+		if (cuby.cubysize === 100) {
+			actualSize = 100;
+		} else if (typeof cuby.cubysize === 'number' && cuby.cubysize <= 10) {
+			// Special identifier values (1,2,3,5,6,10) all use standard CUBYESIZE
+			actualSize = CUBYESIZE;
+		} else if (typeof cuby.cubysize === 'number') {
+			actualSize = cuby.cubysize;
+		} else {
+			actualSize = CUBYESIZE;
+		}
 		const h = actualSize / 2;
 		
 		// Define all 6 faces with their centers and normals
