@@ -11,8 +11,8 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 	const isAppleDevice = /iPhone|iPad|iPod|Macintosh|MacIntel|MacPPC|Mac68K/.test(navigator.userAgent) || 
 	                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 	// Helper function to create load position button
-	const createLoadPositionButton = (pos, cubename) => {
-		return pos ? `<button onclick="onLoadPositionClick('${pos}', '${cubename}')" style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; margin-left: 8px;" title="Load Cube Position at this solve stage">${jumpToPositionIcon}</button>` : '';
+	const createLoadPositionButton = (pos, cubename, title = "Load cube position at this solve stage") => {
+		return pos ? `<button onclick="onLoadPositionClick('${pos}', '${cubename}')" style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; margin-left: 8px;" title="${title}">${jumpToPositionIcon}</button>` : '';
 	};
 
 	window.onLoadPositionClick = function(pos, cubename) {
@@ -163,11 +163,12 @@ if (isAppleDevice) {
 			<strong>Scramble:</strong> 
 			<span id="scramble-text" style="flex: 1;">${scramble || 'N/A'}</span>
 			${scramble && scramble !== 'N/A' ? `
-			<button id="copy-scramble-btn" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center;" title="Copy scramble">
+			<button id="copy-scramble-btn" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; margin-right:-10px;" title="Copy scramble">
 				<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
 					<path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/>
 				</svg>
 			</button>
+			${solvestat.pos && createLoadPositionButton(solvestat.pos, cubename, "Load scramble position")}
 			` : ''}
 		</p>
 	`;
