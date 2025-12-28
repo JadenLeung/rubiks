@@ -9302,7 +9302,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(CUBENAME.toLowerCase().includes("glow"));
+		console.log(cursolvestat);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
@@ -13588,9 +13588,14 @@ function setGlowColors() {
 	}
 }
 
-function setPosition(id, cube) {
+function setPosition(id, cube, scramble = "") {
 	switchCube(cube);
 	quickSolve(IDtoReal(IDtoLayout(decode(id))));
+	cursolvestat.active = true;
+	trackSolveProgress(true);
+	if (scramble != "") {
+		getEl('scramble').innerText = scramble;
+	}
 }
 
 window.setPosition = setPosition;

@@ -12,13 +12,15 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 	// Check if device is iOS or macOS
 	const isAppleDevice = /iPhone|iPad|iPod|Macintosh|MacIntel|MacPPC|Mac68K/.test(navigator.userAgent) || 
 	                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-	// Helper function to create load position button
-	const createLoadPositionButton = (pos, cubename, title = "Load cube position at this solve stage") => {
-		return pos ? `<button onclick="onLoadPositionClick('${pos}', '${cubename}')" style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; margin-left: 8px;" title="${title}">${jumpToPositionIcon}</button>` : '';
+	
+	// Helper function to create load position button with data attributes
+	const createLoadPositionButton = (pos, cubename, title = "Load cube position at this solve stage", scramble = "") => {
+		return pos ? `<button class="load-position-btn" data-pos="${pos}" data-cubename="${cubename}" data-scramble="${scramble}" style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; margin-left: 8px;" title="${title}">${jumpToPositionIcon}</button>` : '';
 	};
 
-	window.onLoadPositionClick = function(pos, cubename) {
-		window.setPosition(pos, cubename);
+	// Function to handle load position button clicks
+	const handleLoadPositionClick = (pos, cubename, scramble = "") => {
+		window.setPosition(pos, cubename, scramble);
 		// Close the dialog by accessing elements directly
 		const modal = document.getElementById("solve-detail-dialog");
 		const backdrop = document.getElementById("solve-detail-backdrop");
@@ -27,7 +29,21 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 		if (window.canMan !== undefined) {
 			window.canMan = true;
 		}
-	}
+	};
+	
+	// Function to attach event listeners to all load position buttons
+	const attachLoadPositionListeners = () => {
+		const buttons = document.querySelectorAll('.load-position-btn');
+		buttons.forEach(button => {
+			button.onclick = (e) => {
+				e.stopPropagation();
+				const pos = button.getAttribute('data-pos');
+				const cubename = button.getAttribute('data-cubename');
+				const scramble = button.getAttribute('data-scramble');
+				handleLoadPositionClick(pos, cubename, scramble);
+			};
+		});
+	};
 
 	if (!modal) {
 		modal = document.createElement("div");
@@ -87,33 +103,37 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 				window.canMan = true;
 			}
 		};
+	}
 
+	// Define closeSolveDialog function (must be outside the if block)
+	function closeSolveDialog() {
+		modal.style.display = "none";
+		backdrop.style.display = "none";
+		if (window.canMan !== undefined) {
+			window.canMan = true;
+		}
+		// Remove Enter key listener
+		if (modal._enterKeyHandler) {
+			document.removeEventListener('keydown', modal._enterKeyHandler);
+			modal._enterKeyHandler = null;
+		}
+	}
 
 	const closeBtn = document.getElementById("solve-detail-close-btn");
 	closeBtn.onclick = closeSolveDialog;
 
-	function closeSolveDialog() {
-		modal.style.display = "none";
-		backdrop.style.display = "none";
-		modalManager.unregister('solve-detail-dialog');
-		if (window.canMan !== undefined) {
-			window.canMan = true;
+	// Add Enter key listener
+	const handleEnterKey = (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			closeSolveDialog();
 		}
-	}
-
-const deleteBtn = document.getElementById("solve-detail-delete-btn");
-deleteBtn.onclick = () => {
-	// Will be set each time dialog is shown
-};
-
-if (isAppleDevice) {
-	const shareBtn = document.getElementById("solve-detail-share-btn");
-	shareBtn.onclick = () => {
-		// Will be set each time dialog is shown
 	};
-}
-}// Update delete button handler for this specific solve
-const deleteBtn = document.getElementById("solve-detail-delete-btn");
+	modal._enterKeyHandler = handleEnterKey;
+	document.addEventListener('keydown', handleEnterKey);
+
+	// Update delete button handler for this specific solve
+	const deleteBtn = document.getElementById("solve-detail-delete-btn");
 
 // Show delete button only in normal, cube, or timed mode
 if (mode === "normal" || mode === "cube" || mode === "timed") {
@@ -171,7 +191,7 @@ if (isAppleDevice) {
 					<path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/>
 				</svg>
 			</button>
-			${solvestat.pos && createLoadPositionButton(solvestat.pos, cubename, "Load scramble position")}
+			${solvestat.pos ? createLoadPositionButton(solvestat.pos, cubename, "Load scramble position", scramble) : ''}
 			` : ''}
 		</p>
 	`;
@@ -309,6 +329,9 @@ if (isAppleDevice) {
 	} catch (e) {
 		console.warn('Failed to render solve stat', e);
 	}
+	
+	// Attach event listeners to all load position buttons
+	attachLoadPositionListeners();
 	
 	// Add copy functionality
 	const copyBtn = document.getElementById("copy-scramble-btn");
