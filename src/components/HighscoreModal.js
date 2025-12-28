@@ -1,4 +1,5 @@
 // Highscore Modal Component
+import { modalManager } from './ModalManager.js';
 
 export function showHighscoreModal(newScore, oldScore = null) {
 	let modal = document.getElementById("highscore-modal");
@@ -103,6 +104,9 @@ export function showHighscoreModal(newScore, oldScore = null) {
 	modal = document.getElementById("highscore-modal");
 	backdrop = document.getElementById("highscore-backdrop");
 	
+	// Register with modal manager
+	modalManager.register('highscore-modal', hideHighscoreModal);
+	
 	// Disable canMan when showing modal
 	if (window.canMan !== undefined) {
 		window.canMan = false;
@@ -123,6 +127,9 @@ export function hideHighscoreModal() {
 	if (backdrop) {
 		backdrop.style.display = "none";
 	}
+	
+	// Unregister from modal manager
+	modalManager.unregister('highscore-modal');
 	
 	// Restore canMan
 	if (window.canMan !== undefined) {

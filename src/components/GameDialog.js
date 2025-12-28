@@ -1,4 +1,5 @@
 import { DIMS_OBJ } from "../data/dims.js";
+import { modalManager } from './ModalManager.js';
 
 export function createCustomDialog(onConfirm, cube, original, is1v1mode, opponentCube = null) {
     console.log(is1v1mode)
@@ -205,7 +206,14 @@ export function createCustomDialog(onConfirm, cube, original, is1v1mode, opponen
     cancelBtn.onclick = () => {
         modal.style.display = "none";
         backdrop.style.display = "none";
+        modalManager.unregister('custom-dialog');
     };
+
+    // Register with modal manager
+    modalManager.register('custom-dialog', () => {
+        modal.style.display = "none";
+        backdrop.style.display = "none";
+    });
 
     backdrop.style.display = "block";
     modal.style.display = "block";

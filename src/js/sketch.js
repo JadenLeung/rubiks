@@ -12,6 +12,7 @@ import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 import { showHighscoreModal, hideHighscoreModal } from '../components/HighscoreModal.js';
 import { speeddata } from '../data/speeddata.js';
+import { showCustomModal } from '../components/CustomModal.js';
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003");
 const socket = io("https://api.virtual-cube.net:3003/");
@@ -156,7 +157,7 @@ export default function (p) {
 		"None": "No glow effect selected.",
 		"Glow Cube": "A color glows when it is on the <b>correct</b> face.",
 		"Anti-Glow": "A color glows when it is on the <b>incorrect</b> face.",
-		"Side Glow": "Solve a side, to unlock the colors of the next. In a shape-shifting cuby, you must also turn it back to cube shape to unlock the next step.",
+		"Side Glow": "Solve a side, to unlock the colors of the next.",
 		"Cuby Glow": "Build the cube, cuby by cuby. Solving the glowing cubies unlocks two more.",
 		"Fade Glow": "Cubies glow when they are correctly positioned, and gradually dim when they are not.",
 	}
@@ -1326,6 +1327,9 @@ p.setup = () => {
 	
 	SOLVE = p.createButton(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
 	setButton(SOLVE, "solve", 'btn btn-success', '', solveCube.bind(null, 0));
+
+	const QUESTION = p.createButton('?');
+	setButton(QUESTION, "question", 'btn btn-warning', '', () => glowInfo());
 	
 	const EASY = p.createButton('Easy');
 	setButton(EASY, "s_easy", 'btn btn-info', MODEBUTTONSTYLE("#42ff58"), easy.bind(null, 0));
@@ -2029,6 +2033,7 @@ setInterval(() => {
 		averagetimedata.mo5length = mo5.length;
 		averagetimedata.oplength = competedata.round;
 	}
+	getEl("question").style.display = CUBENAME.toLowerCase().includes("glow") ? "inline" : "none";
 }, 10)
 //forever
 function reSetup(rot) {
@@ -2389,7 +2394,6 @@ function decode(num){
 	}
 	a = to10(a);
 	a = a.toString(7);
-	//alert(a);
 	if(num.length > 0)
 	num = num.slice(1);
 	return a + decode(num);
@@ -2786,7 +2790,6 @@ function difColors()
 	return false;
 }
 function stopTime(){
-	//alert(moves);
 	if(timer.isRunning && moves > 0)
 	{
 		stopAndUpdateTimes();
@@ -3827,7 +3830,7 @@ function regular(nocustom){
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
-		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon"]);
+		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon", "question"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container","compete_difficulty"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	if (ismid) {
@@ -4825,7 +4828,7 @@ function continueMatch() {
 function competeSettings(num = compete_type) {
     setDisplay("inline", ["undo", "redo", "shuffle_div", "reset_div", "competerestore"]);
     if (num === "1v1" && compete_type === "group" && competedata.userids?.length > 2) {
-        alert("Cannot turn group compete into 1v1 match.");
+        showCustomModal("Cannot turn group compete into 1v1 match.");
         return;
     }
 	MODE = "compete";
@@ -7295,12 +7298,12 @@ document.getElementById("l_submit").onclick = () => MODE == "account" ? submitAc
 async function submitLogin() {
 	const username = document.getElementById("username").value;
 	if (username == "") {
-		alert("Please enter a username");
+		showCustomModal("Please enter a username.");
 		return;
 	}
 	const password = document.getElementById("password").value;
 	if (password == "") {
-		alert("Please enter a password");
+		showCustomModal("Please enter a password.");
 		return;
 	}
 	document.getElementById("l_message").innerHTML = "Attemping to log in...";
@@ -9299,7 +9302,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(cursolvestat);
+		console.log(CUBENAME.toLowerCase().includes("glow"));
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
@@ -9366,7 +9369,7 @@ p.keyPressed = (event) => {
 			navigator.clipboard.writeText(getID());
 			successSQL("Position ID Copied");
 		} else {
-			alert(getID());
+			showCustomModal(getID());
 		}
 		return;
 	}
@@ -11746,6 +11749,15 @@ function multipleMod(nb, len, total2, prev)
 		shufflePossible(len-1, total2, prev);
 	}
 }
+function glowInfo() {
+	const glowtype = CUBENAME.split(' ').slice(1).join(' ');
+	if (glowtype != "Cross Glow") {
+		showCustomModal(glow_instruct_obj[glowtype], "500px");
+	} else {
+		showCustomModal("Solve the cross of 2 faces to make their remaining pieces light up. Then, solve the 2 faces to unlock the next 2 faces' colors.", "500px")
+	}
+}
+
 function multipleCross(nb) {
 	setLayout();
 	if (crossColor() == "nope") {
@@ -12551,11 +12563,6 @@ p.touchStarted = () => {
 	} else {
 		touchrotate[2] = false;
 	}
-	//alert(xx + " " + yy + " length is " + p.touches.length);
-	// let deez = p.get(xx, p.windowHeight * WINDOW - yy);
-	
-	//alert(deez);
-	//alert(getColor(deez));
 	
 	startAction();
 }
