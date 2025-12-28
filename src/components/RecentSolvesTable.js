@@ -1,3 +1,6 @@
+// SVG icon for jump to position button
+const jumpToPositionIcon = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>`;
+
 // Create a dialog to show solve details
 function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete, mode) {
 	console.log("scramble is ", scramble, cubename);
@@ -7,6 +10,22 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 	// Check if device is iOS or macOS
 	const isAppleDevice = /iPhone|iPad|iPod|Macintosh|MacIntel|MacPPC|Mac68K/.test(navigator.userAgent) || 
 	                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+	// Helper function to create load position button
+	const createLoadPositionButton = (pos, cubename) => {
+		return pos ? `<button onclick="onLoadPositionClick('${pos}', '${cubename}')" style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; margin-left: 8px;" title="Load Cube Position at this solve stage">${jumpToPositionIcon}</button>` : '';
+	};
+
+	window.onLoadPositionClick = function(pos, cubename) {
+		window.setPosition(pos, cubename);
+		// Close the dialog by accessing elements directly
+		const modal = document.getElementById("solve-detail-dialog");
+		const backdrop = document.getElementById("solve-detail-backdrop");
+		if (modal) modal.style.display = "none";
+		if (backdrop) backdrop.style.display = "none";
+		if (window.canMan !== undefined) {
+			window.canMan = true;
+		}
+	}
 
 	if (!modal) {
 		modal = document.createElement("div");
@@ -69,14 +88,15 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 
 
 	const closeBtn = document.getElementById("solve-detail-close-btn");
-	closeBtn.onclick = () => {
+	closeBtn.onclick = closeSolveDialog;
+
+	function closeSolveDialog() {
 		modal.style.display = "none";
 		backdrop.style.display = "none";
-	// Restore canMan when closing
-	if (window.canMan !== undefined) {
-		window.canMan = true;
+		if (window.canMan !== undefined) {
+			window.canMan = true;
+		}
 	}
-};
 
 const deleteBtn = document.getElementById("solve-detail-delete-btn");
 deleteBtn.onclick = () => {
@@ -163,38 +183,45 @@ if (isAppleDevice) {
 		// 3x3 solve statistics
 		if (cubename === "3x3" && stat && stat.active && (stat.cross || stat.f2l || stat.oll)) {
 			let solvemethod = "CFOP";
-			if (stat.side && stat.f2lmoves - stat.sidemoves >= 15) {
+			if (stat.side && stat.f2l?.moves - stat.side?.moves >= 15) {
 				solvemethod = "Beginner's Method";
 			}
 
-			const cross = typeof stat.cross === 'number' ? stat.cross : (stat.cross ? parseFloat(stat.cross) : NaN);
-			const crossMoves = stat.crossmoves !== undefined ? Number(stat.crossmoves) : NaN;
-			const f2l = typeof stat.f2l === 'number' ? stat.f2l : (stat.f2l ? parseFloat(stat.f2l) : NaN);
-			const f2lMoves = stat.f2lmoves !== undefined ? Number(stat.f2lmoves) : NaN;
-			const oll = typeof stat.oll === 'number' ? stat.oll : (stat.oll ? parseFloat(stat.oll) : NaN);
-			const ollMoves = stat.ollmoves !== undefined ? Number(stat.ollmoves) : NaN;
+			const cross = stat.cross?.time !== undefined ? Number(stat.cross.time) : NaN;
+			const crossMoves = stat.cross?.moves !== undefined ? Number(stat.cross.moves) : NaN;
+			const f2l = stat.f2l?.time !== undefined ? Number(stat.f2l.time) : NaN;
+			const f2lMoves = stat.f2l?.moves !== undefined ? Number(stat.f2l.moves) : NaN;
+			const oll = stat.oll?.time !== undefined ? Number(stat.oll.time) : NaN;
+			const ollMoves = stat.oll?.moves !== undefined ? Number(stat.oll.moves) : NaN;
 
 			let f2lPairing = (!isNaN(f2l) && !isNaN(cross)) ? f2l - cross : NaN;
 			let f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(crossMoves)) ? f2lMoves - crossMoves : NaN;
 			let sideSegment, sideSegmentMoves;
 			if (solvemethod === "Beginner's Method") {
-				sideSegment = (!isNaN(stat.side) && !isNaN(cross)) ? stat.side - cross : NaN;
-				sideSegmentMoves = (!isNaN(stat.sidemoves) && !isNaN(crossMoves)) ? stat.sidemoves - crossMoves : NaN;
-				f2lPairing = (!isNaN(f2l) && !isNaN(stat.side)) ? f2l - stat.side : NaN;
-				f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(stat.sidemoves)) ? f2lMoves - stat.sidemoves : NaN;
+				const side = stat.side?.time !== undefined ? Number(stat.side.time) : NaN;
+				const sideMoves = stat.side?.moves !== undefined ? Number(stat.side.moves) : NaN;
+				sideSegment = (!isNaN(side) && !isNaN(cross)) ? side - cross : NaN;
+				sideSegmentMoves = (!isNaN(sideMoves) && !isNaN(crossMoves)) ? sideMoves - crossMoves : NaN;
+				f2lPairing = (!isNaN(f2l) && !isNaN(side)) ? f2l - side : NaN;
+				f2lPairingMoves = (!isNaN(f2lMoves) && !isNaN(sideMoves)) ? f2lMoves - sideMoves : NaN;
 			}
 			const ollSegment = (!isNaN(oll) && !isNaN(f2l)) ? oll - f2l : NaN;
 			const ollSegmentMoves = (!isNaN(ollMoves) && !isNaN(f2lMoves)) ? ollMoves - f2lMoves : NaN;
 			const pllSegment = (!isNaN(totalTime) && !isNaN(oll)) ? totalTime - oll : NaN;
 			const pllSegmentMoves = (!isNaN(totalMoves) && !isNaN(ollMoves)) ? totalMoves - ollMoves : NaN;
 
+			const crossPos = stat.cross?.pos;
+			const sidePos = stat.side?.pos;
+			const f2lPos = stat.f2l?.pos;
+			const ollPos = stat.oll?.pos;
+
 			const statHtml = `
 				<div id="solve-stat" style="margin-top: 12px; text-align: left;">
 					<h5 style="margin-top: 40px;">${solvemethod} Solve Statistics</h5>
-					<p style="margin:4px 0;"><strong>Cross:</strong> ${fmtTime(cross)} &nbsp; (${fmtMoves(crossMoves)} moves)</p>
-					${solvemethod === "Beginner's Method" ? `<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(sideSegment)} &nbsp; (${sideSegmentMoves} moves)</p>` : ''}
-					<p style="margin:4px 0;"><strong>F2L:</strong> ${fmtTime(f2lPairing)} &nbsp; (${fmtMoves(f2lPairingMoves)} moves)</p>
-					<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
+					<p style="margin:4px 0;"><strong>Cross:</strong> ${fmtTime(cross)} &nbsp; (${fmtMoves(crossMoves)} moves) ${createLoadPositionButton(crossPos, cubename)}</p>
+					${solvemethod === "Beginner's Method" ? `<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(sideSegment)} &nbsp; (${sideSegmentMoves} moves) ${createLoadPositionButton(sidePos, cubename)}</p>` : ''}
+					<p style="margin:4px 0;"><strong>F2L:</strong> ${fmtTime(f2lPairing)} &nbsp; (${fmtMoves(f2lPairingMoves)} moves) ${createLoadPositionButton(f2lPos, cubename)}</p>
+			<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves) ${createLoadPositionButton(ollPos, cubename)}</p>
 					<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>
 				</div>
 			`;
@@ -204,12 +231,12 @@ if (isAppleDevice) {
 		
 		// 2x2 solve statistics
 		if (cubename === "2x2" && stat && stat.active && stat.side) {
-			const firstlayer = typeof stat.firstlayer === 'number' ? stat.firstlayer : parseFloat(stat.firstlayer);
-			const side = typeof stat.side === 'number' ? stat.side : parseFloat(stat.side);
-			const oll = typeof stat.oll === 'number' ? stat.oll : parseFloat(stat.oll);
-			const firstlayerMoves = stat.firstlayermoves !== undefined ? Number(stat.firstlayermoves) : NaN;
-			const sideMoves = stat.sidemoves !== undefined ? Number(stat.sidemoves) : NaN;
-			const ollMoves = stat.ollmoves !== undefined ? Number(stat.ollmoves) : NaN;
+			const firstlayer = stat.firstlayer?.time !== undefined ? Number(stat.firstlayer.time) : NaN;
+			const side = stat.side?.time !== undefined ? Number(stat.side.time) : NaN;
+			const oll = stat.oll?.time !== undefined ? Number(stat.oll.time) : NaN;
+			const firstlayerMoves = stat.firstlayer?.moves !== undefined ? Number(stat.firstlayer.moves) : NaN;
+			const sideMoves = stat.side?.moves !== undefined ? Number(stat.side.moves) : NaN;
+			const ollMoves = stat.oll?.moves !== undefined ? Number(stat.oll.moves) : NaN;
 			
 			// Check if firstlayer == side (in time)
 			if (!isNaN(firstlayer) && !isNaN(side) && !isNaN(totalMoves) &&
@@ -223,14 +250,17 @@ if (isAppleDevice) {
 					const pllSegment = totalTime - oll;
 					const pllSegmentMoves = (!isNaN(totalMoves) && !isNaN(ollMoves)) ? totalMoves - ollMoves : NaN;
 					
+					const firstlayerPos = stat.firstlayer?.pos;
+					const ollPos = stat.oll?.pos;
+					
 					const statHtml = `
 						<div id="solve-stat" style="margin-top: 12px; text-align: left;">
 							<h5 style="margin-top: 40px;">Beginner's Method Solve Statistics</h5>
-							<p style="margin:4px 0;"><strong>First Layer:</strong> ${fmtTime(firstlayer)} &nbsp; (${fmtMoves(firstlayerMoves)} moves)</p>
-							<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
-							<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>
-						</div>
-					`;
+				<p style="margin:4px 0;"><strong>First Layer:</strong> ${fmtTime(firstlayer)} &nbsp; (${fmtMoves(firstlayerMoves)} moves) ${createLoadPositionButton(firstlayerPos, cubename)}</p>
+					<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves) ${createLoadPositionButton(ollPos, cubename)}</p>
+						<p style="margin:4px 0;"><strong>PLL:</strong> ${fmtTime(pllSegment)} &nbsp; (${fmtMoves(pllSegmentMoves)} moves)</p>
+					</div>
+				`;
 					
 					content.innerHTML += statHtml;
 				} else {
@@ -238,13 +268,15 @@ if (isAppleDevice) {
 					const lastLayerSegment = totalTime - firstlayer;
 					const lastLayerSegmentMoves = (!isNaN(totalMoves) && !isNaN(firstlayerMoves)) ? totalMoves - firstlayerMoves : NaN;
 					
+					const firstlayerPos = stat.firstlayer?.pos;
+					
 					const statHtml = `
 						<div id="solve-stat" style="margin-top: 12px; text-align: left;">
 							<h5 style="margin-top: 40px;">CLL Method Solve Statistics</h5>
-							<p style="margin:4px 0;"><strong>First Layer:</strong> ${fmtTime(firstlayer)} &nbsp; (${fmtMoves(firstlayerMoves)} moves)</p>
-							<p style="margin:4px 0;"><strong>Last Layer:</strong> ${fmtTime(lastLayerSegment)} &nbsp; (${fmtMoves(lastLayerSegmentMoves)} moves)</p>
-						</div>
-					`;
+				<p style="margin:4px 0;"><strong>First Layer:</strong> ${fmtTime(firstlayer)} &nbsp; (${fmtMoves(firstlayerMoves)} moves) ${createLoadPositionButton(firstlayerPos, cubename)}</p>
+						<p style="margin:4px 0;"><strong>Last Layer:</strong> ${fmtTime(lastLayerSegment)} &nbsp; (${fmtMoves(lastLayerSegmentMoves)} moves)</p>
+					</div>
+				`;
 					
 					content.innerHTML += statHtml;
 				}
@@ -255,14 +287,17 @@ if (isAppleDevice) {
 				const pblSegment = totalTime - oll;
 				const pblSegmentMoves = (!isNaN(totalMoves) && !isNaN(ollMoves)) ? totalMoves - ollMoves : NaN;
 				
+				const sidePos = stat.side?.pos;
+				const ollPos = stat.oll?.pos;
+				
 				const statHtml = `
 					<div id="solve-stat" style="margin-top: 12px; text-align: left;">
 						<h5 style="margin-top: 40px;">Ortega Method Solve Statistics</h5>
-						<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(side)} &nbsp; (${fmtMoves(sideMoves)} moves)</p>
-						<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves)</p>
-						<p style="margin:4px 0;"><strong>PBL:</strong> ${fmtTime(pblSegment)} &nbsp; (${fmtMoves(pblSegmentMoves)} moves)</p>
-					</div>
-				`;
+						<p style="margin:4px 0;"><strong>Side:</strong> ${fmtTime(side)} &nbsp; (${fmtMoves(sideMoves)} moves) ${createLoadPositionButton(sidePos, cubename)}</p>
+				<p style="margin:4px 0;"><strong>OLL:</strong> ${fmtTime(ollSegment)} &nbsp; (${fmtMoves(ollSegmentMoves)} moves) ${createLoadPositionButton(ollPos, cubename)}</p>
+					<p style="margin:4px 0;"><strong>PBL:</strong> ${fmtTime(pblSegment)} &nbsp; (${fmtMoves(pblSegmentMoves)} moves)</p>
+				</div>
+			`;
 				
 				content.innerHTML += statHtml;
 			}

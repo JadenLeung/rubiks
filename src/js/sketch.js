@@ -13581,42 +13581,49 @@ function setGlowColors() {
 	}
 }
 
+function setPosition(id, cube) {
+	switchCube(cube);
+	quickSolve(IDtoReal(IDtoLayout(decode(id))));
+}
+
+window.setPosition = setPosition;
+
+function setSolveStat(field) {
+	cursolvestat[field] = {time: timer.roundedTime(), moves: moves, pos: getID()};
+}
+
 function trackSolveProgress(override) {
 	if (MODE != "normal" || (!["3x3", "2x2"].includes(CUBENAME))) {
 		return;
 	}
 	if (!override && (!cursolvestat.active || !timer.isRunning)) return;
+	if (!cursolvestat.pos) {
+		cursolvestat.pos = getID();
+	}
 	if (CUBENAME == "3x3") {
 		if (!cursolvestat.cross && isSolvedByFunc((side) => getCrossCubies(side, true))) {
-			cursolvestat.cross = timer.roundedTime();
-			cursolvestat.crossmoves = moves;
+			setSolveStat("cross");
 		}
 		if (!cursolvestat.side && isSolvedByFunc(getCubiesInSide)) {
-			cursolvestat.side = timer.roundedTime();
-			cursolvestat.sidemoves = moves;
+			setSolveStat("side");
 		}
 		if (!cursolvestat.f2l && isSolvedByFunc(getF2LCubies)) {
-			cursolvestat.f2l = timer.roundedTime();
-			cursolvestat.f2lmoves = moves;
+			setSolveStat("f2l");
 		}
 		if (!cursolvestat.oll && isOLLSolved()) {
-			cursolvestat.oll = timer.roundedTime();
-			cursolvestat.ollmoves = moves;
+			setSolveStat("oll");
 		}
 	} else if (CUBENAME == "2x2") {
 		if (!cursolvestat.side && numSolved() >= 1) {
-			cursolvestat.side = timer.roundedTime();
-			cursolvestat.sidemoves = moves;
+			setSolveStat("side");
 		}
 		if (!cursolvestat.firstlayer && isSolvedByFunc(getCubiesInSide)) {
-			cursolvestat.firstlayer = timer.roundedTime();
-			cursolvestat.firstlayermoves = moves;
+			setSolveStat("firstlayer");
 		}
 		const sidepairarr = [{side: 0, oppside: 1}, {side: 2, oppside: 3}, {side: 4, oppside: 5}];
 		for (const obj of sidepairarr) {
 			if (!cursolvestat.oll && sideSolved(layout[obj.side][1][1][0]) && sideSolved(layout[obj.oppside][1][1][0])) {
-				cursolvestat.oll = timer.roundedTime();
-				cursolvestat.ollmoves = moves;
+				setSolveStat("oll");
 			}
 		}
 	}
