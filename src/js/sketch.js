@@ -13592,6 +13592,7 @@ function setPosition(id, cube, scramble = "") {
 	switchCube(cube);
 	quickSolve(IDtoReal(IDtoLayout(decode(id))));
 	cursolvestat.active = true;
+	setLayout();
 	trackSolveProgress(true);
 	if (scramble != "") {
 		getEl('scramble').innerText = scramble;
