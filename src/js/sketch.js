@@ -120,7 +120,7 @@ export default function (p) {
 	let ZOOM2 = -25;
 	let CHECK = [];
 	let CHECKALL = [];
-	const COMPETE_YOU = `<b style = "color: blue">`;
+	const COMPETE_YOU = `<b>`;
 	let PLLS = [];
 	let pracmode;
 	let SPACE = [];
