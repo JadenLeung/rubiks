@@ -1897,13 +1897,14 @@ setInterval(() => {
 			&& !isShown("creating_match")) {
 		showCnvDiv();
 	} 
-	getEl("peeks").innerHTML = peeks + " peek" + (peeks == 1 ? "" : "s");
+	getEl("peeks").innerHTML = `${peeks} ${!isthin ? `peek${peeks == 1 ? "" : "s"}` : ""}`;
+	getEl("peeks").style.display = isthin ? "inline" : "block";
 	if (MODE == "speed") SPEEDMODE.style('background-color', '#8ef5ee');
 	if (MODE == "timed") { TIMEDMODE2.style('background-color', '#8ef5ee');  TIMEDMODE.style('background-color', '#8ef5ee');}
 	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
 	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	if (MODE == "moves") {
-		setDisplay(isBlinded ? "block" : "none", ["peekbutton"]);
+		setDisplay(isBlinded ? (isthin ? "inline" : "block") : "none", ["peekbutton"]);
 	} else {
 		setDisplay("none", ["peekbutton"])
 	}
@@ -5804,7 +5805,8 @@ function blindmode() {
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher", "show_marathon"]);
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
-		setDisplay("block", ["input", "peeks", "peek_container", "blind2", "wannapeek"]);
+		setDisplay("block", ["input", "peek_container", "blind2", "wannapeek"]);
+		getEl("peeks").style.display = isthin ? "inline" : "block";
 		setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 		getEl("times_desc").innerHTML = "Times:";
 		reSetup();
@@ -5826,7 +5828,8 @@ function showMarathon() {
 	setDisplay("block", ["times_par", "outertime", "marathon2"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_difficulty"]);
 	if (ma_data.type == "blind") {
-		setDisplay("block", ["peeks","times_par"]);
+		setDisplay("block", ["times_par"]);
+		getEl("peeks").style.display = isthin ? "inline" : "block";
 		setDisplay("none", ["outertime"]);
 		getEl("times_desc").innerHTML = "Peeks:";
 	} else {
@@ -6109,7 +6112,7 @@ function toggleBlind(show, p = true) {
 		if (p) peeks++;
 	}
 	if (MODE != "competing") {
-		getEl("peekbutton").style.display = show ? "block" : "none";
+		getEl("peekbutton").style.display = show ? (isthin ? "inline" : "block") : "none";
 	} else {
 		setDisplay("none", ["peekbutton"]);
 	}
