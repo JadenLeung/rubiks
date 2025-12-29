@@ -1824,7 +1824,7 @@ setInterval(() => {
 			} else {
 				socket.emit("solved", room, Math.max(0, timer.roundedTime()));
 			}
-			setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
+			setDisplay("none", ["giveup"])
 			canMan = false;
 		} else if (timer.isRunning && timer.inspection == 2 && timer.getTime() > 0) {
 			timer.stop();
@@ -1954,7 +1954,7 @@ setInterval(() => {
 	  }
 	setDisplay(SIZE > 3 ? "block" : "none", ["customshift"]);
 	if (comstep > 0 && (competedata.stage != "ingame")) {
-		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
+		setDisplay("none", ["giveup"]);
 	}
 	SWITCHER.html(DIM2 == 50 ? "Switch to 2x2" : "Switch to 3x3");
 	if (MINIMODE == "virtual" && timer.getTime() > 0 && juststarted) {
@@ -4475,7 +4475,7 @@ function startRound(data, scramble) {
 	if (MODE != "competing") {
 		return;
 	}
-	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div", "reset_div", "scramble_par"])
+	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div", "reset_div", "scramble_par", "reset2_div"]);
 	setDisplay("block", ["cnv_div", "chat-container", "chat_instruct"]);
 	setDisplay("flex", ["competeinput"]);
 	getEl("input").disabled = true;
@@ -4745,7 +4745,7 @@ function competeSolved(data) {
 		getEl("match_INSTRUCT").innerHTML = "Round " + (data.round + 1) + " Final Times";
 		getEl("match_INSTRUCT3").innerHTML = "Overall Points Ranking";
 		getEl("ss_container").style.display = "none";
-		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
+		setDisplay("none", ["giveup"])
 		setDisplay("block", ["scramble_par"]);
 		competeTimes(data, true);
 		competePoints(data);
@@ -13105,17 +13105,18 @@ socket.on("sending-message", (message, id, names, image) => {
 	sendMessage("person", message, id, names, image)
 })
 
-socket.on("joined_room", (room, id, name, image, stage) => {
+socket.on("joined_room", (room, id, name, stage) => {
+	console.log("JOINED ROOM", id, socket.id, stage);
 	if (id == socket.id && stage == "lobby") {
 		getEl("practice_container").style.display = "block";
 		setDisplay("none", ["keymap", "input2"]);
-		setDisplay("inline", ["shuffle_div", "reset_div", "outertime"]);
+		setDisplay("inline", ["shuffle_div", "reset_div", "outertime", "undo", "redo"]);
 	}
-	sendMessage("joined", {room : room, id : id, name : name}, image)
+	sendMessage("joined", {room : room, id : id, name : name})
 })
 
-socket.on("left_room", (room, id, names, image) => {
-	sendMessage("left", {room : room, id : id, name : names[id]}, image)
+socket.on("left_room", (room, id, names) => {
+	sendMessage("left", {room : room, id : id, name : names[id]})
 })
 
 const enterActions = {
