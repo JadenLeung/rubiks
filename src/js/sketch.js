@@ -385,6 +385,11 @@ class Timer {
 			this.overallTime = s;
 		}
 	}
+
+	setDNF() {
+		this.startTime = DNF * 1000;
+		this.overallTime = DNF * 1000;
+	}
 	
 	_getTimeElapsedSinceLastStart () {
 		if (!this.startTime) {
@@ -1577,6 +1582,9 @@ p.setup = () => {
 
 setInterval(() => {
 	timeInSeconds = Math.round(timer.getTime() / 10)/100.0;
+	if (timeInSeconds == DNF) {
+		timeInSeconds = "DNF";
+	}
 	if (MODE == "competing" && competedata.data.type == "teamblind") {
 		timeInSeconds = blindTime() ?? 0;
 		if (competedata.stage == "results") {
@@ -1818,7 +1826,7 @@ setInterval(() => {
 			canMan = false;
 		} else if (timer.isRunning && timer.inspection == 2 && timer.getTime() > 0) {
 			timer.stop();
-			timer.reset();
+			timer.setDNF();
 			comstep++;
 			ao5.push("DNF");
 			mo5.push("DNF");
@@ -1993,12 +2001,6 @@ setInterval(() => {
 		localStorage.saveshapemod = JSON.stringify({checkarr: saveshapemod, size: SEL7.value(), 
 			colors: [SEL.value(), SEL2.value(), SEL3.value(), SEL4.value(), SEL5.value(), SEL6.value()],
 			customshift : CUSTOMSHIFT.checked()});
-	}
-	if (timer.getTime() > 999999 && MODE == "competing") {
-		// timer.stop();
-		// timer.reset();
-		// timer.setTime(-15000, true);
-		// timer.start();
 	}
 	if (MODE == "competing" && competedata.stage == "ingame") {
 		competeTimes(competedata);
@@ -2818,7 +2820,7 @@ function giveUp()
 		getEl("giveup").style.display = "none";
 	} else if (comstep > 0) {
 		timer.stop();
-		timer.reset();
+		timer.setDNF();
 		comstep++;
 		if (competedata.data.type != "teamblind") {
 			ao5.push("DNF");
@@ -2829,7 +2831,6 @@ function giveUp()
 		fadeInText(1, "DNF");
 		setOriginalColor();
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
-		canMan = false;
 		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
 		if (competedata.data.type == "teamblind")
 			socket.emit("giveup_blind", room);
@@ -4711,7 +4712,7 @@ function competeSolved(data) {
 	if (MODE != "competing") {
 		return;
 	}
-	canMan = false;
+	canMan = true;
 	competedata = data;
 	if (data.data.type == "teamblind") {
 		toggleBlind(false);
@@ -5905,6 +5906,7 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 			timer.start(true);      // Start the timer
 		}
 		if (start) {
+			console.log("Starting from B");
 			timer.start();
 		}
 		isShuffling = false;
@@ -9120,11 +9122,9 @@ function animate(axis, rows, dir, timed, bcheck = true) {
 	if(Math.round(timer.getTime() / 10)/100.0 <= 0 && timed)
 	{
 		timer.reset();
+		console.log("Starting from A")
 		timer.start();
 		if (cstep == 1 || cstep == 1.5) cstep++;
-		// if (CUBENAME.toLowerCase().includes("glow")) {
-		// 	setCubyAllColor("black");
-		// }
 	}
 
 	for (let i = 0; i < SIZE * SIZE * SIZE; i++) {
