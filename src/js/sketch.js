@@ -41,6 +41,7 @@ export default function (p) {
 	let compete_cube = "";
 	let compete_type = "";
 	let compete_dims = [];
+	let compete_solved = false;
 	let compete_customarr = [];
 	let compete_alltimes = [];
 	let fullscreen = false;
@@ -1816,6 +1817,7 @@ setInterval(() => {
 			stopAndUpdateTimes();
 			console.log("time is ", timer.getTime());
 			socket.emit("progress-update", room, 100, Math.round(timer.getTime() / 10)/100.0, isShuffling ? false : getID());
+			compete_solved = true;
 			if (competedata.data.type == "teamblind") {
 				competeSolved(competedata);
 				socket.emit("solved", room, blindTime());
@@ -1831,6 +1833,7 @@ setInterval(() => {
 			ao5.push("DNF");
 			mo5.push("DNF");
 			movesarr.push(moves);
+			compete_solved = true;
 			socket.emit("solved", room, "DNF");
 			fadeInText(1, "DNF");
 			setTimeout(() => {fadeInText(0, "DNF")}, 400);
@@ -2699,22 +2702,26 @@ function moveSetup()
 {
 	if ((mastep > 0 || cstep > 0) && timer.getTime() <= 0) return;
 	if (comstep > 0) {
-		setDisplay("none", ["reset2_div", "giveup"])
-		comstep--;
-		canMan = true;
-		quickSolve();
-		setTimeout(() => {
-			if (comstep > 0) {
-				moves = 0;
-				undo = [];
-				redo = [];
-				arr = [];
-				otherShuffling = true;
-				changeArr(competeshuffle);
-				multiple2("compete");
-				waitStopTurning(false, "compete");
-			}
-		}, 100);
+		if (!compete_solved) {
+			setDisplay("none", ["reset2_div", "giveup"])
+			comstep--;
+			canMan = true;
+			quickSolve();
+			setTimeout(() => {
+				if (comstep > 0) {
+					moves = 0;
+					undo = [];
+					redo = [];
+					arr = [];
+					otherShuffling = true;
+					changeArr(competeshuffle);
+					multiple2("compete");
+					waitStopTurning(false, "compete");
+				}
+			}, 100);
+		} else {
+			quickSolve();
+		}
 		return;
 	}
 	if ((cstep > 0 || mastep > 0) && (!savesetupdim.includes(DIM) || SIZE > 3 || ["cuboid", "baby"].includes(ma_data.type))) {
@@ -2821,6 +2828,7 @@ function giveUp()
 	} else if (comstep > 0) {
 		timer.stop();
 		timer.setDNF();
+		compete_solved = true;
 		comstep++;
 		if (competedata.data.type != "teamblind") {
 			ao5.push("DNF");
@@ -2831,7 +2839,7 @@ function giveUp()
 		fadeInText(1, "DNF");
 		setOriginalColor();
 		setTimeout(() => {fadeInText(0, "DNF")}, 400);
-		setDisplay("none", ["giveup", "reset2_div", "undo", "redo"])
+		setDisplay("none", ["giveup"])
 		if (competedata.data.type == "teamblind")
 			socket.emit("giveup_blind", room);
 	} else if(m_4step > 0 && m_4step % 2 == 1) {
@@ -4113,7 +4121,7 @@ function competemode() {
 }
 
 function progressUpdate(time = 0) {
-	if (comstep > 0 && competedata.stage == "ingame") {
+	if (comstep > 0 && competedata.stage == "ingame" && !compete_solved) {
 		console.log("uploading", isSolved() || timer.getTime() == 0 ? timer.roundedTime() : timer.startTime + (timer.getTime() < 0 ? 15000 : 0))
 		socket.emit("progress-update", room, competeprogress, competedata.data.type == "teamblind" ? (time ? time : competedata.data.time) : isSolved() ? timer.roundedTime() : timer.startTime + (timer.getTime() < 0 ? 15000 : 0), isShuffling ? false : getID());
 	}
@@ -4478,6 +4486,7 @@ function startRound(data, scramble) {
 	bandaged = [];
 	reSetup();
 	competedata = data;
+	compete_solved = false;
 	let scram_value = "Default";
 	let cube = "";
 	let glow = competeProperty("glow", "None");
@@ -9680,7 +9689,9 @@ function multiple(nb, timed, use = "default") {
 				canMan = false;
 			}
 			trackSolveProgress(true);
-		} else if (comstep > 0) {
+		}  
+		
+		if (comstep > 0) {
 			waitForCondition(logProgressUpdate)
 		}
 	}
@@ -13835,7 +13846,7 @@ function getOp() {
 }
 
 function competeScreenshot() {
-	if (competedata.data.type != "1v1") {
+	if (competedata.data.type != "1v1" || compete_solved) {
 		return;
 	}
 	let str = p.canvas.toDataURL('image/jpeg', 0.15);
