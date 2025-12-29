@@ -4323,8 +4323,14 @@ function enterLobby(data, r) {
 			str += "<br>";
 		})
 	} else {
+		// Helper function to create clickable cube link
+		const createCubeLink = (cubeName, playerCube) => {
+			return `<a href="#" onclick="competePracticeCube('${cubeName}'); return false;" style="color: inherit; text-decoration: underline;">${cubeName + playerCube}</a>`;
+		};
 		data.data.dims.forEach((cube, x) => {
-			str += `Round ${x + 1}): ${cube[0] + (competeProperty("glow", "None", x) != "None" ? " " + competeProperty("glow", "None", x) : "")}`
+			const cubeName = cube[0];
+			const playerCube = (competeProperty("glow", "None", x) != "None" ? " " + competeProperty("glow", "None", x) : "");
+			str += `Round ${x + 1}): ${createCubeLink(cubeName, playerCube)}`
 			if (data.data.shufflearr.length > 0) {
 				str += `${formatCustom(data.data.customarr[x][0])}`;
 			}
