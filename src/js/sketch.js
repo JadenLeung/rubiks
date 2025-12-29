@@ -3085,6 +3085,7 @@ function switchCube(cubename) {
 	bandaged = [];
 	CUBEMAP[cubename]();
 	CUBENAME = cubename;
+	PRACTICE_SEL.value(cubename);
 }
 function switchCuboid(cubename, b) {
 	const dimarr = getCuboidDims(cubename);
@@ -4200,6 +4201,10 @@ function formatCustom(customobj) {
 	return strarr.length > 0 ? ", " + strarr.join(", ") : "";
 }
 
+window.competePracticeCube = function(cube) {
+	switchCube(cube);
+}
+
 function formatSettingsCustom(customobj) {
 	let strarr = [];
 	Object.keys(customobj).forEach((key, i) => {
@@ -4286,6 +4291,10 @@ function enterLobby(data, r) {
 	str = `<h6 style = "margin-top:20px">Total Rounds: ${data.data.dims.length} </h6>`;
 	if (data.data.type == "1v1") {
 		const OP_NAME = data.userids.length == 2 ? (data.userids[0] == socket.id ? data.names[data.userids[1]] : data.names[data.userids[0]]): "opponent";
+		// Helper function to create clickable cube link
+		const createCubeLink = (cubeName, playerCube) => {
+			return `<a href="#" onclick="competePracticeCube('${cubeName}'); return false;" style="color: inherit; text-decoration: underline;">${cubeName + playerCube}</a>`;
+		};
 		data.data.dims.forEach((cube, x) => {
 			let player1cube = (competeProperty("glow", "None", x, 0) != "None" ? " " + competeProperty("glow", "None", x, 0) : "");
 			let player2cube = (competeProperty("glow", "None", x, 1) != "None" ? " " + competeProperty("glow", "None", x, 1) : "");
@@ -4294,7 +4303,7 @@ function enterLobby(data, r) {
 			// 	str += `<br>&ensp;`
 			// }
 			if (data.data.leader == socket.id) {
-				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[0] + player1cube}</b>`;
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${createCubeLink(cube[0], player1cube)}</b>`;
 			} else {
 				str += ` ${OP_NAME}: ${cube[0] + player1cube}`;
 			}
@@ -4306,7 +4315,7 @@ function enterLobby(data, r) {
 			if (data.data.leader == socket.id) {
 				str += ` ${OP_NAME}: ${cube[1] + player2cube}`;
 			} else {
-				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${cube[1] + player2cube}</b>`;
+				str += `${COMPETE_YOU} ${data.names[socket.id]}: ${createCubeLink(cube[1], player2cube)}</b>`;
 			}
 			if (data.data.shufflearr.length > 0) {
 				str += `${formatCustom(data.data.customarr[x][1])}&ensp;`;
