@@ -40,7 +40,7 @@ export function showCustomModal(message, width = "300px") {
 			boxShadow: "0 2px 15px rgba(0,0,0,0.3)",
 			zIndex: "9999",
 			display: "none",
-			width: width,
+			width: "90%",
 			maxWidth: width,
 			boxSizing: "border-box",
 			overflowWrap: "break-word",
@@ -79,9 +79,8 @@ export function showCustomModal(message, width = "300px") {
 	modal = document.getElementById("custom-modal");
 	backdrop = document.getElementById("custom-backdrop");
 	
-	// Update width if modal already existed
+	// Update max-width if modal already existed
 	if (modal) {
-		modal.style.width = width;
 		modal.style.maxWidth = width;
 	}
 	
