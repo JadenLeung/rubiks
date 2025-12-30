@@ -4167,12 +4167,32 @@ socket.on("joined_late", (data, r) => {
 		changeInput();
 		canMan = false;
 		if (data.stage == "ingame") {
-			comstep = 2;
-			giveUp();
+			if (!data.solved[socket.id]) {
+				comstep = 2;
+				giveUp();
+			} else {
+				compete_solved = true;
+				comstep = 3;
+				if (data.solved[socket.id] == "DNF") {
+					timer.setDNF();
+				} else {
+					timer.setTime(data.solved[socket.id] * 1000, true);
+				}
+			}
 		} else {
 			comstep = 3;
+			if (data.stage == "results") {
+				if (data.solved[socket.id]) {
+					if (data.solved[socket.id] == "DNF") {
+						timer.setDNF();
+					} else {
+						timer.setTime(data.solved[socket.id] * 1000, true);
+					}
+				} else {
+					timer.setDNF();
+				}
+			}
 			competeSolved(data);
-
 		}
 	}
 })
@@ -9329,7 +9349,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(cursolvestat);
+		console.log(competedata);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
