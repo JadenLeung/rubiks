@@ -466,11 +466,26 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	}
 	else if (MODE === "competing" && competedata.data.type == "group")
 	{
-		// For group mode, get all player IDs
-		groupPlayers = competedata.userids || [];
-		groupPlayerNames = groupPlayers.map(id => competedata.names[id] || 'Unknown');
+		// For group mode, get all player IDs and reorder so current player is first
+		const allPlayers = competedata.userids || [];
+		groupPlayers = [];
+		groupPlayerNames = [];
 		
-		// Create arrays for each player's times
+		// Add current player first
+		if (allPlayers.includes(socketId)) {
+			groupPlayers.push(socketId);
+			groupPlayerNames.push(competedata.names[socketId] || 'Unknown');
+		}
+		
+		// Add other players
+		allPlayers.forEach(id => {
+			if (id !== socketId) {
+				groupPlayers.push(id);
+				groupPlayerNames.push(competedata.names[id] || 'Unknown');
+			}
+		});
+		
+		// Create arrays for each player's times (mapped to reordered groupPlayers)
 		competearr = competedata.solvedarr.map(obj => {
 			return groupPlayers.map(playerId => obj[playerId]);
 		});
