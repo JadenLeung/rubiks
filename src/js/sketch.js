@@ -4767,6 +4767,7 @@ function competeSolved(data) {
 	}
 	canMan = true;
 	competedata = data;
+	displayAverage();
 	if (data.data.type == "teamblind") {
 		toggleBlind(false);
 		getEl("competeswitch").style.display = "none";

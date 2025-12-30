@@ -450,6 +450,9 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	let competearr = false;
 	let opparr = false;
 	let isCompeting = false;
+	let groupPlayers = []; // Array of player IDs for group mode
+	let groupPlayerNames = []; // Array of player names for group mode
+	
 	if (MODE === "competing" && competedata.data.type == "1v1")
 	{
 		competearr = competedata.solvedarr.map(obj => obj[socketId]);
@@ -459,6 +462,22 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		if (competedata.solved && Object.keys(competedata.solved).length > 0 && competedata.solvedarr.length <= competedata.round) {
 			competearr.push(competedata.solved[socketId] || undefined);
 			opparr.push(competedata.solved[opponentId] || undefined);
+		}
+	}
+	else if (MODE === "competing" && competedata.data.type == "group")
+	{
+		// For group mode, get all player IDs
+		groupPlayers = competedata.userids || [];
+		groupPlayerNames = groupPlayers.map(id => competedata.names[id] || 'Unknown');
+		
+		// Create arrays for each player's times
+		competearr = competedata.solvedarr.map(obj => {
+			return groupPlayers.map(playerId => obj[playerId]);
+		});
+		
+		// Append current round from competedata.solved if it exists
+		if (competedata.solved && Object.keys(competedata.solved).length > 0 && competedata.solvedarr.length <= competedata.round) {
+			competearr.push(groupPlayers.map(playerId => competedata.solved[playerId] || undefined));
 		}
 	}
 
@@ -472,7 +491,98 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		const movesColHeader = document.getElementById('moves_col');
 		const movesColBodyElem = document.getElementById('moves_col_body');
 		
-		if (isCompeting) {
+		const isGroupMode = MODE === "competing" && competedata.data.type == "group";
+		
+		if (isGroupMode) {
+			// Hide default time and moves columns
+			timeHeader.style.display = 'none';
+			movesHeader.style.display = 'none';
+			if (timeCol) timeCol.style.display = 'none';
+			if (timeColBody) timeColBody.style.display = 'none';
+			if (movesColHeader) movesColHeader.style.display = 'none';
+			if (movesColBodyElem) movesColBodyElem.style.display = 'none';
+			
+			// Get or create dynamic columns container in thead
+			const theadRow = timeHeader.parentElement;
+			const colgroup = document.querySelector('#recent_solves_table colgroup');
+			const colgroupBody = document.querySelector('#recent_solves_table + div table colgroup');
+			
+			// Remove existing dynamic player columns
+			document.querySelectorAll('.dynamic-player-header').forEach(el => el.remove());
+			document.querySelectorAll('.dynamic-player-col').forEach(el => el.remove());
+			
+			// Track if we've already marked a column as "You"
+			let youColumnMarked = false;
+			
+			// Add column for each player
+			groupPlayers.forEach((playerId, idx) => {
+				const playerName = groupPlayerNames[idx];
+				const isCurrentPlayer = playerId === socketId && !youColumnMarked;
+				if (isCurrentPlayer) youColumnMarked = true;
+				
+				// Add header
+				const th = document.createElement('th');
+				th.className = 'dynamic-player-header';
+				th.style.cssText = 'padding: 4px 8px; text-align: center; border: 1px solid;';
+				if (isCurrentPlayer) {
+					th.innerHTML = `${playerName} (You)`;
+				} else {
+					th.textContent = playerName;
+				}
+				theadRow.insertBefore(th, ao5Header);
+				
+				// Add colgroup for header table
+				const col = document.createElement('col');
+				col.className = 'dynamic-player-col';
+				col.style.width = '80px';
+				colgroup.insertBefore(col, document.getElementById('ao5_col'));
+				
+				// Add colgroup for body table
+				if (colgroupBody) {
+					const colBody = document.createElement('col');
+					colBody.className = 'dynamic-player-col';
+					colBody.style.width = '80px';
+					const ao5ColBody = document.getElementById('ao5_col_body');
+					if (ao5ColBody) {
+						colgroupBody.insertBefore(colBody, ao5ColBody);
+					} else {
+						colgroupBody.appendChild(colBody);
+					}
+				}
+			});
+			
+			// Store which column index is marked as You for later use
+			window.youColumnIndex = groupPlayers.findIndex((pid, i) => {
+				for (let j = 0; j < i; j++) {
+					if (groupPlayers[j] === socketId) return false;
+				}
+				return pid === socketId;
+			});
+			
+			// Synchronize horizontal scroll between header and body for group mode
+			const scrollableBody = document.querySelector('#recent_solves_container > div > div[style*="overflow-y"]');
+			const headerTable = document.getElementById('recent_solves_table');
+			const tableContainer = document.querySelector('#recent_solves_container > div');
+			if (scrollableBody && headerTable && tableContainer) {
+				// Enable horizontal scrolling on the body div
+				scrollableBody.style.overflowX = 'auto';
+				
+				// Set overflow hidden on the table container to clip the shifted header
+				tableContainer.style.overflowX = 'hidden';
+				
+				// Remove any existing scroll listener
+				if (window.groupScrollListener) {
+					const oldBody = document.querySelector('#recent_solves_container > div > div[style*="overflow-y"]');
+					if (oldBody) oldBody.removeEventListener('scroll', window.groupScrollListener);
+				}
+				
+				// Add new scroll listener to sync header with body scroll
+				window.groupScrollListener = function() {
+					headerTable.style.marginLeft = -this.scrollLeft + 'px';
+				};
+				scrollableBody.addEventListener('scroll', window.groupScrollListener);
+			}
+		} else if (isCompeting) {
 			timeHeader.textContent = 'You';
 			movesHeader.textContent = 'Opponent';
 			movesHeader.style.display = ''; // Show opponent column in competing mode
@@ -482,11 +592,40 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			if (movesColHeader) movesColHeader.style.width = '50%';
 			if (movesColBodyElem) movesColBodyElem.style.width = '50%';
 		} else {
+			// Normal mode - remove dynamic columns and reset headers
+			document.querySelectorAll('.dynamic-player-header').forEach(el => el.remove());
+			document.querySelectorAll('.dynamic-player-col').forEach(el => el.remove());
+			
+			// Clean up scroll listener when not in group mode
+			if (window.groupScrollListener) {
+				const scrollableBody = document.querySelector('#recent_solves_container > div > div[style*="overflow-y"]');
+				const tableContainer = document.querySelector('#recent_solves_container > div');
+				if (scrollableBody) {
+					scrollableBody.removeEventListener('scroll', window.groupScrollListener);
+					scrollableBody.style.overflowX = 'hidden'; // Reset overflow-x
+				}
+				if (tableContainer) {
+					tableContainer.style.overflowX = 'visible'; // Reset container overflow
+				}
+				window.groupScrollListener = null;
+			}
+			
+			// Reset header table margin
+			const headerTable = document.getElementById('recent_solves_table');
+			if (headerTable) headerTable.style.marginLeft = '0';
+			
 			timeHeader.textContent = 'Time';
+			timeHeader.style.display = '';
 			movesHeader.textContent = 'Moves';
 			// Reset widths for normal mode
-			if (timeCol) timeCol.style.width = '80px';
-			if (timeColBody) timeColBody.style.width = '80px';
+			if (timeCol) {
+				timeCol.style.width = '80px';
+				timeCol.style.display = '';
+			}
+			if (timeColBody) {
+				timeColBody.style.width = '80px';
+				timeColBody.style.display = '';
+			}
 			if (movesColHeader) movesColHeader.style.width = '60px';
 			if (movesColBodyElem) movesColBodyElem.style.width = '60px';
 		}
@@ -508,9 +647,13 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		
 		// Show ALL solves (scrollable div will handle overflow)
 		let recentTimes, recentMoves;
-		if (isCompeting) {
+		const isGroupMode = MODE === "competing" && competedata.data.type == "group";
+		
+		if (isCompeting && !isGroupMode) {
 			recentTimes = competearr;
 			recentMoves = opparr;
+		} else if (isGroupMode) {
+			recentTimes = competearr; // Array of arrays for group mode
 		} else {
 			recentTimes = mo5;
 			recentMoves = movesarr;
@@ -549,17 +692,42 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				
 				// Time/You column
 				const cellTime = row.insertCell(1);
-				if (isCompeting) {
+				if (isGroupMode) {
+					// For group mode, create a cell for each player
+					const playerTimes = recentTimes[i];
+					if (Array.isArray(playerTimes)) {
+						groupPlayers.forEach((playerId, idx) => {
+							const time = playerTimes[idx];
+							const timeStr = time === undefined ? '' : (time + (time == "DNF" ? "" : 's'));
+							const playerCell = row.insertCell();
+						// Only bold the column that was marked as (You)
+						if (idx === window.youColumnIndex) {
+								playerCell.innerHTML = `<b>${timeStr}</b>`;
+							} else {
+								playerCell.textContent = timeStr;
+							}
+						});
+					} else {
+						// Empty cells for each player
+						groupPlayers.forEach(() => {
+							const playerCell = row.insertCell();
+							playerCell.textContent = '';
+						});
+					}
+					// Remove the default time cell since we created individual cells
+					row.deleteCell(1);
+				} else if (isCompeting) {
 					cellTime.textContent = recentTimes[i] === undefined ? '' : (recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's'));
-			} else {
-				cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
-			}
+				} else {
+					cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
+				}
 			
 			// Moves/Opponent column (show for competing or when showMoves is true)
-			if (isCompeting || showMoves) {
+			if ((isCompeting && !isGroupMode) || showMoves) {
 				const cellMoves = row.insertCell(2);
-				if (isCompeting) {
-					cellMoves.textContent = recentMoves[i] === undefined ? '' : (recentMoves[i] + (recentMoves[i] == "DNF" ? "" : 's'));				} else {
+				if (isCompeting && !isGroupMode) {
+					cellMoves.textContent = recentMoves[i] === undefined ? '' : (recentMoves[i] + (recentMoves[i] == "DNF" ? "" : 's'));
+				} else {
 					cellMoves.textContent = recentMoves[i] || 'N/A';
 				}
 			}			
@@ -624,11 +792,19 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				const cellNum = row.insertCell(0);
 				cellNum.textContent = '';
 				
-				const cellTime = row.insertCell(1);
-				cellTime.textContent = '';
+				if (isGroupMode) {
+					// Create empty cells for each player in group mode
+					groupPlayers.forEach(() => {
+						const playerCell = row.insertCell();
+						playerCell.textContent = '';
+					});
+				} else {
+					const cellTime = row.insertCell(1);
+					cellTime.textContent = '';
+				}
 				
-				// Moves/Opponent column (show for competing or when showMoves is true)
-				if (isCompeting || showMoves) {
+				// Moves/Opponent column (show for competing or when showMoves is true, but not for group mode)
+				if ((isCompeting && !isGroupMode) || showMoves) {
 					const cellMoves = row.insertCell(2);
 					cellMoves.textContent = '';
 				}
