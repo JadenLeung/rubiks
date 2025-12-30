@@ -6115,6 +6115,7 @@ function endchallenge(passed = true) {
 				setScore("c_day2", timeInSeconds);
 				localStorage.c_today2 = timeInSeconds;
 			}
+			setDisplay("block", ["scramble_par"])
 		}
 		document.getElementById('c_title').innerHTML = "Good Job!";
 		document.getElementById('c_desc').innerHTML = "You got the scramble in " + timeInSeconds + " seconds!";
