@@ -4604,7 +4604,7 @@ function startRound(data, scramble) {
 	}, 500);
 }
 
-socket.on("update-data", (data) => {competedata = data;});
+socket.on("update-data", (data) => {competedata = data; displayAverage();});
 
 function playerIndex() {
 	if (competedata.data.type != "1v1" || competedata.data.leader == socket.id) {

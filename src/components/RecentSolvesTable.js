@@ -452,8 +452,14 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	let isCompeting = false;
 	if (MODE === "competing" && competedata.data.type == "1v1")
 	{
-		competearr = mo5;
+		competearr = competedata.solvedarr.map(obj => obj[socketId]);
 		opparr = competedata.solvedarr.map(obj => obj[opponentId]);
+		
+		// Append current round from competedata.solved if it exists and has values
+		if (competedata.solved && Object.keys(competedata.solved).length > 0 && competedata.solvedarr.length <= competedata.round) {
+			competearr.push(competedata.solved[socketId] || undefined);
+			opparr.push(competedata.solved[opponentId] || undefined);
+		}
 	}
 
 	isCompeting = Array.isArray(competearr);
@@ -651,7 +657,14 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		// Check if we're in PLL/OLL mode or marathon non-blind mode
 		const sumOfTimes = ["easy", "medium", "OLL", "PLL"].includes(MINIMODE) || isMarathonNonBlind;
 		
-		if (showPeeks) {
+		if (isCompeting) {
+			// Hide all stats in competing mode
+			document.getElementById('ao5_stat').parentElement.style.display = 'none';
+			document.getElementById('mo5_stat').parentElement.style.display = 'none';
+			document.getElementById('best_time_stat').parentElement.style.display = 'none';
+			document.getElementById('best_ao5_div').style.display = 'none';
+			statsSummary.style.display = 'none';
+		} else if (showPeeks) {
 			// Calculate total peeks
 			const validPeeks = solvedata.filter(s => s && s.peeks !== undefined && s.peeks !== null && !isNaN(s.peeks));
 			let totalPeeks = 0;
@@ -750,8 +763,10 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			document.getElementById('best_ao5_div').style.display = 'none';
 		}
 		
-		// Always show stats summary
-		statsSummary.style.display = 'block';
+		// Show stats summary only if not competing
+		if (!isCompeting) {
+			statsSummary.style.display = 'block';
+		}
 	} else {
 		container.style.display = 'none';
 	}
