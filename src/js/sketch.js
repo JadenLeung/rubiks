@@ -82,7 +82,6 @@ export default function (p) {
 	let mids = {3: 4, 4: 5, 5: 12};
 	let touchrotate = [];
 	let recentmove = "";
-	const NOMOUSE = [13, "lasagna", "sandwich2x2"];
 	const removedcubies = {100: [1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 22, 23, 25]};
 	// dir is the string, side is the number
 	const DIROBJ = {
@@ -8243,7 +8242,7 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 			// Determine actual cuby size - special cubysize values (1,2,3,5,6,etc) use CUBYESIZE=50, 
 			// only 100 (2x2) and explicit sizes use their value
 			let actualSize;
-			if (cuby.cubysize === 100) {
+			if (cuby.cubysize === 100 || (DIM2 === 100)) {
 				actualSize = 100;
 			} else {
 				actualSize = CUBYESIZE;
@@ -8300,7 +8299,7 @@ function getCubyIndexByMousePosition(mouseX, mouseY) {
 		
 		// Use the actual cuby size for face centers
 		let actualSize;
-		if (cuby.cubysize === 100) {
+		if (cuby.cubysize === 100 || (DIM2 === 100)) {
 			actualSize = 100;
 		} else if (typeof cuby.cubysize === 'number' && cuby.cubysize <= 10) {
 			// Special identifier values (1,2,3,5,6,10) all use standard CUBYESIZE
