@@ -13,9 +13,17 @@ import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 import { showHighscoreModal, hideHighscoreModal } from '../components/HighscoreModal.js';
 import { speeddata } from '../data/speeddata.js';
 import { showCustomModal } from '../components/CustomModal.js';
+let userId = localStorage.userId;
+
+if (!userId) {
+  userId = crypto.randomUUID();
+  localStorage.userId = userId;
+}
+
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3003");
-const socket = io("https://api.virtual-cube.net:3003/");
+// const socket = io("http://localhost:3003", {auth: {userId}});
+const socket = io("https://api.virtual-cube.net:3003/", {auth: {userId}});
+
 
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
 export default function (p) {
@@ -5560,7 +5568,7 @@ function displayPublicRooms() {
     let hasRooms = false;
 	let totalrooms = 0;
     for (let room in competerooms) {
-        if (competerooms[room].data.visibility === "public" && (competerooms[room].stage === "lobby" || competerooms[room].allids.includes(socket.id))
+        if (competerooms[room].data.visibility === "public" && (competerooms[room].stage === "lobby" || Object.keys(competerooms[room].allids).includes(userId))
 			&& !(competerooms[room].data.type != "group" && competerooms[room].userids.length >= 2)) {
 			totalrooms++;
             hasRooms = true;
@@ -9350,7 +9358,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata, compete_solved, comstep);
+		console.log(competedata);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
