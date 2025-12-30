@@ -3683,6 +3683,7 @@ function Reverse(move)
 }
 
 function getProgress() { // temporary get progress
+	if (timer.getTime() <= 0) return 0;
 	if (competeGoal() == "Make Cubic Shape") {
 		return computeCubeScore(getCubyFromPos, MAXX, CUBYESIZE).adjustedScore;
 	}
@@ -9349,7 +9350,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata);
+		console.log(competedata, compete_solved, comstep);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
