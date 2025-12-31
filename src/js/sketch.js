@@ -5235,6 +5235,10 @@ function competeSettings(num = compete_type) {
 	Object.assign(addRoundBtn.style, { fontSize: "10px", padding: "6px 10px", marginBottom: "10px", marginLeft: (isthin ? 20 : 80) + 10 + "px" });
 	addRoundBtn.onclick = () => {
 		const currentRounds = parseInt(getEl("compete_rounds").value);
+		if (currentRounds + 1 >= 100) {
+			showCustomModal("Maximum rounds reached.");
+			return;
+		}
 		const newRoundIndex = currentRounds;
 		
 		// Update round counter
