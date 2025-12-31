@@ -5107,7 +5107,6 @@ function competeSettings(num = compete_type) {
             p2 = createPlayerColumn(i, 1, "opponent ");
             row.append(p2.container);
         }
-	rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText, row, label });
 
         // Add delete button for each row
         const deleteBtn = document.createElement("button");
@@ -5118,7 +5117,6 @@ function competeSettings(num = compete_type) {
         deleteBtn.onclick = () => {
             const currentRounds = parseInt(getEl("compete_rounds").value);
             if (currentRounds <= 1) {
-                showCustomModal("Cannot delete the last round.");
                 return;
             }
             
@@ -5142,6 +5140,12 @@ function competeSettings(num = compete_type) {
                 // Re-label remaining rows
                 rows.forEach((r, idx) => {
                     r.label.textContent = `${isthin ? "R" : "Round "}${idx + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
+                });
+                
+                // Hide all delete buttons if only 1 round remains
+                const newRoundCount = rows.length;
+                rows.forEach(r => {
+                    if (r.deleteBtn) r.deleteBtn.style.display = newRoundCount <= 1 ? 'none' : '';
                 });
                 
                 // If we deleted the first row, add the "Apply row to all" button to the new first row
@@ -5187,6 +5191,8 @@ function competeSettings(num = compete_type) {
         // Add delete button to all rows
         extraColumn.appendChild(deleteBtn);
         
+        rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText, row, label, deleteBtn });
+        
        if (i === 0) {
 			const applyBtn = document.createElement("button");
 			applyBtn.textContent = !isthin ? "Apply row to all" : "↓";
@@ -5215,6 +5221,11 @@ function competeSettings(num = compete_type) {
 		}
         row.appendChild(extraColumn);
         container.appendChild(row);
+    }
+    
+    // Hide delete buttons if there's only 1 row
+    if (rows.length === 1) {
+        rows[0].deleteBtn.style.display = 'none';
     }
 
 	// Add + button to create new rounds
@@ -5246,7 +5257,6 @@ function competeSettings(num = compete_type) {
 			p2 = createPlayerColumn(newRoundIndex, 1, "opponent ");
 			row.append(p2.container);
 		}
-		rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText, row, label });
 
 		// Add delete button
 		const deleteBtn = document.createElement("button");
@@ -5257,7 +5267,6 @@ function competeSettings(num = compete_type) {
 		deleteBtn.onclick = () => {
 			const currentRounds = parseInt(getEl("compete_rounds").value);
 			if (currentRounds <= 1) {
-				showCustomModal("Cannot delete the last round.");
 				return;
 			}
 			
@@ -5273,6 +5282,12 @@ function competeSettings(num = compete_type) {
 				
 				rows.forEach((r, idx) => {
 					r.label.textContent = `${isthin ? "R" : "Round "}${idx + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
+				});
+				
+				// Hide all delete buttons if only 1 round remains
+				const newRoundCount = rows.length;
+				rows.forEach(r => {
+					if (r.deleteBtn) r.deleteBtn.style.display = newRoundCount <= 1 ? 'none' : '';
 				});
 				
 				// If we deleted the first row, add the "Apply row to all" button to the new first row
@@ -5316,6 +5331,13 @@ function competeSettings(num = compete_type) {
 		extraColumn.appendChild(deleteBtn);
 		
 		row.appendChild(extraColumn);
+		
+		rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText, row, label, deleteBtn });
+		
+		// Show all delete buttons since we now have at least 2 rounds
+		rows.forEach(r => {
+			if (r.deleteBtn) r.deleteBtn.style.display = '';
+		});
 		
 		// Insert before the add button
 		container.insertBefore(row, addRoundBtn);
