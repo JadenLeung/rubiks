@@ -5783,7 +5783,7 @@ function displayPublicRooms() {
     let hasRooms = false;
 	let totalrooms = 0;
     for (let room in competerooms) {
-        if (competerooms[room].data.visibility === "public" && (competerooms[room].stage === "lobby" || Object.keys(competerooms[room].allids).includes(userId))
+        if (competerooms[room].data.visibility === "public" && (competerooms[room].stage === "lobby" || (Object.keys(competerooms[room].allids).includes(userId) && competerooms[room].data.type != "teamblind"))
 			&& !(competerooms[room].data.type != "group" && competerooms[room].userids.length >= 2)) {
 			totalrooms++;
             hasRooms = true;
