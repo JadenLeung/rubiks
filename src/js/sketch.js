@@ -5185,6 +5185,81 @@ function competeSettings(num = compete_type) {
         container.appendChild(row);
     }
 
+	// Add + button to create new rounds
+	const addRoundBtn = document.createElement("button");
+	addRoundBtn.textContent = "+ Add Round";
+	addRoundBtn.classList.add("btn", "btn-primary");
+	Object.assign(addRoundBtn.style, { fontSize: "10px", padding: "6px 10px", marginBottom: "10px", marginLeft: (isthin ? 20 : 80) + 10 + "px" });
+	addRoundBtn.onclick = () => {
+		const currentRounds = parseInt(getEl("compete_rounds").value);
+		const newRoundIndex = currentRounds;
+		
+		// Update round counter
+		getEl("compete_rounds").value = currentRounds + 1;
+		
+		// Create new row
+		const row = document.createElement("div");
+		const rowWidth = isthin ? (num === "1v1" ? "410px" : "360px") : (num === "1v1" ? "650px" : "450px");
+		Object.assign(row.style, { display: "flex", width: rowWidth, gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
+		
+		const label = document.createElement("span");
+		label.textContent = `${isthin ? "R" : "Round "}${newRoundIndex + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
+		Object.assign(label.style, { width: (isthin ? 20 : 80) + "px", paddingTop: "5px" });
+		
+		const p1 = createPlayerColumn(newRoundIndex, 0, "your ");
+		let p2 = null;
+		
+		row.append(label, p1.container);
+		if (num === "1v1") {
+			p2 = createPlayerColumn(newRoundIndex, 1, "opponent ");
+			row.append(p2.container);
+		}
+		rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText, row, label });
+
+		// Add delete button
+		const deleteBtn = document.createElement("button");
+		deleteBtn.innerHTML = "✕";
+		deleteBtn.classList.add("btn", "btn-danger");
+		Object.assign(deleteBtn.style, { fontSize: "14px", padding: "2px 8px", marginRight: "8px", lineHeight: "1" });
+		deleteBtn.title = "Delete round";
+		deleteBtn.onclick = () => {
+			const currentRounds = parseInt(getEl("compete_rounds").value);
+			if (currentRounds <= 1) {
+				showCustomModal("Cannot delete the last round.");
+				return;
+			}
+			
+			row.remove();
+			const rowIndex = rows.findIndex(r => r.row === row);
+			if (rowIndex !== -1) {
+				rows.splice(rowIndex, 1);
+				compete_dims.splice(rowIndex, 1);
+				compete_customarr.splice(rowIndex, 1);
+				getEl("compete_rounds").value = currentRounds - 1;
+				
+				rows.forEach((r, idx) => {
+					r.label.textContent = `${isthin ? "R" : "Round "}${idx + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
+				});
+				
+				handleCompeteSettingsChange();
+			}
+		};
+		
+		const extraColumn = document.createElement("span");
+		extraColumn.style.width = "120px";
+		extraColumn.style.display = "flex";
+		extraColumn.style.alignItems = "center";
+		extraColumn.appendChild(deleteBtn);
+		
+		row.appendChild(extraColumn);
+		
+		// Insert before the add button
+		container.insertBefore(row, addRoundBtn);
+		
+		handleCompeteSettingsChange();
+	};
+	container.appendChild(addRoundBtn);
+
 	// Setup group mode random button after rows are created
 	if (num === "group") {
 		// Add random header row beneath the rows for group mode
