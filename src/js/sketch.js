@@ -5092,7 +5092,7 @@ function competeSettings(num = compete_type) {
 
     for (let i = 0; i < getEl("compete_rounds").value; i++) {
         const row = document.createElement("div");
-        const rowWidth = isthin ? (num === "1v1" ? "410px" : "450px") : (num === "1v1" ? "650px" : "450px");
+        const rowWidth = isthin ? (num === "1v1" ? "410px" : "360px") : (num === "1v1" ? "650px" : "450px");
         Object.assign(row.style, { display: "flex", width: rowWidth, gap: "10px", alignItems: "flex-start", marginBottom: "10px" });
         
         const label = document.createElement("span");
