@@ -5100,11 +5100,54 @@ function competeSettings(num = compete_type) {
             p2 = createPlayerColumn(i, 1, "opponent ");
             row.append(p2.container);
         }
-	rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText });
+	rows.push({ container1: p1.container, select1: p1.puzzleSelect, optionText1: p1.optionText, container2: p2?.container, select2: p2?.puzzleSelect, optionText2: p2?.optionText, row, label });
 
+        // Add delete button for each row
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = "✕";
+        deleteBtn.classList.add("btn", "btn-danger");
+        Object.assign(deleteBtn.style, { fontSize: "14px", padding: "2px 8px", marginRight: "8px", lineHeight: "1" });
+        deleteBtn.title = "Delete round";
+        deleteBtn.onclick = () => {
+            const currentRounds = parseInt(getEl("compete_rounds").value);
+            if (currentRounds <= 1) {
+                showCustomModal("Cannot delete the last round.");
+                return;
+            }
+            
+            // Remove the row from DOM
+            row.remove();
+            
+            // Remove from rows array
+            const rowIndex = rows.findIndex(r => r.row === row);
+            if (rowIndex !== -1) {
+                rows.splice(rowIndex, 1);
+                
+                // Update compete_dims and compete_customarr
+                compete_dims.splice(rowIndex, 1);
+                compete_customarr.splice(rowIndex, 1);
+                
+                // Update round counter
+                getEl("compete_rounds").value = currentRounds - 1;
+                
+                // Re-label remaining rows
+                rows.forEach((r, idx) => {
+                    r.label.textContent = `${isthin ? "R" : "Round "}${idx + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
+                });
+                
+                handleCompeteSettingsChange();
+            }
+        };
+        
         // Add "Apply to all" button to the first row
         const extraColumn = document.createElement("span");
         extraColumn.style.width = "120px";
+        extraColumn.style.display = "flex";
+        extraColumn.style.alignItems = "center";
+        
+        // Add delete button to all rows
+        extraColumn.appendChild(deleteBtn);
+        
        if (i === 0) {
 			const applyBtn = document.createElement("button");
 			applyBtn.textContent = !isthin ? "Apply row to all" : "↓";
