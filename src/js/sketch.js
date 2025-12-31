@@ -14,12 +14,19 @@ import { showHighscoreModal, hideHighscoreModal } from '../components/HighscoreM
 import { speeddata } from '../data/speeddata.js';
 import { showCustomModal } from '../components/CustomModal.js';
 let userId = localStorage.userId;
+if (!userId && window.crypto) {
+  if (crypto.randomUUID) {
+    userId = crypto.randomUUID();
+  } else {
+    userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
-if (!userId) {
-  userId = crypto.randomUUID();
   localStorage.userId = userId;
 }
-
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003", {auth: {userId}});
 const socket = io("https://api.virtual-cube.net:3003/", {auth: {userId}});
