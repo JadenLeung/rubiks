@@ -5128,6 +5128,8 @@ function competeSettings(num = compete_type) {
             // Remove from rows array
             const rowIndex = rows.findIndex(r => r.row === row);
             if (rowIndex !== -1) {
+                const wasFirstRow = rowIndex === 0;
+                
                 rows.splice(rowIndex, 1);
                 
                 // Update compete_dims and compete_customarr
@@ -5141,6 +5143,36 @@ function competeSettings(num = compete_type) {
                 rows.forEach((r, idx) => {
                     r.label.textContent = `${isthin ? "R" : "Round "}${idx + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
                 });
+                
+                // If we deleted the first row, add the "Apply row to all" button to the new first row
+                if (wasFirstRow && rows.length > 0) {
+                    const newFirstRow = rows[0];
+                    const extraCol = newFirstRow.row.querySelector('span[style*="width: 120px"]');
+                    if (extraCol) {
+                        const applyBtn = document.createElement("button");
+                        applyBtn.textContent = !isthin ? "Apply row to all" : "↓";
+                        applyBtn.classList.add("btn", "btn-secondary");
+                        Object.assign(applyBtn.style, { fontSize: "10px", padding: "1px 6px" });
+                        applyBtn.onclick = () => {
+                            for (let j = 0; j < rows.length; j++) {
+                                rows[j].select1.value = rows[0].select1.value;
+                                if (COMPETE_ADVANCED.checked()) {
+                                    compete_customarr[j][0] = compete_customarr[0][0];
+                                    rows[j].optionText1.textContent = rows[0].optionText1.textContent;
+                                }
+                                if (num === "1v1") {
+                                    rows[j].select2.value = rows[0].select2.value;
+                                    if (COMPETE_ADVANCED.checked()) {
+                                        compete_customarr[j][1] = compete_customarr[0][1];
+                                        rows[j].optionText2.textContent = rows[0].optionText2.textContent;
+                                    }
+                                }
+                            }
+                            handleCompeteSettingsChange();
+                        };
+                        extraCol.appendChild(applyBtn);
+                    }
+                }
                 
                 handleCompeteSettingsChange();
             }
@@ -5232,6 +5264,8 @@ function competeSettings(num = compete_type) {
 			row.remove();
 			const rowIndex = rows.findIndex(r => r.row === row);
 			if (rowIndex !== -1) {
+				const wasFirstRow = rowIndex === 0;
+				
 				rows.splice(rowIndex, 1);
 				compete_dims.splice(rowIndex, 1);
 				compete_customarr.splice(rowIndex, 1);
@@ -5240,6 +5274,36 @@ function competeSettings(num = compete_type) {
 				rows.forEach((r, idx) => {
 					r.label.textContent = `${isthin ? "R" : "Round "}${idx + 1}  ${COMPETE_ADVANCED.checked() && !isthin ? "Custom:" : ""}`;
 				});
+				
+				// If we deleted the first row, add the "Apply row to all" button to the new first row
+				if (wasFirstRow && rows.length > 0) {
+					const newFirstRow = rows[0];
+					const extraCol = newFirstRow.row.querySelector('span[style*="width: 120px"]');
+					if (extraCol) {
+						const applyBtn = document.createElement("button");
+						applyBtn.textContent = !isthin ? "Apply row to all" : "↓";
+						applyBtn.classList.add("btn", "btn-secondary");
+						Object.assign(applyBtn.style, { fontSize: "10px", padding: "1px 6px" });
+						applyBtn.onclick = () => {
+							for (let j = 0; j < rows.length; j++) {
+								rows[j].select1.value = rows[0].select1.value;
+								if (COMPETE_ADVANCED.checked()) {
+									compete_customarr[j][0] = compete_customarr[0][0];
+									rows[j].optionText1.textContent = rows[0].optionText1.textContent;
+								}
+								if (num === "1v1") {
+									rows[j].select2.value = rows[0].select2.value;
+									if (COMPETE_ADVANCED.checked()) {
+										compete_customarr[j][1] = compete_customarr[0][1];
+										rows[j].optionText2.textContent = rows[0].optionText2.textContent;
+									}
+								}
+							}
+							handleCompeteSettingsChange();
+						};
+						extraCol.appendChild(applyBtn);
+					}
+				}
 				
 				handleCompeteSettingsChange();
 			}
@@ -5344,7 +5408,7 @@ function competeSettings(num = compete_type) {
 		const applyColBtn = document.createElement("button");
 		applyColBtn.textContent = "Apply column >>";
 		applyColBtn.classList.add("btn", "btn-secondary");
-		Object.assign(applyColBtn.style, { fontSize: "10px", padding: "6px 10px", marginTop: "6px" });
+		Object.assign(applyColBtn.style, { fontSize: "10px", padding: "6px 10px", marginTop: "6px", width: "auto", alignSelf: "flex-start" });
 		applyColBtn.onclick = () => {
 			for (let j = 0; j < rows.length; j++) {
 				if (rows[j].select2) { // ensure opponent column exists
