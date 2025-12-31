@@ -9359,7 +9359,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(competedata);
+		console.log(MINIMODE, MODE);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab

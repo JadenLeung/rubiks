@@ -4,7 +4,7 @@ import { modalManager } from './ModalManager.js';
 const jumpToPositionIcon = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>`;
 
 // Create a dialog to show solve details
-function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete, mode) {
+function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete, mode, MINIMODE) {
 	console.log("scramble is ", scramble, cubename);
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
@@ -136,7 +136,7 @@ function showSolveDialog(solveNumber, time, moves, scramble, cubename, scramblet
 	const deleteBtn = document.getElementById("solve-detail-delete-btn");
 
 // Show delete button only in normal, cube, or timed mode
-if (mode === "normal" || mode === "cube" || mode === "timed") {
+if (mode === "normal" || mode === "cube" || mode === "timed" || ["practice", "pracPLL"].includes(MINIMODE)) {
 	deleteBtn.style.display = '';
 	deleteBtn.onclick = () => {
 		// Delete from arrays using removeSpecificTime (solveNumber is 1-indexed, arrays are 0-indexed)
@@ -702,7 +702,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 					showSolveDialog(solveNumber, timeText, movesText, curSolveData.scramble ?? curSolveData, curSolveData.cubename, curSolveData.scrambletype, curSolveData.solvestat, () => {
 						// Refresh the table after deletion
 						updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId);
-					}, MODE);
+					}, MODE, MINIMODE);
 				};
 				
 				// Time/You column
