@@ -38,6 +38,10 @@
 			-moz-appearance: textfield;
 			appearance: textfield;
 		}
+		/* Hide scrollbar while keeping scroll functionality */
+		div[style*="overflow-y: auto"]::-webkit-scrollbar {
+			display: none;
+		}
 	</style>
 	<script>
 		// Auto-blur all select elements on change
@@ -541,7 +545,7 @@
 								</tr>
 							</thead>
 						</table>
-						<div style="max-height: 160px; overflow-y: auto;">
+						<div style="max-height: 160px; overflow-y: auto; scrollbar-width: none;">
 							<table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 14px;">
 								<colgroup>
 									<col style="width: 60px;">
