@@ -100,6 +100,7 @@ export default function (p) {
 		back: 0,
 	};
 	const DIRARR = ["top", "bottom", "left", "right", "front", "back"];
+	const ROTATIONS = ["x", "y", "z", "x'", "y'", "z'"];
 	let pracalgs = [];
 	let trackthin = null; // false means thin
 	const bstyle = "btn btn-secondary";
@@ -13729,15 +13730,12 @@ function setGlowColors() {
 		}
 	}
 
-	if (!timer.isRunning || timer.getTime() <= 0) {
+	if (!timer.isRunning || timer.getTime() <= 0 || ROTATIONS.includes(recentmove)) {
 		return;
 	}
 	setLayout();
 
 	if (CUBENAME.includes("Fade Glow")) {
-		if (["x", "y", "z", "x'", "y'", "z'"].includes(recentmove)) {
-			return;
-		}
 		const DIMMING_LENGTH = 15;
 		let cubies = getOuterCubes();
 		if (cubyglows.size == 0) {
