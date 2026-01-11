@@ -7297,6 +7297,11 @@ function practicePLL() {
 				arr.push("y");
 			}
 		}
+		if (pracmode == "PLL" && DIM == 50) {
+			document.getElementById("scramble").innerHTML = `${arr.join(" ")} (${rnd} perm)`;
+		} else {
+			document.getElementById("scramble").innerHTML = `${arr.join(" ")} (${(DIM == 100 && pracmode == "PLL" ? "PBL" : pracmode) + " " + rnd})`;
+		}
 		multipleEasy(0, 6);
 	}
 

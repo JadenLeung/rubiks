@@ -336,6 +336,9 @@ if (isAppleDevice) {
 	// Add copy functionality
 	const copyBtn = document.getElementById("copy-scramble-btn");
 	if (copyBtn && scramble) {
+		if (scramble.includes("(")) {
+			scramble = scramble.split("(")[0];
+		}
 		copyBtn.onclick = (e) => {
 			e.stopPropagation();
 			navigator.clipboard.writeText(scramble).then(() => {
