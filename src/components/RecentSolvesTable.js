@@ -969,9 +969,11 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
         if (movesParOld) movesParOld.style.display = 'none';
     }
 	
-	// Scroll to bottom of the table body
+	// Scroll to bottom of the table body — defer to next frame so DOM is rendered
 	const scrollableDiv = document.querySelector('#recent_solves_container div[style*="overflow-y"]');
 	if (scrollableDiv) {
-		scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+		requestAnimationFrame(() => {
+			scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+		});
 	}
 }
