@@ -1810,10 +1810,10 @@ setInterval(() => {
 			timer.stop();
 			cstep++;
 			endchallenge(false);
-		} else if (timer.isRunning && timer.inspection && timer.getTime() > -3000 && cstep == 1) {
+		} else if (timer.isRunning && timer.inspection == 1 && timer.getTime() > -3000 && cstep == 1) {
+			timer.inspection = 2;
 			fadeInText(1, "3 secs");
 			setTimeout(() => {fadeInText(0, "3 secs")}, 400);
-			cstep = 1.5;
 		}
 	} else if (getEl("practice_container").style.display == "block" && isSolved()) {
 		if (timer.isRunning && timer.getTime() > secs)
