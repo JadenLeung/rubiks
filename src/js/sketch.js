@@ -1719,12 +1719,13 @@ setInterval(() => {
 			else if(greenLayer() && DIM == 100)
 			{
 				stopAndUpdateTimes();
+				easystep++;
 				easy();
 			}
 		}
 		else if(easystep == 7)
 		{
-			if((twoLines() && DIM == 50) || (isSolved() && DIM == 100))
+			if((DIM == 50 && twoLines()) || (isSolved() && DIM == 100))
 			{
 				stopAndUpdateTimes();
 				easystep++;
@@ -8255,7 +8256,6 @@ function twoLines()
 	{
 		let a = testcubes[i][0];
 		let b = testcubes[i][1];
-		console.log(a,b);
 		if(layout[a][0][1][0] == layout[a][1][1][0] && layout[a][2][1][0] == layout[a][1][1][0])
 		{
 			if(layout[b][0][1][0] == layout[b][1][1][0] && layout[b][2][1][0] == layout[b][1][1][0])
@@ -8269,7 +8269,6 @@ function twoLines()
 	{
 		let a = testcubes[i][0];
 		let b = testcubes[i][1];
-		console.log(a,b);
 		if(layout[a][1][0][0] == layout[a][1][1][0] && layout[a][1][2][0] == layout[a][1][1][0])
 		{
 			if(layout[b][1][0][0] == layout[b][1][1][0] && layout[b][1][2][0] == layout[b][1][1][0])
@@ -9579,7 +9578,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(MINIMODE, MODE);
+		console.log(easystep);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
@@ -14370,9 +14369,9 @@ Jaden WR 4x4: 139.71 123.59 116.96
 Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3, 9.72
 
 3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01 4.86
-3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06
+3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06 2.74
 3x3 Easy: 0.8, 0.52s
-3x3 Medium: 15.4s, 13.58s
+3x3 Medium: 15.4s, 13.58s 7.33
 3x3 Easy: 1.4s
 FMC: 193
 Shape Mod All (3x3x2 in 3x3x2 mode): 234.85, 125.58s, 123.2s, 116.1, 91.27, 85.90, 60.69
