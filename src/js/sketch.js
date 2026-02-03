@@ -9579,7 +9579,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(easystep);
+		console.log(cursolvestat);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
@@ -13936,8 +13936,7 @@ function trackAutoSolveProgress(index) {
 		if (stepIndex <= index) {
 			const name = stepObj.name;
 			if (!cursolvestat[name]) {
-				cursolvestat[name] = timer.roundedTime();
-				cursolvestat[name + "moves"] = moves;
+				setSolveStat(name);
 			}
 		}
 	});
