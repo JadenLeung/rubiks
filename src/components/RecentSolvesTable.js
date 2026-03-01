@@ -970,10 +970,37 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
     }
 	
 	// Scroll to bottom of the table body — defer to next frame so DOM is rendered
-	const scrollableDiv = document.querySelector('#recent_solves_container div[style*="overflow-y"]');
-	if (scrollableDiv) {
+	// Use multiple animation frames to ensure DOM has fully settled after structural changes
+	if (container && container.style.display !== 'none') {
 		requestAnimationFrame(() => {
-			scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+			requestAnimationFrame(() => {
+				// Try to find scrollable div, with multiple fallback strategies
+				let scrollableDiv = container.querySelector('div[style*="overflow-y"]');
+				
+				// If not found, look for any div with overflow style (CSS or inline)
+				if (!scrollableDiv) {
+					scrollableDiv = Array.from(container.querySelectorAll('div')).find(el => {
+						const computed = window.getComputedStyle(el);
+						return (computed.overflowY === 'auto' || computed.overflowY === 'scroll') && 
+							   el.scrollHeight > el.clientHeight && el.clientHeight > 0;
+					});
+				}
+				
+				// Last resort: find any div that's scrollable
+				if (!scrollableDiv) {
+					scrollableDiv = Array.from(container.querySelectorAll('div')).find(el => {
+						return el.scrollHeight > el.clientHeight && el.clientHeight > 0;
+					});
+				}
+				
+				if (scrollableDiv) {
+					// Force a reflow to ensure layout has calculated
+					const _ = scrollableDiv.offsetHeight;
+					setTimeout(() => {
+						scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+					}, 150);
+				}
+			});
 		});
 	}
 }
