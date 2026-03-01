@@ -14125,12 +14125,12 @@ socket.on("update-screenshot", (screenshot) => {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
-	// speedmode();
-	modnum = 4;
-    cubemode();
+	// // speedmode();
+	// modnum = 4;
+    // cubemode();
 	// CUBEMAP["2x3x5"]();
-	switchCube("3x3 Cross Glow");
-	CROSSGLOW3x3.style('background-color', "#8ef5ee");
+	// switchCube("3x3 Cross Glow");
+	// CROSSGLOW3x3.style('background-color', "#8ef5ee");
 });
 
 document.getElementById("suggest").addEventListener("click", function(event) {
