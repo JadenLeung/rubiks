@@ -1580,6 +1580,11 @@ p.setup = () => {
 
 	if (!localStorage.username) 
 		localStorage.username = "signedout";
+
+	if(localStorage.username != "signedout" || !localStorage.token) {
+		signOut();
+	}
+
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const r = urlParams.get('room')
@@ -6840,7 +6845,10 @@ function updateScores() {
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
 			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon"};
 	Object.keys(display).forEach((mode) => {
-		const score  = localStorage[mode];
+		let score  = localStorage[mode];
+		if (score == "undefined") {
+			score = null;
+		}
 		if (mode.includes("bweek") && score && JSON.parse(score) != null && score != -1 && score != "null" && JSON.parse(score).score != "null" && JSON.parse(score).week == week) {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + JSON.parse(score).score;
 		} else if (!mode.includes("bweek") && score != null && score != -1 && !(mode == "c_week" && localStorage.cdate != week)) {
@@ -7513,7 +7521,14 @@ async function saveData(username, password, method, al) {
 		keymappings: localStorage.keymappings,
 	};
 	console.log(data);
-	await repeatUntilSuccess(() => putUsers(data, method));
+	const response = await repeatUntilSuccess(() => putUsers(data, method));
+	if (response.error) {
+		alert("Invalid token, signing out");
+		getEl("logindesc").innerHTML = "";
+		signOut();
+		loginmode();
+		return;
+	}
 	successSQL("Data saved");
 	hideHighscoreModal();
 }
@@ -7537,11 +7552,21 @@ async function saveData(username, password, method, al) {
   }
 
 document.getElementById("loaddata").onclick = () => loadData(true);
-async function loadData(times) {
+async function loadData(times, userdata) {
 	if (document.getElementById("logindesc").innerHTML == "") {
 		document.getElementById("logindesc").innerHTML = "Loading data...";
 	}
-	const userdata = await repeatUntilSuccess(() => getUserData(localStorage.username));
+	if (!userdata) {
+		console.log("Self Load")
+		userdata = await repeatUntilSuccess(() => getUserData(localStorage.username));
+	}
+	if (userdata.error) {
+		alert("Invalid token, signing out");
+		signOut();
+		getEl("logindesc").innerHTML = "";
+		loginmode();
+		return;
+	}
 	if (!userdata) {
 		alert("Load failed, please try again");
 		document.getElementById("logindesc").innerHTML = "";
@@ -7571,10 +7596,14 @@ async function loadData(times) {
 	updateScores();
 	setSettings(userdata);
 }
-document.getElementById("signout").onclick = () => {
+document.getElementById("signout").onclick = signOut;
+
+function signOut(){
 	document.getElementById("l_message").innerHTML = "";
 	localStorage.username = "signedout";
-};
+	localStorage.token = "";
+}
+
 document.getElementById("l_submit").onclick = () => MODE == "account" ? submitAccount() : submitLogin();
 async function submitLogin() {
 	const username = document.getElementById("username").value;
@@ -7598,8 +7627,9 @@ async function submitLogin() {
 		loginmode();
 		document.getElementById("l_message").innerHTML = "Logged in successfully! Your settings and high scores have been updated.";
 		localStorage.username = username;
-	
-		loadData(true);
+		localStorage.token = response.token;
+		let userData = response.userData;
+		loadData(true, userData);
 	}
 }
 async function submitAccount() {

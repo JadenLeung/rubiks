@@ -45,22 +45,27 @@ export async function modeData(mode) {
 }
 
 
-export async function getUserData(username) {
-    const url = `${rootURL}/api/users2?username=${username}`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
+export async function getUserData() {
+  const token = localStorage.token; 
+  const url = `${rootURL}/api/users2`; 
   
-      const json = await response.json();
-      console.log(json);
-      return json;
-    } catch (error) {
-      console.error(error.message);
-      //return null;
-    }
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const json = await response.json();
+    console.log(json);
+    return json;
+  } catch (error) {
+    console.error(error.message);
+    //return null;
   }
+}
 
   export async function hasUser(username, password) {
     const url = `${rootURL}/api/hasuser?username=${username}&password=${password}`;
@@ -79,21 +84,25 @@ export async function getUserData(username) {
   }
 
   export async function putUsers(data, method) {
-    //data = {waitfor: 0, ...data};
-    console.log("Attemping to upload");
-    await fetch(`${rootURL}/api/users2`, {
-		method: method,
-		body: JSON.stringify([data]),
-		headers: {
-		  "Content-type": "application/json; charset=UTF-8"
-		}
-	  }).then((response) => {
-        console.log(response);
-    }).catch((err) => {
-      console.log("Error " + err);
+  const token = localStorage.token; 
+  console.log("Attemping to upload");
+  try {
+    const response = await fetch(`${rootURL}/api/users2`, {
+      method: method,
+      body: JSON.stringify([data]),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        'Authorization': `Bearer ${token}`
+      }
     });
-    return true;
+    
+    const json = await response.json();
+    return json;
+  } catch (err) {
+    console.log("Error " + err);
+    throw err;
   }
+}
 
   export async function putSuggestion(data, method) {
     console.log("Attemping to upload");
