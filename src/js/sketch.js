@@ -1581,7 +1581,7 @@ p.setup = () => {
 	if (!localStorage.username) 
 		localStorage.username = "signedout";
 
-	if(localStorage.username != "signedout" || !localStorage.token) {
+	if(localStorage.username != "signedout" && !localStorage.token) {
 		signOut();
 	}
 
