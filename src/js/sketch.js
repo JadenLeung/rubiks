@@ -7531,6 +7531,7 @@ async function saveData(username, password, method, al) {
 	}
 	successSQL("Data saved");
 	hideHighscoreModal();
+	return response;
 }
 
 
@@ -7652,9 +7653,10 @@ async function submitAccount() {
 		return;
 	}
 	document.getElementById('password').value = '';
-	await saveData(username, password, "PUT", false);
+	const response = await saveData(username, password, "PUT", false);
 	document.getElementById("l_message").innerHTML = "Account Created! You are logged in.";
 	localStorage.username = username;
+	localStorage.token = response.token;
 }
 function successSQL(text, id = "logindesc") {
 	document.getElementById(id).innerHTML = text;
