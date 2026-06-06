@@ -67,13 +67,21 @@ export async function getUserData() {
   }
 }
 
-  export async function hasUser(username, password) {
-    const url = `${rootURL}/api/hasuser?username=${username}&password=${password}`;
+export async function hasUser(username, password) {
+    const url = `${rootURL}/api/hasuser`;
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
+      
       const json = await response.json();
       console.log(json);
       return json;
@@ -81,7 +89,7 @@ export async function getUserData() {
       console.error(error.message);
       return null;
     }
-  }
+}
 
   export async function putUsers(data, method) {
   const token = localStorage.token; 
