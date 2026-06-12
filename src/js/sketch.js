@@ -27,9 +27,15 @@ if (!userId && window.crypto) {
 
   localStorage.userId = userId;
 }
+
+const servers = {
+	main: "https://api.virtual-cube.net:3003/",
+	backup: "https://snake-efhkgffpc0gteee3.eastus-01.azurewebsites.net/",
+}
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003", {auth: {userId}});
-const socket = io("https://api.virtual-cube.net:3003/", {auth: {userId}});
+let socket = io("https://api.virtual-cube.net:3003/", {auth: {userId}});
+let server = "main";
 
 
 //Thanks to Antoine Gaubert https://github.com/angauber/p5-js-rubik-s-cube
@@ -160,12 +166,178 @@ export default function (p) {
 	let m_4step = 0;
 	let ma_data = {};
 	let bstep = 0, cstep = 0, dstep = false, mastep = 0, comstep = 0;
-	socket.on("connect_error", (err) => {
-		if (comstep > 0) {
-			alert("You have been disconnected from the server.");
-			regular();
-		}
-	});
+
+	function setupSocketListeners() {
+		socket.on("connect_error", (err) => {
+			if (comstep > 0) {
+				alert("You have been disconnected from the server.");
+				regular();
+			}
+		});
+
+		socket.on("connect", () => {
+			console.log("Youre are connected with id: ", socket.id)
+		});
+
+		socket.on("restart_available", () => {
+			COMPETE_AGAIN.html("Play Again");
+			COMPETE_AGAIN.removeAttribute('disabled');
+		})
+
+		socket.on("refresh_rooms", (data, r) => {
+			if (MODE == "compete" || MODE == "competing") {
+				competedata = data;
+				enterLobby(data, r)
+			} else {
+				socket.emit("leave-room", room);
+			}
+		});
+
+		socket.on("joined_late", (data, r) => {
+			if (MODE == "compete") {
+				saveao5 = [ao5, mo5, solvedata, movesarr];
+				ao5 = [];
+				mo5 = [];
+				solvedata = [];
+				movesarr = [];
+				MODE = "competing";
+				competedata = data;
+				room = r;
+				console.log("I am joined");
+				getEl("in_match").style.display = "block";
+				setDisplay("none", ["lobby", "practice_container"]);
+				setDisplay("inline", ["slider_div", "speed"]);
+				setDisplay("block", ["outertime"]);
+				timer.reset();
+				timer.stop();
+				changeInput();
+				canMan = false;
+				if (data.stage == "ingame") {
+					if (!data.solved[socket.id]) {
+						comstep = 2;
+						giveUp();
+					} else {
+						compete_solved = true;
+						comstep = 3;
+						if (data.solved[socket.id] == "DNF") {
+							timer.setDNF();
+						} else {
+							timer.setTime(data.solved[socket.id] * 1000, true);
+						}
+					}
+				} else {
+					comstep = 3;
+					if (data.stage == "results") {
+						if (data.solved[socket.id]) {
+							if (data.solved[socket.id] == "DNF") {
+								timer.setDNF();
+							} else {
+								timer.setTime(data.solved[socket.id] * 1000, true);
+							}
+						} else {
+							timer.setDNF();
+						}
+					}
+					competeSolved(data);
+				}
+			}
+		})
+
+		socket.on("room_change", rooms => {
+			competerooms = rooms;
+			displayPublicRooms();
+		})
+
+		socket.on("started-match", (data, scramble) => {
+			MODE = "competing";
+			setDisplay("none", ["waitingroom", "startmatch", "practice_container"]);
+			setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time"]);
+			setDisplay("block", ["times_par"])
+			changeInput();
+			saveao5 = [ao5, mo5, solvedata, movesarr];
+			ao5 = [];
+			mo5 = [];
+			solvedata = [];
+			movesarr = [];
+			comstep = 1;
+			startRound(data, scramble);
+		});
+
+		socket.on("next-match", (data, scramble) => startRound(data, scramble))
+
+		socket.on("update-data", (data) => {competedata = data; displayAverage();});
+
+		socket.on("all-solved", data => competeSolved(data));
+
+		socket.on("switched-blindfold", (data) => {
+			competedata = data;
+			toggleBlindfold(data.data.blinded == socket.id);
+		})
+
+		socket.on("bot_connected", (scramble) => {
+			realtop = TOPWHITE.value()[0].toLowerCase();
+			special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+			quickSolve();
+			if (MODE == "bot") {
+				reSetup();
+			}
+			if (MODE != "bot") {
+				document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
+				document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
+					: "Winner gets a point, first to 5 wins!";
+				getEl("r_iframe").style.display = "block";
+			}
+			console.log("TRYNA SCRAMBLE", scramble)
+			changeArr(scramble);
+			getEl("scramble").innerHTML = scramble;
+			multiple2("scramble");
+			waitStopTurning(true, "virtual_race");
+			juststarted = true;
+		});
+
+		socket.on("started_race", () => {
+			if (MODE == "bot") {
+				canMan = true;
+				race = 2;
+				solveCube();
+			}
+		});
+
+		socket.on("race_won", (winner) => {
+			if (winner == 0) {
+				raceDetect();
+			} else {
+				raceWinner(1);
+			}
+			timer.stop();
+			stopMoving();
+		})
+
+		socket.on("sending-message", (message, id, names, image) => {
+			sendMessage("person", message, id, names, image)
+		})
+
+		socket.on("joined_room", (room, id, name, stage) => {
+			console.log("JOINED ROOM", id, socket.id, stage);
+			if (id == socket.id && stage == "lobby") {
+				getEl("practice_container").style.display = "block";
+				setDisplay("none", ["keymap", "input2"]);
+				setDisplay("inline", ["shuffle_div", "reset_div", "outertime", "undo", "redo"]);
+			}
+			sendMessage("joined", {room : room, id : id, name : name})
+		})
+
+		socket.on("left_room", (room, id, names) => {
+			sendMessage("left", {room : room, id : id, name : names[id]})
+		})
+
+		socket.on("update-screenshot", (screenshot) => {
+			getEl("opponent_ss").src = screenshot;
+		})
+	}
+
+	setupSocketListeners();
+
 	let OLL, PLL, PLLPRAC, OLLPRAC, F2LPRAC;
 	let competedata = {};
 	let competerooms = {};
@@ -4151,79 +4323,6 @@ function progressUpdate(time = 0) {
 	}
 }
 
-socket.on("connect", () => {
-	console.log("Youre are connected with id: ", socket.id)
-});
-
-socket.on("restart_available", () => {
-	COMPETE_AGAIN.html("Play Again");
-	COMPETE_AGAIN.removeAttribute('disabled');
-})
-
-socket.on("refresh_rooms", (data, r) => {
-	if (MODE == "compete" || MODE == "competing") {
-		competedata = data;
-		enterLobby(data, r)
-	} else {
-		socket.emit("leave-room", room);
-	}
-});
-
-socket.on("joined_late", (data, r) => {
-	if (MODE == "compete") {
-		saveao5 = [ao5, mo5, solvedata, movesarr];
-		ao5 = [];
-		mo5 = [];
-		solvedata = [];
-		movesarr = [];
-		MODE = "competing";
-		competedata = data;
-		room = r;
-		console.log("I am joined");
-		getEl("in_match").style.display = "block";
-		setDisplay("none", ["lobby", "practice_container"]);
-		setDisplay("inline", ["slider_div", "speed"]);
-		setDisplay("block", ["outertime"]);
-		timer.reset();
-		timer.stop();
-		changeInput();
-		canMan = false;
-		if (data.stage == "ingame") {
-			if (!data.solved[socket.id]) {
-				comstep = 2;
-				giveUp();
-			} else {
-				compete_solved = true;
-				comstep = 3;
-				if (data.solved[socket.id] == "DNF") {
-					timer.setDNF();
-				} else {
-					timer.setTime(data.solved[socket.id] * 1000, true);
-				}
-			}
-		} else {
-			comstep = 3;
-			if (data.stage == "results") {
-				if (data.solved[socket.id]) {
-					if (data.solved[socket.id] == "DNF") {
-						timer.setDNF();
-					} else {
-						timer.setTime(data.solved[socket.id] * 1000, true);
-					}
-				} else {
-					timer.setDNF();
-				}
-			}
-			competeSolved(data);
-		}
-	}
-})
-
-socket.on("room_change", rooms => {
-	competerooms = rooms;
-	displayPublicRooms();
-})
-
 function capital(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -4512,23 +4611,6 @@ function competeAgain() {
 	});
 }
 
-socket.on("started-match", (data, scramble) => {
-	MODE = "competing";
-	setDisplay("none", ["waitingroom", "startmatch", "practice_container"]);
-	setDisplay("inline", ["in_match", "speed", "slider_div", "undo", "redo","outertime", "time"]);
-	setDisplay("block", ["times_par"])
-	changeInput();
-	saveao5 = [ao5, mo5, solvedata, movesarr];
-	ao5 = [];
-	mo5 = [];
-	solvedata = [];
-	movesarr = [];
-	comstep = 1;
-	startRound(data, scramble);
-});
-
-socket.on("next-match", (data, scramble) => startRound(data, scramble))
-
 function startRound(data, scramble) {
 	if (MODE != "competing") {
 		return;
@@ -4617,8 +4699,6 @@ function startRound(data, scramble) {
 		getEl("match_INSTRUCT").innerHTML = matchInstructObj[competeGoal()] ;
 	}, 500);
 }
-
-socket.on("update-data", (data) => {competedata = data; displayAverage();});
 
 function playerIndex() {
 	if (competedata.data.type != "1v1" || competedata.data.leader == socket.id) {
@@ -4772,8 +4852,6 @@ function competePoints(data, el = "match_INSTRUCT4") {
 	getEl(el).innerHTML = str;
 	return myrank;
 }
-
-socket.on("all-solved", data => competeSolved(data));
 
 function competeSolved(data) {
 	if (MODE != "competing") {
@@ -5953,11 +6031,6 @@ function switchBlindfold() {
 	}
 	socket.emit("switch_blindfold", room, blinded, blindTime());
 }
-
-socket.on("switched-blindfold", (data) => {
-	competedata = data;
-	toggleBlindfold(data.data.blinded == socket.id);
-})
 
 function toggleBlindfold(blinded) {
 	getEl("competeswitch").style.display = "none";
@@ -7712,7 +7785,7 @@ function speedRace2(){
 	document.getElementById("s_instruct2").innerHTML = "Your points: <div style = 'color: green; display: inline;'>" + roundresult[0] + "</div><br>Bot points: <div style = 'color: red; display: inline;'>" + roundresult[1] + "</div>";
 	if (MINIMODE == "virtual") {
 		if (round == 1) {
-			getEl("r_iframe").src = `${window.location.href}/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&speed=${RACE_SLIDER.value()}&delay=${RACE_DELAY_SLIDER.value()}`;
+			getEl("r_iframe").src = `${window.location.href}/?race=true&id=${socket.id}&dim=${DIM == 50 ? "3x3" : "2x2"}&speed=${RACE_SLIDER.value()}&delay=${RACE_DELAY_SLIDER.value()}&server=${server}`;
 		} else {
 			socket.emit("bot_shuffle", socket.id, DIM);
 		}
@@ -7767,6 +7840,8 @@ function raceHide() {
 	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
 }
 function botConnect(obj) {
+	server = obj.get('server');
+	updateServer();
 	switchCube(obj.get('dim'));
 	fullScreen(true);
 	var elements = document.getElementsByClassName('normal');
@@ -7786,46 +7861,7 @@ function botConnect(obj) {
 	DELAY = obj.get('delay');
 	race = 2;
 }
-socket.on("bot_connected", (scramble) => {
-	realtop = TOPWHITE.value()[0].toLowerCase();
-	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
-	quickSolve();
-	if (MODE == "bot") {
-		reSetup();
-	}
-	if (MODE != "bot") {
-		document.getElementById("s_INSTRUCT").innerHTML = "Round " + round;
-		document.getElementById("s_instruct").innerHTML = MINIMODE == "physical" ? "Scramble YOUR OWN cube to the given scramble. Release space/touch screen to start solving, and press any key/touch anywhere to stop. Winner gets a point, first to 5 wins!"
-				: "Winner gets a point, first to 5 wins!";
-		getEl("r_iframe").style.display = "block";
-	}
-	console.log("TRYNA SCRAMBLE", scramble)
-	changeArr(scramble);
-	getEl("scramble").innerHTML = scramble;
-	multiple2("scramble");
-	waitStopTurning(true, "virtual_race");
-	juststarted = true;
-});
-
-socket.on("started_race", () => {
-	if (MODE == "bot") {
-		canMan = true;
-		race = 2;
-		solveCube();
-	}
-});
-
-socket.on("race_won", (winner) => {
-	if (winner == 0) {
-		raceDetect();
-	} else {
-		raceWinner(1);
-	}
-	timer.stop();
-	stopMoving();
-})
-
-function raceTimes(winner){
+function raceTimes(winner) {
 	let str = "";
 	for(let i = 2; i < roundresult.length; i++){
 		if(roundresult[i][1] == 0)
@@ -13401,24 +13437,6 @@ function sendPastedImage(imageDataUrl) {
 		room, localStorage.username, true);
 }
 
-socket.on("sending-message", (message, id, names, image) => {
-	sendMessage("person", message, id, names, image)
-})
-
-socket.on("joined_room", (room, id, name, stage) => {
-	console.log("JOINED ROOM", id, socket.id, stage);
-	if (id == socket.id && stage == "lobby") {
-		getEl("practice_container").style.display = "block";
-		setDisplay("none", ["keymap", "input2"]);
-		setDisplay("inline", ["shuffle_div", "reset_div", "outertime", "undo", "redo"]);
-	}
-	sendMessage("joined", {room : room, id : id, name : name})
-})
-
-socket.on("left_room", (room, id, names) => {
-	sendMessage("left", {room : room, id : id, name : names[id]})
-})
-
 const enterActions = {
   "#test_alg_div": testAlg,
   "#timegone4": removeSpecificTime,
@@ -14151,10 +14169,6 @@ function competeScreenshot() {
 	socket.emit("send-screenshot", str, getOp());
 }
 
-socket.on("update-screenshot", (screenshot) => {
-	getEl("opponent_ss").src = screenshot;
-})
-
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
 	// // speedmode();
@@ -14360,6 +14374,18 @@ getEl("keyboardcheck").addEventListener('change', () => {
 	getEl("keyboardtitle2").style.display = getEl("keyboardcheck").checked ? "inline" : "none";
   changeKeys();
 });
+
+function updateServer() {
+	socket = io(servers[server], {auth: {userId}});
+	setupSocketListeners();
+	socket.emit("get-rooms");
+}
+
+getEl("server_select").addEventListener('change', () => {
+	server = getEl("server_select").value;
+	updateServer();
+});
+
 
 window.addEventListener('keydown', (e) => {
 	if (e.target.localName != 'input') {   // if you need to filter <input> elements
