@@ -1561,9 +1561,9 @@ p.setup = () => {
 	FULLSCREEN.attribute('title', 'Fullscreen');
 
 	ALIGN = p.createButton('');
-	setButton(ALIGN, "align", 'bi bi-camera', 'font-size: 40px; height: 60px; width: 60px; z-index: 2; border: none;', alignIt);
+	setButton(ALIGN, "align", 'bi bi-box', 'font-size: 40px; height: 60px; width: 60px; z-index: 2; border: none;', alignIt);
 	ALIGN.position(30,window.innerHeight-145);
-	ALIGN.attribute("title", "Align Camera");
+	ALIGN.attribute("title", "Align Cube");
 	ALIGN.style("background-color: transparent; color: " + document.body.style.color);
 
 	GENERATE = p.createButton('Generate');
@@ -2233,6 +2233,7 @@ setInterval(() => {
 		averagetimedata.oplength = competedata.round;
 	}
 	getEl("question").style.display = CUBENAME.toLowerCase().includes("glow") ? "inline" : "none";
+	getEl("align").style.display = SWIPEROTATE.checked() ? "none" : "block";
 }, 10)
 //forever
 function reSetup(rot) {
@@ -14472,6 +14473,8 @@ Sand	8.28	1
 //WORLD RECORD SCRAMBLES 2x2
 //L' R B L' D L R' U F' B L R' F U L F' B' F R2 (4)
 /*
+
+1:35
 
 Im a scare to all the crows
 When I stand among the rows
