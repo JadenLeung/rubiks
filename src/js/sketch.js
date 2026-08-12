@@ -877,7 +877,7 @@ p.setup = () => {
 	refreshButtons();
 
 
-	setDisplay("none", ["mode4", "link1", "timegone"]);
+	setDisplay("none", ["home", "link1", "timegone"]);
 
 
 	TWOBYTWO = p.createButton('2x2');
@@ -2209,8 +2209,10 @@ setInterval(() => {
 			}
 		}
 	}
-	if (isMobile() && isthin) {
+	if (isthin) {
 		getEl("inputscram").style.display = "none";
+		getEl("or_instruct4").style.display = "none";
+		setDisplay("none", ["inputscram", "or_instruct4", "mode", "mode2", "mode3", "mode7"])
 	}
 	if (SWIPEROTATE.checked()) {
 		if (CAM.getRotationScale() != 0)
@@ -4028,7 +4030,7 @@ function regular(nocustom){
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
 	setDisplay("block", ["or_instruct", "or_instruct2", "or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram", "timeselect"]);
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
-	setDisplay("none", ["or_instruct3", "points_par", "readybot", "mode4", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
+	setDisplay("none", ["or_instruct3", "points_par", "readybot", "home", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
 		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
@@ -4126,7 +4128,7 @@ function cubemode()
 	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct", 
 		"or_instruct2", "or_instruct4", "custom2", "custom4"]);
 	setDisplay("block", ["scram", "input", "allmodes", "modarrow", "cube"]);
-	setDisplay("inline", ["mode4"]);
+	setDisplay("inline", ["home"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
 	else document.getElementById("customb").style.display = "none"; 
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -4302,7 +4304,7 @@ function competemode() {
 			"or_instruct", "or_instruct2", "or_instruct4", "recent_solves_container", "keymap", "show_keyboard"
 	]);
 	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
-	setDisplay("inline", ["mode4"]);
+	setDisplay("inline", ["home"]);
 	if (isthin) {
 		setDisplay("none", ["cnv_div", "chat_instruct", "chat-container", "competeinput"]);
 	}
@@ -6065,6 +6067,7 @@ function challengemode() {
 	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", 
 		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
+	if (isMobile()) getEl("home").style.display = 
 	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
@@ -8994,12 +8997,12 @@ function displayTimes()
 	if (MODE == "timed") {
 		setDisplay("block", ["alltimes", "timegone", "link1"]);
 		if (!ismid) {
-			setDisplay("inline", ["mode4"]);
+			setDisplay("inline", ["home"]);
 			setDisplay("none", ["mode", "mode2", "mode3", "mode7", "or_instruct4"]);
 
 		} else {
 			setDisplay("inline", ["mode", "mode2", "mode3", "mode7"]);
-			setDisplay("none", ["mode4"]);
+			setDisplay("none", ["home"]);
 			setDisplay("block", ["or_instruct4"]);
 		}
 		setDisplay(mo5.length == 0 && MODE == "timed" ? "block" : "none", ["beforetime"]);
@@ -10368,7 +10371,7 @@ function refreshButtons()
 	
 
 	REGULAR2 = p.createButton(' Home');
-	setButton(REGULAR2, "mode4", 'btn btn-secondary bi bi-arrow-return-left', 'font-size:12px;', regular.bind(null, 0));
+	setButton(REGULAR2, "home", 'btn btn-secondary bi bi-arrow-return-left', 'font-size:12px;', regular.bind(null, 0));
 	
 	// Shape Mods
 	ONEBYTHREE = setCubeButton(ONEBYTHREE, "cube1", "1x3x3");
