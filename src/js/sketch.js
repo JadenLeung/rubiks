@@ -2212,7 +2212,7 @@ setInterval(() => {
 	if (isthin) {
 		getEl("inputscram").style.display = "none";
 		getEl("or_instruct4").style.display = "none";
-		setDisplay("none", ["inputscram", "or_instruct4", "mode", "mode2", "mode3", "mode7"])
+		setDisplay("none", ["inputscram", "or_instruct4", "mode", "mode2", "mode3", "mode7", "ID2"])
 	}
 	if (SWIPEROTATE.checked()) {
 		if (CAM.getRotationScale() != 0)
@@ -6067,7 +6067,7 @@ function challengemode() {
 	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", 
 		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
-	if (isMobile()) getEl("home").style.display = 
+	if (isMobile()) getEl("home").style.display = "block";
 	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
 	SCRAM.value("Normal");
 	var elements = document.getElementsByClassName('normal');
