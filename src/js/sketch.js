@@ -29,12 +29,12 @@ if (!userId && window.crypto) {
 }
 
 const servers = {
-	main: "https://api.virtual-cube.net:3003/",
+	main: "https://battle.virtual-cube.net/",
 	backup: "https://snake-efhkgffpc0gteee3.eastus-01.azurewebsites.net/",
 }
 // const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
 // const socket = io("http://localhost:3003", {auth: {userId}});
-let socket = io("https://api.virtual-cube.net:3003/", {auth: {userId}});
+let socket = io(servers.main, {auth: {userId}});
 let server = "main";
 
 
