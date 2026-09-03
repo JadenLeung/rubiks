@@ -30,10 +30,11 @@ if (!userId && window.crypto) {
 
 const servers = {
 	main: "https://battle.virtual-cube.net/",
+	// main: "http://localhost:3003",
 	backup: "https://snake-efhkgffpc0gteee3.eastus-01.azurewebsites.net/",
 }
-// const socket = io("https://giraffe-bfa2c4acdpa4ahbr.canadacentral-01.azurewebsites.net/");
-// const socket = io("http://localhost:3003", {auth: {userId}});
+
+
 let socket = io(servers.main, {auth: {userId}});
 let server = "main";
 
@@ -332,7 +333,20 @@ export default function (p) {
 		})
 
 		socket.on("update-screenshot", (screenshot) => {
-			getEl("opponent_ss").src = screenshot;
+			if (typeof screenshot === "string") {
+				getEl("opponent_ss").src = screenshot;
+				return;
+			}
+
+			const screenshotBlob = screenshot instanceof Blob
+				? screenshot
+				: new Blob([screenshot], { type: "image/jpeg" });
+			const screenshotUrl = URL.createObjectURL(screenshotBlob);
+			const opponentScreenshot = getEl("opponent_ss");
+			const previousScreenshotUrl = opponentScreenshot.dataset.objectUrl;
+			opponentScreenshot.src = screenshotUrl;
+			opponentScreenshot.dataset.objectUrl = screenshotUrl;
+			if (previousScreenshotUrl) URL.revokeObjectURL(previousScreenshotUrl);
 		})
 	}
 
@@ -14159,9 +14173,11 @@ function competeScreenshot() {
 	if (competedata.data.type != "1v1" || compete_solved) {
 		return;
 	}
-	let str = p.canvas.toDataURL('image/jpeg', 0.15);
-	console.log("room is ", room);
-	socket.emit("send-screenshot", str, getOp());
+	p.canvas.toBlob((screenshotBlob) => {
+		if (!screenshotBlob) return;
+		console.log("room is ", room);
+		socket.emit("send-screenshot", screenshotBlob, getOp());
+	}, "image/jpeg", 0.15);
 }
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
