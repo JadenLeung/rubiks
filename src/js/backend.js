@@ -1,5 +1,6 @@
 let visited = {};
-const rootURL = "https://elephant4.azurewebsites.net";
+// const rootURL = "https://elephant4.azurewebsites.net";
+const rootURL = "https://sql.virtual-cube.net";
 // const rootURL = "http://localhost:3002";
 
 export async function getIP() {
