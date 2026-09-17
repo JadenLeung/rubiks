@@ -363,14 +363,6 @@ export default function (p) {
 		"Cuby Glow": "Build the cube, cuby by cuby. Solving the glowing cubies unlocks two more.",
 		"Fade Glow": "Cubies glow when they are correctly positioned, and gradually dim when they are not.",
 	}
-	let REGULAR;
-	let SPEEDMODE;
-	let TIMEDMODE;
-	let MOVESMODE;
-	let REGULAR2;
-	let SPEEDMODE2;
-	let TIMEDMODE2;
-	let MOVESMODE2;
 	let TIMEGONE, COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND;
 	let audioon = true;
 	let input = "keyboard";
@@ -400,7 +392,7 @@ export default function (p) {
 	let inspect = false;
 	let giveups = 0;
 	let ONEBYTHREE, SANDWICH, CUBE3, CUBE4, CUBE5, CUBE13, GLOW3x3, ANTIGLOW3x3, SIDEGLOW2x2, SIDEGLOW3x3, CROSSGLOW3x3, CUBYGLOW2x2, CUBYGLOW3x3, FADEGLOW3x3;
-	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDMODE, IDINPUT, GENERATE, SETTINGS, SWITCHER,
+	let SEL, SEL2, SEL3, SEL4, SEL5, SEL6, SEL7, IDINPUT, GENERATE, SETTINGS, SWITCHER,
 		VOLUME, HOLLOW, TOPWHITE, TOPPLL, SOUND, KEYBOARD, FULLSCREEN, ALIGN, DARKMODE, BANDAGE_SELECT, SMOOTHBANDAGE, SWIPEROTATE,
 		BANDAGE_SLOT, CUSTOMSHIFT, PRACTICE_SEL, COMPETE_ADVANCED, COMPETE_INSPECTION;
 	let RESET, RESET2, RESET3, UNDO, REDO, SHUFFLE_BTN;
@@ -660,11 +652,9 @@ function setWidth() {
 	if (!ismid) {
 		document.getElementById("fullscreen").style.display = "block";
 		if(FULLSCREEN) FULLSCREEN.position(cnv_div.offsetWidth-50,window.innerHeight-145);
-		document.getElementById('ID_left').appendChild(document.getElementById('ID1'));
 		document.getElementById('timed_left').appendChild(document.getElementById('timed_all'));
 	} else {
 		document.getElementById("fullscreen").style.display = "none";
-		document.getElementById('ID_right').appendChild(document.getElementById('ID1'));
 		document.getElementById('timed_right').appendChild(document.getElementById('timed_all'));
 	}
 	if (isthin == trackthin) return;
@@ -685,7 +675,6 @@ function setWidth() {
 		getEl("loaddata").innerHTML = ""
 		getEl("savedata").innerHTML = ""
 		getEl("banner").style.paddingBottom = "10px";
-		getEl("or_instruct4").style.paddingTop = "10px";
 	} else {
 		ZOOM3 = -170;
 		ZOOM2 = -25;
@@ -874,20 +863,12 @@ p.setup = () => {
 		BORDER_SLIDER.parent("border");
 		BORDER_SLIDER.style('width', '100px');
 	}
-	REGULAR = p.createButton('Normal Mode');
-	SPEEDMODE = p.createButton('Speed Mode');
-	TIMEDMODE = p.createButton('Stats Mode');
-	MOVESMODE = p.createButton('Misc Challenges');
-	IDMODE = p.createButton('Save/Load ID');
+	// Legacy mode buttons removed in favor of the refreshed button set created in refreshButtons().
 	SETTINGS = p.createButton('');
 	SWITCHER = p.createButton('');
 	setButton(SWITCHER, "switcher", 'btn btn-primary', 'text-align:center; font-size:20px;',() => {if (DIM2 == 50) changeTwo() 
 		else changeThree()});
 	VOLUME = p.createButton('');
-	REGULAR2 = p.createButton('Normal');
-	SPEEDMODE2 = p.createButton('Speed');
-	TIMEDMODE2 = p.createButton('Stat');
-	MOVESMODE2 = p.createButton('FMC');
 	refreshButtons();
 
 
@@ -2106,10 +2087,6 @@ setInterval(() => {
 	} 
 	getEl("peeks").innerHTML = `${peeks} ${!isthin ? `peek${peeks == 1 ? "" : "s"}` : ""}`;
 	getEl("peeks").style.display = isthin ? "inline" : "block";
-	if (MODE == "speed") SPEEDMODE.style('background-color', '#8ef5ee');
-	if (MODE == "timed") { TIMEDMODE2.style('background-color', '#8ef5ee');  TIMEDMODE.style('background-color', '#8ef5ee');}
-	if (MODE == "normal") REGULAR.style('background-color', '#8ef5ee');
-	if (MODE == "moves") MOVESMODE.style('background-color', '#8ef5ee');
 	if (MODE == "moves") {
 		setDisplay(isBlinded ? (isthin ? "inline" : "block") : "none", ["peekbutton"]);
 	} else {
@@ -2225,8 +2202,7 @@ setInterval(() => {
 	}
 	if (isthin) {
 		getEl("inputscram").style.display = "none";
-		getEl("or_instruct4").style.display = "none";
-		setDisplay("none", ["inputscram", "or_instruct4", "mode", "mode2", "mode3", "mode7", "ID2"])
+		setDisplay("none", ["inputscram", "ID2"])
 	}
 	if (SWIPEROTATE.checked()) {
 		if (CAM.getRotationScale() != 0)
@@ -4039,10 +4015,9 @@ function regular(nocustom){
 	}
 	bandaged = [];
 	refreshButtons();
-	REGULAR.style('background-color', '#8ef5ee');
 	//REGULAR.class('btn btn-secondary');
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
-	setDisplay("block", ["or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram", "timeselect"]);
+	setDisplay("block", ["test_alg_div", "type3", "settings", "scram", "timeselect"]);
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "home", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
@@ -4115,7 +4090,7 @@ function timedmode()
 	TIMEDMODE.style('background-color', '#8ef5ee');
 	TIMEDMODE2.style('background-color', "#8ef5ee");
 
-	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1"]);
+	setDisplay("none", ["settings", "or_instruct3", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1"]);
 	setDisplay("block", ["type3"]);
 	document.getElementById("or_instruct3").innerHTML = "";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -4136,7 +4111,7 @@ function cubemode()
 	regular(true);
 	reSetup();
 	MODE = "cube";
-	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct4", "custom2", "custom4"]);
+	setDisplay("none", ["settings", "solve", "type3", "custom2", "custom4"]);
 	setDisplay("block", ["scram", "input", "allmodes", "modarrow", "cube"]);
 	setDisplay("inline", ["home"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
@@ -4158,8 +4133,6 @@ function idmode()
 	stopMoving();
 	inp.value("");
 	refreshButtons();
-	REGULAR.style('background-color', '#10caf0');
-	IDMODE.style('background-color', '#8ef5ee');
 
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
@@ -4310,8 +4283,8 @@ function competemode() {
 	displayPublicRooms();
 	modeData("compete");
 	regular();
-	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
-			"or_instruct4", "recent_solves_container", "keymap", "show_keyboard"
+	setDisplay("none", ["test_alg_div", "input", "scram", "challengeback", "settings", "timeselect","type3",
+			"recent_solves_container", "keymap", "show_keyboard"
 	]);
 	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
 	setDisplay("inline", ["home"]);
@@ -6074,7 +6047,7 @@ function challengemode() {
 	regular(true);
 	MODE = "challenge";
 	refreshButtons();
-	setDisplay("none", ["test_alg_div", "ID1", "input", "scram", "challengeback", "settings", 
+	setDisplay("none", ["test_alg_div", "input", "scram", "challengeback", "settings", 
 		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	if (isMobile()) getEl("home").style.display = "block";
@@ -6668,10 +6641,9 @@ function settingsmode()
 	fullScreen(false);
 	//quickSolve();
 	refreshButtons();
-	REGULAR.style('background-color', '#10caf0');
 	SETTINGS.style('background-color: transparent; color: " + document.body.style.color')
 	setDisplay("none", ["shuffle_div", "reset_div", "solve", "input", "input2", "test_alg_div", "hotkey1", "scram", 
-		"timeselect", "ID1", "keyboard1", "keyboard2", "keyboard_header", "keymap", "show_keyboard"]);
+		"timeselect", "keyboard1", "keyboard2", "keyboard_header", "keymap", "show_keyboard"]);
 	setDisplay("block", ["settings1"]);
 	setInnerHTML(["s_instruct2", "s_RACE3"]);
 	var elements = document.getElementsByClassName('normal');
@@ -6697,8 +6669,7 @@ function speedmode()
 	movesarr = [];
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "end" });
 	refreshButtons();
-	SPEEDMODE.style('background-color', '#8ef5ee');
-	setDisplay("none", ["test_alg_div", "shuffle_div", "ID1", "settings", "reset_div", "solve", 
+	setDisplay("none", ["test_alg_div", "shuffle_div", "settings", "reset_div", "solve", "type3",
 		"input", "input2", "scram", "s_RACE2", "timeselect","s_start", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
@@ -6752,12 +6723,11 @@ function movesmode()
 	movesarr = [];
 
 	refreshButtons();
-	MOVESMODE.style('background-color', '#8ef5ee');
 
 	if (DIM2 != 50 && DIM2 != 100) {
 		startCube() 
 	}
-	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "ID1", "settings", 
+	setDisplay("none", ["test_alg_div", "shuffle_div", "reset_div", "settings", "type3",
 		"solve", "input", "input2", "scram", "timeselect", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("inline", ["m_34", "m_4"]);
 	setDisplay("block", ["m_high", "blind","b_start","marathon", "show_marathon", "marathon"]);
@@ -9021,12 +8991,11 @@ function displayTimes()
 		setDisplay("block", ["alltimes", "timegone", "link1"]);
 		if (!ismid) {
 			setDisplay("inline", ["home"]);
-			setDisplay("none", ["mode", "mode2", "mode3", "mode7", "or_instruct4"]);
+			setDisplay("none", []);
 
 		} else {
-			setDisplay("inline", ["mode", "mode2", "mode3", "mode7"]);
+			setDisplay("inline", []);
 			setDisplay("none", ["home"]);
-			setDisplay("block", ["or_instruct4"]);
 		}
 		setDisplay(mo5.length == 0 && MODE == "timed" ? "block" : "none", ["beforetime"]);
 		if(mo5.length == 0)
@@ -9628,7 +9597,7 @@ p.keyPressed = (event) => {
 	}
 	if(p.keyCode == 50 && (race < 1 || MINIMODE == "virtual")) //2 //two
 	{
-		if (p.keyIsDown(p.SHIFT) && (getEl("mode3").style.display != "none")) {
+		if (p.keyIsDown(p.SHIFT)) {
 			timedmode();
 		} else if(SPEED != 1.6) {
 			SPEED_SLIDER.value(1.6);
@@ -10310,8 +10279,7 @@ function refreshButtons()
 	getEl("glowcubes").style.display = modnum == 4 ? "block" : "none";
 	
 	const CUBE_BUTTONS = [
-		SPEEDMODE, REGULAR, TIMEDMODE, MOVESMODE, IDMODE, SETTINGS, VOLUME,
-		SPEEDMODE2, REGULAR2, TIMEDMODE2, MOVESMODE2, ONEBYTHREE, SANDWICH,
+		SETTINGS, VOLUME, ONEBYTHREE, SANDWICH,
 		FOURBYFOUR, FIVEBYFIVE, ONEBYFOURBYFOUR, ONEBYFIVEBYFIVE, TWOBYTWOBYFOUR,
 		TWOBYTHREEBYFOUR, TWOBYTHREEBYFIVE, THREEBYTHREEBYFIVE, THREEBYTHREEBYFOUR, LASAGNA,
 		CUBE3, CUBE4, CUBE5, CUBE6, CUBE7, CUBE8, CUBE9, CUBE10, CUBE11,
@@ -10326,21 +10294,6 @@ function refreshButtons()
 	let d = isthin? 1.5 : 1;
 	let d2 = isthin? 2.5 : 1;
 	let m = isthin? "" : " Mode";
-	
-	REGULAR = p.createButton(`Normal${m}`);
-	setButton(REGULAR, "mode", 'btn btn-info', `text-align:center; font-size: ${20/d}px; width:${180/d2}px; border: none;`, regular.bind(null, 0));
-
-	TIMEDMODE = p.createButton(`Stats${m}`);
-	setButton(TIMEDMODE, "mode3", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d2}px; border: none;`, timedmode.bind(null, 0));
-	
-	MOVESMODE = p.createButton(`Challenges`);
-	setButton(MOVESMODE, "mode7", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d}px; border: none;`, movesmode.bind(null, 0));
-
-	SPEEDMODE = p.createButton(`Speed${m}`);
-	setButton(SPEEDMODE, "mode2", 'btn btn-info', `text-align:center; font-size:${20/d}px; width:${180/d2}px; border: none;`, speedmode.bind(null, 0));
-
-	IDMODE = p.createButton('View/Save ID');
-	setButton(IDMODE, "ID2", 'btn btn-info', 'text-align:center; border: none;', idmode.bind(null, 0));
 
 	SETTINGS = p.createButton('');
 	SETTINGS.attribute('title', 'Settings');
@@ -10391,10 +10344,6 @@ function refreshButtons()
 		}
 		audioon = !audioon;
 	});
-	
-
-	REGULAR2 = p.createButton(' Home');
-	setButton(REGULAR2, "home", 'btn btn-secondary bi bi-arrow-return-left', 'font-size:12px;', regular.bind(null, 0));
 	
 	// Shape Mods
 	ONEBYTHREE = setCubeButton(ONEBYTHREE, "cube1", "1x3x3");
@@ -14391,6 +14340,10 @@ getEl("keyboardcheck").addEventListener('change', () => {
 	getEl("keyboardtitle2").style.display = getEl("keyboardcheck").checked ? "inline" : "none";
   changeKeys();
 });
+
+getEl("normalbutton").addEventListener('click', regular);
+getEl("speedbutton").addEventListener('click', speedmode);
+getEl("challengesbutton").addEventListener('click', movesmode);
 
 function updateServer() {
 	socket = io(servers[server], {auth: {userId}});
