@@ -648,6 +648,14 @@ class Timer {
 function isMobile() {  //phone computer
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
+function updateThinNavigation() {
+	const iconOnly = isthin;
+	getEl("speedbutton").innerHTML = iconOnly ? "" : "&nbsp;Speed Mode";
+	getEl("challengesbutton").innerHTML = iconOnly ? "" : "&nbsp;Challenges";
+	getEl("challenge").innerHTML = iconOnly ? "" : "&nbsp;Weekly";
+	getEl("challenge").innerHTML = iconOnly ? "" : "&nbsp;Weekly";
+	getEl("compete").innerHTML = iconOnly ? "" : "&nbsp;Multiplayer";
+}
 function setWidth() {
 	if (!ismid) {
 		document.getElementById("fullscreen").style.display = "block";
@@ -657,6 +665,7 @@ function setWidth() {
 		document.getElementById("fullscreen").style.display = "none";
 		document.getElementById('timed_right').appendChild(document.getElementById('timed_all'));
 	}
+	updateThinNavigation();
 	if (isthin == trackthin) return;
 	trackthin = isthin;
 	let change = [ZOOM2, ZOOM3];
@@ -684,8 +693,6 @@ function setWidth() {
 		getEl("challenge").innerHTML = "&nbsp;Weekly";
 		getEl("compete").innerHTML = "&nbsp;Multiplayer";
 		getEl("account").innerHTML = "&nbsp;Create an Account";
-		getEl("loaddata").innerHTML = "&nbsp;Load Data";
-		getEl("savedata").innerHTML = "&nbsp;Save Data";
 	}
 	// var isSafari = false; //window.safari !== undefined || isIpad(); //safari
 	if (change[0] != ZOOM2 && change[1] != ZOOM3) {
@@ -2228,6 +2235,9 @@ setInterval(() => {
 	}
 	getEl("question").style.display = CUBENAME.toLowerCase().includes("glow") ? "inline" : "none";
 	getEl("align").style.display = SWIPEROTATE.checked() ? "none" : "block";
+	if (isthin) {
+		setDisplay("none", ["loaddata", "savedata"]);
+	}
 }, 10)
 //forever
 function reSetup(rot) {
@@ -7624,10 +7634,10 @@ async function saveData(username, password, method, al) {
 
 document.getElementById("loaddata").onclick = () => loadData(true);
 if (localStorage.username && localStorage.username !== "signedout" && localStorage.token) {
-	loadData(true);
+	loadData(true, false, false);
 }
-async function loadData(times, userdata) {
-	if (document.getElementById("logindesc").innerHTML == "") {
+async function loadData(times, userdata, showText=true) {
+	if (document.getElementById("logindesc").innerHTML == "" && showText) {
 		document.getElementById("logindesc").innerHTML = "Loading data...";
 	}
 	if (!userdata) {
@@ -7666,7 +7676,10 @@ async function loadData(times, userdata) {
 				localStorage[param] = userdata[param];
 		})
 	}
-	successSQL("Loaded data");
+
+	if (showText) {
+		successSQL("Loaded data");
+	}
 	updateScores();
 	setSettings(userdata);
 }
