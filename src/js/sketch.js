@@ -6,7 +6,7 @@ import {patterndata} from '../data/pattern.js'
 import { getMove } from '../data/notation.js';
 import {DIMS_OBJ} from '../data/dims.js';
 import { constkeymappings } from '../data/keymap.js';
-import {modeData, getUserData, printUsers, putUsers, hasUser, putSuggestion} from "./backend.js";
+import {modeData, getUserData, putUsers, hasUser, putSuggestion} from "./backend.js";
 import { createCustomDialog } from '../components/GameDialog.js';
 import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
@@ -7688,7 +7688,12 @@ async function loadData(times, userdata) {
 	updateScores();
 	setSettings(userdata);
 }
-document.getElementById("signout").onclick = signOut;
+document.getElementById("signout").onclick = () => {
+	if (confirm("Are you sure you want to sign out?")) {
+		signOut();
+	}
+}
+
 
 function signOut(){
 	document.getElementById("l_message").innerHTML = "";
