@@ -6063,7 +6063,7 @@ function challengemode() {
 	MODE = "challenge";
 	refreshButtons();
 	setDisplay("none", ["test_alg_div", "input", "scram", "challengeback", "settings", 
-		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard"]);
+		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard", "inputscram"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	if (isMobile()) getEl("home").style.display = "block";
 	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
