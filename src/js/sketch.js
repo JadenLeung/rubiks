@@ -876,13 +876,15 @@ p.setup = () => {
 
 
 	TWOBYTWO = p.createButton('2x2');
-	setButton(TWOBYTWO, "type", 'btn btn-light btn-sm', 'border-color: black;', changeTwo.bind(null));
+	setCubePickerButton(TWOBYTWO, "type", 'btn btn-light', 2, changeTwo.bind(null));
 
 	THREEBYTHREE = p.createButton('3x3');
-	setButton(THREEBYTHREE, "type2", 'btn btn-warning btn-sm', 'border-color: black;', changeThree.bind(null));
+	setCubePickerButton(THREEBYTHREE, "type2", 'btn btn-warning', 3, changeThree.bind(null));
 
 	NBYN = p.createButton('More');
-	setButton(NBYN, "type4", 'btn btn-light btn-sm', 'border-color: black; ', cubemode.bind(null, 0));
+	setButton(NBYN, "type4", `btn btn-light cube-picker cube-picker-more${isthin ? ' cube-picker-thin' : ''}`, '', cubemode.bind(null, 0));
+	NBYN.attribute('aria-label', 'More cube options');
+	NBYN.html('<img class="cube-picker-image" src="images/General/2x2x4.png" alt="2x2x4 cube"><span>More Cubes</span>');
 
 	CUSTOMSHIFT = p.createCheckbox(" Shape Shift", true);
 	CUSTOMSHIFT.parent("customshift")
@@ -2745,6 +2747,12 @@ function setCubeButton(BUTTON, parent, name) {
 	setButton(BUTTON, parent, 'btn btn-info', allcubestyle, () => {switchCube(name); BUTTON.style('background-color', "#8ef5ee");});
 	return BUTTON;
 }
+function setCubePickerButton(BUTTON, parent, className, dimension, event) {
+	setButton(BUTTON, parent, `${className} cube-picker${isthin ? ' cube-picker-thin' : ''}`, 'margin-top: 10px;', event);
+	BUTTON.attribute('aria-label', `${dimension}x${dimension}`);
+	const imageName = dimension === 2 ? '2x2' : '3x3';
+	BUTTON.html(`<img class="cube-picker-image" src="images/General/${imageName}.png" alt="${dimension}x${dimension} cube">`);
+}
 function setButton(BUTTON, parent, className, style, event) {
 	BUTTON.parent(parent);
 	BUTTON.class(className);
@@ -3082,8 +3090,8 @@ function changeTwo(switchstart = true)
 	if (switchstart)
 		localStorage.startcube = 2;
 	modeData("twobytwo");
-	THREEBYTHREE.class('btn btn-light btn-sm');
-	TWOBYTWO.class('btn btn-warning btn-sm');
+	THREEBYTHREE.class(`btn btn-light cube-picker${isthin ? ' cube-picker-thin' : ''}`);
+	TWOBYTWO.class(`btn btn-warning cube-picker cube-picker-selected${isthin ? ' cube-picker-thin' : ''}`);
 	SIZE_SLIDER2.remove();
 	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);
@@ -3113,8 +3121,8 @@ function changeThree(switchstart = true)
 	CUBENAME = "3x3";
 	if (switchstart)
 		localStorage.startcube = 3;
-	THREEBYTHREE.class('btn btn-warning btn-sm');
-	TWOBYTWO.class('btn btn-light btn-sm');
+	THREEBYTHREE.class(`btn btn-warning cube-picker cube-picker-selected${isthin ? ' cube-picker-thin' : ''}`);
+	TWOBYTWO.class(`btn btn-light cube-picker${isthin ? ' cube-picker-thin' : ''}`);
 	SIZE_SLIDER2.remove();
 	SIZE_SLIDER2 = p.createSlider(-1000, 300, -CAMZOOM, 5);
 	SIZE_SLIDER2.input(sliderUpdate2);

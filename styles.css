@@ -133,6 +133,94 @@ button:hover {
     cursor: pointer;
     background-color: #FABD44;
 }
+.cube-picker {
+    align-items: center;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    display: inline-flex;
+    height: 128px;
+    justify-content: center;
+    margin: 4px;
+    padding: 12px;
+    vertical-align: middle;
+    width: 128px;
+}
+.cube-picker:hover,
+.cube-picker:focus,
+.cube-picker:active {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+.cube-picker-selected,
+.cube-picker-selected:hover,
+.cube-picker-selected:focus,
+.cube-picker-selected:active {
+    background-color: #8ef5ee !important;
+    box-shadow: none !important;
+}
+.cube-picker-grid {
+    display: grid;
+    gap: 3px;
+    height: 96px;
+    width: 96px;
+}
+.cube-picker-image {
+    height: auto;
+    max-height: 104px;
+    max-width: 112px;
+    object-fit: contain;
+    width: 112px;
+}
+.cube-picker-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+.cube-picker-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+.cube-picker-grid span {
+    background-color: transparent;
+    border: 2px solid #202124;
+    border-radius: 2px;
+}
+.cube-picker-grid span:nth-child(3n + 1) {
+    background-color: #dc3545;
+}
+.cube-picker-grid span:nth-child(3n + 2) {
+    background-color: #ffc107;
+}
+.cube-picker-grid span:nth-child(3n) {
+    background-color: #198754;
+}
+.cube-picker-more {
+    flex-direction: column;
+    font-size: 22px;
+    font-weight: 700;
+}
+.cube-picker-thin {
+    height: 76px;
+    margin: 2px;
+    padding: 6px;
+    width: 76px;
+}
+.cube-picker-thin.cube-picker-more {
+    font-size: 12px;
+}
+.cube-picker-thin .cube-picker-image {
+    max-height: 62px;
+    max-width: 64px;
+    width: 64px;
+}
+.cube-picker-thin + span,
+.cube-picker-thin + p {
+    display: inline;
+}
+.cubeselectbutton:has(.cube-picker-thin) {
+    display: inline;
+    margin-top: 2px;
+}
+#type3 {
+    text-align: center;
+}
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -394,6 +482,10 @@ button:hover {
 #suggest_submit {
     margin-top: 5px;
     pointer-events: auto;
+}
+
+.cubeselectbutton{
+    margin-top: 10px;
 }
 
 @media screen and (max-width: 1199px) {
