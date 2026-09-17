@@ -6947,6 +6947,7 @@ function updateScores() {
 }
 function setScore(mode, total, getlow = true) {
 	const highscores = parseFloat(localStorage[mode]);
+	let scoreChanged = false;
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
 	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
@@ -6962,6 +6963,7 @@ function setScore(mode, total, getlow = true) {
 		if (["weekly", "daily"].includes(MODE)) {
 			localStorage[chalday[mode]] = (mode == "c_week" ? week : sinceOct12('d'));
 		}
+		scoreChanged = true;
 		updateScores();
 	}
 	if (["c_day", "c_day2"].includes(mode)) {
@@ -6974,8 +6976,12 @@ function setScore(mode, total, getlow = true) {
 				showHighscoreModal(total, oldWeeklyScore);
 			}
 			localStorage[mode + "_bweek"] = JSON.stringify({week: week, score: total});
+			scoreChanged = true;
 			updateScores();
 		}
+	}
+	if (scoreChanged && localStorage.username != "signedout" && localStorage.token) {
+		saveData(localStorage.username, null, "POST", true);
 	}
 }
 function easy() 
@@ -7617,7 +7623,6 @@ async function saveData(username, password, method, al) {
 		return;
 	}
 	successSQL("Data saved");
-	hideHighscoreModal();
 	return response;
 }
 
@@ -7640,6 +7645,9 @@ async function saveData(username, password, method, al) {
   }
 
 document.getElementById("loaddata").onclick = () => loadData(true);
+if (localStorage.username && localStorage.username !== "signedout" && localStorage.token) {
+	loadData(true);
+}
 async function loadData(times, userdata) {
 	if (document.getElementById("logindesc").innerHTML == "") {
 		document.getElementById("logindesc").innerHTML = "Loading data...";

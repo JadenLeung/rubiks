@@ -77,7 +77,6 @@ export function showHighscoreModal(newScore, oldScore = null) {
 		<h5>You got a personal best!</h5>
 		${scoreHtml}
 		<div style="display: flex; gap: 10px; margin-top: 20px;">
-			<button class="btn btn-primary" style="flex: 1; font-size: 18px;" id="highscore-save-btn">Save score</button>
 			<button class="btn btn-secondary" style="flex: 1; font-size: 18px;" id="highscore-close-btn">Close</button>
 		</div>
 	`;
@@ -87,16 +86,6 @@ export function showHighscoreModal(newScore, oldScore = null) {
 	if (closeBtn) {
 		closeBtn.onclick = () => {
 			hideHighscoreModal();
-		};
-	}
-	
-	// Setup save button handler
-	const saveBtn = document.getElementById("highscore-save-btn");
-	if (saveBtn) {
-		saveBtn.onclick = () => {
-			if (window.saveData && localStorage.username) {
-				window.saveData(localStorage.username, null, "POST", true);
-			}
 		};
 	}
 	
