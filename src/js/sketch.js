@@ -692,8 +692,8 @@ function setWidth() {
 		CAMZOOM = ZOOM3;
 		getEl("banner").style.paddingBottom = "0px";
 		setDisplay("inline", ["audio", "bannercube", "bannerlogin"]);
-		getEl("challenge").innerHTML = "&nbsp;Weekly Challenges";
-		getEl("compete").innerHTML = "&nbsp;Multiplayer Battle";
+		getEl("challenge").innerHTML = "&nbsp;Weekly";
+		getEl("compete").innerHTML = "&nbsp;Multiplayer";
 		getEl("account").innerHTML = "&nbsp;Create an Account";
 		getEl("loaddata").innerHTML = "&nbsp;Load Data";
 		getEl("savedata").innerHTML = "&nbsp;Save Data";
