@@ -2236,7 +2236,7 @@ setInterval(() => {
 	getEl("question").style.display = CUBENAME.toLowerCase().includes("glow") ? "inline" : "none";
 	getEl("align").style.display = SWIPEROTATE.checked() ? "none" : "block";
 	if (isthin) {
-		setDisplay("none", ["loaddata", "savedata"]);
+		setDisplay("none", ["loaddata", "savedata", "cubeidbutton", "statsbutton"]);
 	}
 }, 10)
 //forever
