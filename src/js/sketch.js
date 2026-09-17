@@ -4045,7 +4045,7 @@ function regular(nocustom){
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
 		"race_instruct_div", "r_iframe", "r_sliders", "r_physical", "botestimate", "blinddesc", "practice_container", "advanced_container", "suggest_container",
 		"deleteban", "compete_select", "competerestore", "suggest_text", "practiceskip", "keyboard1", "keyboard2", "keyboardtitle2", "keyboard_header",
-		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon", "question"]);
+		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon", "question", "ID1"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container","compete_difficulty"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
 	getEl("times_desc").innerHTML = "Times:";
@@ -4105,11 +4105,8 @@ function timedmode()
 	reSetup();
 
 	refreshButtons();
-	TIMEDMODE.style('background-color', '#8ef5ee');
-	TIMEDMODE2.style('background-color', "#8ef5ee");
 
-	setDisplay("none", ["settings", "or_instruct3", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1"]);
-	setDisplay("block", ["type3"]);
+	setDisplay("none", ["settings", "or_instruct3", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1", "type3"]);
 	document.getElementById("or_instruct3").innerHTML = "";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
 	changeInput();
@@ -4156,8 +4153,8 @@ function idmode()
 	document.getElementById("s_RACE3").innerHTML = "";
 
 	setDisplay("none", ["shuffle_div", "settings", "input", "reset_div", "solve", "settings1", "input2",
-		 "scram", "timeselect", "recent_solves_container", "keymap", "show_keyboard"]);
-	setDisplay("block", ["ID3", "test_alg_div","ID4","ID5"]);
+		 "scram", "timeselect", "recent_solves_container", "keymap", "show_keyboard", "type3"]);
+	setDisplay("block", ["ID3", "test_alg_div","ID4","ID5", "ID1"]);
 	setDisplay("inline", ["iddefault"])
 	
 	var elements = document.getElementsByClassName('normal');
@@ -14366,6 +14363,8 @@ getEl("keyboardcheck").addEventListener('change', () => {
 getEl("normalbutton").addEventListener('click', regular);
 getEl("speedbutton").addEventListener('click', speedmode);
 getEl("challengesbutton").addEventListener('click', movesmode);
+getEl("cubeidbutton").addEventListener('click', idmode);
+getEl("statsbutton").addEventListener('click', timedmode);
 
 function updateServer() {
 	socket = io(servers[server], {auth: {userId}});
