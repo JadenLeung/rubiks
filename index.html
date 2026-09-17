@@ -57,19 +57,19 @@
  <body oncontextmenu="return false">
 	<!--h1 style = "text-align: center;">Virtual Cubing</h1-->
 	<ul class = "noselect" id = "banner">
-		<li style = "float:left;" id = "bannerlogin" class="navbar-nohighlight"><div id = "loginname"> Not logged in </div></li>
-		<button class = "btn btn-light btn-sm login" id = "account">Create an Account</button>
-		<button class = "btn btn-light btn-sm login" id = "login">Log in</button>
-		<div id = "inaccount" style = "float:left;">
-			<button class = "btn btn-danger btn-sm login" id = "signout">Sign out</button>
-			<button class = "btn btn-light btn-sm login bi bi-cloud-arrow-down" id = "loaddata">&nbsp;Load data</button>
-			<button class = "btn btn-light btn-sm login bi bi-cloud-arrow-up" id = "savedata">&nbsp;Save data</button>
-		</div>
+		<li id = "bannercube" class="navbar-nohighlight">The Virtual Cube</li>
+		<li id = "cubequestion"><a style = "color:white">?</a></li>
 		<button class = "btn btn-sm login bi bi-people" style = "background-color: orange;"id = "compete">&nbsp;Multiplayer Games</button>
 		<button class = "btn btn-warning btn-sm login bi bi-stopwatch" id = "challenge">&nbsp;Weekly Challenges</button>
-		<li style = "float:right;" id = "cubequestion"><a style = "color:white">?</a></li>
-		<li style = "float:right;" id = "bannercube" class="navbar-nohighlight">The Virtual Cube</li>
-		<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
+		<li style = "float:right;" id = "bannerlogin" class="navbar-nohighlight"><div id = "loginname"> Not logged in </div></li>
+		<button class = "btn btn-light btn-sm login" id = "account" style = "float:right;">Create an Account</button>
+		<button class = "btn btn-light btn-sm login" id = "login" style = "float:right;">Log in</button>
+		<div id = "inaccount" style = "float:right;">
+			<li style = "color:white; padding-top: 14px; padding-left:10px; padding-right:5px;" id = "logindesc"></li>
+			<button class = "btn btn-light btn-sm login bi bi-cloud-arrow-down" id = "loaddata">&nbsp;Load data</button>
+			<button class = "btn btn-light btn-sm login bi bi-cloud-arrow-up" id = "savedata">&nbsp;Save data</button>
+			<button class = "btn btn-danger btn-sm login" id = "signout">Sign out</button>
+		</div>
 	</ul>
 	<div class="row">
 		<div class = "col-xl-2 noselect" style = "padding-left:30px; padding-right:0px" id = "left">
