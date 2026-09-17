@@ -678,7 +678,7 @@ function setWidth() {
 			ZOOM2 = -100;
 		}
 		CAMZOOM = ZOOM3;
-		setDisplay("none", ["audio", "bannercube", "bannerlogin"]);
+		setDisplay("none", ["audio", "bannercube", "bannerlogin", "cubequestion"]);
 		getEl("challenge").innerHTML = "&nbsp;Weekly";
 		getEl("compete").innerHTML = "&nbsp;Co-op";
 		getEl("account").innerHTML = "&nbsp;Create Account";
@@ -4042,7 +4042,7 @@ function regular(nocustom){
 	REGULAR.style('background-color', '#8ef5ee');
 	//REGULAR.class('btn btn-secondary');
 	document.getElementById("test_alg_span").innerHTML = "Test Algorithm:";
-	setDisplay("block", ["or_instruct", "or_instruct2", "or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram", "timeselect"]);
+	setDisplay("block", ["or_instruct4", "test_alg_div", "type3", "mode", "mode2", "mode3", "mode7", "ID1", "settings", "scram", "timeselect"]);
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "home", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
@@ -4055,9 +4055,6 @@ function regular(nocustom){
 		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon", "question"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container","compete_difficulty"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
-	if (ismid) {
-		setDisplay("none", ["or_instruct", "or_instruct2"]);
-	}
 	getEl("times_desc").innerHTML = "Times:";
 	getEl("outertime").style.color = document.body.style.color;
 	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
@@ -4118,7 +4115,7 @@ function timedmode()
 	TIMEDMODE.style('background-color', '#8ef5ee');
 	TIMEDMODE2.style('background-color', "#8ef5ee");
 
-	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct", "or_instruct2", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1"]);
+	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "or_instruct3", "or_instruct4", "scram", "timegone", "custom2", "custom4", "cube", "input", "hotkey1"]);
 	setDisplay("block", ["type3"]);
 	document.getElementById("or_instruct3").innerHTML = "";
 	VOLUME.position(cnv_div.offsetWidth-(document.getElementById("settings").style.display == "none"? 60 : 130), 5);
@@ -4139,8 +4136,7 @@ function cubemode()
 	regular(true);
 	reSetup();
 	MODE = "cube";
-	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct", 
-		"or_instruct2", "or_instruct4", "custom2", "custom4"]);
+	setDisplay("none", ["mode", "ID1", "settings", "mode2", "mode3", "mode7", "solve", "type3", "or_instruct4", "custom2", "custom4"]);
 	setDisplay("block", ["scram", "input", "allmodes", "modarrow", "cube"]);
 	setDisplay("inline", ["home"]);
 	if(modnum == 1) document.getElementById("customb").style.display = "block"; 
@@ -4315,7 +4311,7 @@ function competemode() {
 	modeData("compete");
 	regular();
 	setDisplay("none", ["mode", "mode2", "mode3", "mode7", "test_alg_div", "ID1", "input", "scram", "challengeback", "settings", "timeselect","type3",
-			"or_instruct", "or_instruct2", "or_instruct4", "recent_solves_container", "keymap", "show_keyboard"
+			"or_instruct4", "recent_solves_container", "keymap", "show_keyboard"
 	]);
 	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
 	setDisplay("inline", ["home"]);
@@ -13221,13 +13217,6 @@ function resized(){
     p.resizeCanvas(width, isthin ? (isMobile() ? 400 : 550) : window.innerHeight * (fullscreen ? 1 : 0.9), p.WEBGL);
     // PICKER.buffer.resizeCanvas(width, height * 3);
 	SOLVE.html(window.matchMedia("(max-width: " + MAX_WIDTH + ")").matches ? 'Solve' : 'Autosolve');
-	if (MODE == "normal") {
-		if (ismid) {
-			setDisplay("none", ["or_instruct", "or_instruct2"]);
-		} else {
-			setDisplay("block", ["or_instruct", "or_instruct2"]);
-		}
-	}
 	refreshButtons();
 } 
 
@@ -14195,15 +14184,19 @@ document.getElementById("bannercube").addEventListener("click", function(event) 
 	// CROSSGLOW3x3.style('background-color', "#8ef5ee");
 });
 
-document.getElementById("suggest").addEventListener("click", function(event) {
-    event.preventDefault();
-    suggestMode();
-});
-
 getEl("suggest_submit").addEventListener("click", async function(event) {
     event.preventDefault();
 	submitSuggestion();
 });
+
+getEl("cubequestion").addEventListener("click", async function() {
+	showCustomModal(`
+			<p id = "or_instruct2" style = "font-size:12px; margin: 0px;">Drag the mouse on a cube layer <b>across a solid black line</b> to rotate it. You can also use the keyboard.
+				<a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a>
+		`);
+});
+
+
 document.getElementById('keymap').addEventListener('click', function(event) {
   let cell = event.target.closest('td');
 	const special = { 
