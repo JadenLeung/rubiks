@@ -14154,6 +14154,7 @@ function competeScreenshot() {
 
 document.getElementById("bannercube").addEventListener("click", function(event) { //news
     event.preventDefault();
+	regular();
 	// // speedmode();
 	// modnum = 4;
     // cubemode();

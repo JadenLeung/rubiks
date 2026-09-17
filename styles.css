@@ -192,9 +192,15 @@ button:hover {
     background-color: #198754;
 }
 .cube-picker-more {
+    color: inherit !important;
     flex-direction: column;
     font-size: 22px;
     font-weight: 700;
+}
+.cube-picker-more:hover,
+.cube-picker-more:focus,
+.cube-picker-more:active {
+    color: inherit !important;
 }
 .cube-picker-thin {
     height: 76px;
