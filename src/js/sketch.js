@@ -7631,7 +7631,11 @@ async function saveData(username, password, method, al) {
 
 document.getElementById("loaddata").onclick = () => loadData(true);
 if (localStorage.username && localStorage.username !== "signedout" && localStorage.token) {
-	loadData(true, false, false);
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	if (urlParams.get('race') != "true") {
+		loadData(true, false, false);
+	}
 }
 async function loadData(times, userdata, showText=true) {
 	if (document.getElementById("logindesc").innerHTML == "" && showText) {
