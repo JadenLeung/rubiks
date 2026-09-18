@@ -6407,11 +6407,11 @@ function endchallenge(passed = true) {
 			setScore("c_week", timeInSeconds);
 		} else {
 			if (DIM == 50) {
-				setScore("c_day", timeInSeconds);
 				localStorage.c_today = timeInSeconds;
+				setScore("c_day", timeInSeconds, true, true);
 			} else {
-				setScore("c_day2", timeInSeconds);
 				localStorage.c_today2 = timeInSeconds;
+				setScore("c_day2", timeInSeconds, true, true);
 			}
 			setDisplay("block", ["scramble_par"])
 		}
@@ -6930,7 +6930,7 @@ function updateScores() {
 		}
 	})
 }
-function setScore(mode, total, getlow = true) {
+function setScore(mode, total, getlow = true, persist = false) {
 	const highscores = parseFloat(localStorage[mode]);
 	let scoreChanged = false;
 	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
@@ -6965,7 +6965,7 @@ function setScore(mode, total, getlow = true) {
 			updateScores();
 		}
 	}
-	if (scoreChanged && localStorage.username != "signedout" && localStorage.token) {
+	if ((scoreChanged || persist) && localStorage.username != "signedout" && localStorage.token) {
 		saveData(localStorage.username, null, "POST", true);
 	}
 }
@@ -14540,4 +14540,4 @@ Your precious rays will brighten our days
 Mr. Sunshine give us your rays
 */
 
-//DQIAX	
+//DQIAX
