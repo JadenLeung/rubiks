@@ -9568,6 +9568,7 @@ p.keyPressed = (event) => {
 			if (!window.confirm("Are you sure you want to quit?")) {
 				return;
 			}
+			saveData()
 		}
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
