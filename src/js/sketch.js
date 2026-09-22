@@ -6063,7 +6063,7 @@ function challengemode() {
 	MODE = "challenge";
 	refreshButtons();
 	setDisplay("none", ["test_alg_div", "input", "scram", "challengeback", "settings", 
-		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard", "inputscram"]);
+		"timeselect","type3", "recent_solves_container", "keymap", "show_keyboard", "input", "scram"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week", "c_start", "cd", "c_desc2"]);
 	if (isMobile()) getEl("home").style.display = "block";
 	document.getElementById('c_start').scrollIntoView({ behavior: 'smooth', block: "center" });
@@ -9568,7 +9568,7 @@ p.keyPressed = (event) => {
 			if (!window.confirm("Are you sure you want to quit?")) {
 				return;
 			}
-			saveData()
+			saveData(localStorage.username, null, "POST", true);
 		}
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
@@ -9894,7 +9894,7 @@ p.keyPressed = (event) => {
 			} else {
 				if(localStorage.username == "signedout")
 					break;
-				saveData();
+				saveData(localStorage.username, null, "POST", true);
 			}
 			break;
 			case "_": case "-": //-
