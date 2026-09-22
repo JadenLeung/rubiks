@@ -1231,7 +1231,7 @@ p.setup = () => {
 		["1", "Quit"],
 		["⇧ 1", "Home"],
 		["2", "Max/Min turn speed"],
-		["⇧ 2", "Stats Mode"],
+		["⇧ 2", "Multiplayer"],
 		["3", "On/Off Dark Mode"],
 		["⇧ 3", "Speed Mode"],
 		["4", "Align Camera"],
@@ -1245,7 +1245,7 @@ p.setup = () => {
 		["0", "Save Data"],
 		["⇧ 0", "Save Position ID"],
 		["-", "Switch to 2x2/3x3"],
-		["⇧ -", "Other Cubes"],
+		["⇧ -", "More Cubes"],
 	];
 
     appendToTable(hotkeys, "hotkeytable", 2);
@@ -4301,10 +4301,11 @@ function competemode() {
 	setDisplay("none", ["test_alg_div", "input", "scram", "challengeback", "settings", "timeselect","type3",
 			"recent_solves_container", "keymap", "show_keyboard"
 	]);
-	setDisplay("block", ["lobby", "allmodes", "chat-container", "message-input", "chat_instruct", "compete_group_container"]);
+	setDisplay("block", ["lobby", "allmodes", "compete_group_container"]);
+	setDisplay("none", ["chat_instruct", "chat-container", "competeinput"]);
 	setDisplay("inline", ["home"]);
 	if (isthin) {
-		setDisplay("none", ["cnv_div", "chat_instruct", "chat-container", "competeinput"]);
+		setDisplay("none", ["cnv_div"]);
 	}
 	getEl("send-btn").style.display = "inline-block"; // To show the button
 
@@ -4384,7 +4385,7 @@ function enterLobby(data, r) {
 	setDisplay("none", ["lobby", "in_match", "final_tally"]);
 	setDisplay("inline", ["outertime", "reset_div"]);
 	setDisplay("block", ["cnv_div"]);
-	setDisplay("block", ["practice_container", "chat_instruct", "chat-container"]);
+	setDisplay("block", ["practice_container", "chat_instruct", "chat-container", "message-input"]);
 	setDisplay("flex", ["competeinput"]);
 	setDisplay(data.data.leader == socket.id ? "inline" : "none", ["editcompete"]);
 	getEl("waitingroom").style.display = isShown("compete_select") ? "none" : "block";
@@ -4617,7 +4618,7 @@ function startRound(data, scramble) {
 		return;
 	}
 	setDisplay("none", ["continuematch", "waitingmatch", "reset_div", "shuffle_div", "reset_div", "scramble_par", "reset2_div"]);
-	setDisplay("block", ["cnv_div", "chat-container", "chat_instruct"]);
+	setDisplay("block", ["cnv_div", "chat-container", "chat_instruct" , "message-input"]);
 	setDisplay("flex", ["competeinput"]);
 	getEl("input").disabled = true;
 	getEl("ss_container").src = "";
@@ -9621,7 +9622,7 @@ p.keyPressed = (event) => {
 	if(p.keyCode == 50 && (race < 1 || MINIMODE == "virtual")) //2 //two
 	{
 		if (p.keyIsDown(p.SHIFT)) {
-			timedmode();
+			competemode();
 		} else if(SPEED != 1.6) {
 			SPEED_SLIDER.value(1.6);
 			SPEED = 1.6;
