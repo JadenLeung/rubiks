@@ -195,7 +195,6 @@ button:hover {
     color: inherit !important;
     flex-direction: column;
     font-size: 22px;
-    font-weight: 700;
 }
 .cube-picker-more:hover,
 .cube-picker-more:focus,
