@@ -490,7 +490,9 @@ button:hover {
 }
 
 .cubeselectbutton{
+    display: inline;
     margin-top: 10px;
+    vertical-align: middle;
 }
 
 @media screen and (max-width: 1199px) {
