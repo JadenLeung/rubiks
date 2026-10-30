@@ -6144,7 +6144,7 @@ function blindmode() {
 		setDisplay("block", ["b_win", "b_start","m_high"]);
 		toggleBlind(false);
 		getEl("b_win").innerHTML = "You did it! You solved the cube in " + peeks + " peek" + (peeks == 1 ? "." : "s. <br> Play again?");
-		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks);
+		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks, true);
 	}
 }
 function showMarathon() {
@@ -6934,9 +6934,9 @@ function updateScores() {
 function setScore(mode, total, getlow = true, persist = false) {
 	const highscores = parseFloat(localStorage[mode]);
 	let scoreChanged = false;
-	console.log("In setscore ", mode, total, localStorage[mode], !highscores, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
+	console.log("In setscore ", mode, total, localStorage[mode], highscores === null || highscores === undefined, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
-	if (!highscores || highscores == -1 || (MODE == "speed" && total < highscores) || 
+	if (highscores === null || highscores === undefined || highscores == -1 || (MODE == "speed" && total < highscores) || 
 	(MODE == "moves" && ((total > highscores && !getlow) || (total < highscores && getlow)))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceOct12('d')) || total < highscores))) {
 		if (localStorage.username != "signedout") {
