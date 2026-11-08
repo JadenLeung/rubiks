@@ -435,7 +435,6 @@ export default function (p) {
 	let solvedata = [];
 	let savesetup = [];
 	let savebandage = [];
-	let savedark = [];
 	let keyselected = "";
 	const MAX_WIDTH = "767px";
 	const MAX_WIDTH2 = "1199px";
@@ -1404,6 +1403,10 @@ p.setup = () => {
 	}
 	setColors(temp[0], temp[1], temp[2], temp[3]);
 
+	// Restore saved dark-mode state. setColors above applied the non-dark colors
+	// to the live state; darken on top of them if dark mode was last on.
+	syncDarkMode();
+
 	TOPWHITE = p.createSelect(); 
 	TOPWHITE.parent("topwhite");
 	TOPWHITE.option("White");
@@ -1832,9 +1835,10 @@ setInterval(() => {
 	localStorage.toppll = TOPPLL.value();
 	localStorage.keyboard = KEYBOARD.value();
 	localStorage.keymappings = JSON.stringify(keymappings);
-	localStorage.background = stringrgbToHex(document.body.style.backgroundColor) + " " + BACKGROUND_COLOR + " " + stringrgbToHex(document.body.style.color ) + " " + special[4];
+	localStorage.background = document.getElementById("colorPicker").value + " " + document.getElementById("colorPicker2").value + " " + document.getElementById("colorPicker3").value + " " + special[4];
 	localStorage.hollow = HOLLOW.checked();
 	localStorage.swiperotate = SWIPEROTATE.checked();
+	localStorage.darkmode = darkmode;
 	localStorage.border_width = BORDER_SLIDER.value();
 	localStorage.audioon = audioon;
 	localStorage.racespeed = RACE_SLIDER.value();
@@ -6799,6 +6803,7 @@ function setSettings(obj) {
 	console.log("d is " + d)
 	let temp = d.split(' ');
 	setColors(temp[0], temp[1], temp[2], temp.length > 3 ? temp[3] : "#000000");
+	syncDarkMode();
 	topWhite();
 	changeKeys();
 	refreshButtons();
@@ -12161,17 +12166,18 @@ function multipleCross(nb) {
 }
 
 document.getElementById('colorPicker').addEventListener('input', (event) => {
+	if (darkmode) return;
 	document.body.style.backgroundColor = event.target.value;
 	updateTheme();
 });
 
 document.getElementById('colorPicker2').addEventListener('input', (event) => {
-	let hoveredColor = p.color(event.target.value).levels;
+	if (darkmode) return;
 	BACKGROUND_COLOR = event.target.value;
-	document.getElementById('colorPicker2').value = BACKGROUND_COLOR;
 	reSetup();
 });
 document.getElementById('colorPicker3').addEventListener('input', (event) => {
+	if (darkmode) return;
 	document.body.style.color = event.target.value;
 	reSetup();
 });
@@ -12230,8 +12236,7 @@ function setColors(a, b, c, d) {
 	updateTheme();
 }
 const DARK_COLORS = { page: "#181c24", canvas: "#232a35", text: "#b8babc" };
-// Switch Bootstrap's dark theme (inputs, selects, tables) on whenever the page background is dark,
-// whether it came from the Dark Mode checkbox, a saved color, or the color pickers.
+
 function updateTheme() {
 	const hex = stringrgbToHex(document.body.style.backgroundColor || "rgb(214, 241, 255)");
 	if (!hex) return;
@@ -12239,26 +12244,39 @@ function updateTheme() {
 	const isDark = 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.4;
 	document.documentElement.setAttribute("data-bs-theme", isDark ? "dark" : "light");
 }
+function applyPickerColorsToLiveState(){
+	document.body.style.backgroundColor = document.getElementById("colorPicker").value;
+	BACKGROUND_COLOR = document.getElementById("colorPicker2").value;
+	document.body.style.color = document.getElementById("colorPicker3").value;
+}
+// Idempotently force dark mode to match localStorage.darkmode, regardless of the
+// current state. Use this after any code path that resets colors (e.g. loading
+// saved/cloud settings) so the checkbox and live render state stay in sync.
+function syncDarkMode(){
+	const shouldBeDark = localStorage.darkmode === "true";
+	if (shouldBeDark !== darkmode) {
+		darkMode();
+	} else {
+		// Already in the right mode; make sure the live state reflects it.
+		if (darkmode) {
+			BACKGROUND_COLOR = DARK_COLORS.canvas;
+			document.body.style.backgroundColor = DARK_COLORS.page;
+			document.body.style.color = DARK_COLORS.text;
+			getEl("outertime").style.color = document.body.style.color;
+			updateTheme();
+		}
+		DARKMODE.checked(darkmode);
+	}
+}
 function darkMode(){
 	if(!darkmode){
-		savedark[0] = document.body.style.backgroundColor == '' ? "#d6f1ff" : stringrgbToHex(document.body.style.backgroundColor);
-		savedark[1] = BACKGROUND_COLOR;
-		savedark[2] = document.body.style.color  == '' ? "#0a1970" : stringrgbToHex(document.body.style.color);
 		BACKGROUND_COLOR = DARK_COLORS.canvas;
 		document.body.style.backgroundColor = DARK_COLORS.page;
 		document.body.style.color = DARK_COLORS.text;
-		document.getElementById("colorPicker").value = DARK_COLORS.page;
-		document.getElementById("colorPicker2").value = DARK_COLORS.canvas;
-		document.getElementById("colorPicker3").value = DARK_COLORS.text;
 		darkmode = true;
 	}
 	else{
-		document.body.style.backgroundColor = savedark[0];
-		BACKGROUND_COLOR = savedark[1];
-		document.body.style.color = savedark[2];
-		document.getElementById("colorPicker").value=savedark[0];
-		document.getElementById("colorPicker2").value=savedark[1];
-		document.getElementById("colorPicker3").value=savedark[2];
+		applyPickerColorsToLiveState();
 		darkmode = false;
 		// reSetup();
 	}
@@ -14071,6 +14089,8 @@ function settingsDefault(){
 	document.getElementById("colorPicker2").value="#e7e5ff";
 	document.getElementById("colorPicker3").value="#0a1970";
 	document.getElementById("colorPicker4").value="#000000";
+	darkmode = false;
+	DARKMODE.checked(false);
 	updateTheme();
 	changeKeys();
 	CAMZOOM = -170;
