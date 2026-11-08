@@ -2088,7 +2088,8 @@ setInterval(() => {
 	if (document.getElementById("settings1").style.display == "none") {
 		SETTINGS.style("background-color: transparent; color: " + document.body.style.color);
 	} else if (!isthin){
-		SETTINGS.style("background-color: #8ef4ee; color: " + document.body.style.color);
+		const settingsHighlight = document.documentElement.getAttribute("data-bs-theme") === "dark" ? "rgba(142, 245, 238, 0.16)" : "#8ef4ee";
+		SETTINGS.style("background-color: " + settingsHighlight + "; color: " + document.body.style.color);
 	}
 	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL") && !(MODE.includes("compete") && isthin) 
 			&& !isShown("creating_match")) {
