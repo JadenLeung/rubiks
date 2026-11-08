@@ -189,6 +189,8 @@ weird{
 
 /* ---------- Side panels ---------- */
 #s_high,
+#compete_high,
+#ID1,
 #m_high,
 #ma_highscores,
 #c_week,
@@ -993,4 +995,10 @@ button:hover {
    slider isn't flush against the colon. */
 #settings1 .setting-label > input[type="range"] {
     margin-left: 10px;
+}
+
+/* The Multiplayer card holds only its title; drop the paragraph's default
+   bottom margin so the top and bottom padding match. */
+#compete_high > p {
+    margin-bottom: 0;
 }

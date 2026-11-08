@@ -4001,6 +4001,11 @@ function startCube() {
 }
 function regular(nocustom){
 	modeData("normal");
+	if (!["normal", "timed", "compete"].includes(MODE) || ["settings"].includes(MINIMODE)) {
+		if (username != "signedout") {
+			saveData(localStorage.username, null, "POST", true);
+		}
+	}
 	MINIMODE = "normal";
 	if(MODE != "timed" && MODE != "cube" && MODE != "normal")
 	{
@@ -4047,7 +4052,7 @@ function regular(nocustom){
 	setDisplay("inline", ["shuffle_div", "reset_div", "solve", "undo", "redo", "speed", "slider_div", "outermoves", "outertime", "input", "delayuseless"]);
 	setDisplay("none", ["or_instruct3", "points_par", "readybot", "home", "alltimes", "ID3", "s_easy", "s_medium", "s_OLL", "s_PLL", "m_34", "m_4", 
 		"m_high", "link1", "timegone", "reset2_div", "reset3_div", "giveup", "giveup2", "hint", "cube", "custom2", "custom4", "spacetime", "stop_div", "modarrow", "s_bot", 
-		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start"
+		"s_high", "s_RACE", "s_RACE2", "settings1", "loginform", "c_INSTRUCT", "c_week", "challengeback", "hotkey1", "s_prac", "s_prac2", "s_image","s_start", "compete_high"
 		,"blind", "overlay", "peeks", "b_win", "b_start", "divider", "beforetime", "marathon","marathon2","ma_buttons","paint","saveposition", "lobby", "creating_match", "waitingroom", "startmatch", "in_match", "continuematch", "com_1v1_div",
 		"com_group_div", "finish_match", "cantmatch", "final_tally", "go!", "chat-container", "message-input", "chat_instruct",
 		"send-btn", "ss_container", "com_teamblind_div", "competeswitch", "compete_group_container", "peek_container", "blind2",
@@ -4310,7 +4315,7 @@ function competemode() {
 	setDisplay("none", ["test_alg_div", "input", "scram", "challengeback", "settings", "timeselect","type3",
 			"recent_solves_container", "keymap", "show_keyboard"
 	]);
-	setDisplay("block", ["lobby", "allmodes", "compete_group_container"]);
+	setDisplay("block", ["lobby", "allmodes", "compete_group_container", "compete_high"]);
 	setDisplay("none", ["chat_instruct", "chat-container", "competeinput"]);
 	setDisplay("inline", ["home"]);
 	if (isthin) {
@@ -4391,7 +4396,7 @@ function enterLobby(data, r) {
 		COMPETE_ADVANCED.checked(false);
 	}
 	MODE = "compete";
-	setDisplay("none", ["lobby", "in_match", "final_tally"]);
+	setDisplay("none", ["lobby", "in_match", "final_tally", "compete_high"]);
 	setDisplay("inline", ["outertime", "reset_div"]);
 	setDisplay("block", ["cnv_div"]);
 	setDisplay("block", ["practice_container", "chat_instruct", "chat-container", "message-input"]);
@@ -4500,7 +4505,7 @@ function enterLobby(data, r) {
 	getEl("competerules").innerHTML = str;
 }
 function createMatch(newmatch = true) {
-	setDisplay("none", ["lobby", "waitingroom", "startmatch", "outertime", "practice_container"]);
+	setDisplay("none", ["lobby", "waitingroom", "startmatch", "outertime", "practice_container", "compete_high"]);
 	setDisplay("block", ["creating_match"]);
 	document.getElementById("cnv_div").style.display = "none";
 	document.getElementById("right").className = "col-xl-10 noselect";
@@ -9619,7 +9624,6 @@ p.keyPressed = (event) => {
 			if (!window.confirm("Are you sure you want to quit?")) {
 				return;
 			}
-			saveData(localStorage.username, null, "POST", true);
 		}
 		if (p.keyIsDown(p.SHIFT)) {
 			regular();
