@@ -9856,6 +9856,7 @@ p.keyPressed = (event) => {
 			/*fetch('src/PLL.json')
 			.then((response) => response.json())
 			.then((obj) => (setPLL(obj)));*/
+			hideHighscoreModal();
 			console.log("erger");
 			break;
 			case "*": case "8": //8
