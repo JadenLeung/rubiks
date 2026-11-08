@@ -85,7 +85,7 @@ export default function (p) {
 	const defaultShuffleData = JSON.stringify({ scramble: "Default", input: "Default", "goal": "Default"});
     const defaultShuffleText = "Input: Default\nScramble: Default\nWin Condition: Default";
 	let othershuffle = false;
-	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby", "Bandage", "Glow"];
+	const cubetypenames = ["All", "NxN", "Cuboid", "Non-cubic", "Big", "Baby", "Bandage"];
 	let SWITCHTIME = 15;
 	let saveCompeteSettings = {};
 	let isShuffling = false;
@@ -12229,7 +12229,7 @@ function setColors(a, b, c, d) {
 	p.background(BACKGROUND_COLOR);
 	updateTheme();
 }
-const DARK_COLORS = { page: "#181c24", canvas: "#232a35", text: "#c7dcef" };
+const DARK_COLORS = { page: "#181c24", canvas: "#232a35", text: "#b8babc" };
 // Switch Bootstrap's dark theme (inputs, selects, tables) on whenever the page background is dark,
 // whether it came from the Dark Mode checkbox, a saved color, or the color pickers.
 function updateTheme() {
@@ -14481,7 +14481,7 @@ Jaden WR 4x4: 139.71 123.59 116.96
 Jaden WR 3x3: 25.4, 20.9, 19.7, 16.6, 16.07, 13.73, 11.3, 9.72
 
 3x3 PLL Attack: 6.9, 6.84, 6.2, 5.01 4.86
-3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06 2.74
+3x3 OLL Attack: 4.66, 4.31, 3.2, 3.06 2.74 2.51
 3x3 Easy: 0.8, 0.52s
 3x3 Medium: 15.4s, 13.58s 7.33
 3x3 Easy: 1.4s
