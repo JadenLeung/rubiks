@@ -43,7 +43,7 @@ let server = "main";
 export default function (p) {
 	const CUBYESIZE = 50;
 	const DEBUG = false;
-	let week = sinceOct12('w') % 20;
+	let week = sinceOct12('w') % weeklyscrambles.length;
 	let averagetimedata = {};
 	let CAM;
 	let keymappings = constkeymappings;
