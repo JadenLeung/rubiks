@@ -12120,6 +12120,7 @@ function multipleCross(nb) {
 
 document.getElementById('colorPicker').addEventListener('input', (event) => {
 	document.body.style.backgroundColor = event.target.value;
+	updateTheme();
 });
 
 document.getElementById('colorPicker2').addEventListener('input', (event) => {
@@ -12184,18 +12185,29 @@ function setColors(a, b, c, d) {
 	document.getElementById("colorPicker3").value=c;
 	document.getElementById("colorPicker4").value=d;
 	p.background(BACKGROUND_COLOR);
+	updateTheme();
+}
+const DARK_COLORS = { page: "#181c24", canvas: "#232a35", text: "#c7dcef" };
+// Switch Bootstrap's dark theme (inputs, selects, tables) on whenever the page background is dark,
+// whether it came from the Dark Mode checkbox, a saved color, or the color pickers.
+function updateTheme() {
+	const hex = stringrgbToHex(document.body.style.backgroundColor || "rgb(214, 241, 255)");
+	if (!hex) return;
+	const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+	const isDark = 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.4;
+	document.documentElement.setAttribute("data-bs-theme", isDark ? "dark" : "light");
 }
 function darkMode(){
 	if(!darkmode){
 		savedark[0] = document.body.style.backgroundColor == '' ? "#d6f1ff" : stringrgbToHex(document.body.style.backgroundColor);
 		savedark[1] = BACKGROUND_COLOR;
 		savedark[2] = document.body.style.color  == '' ? "#0a1970" : stringrgbToHex(document.body.style.color);
-		BACKGROUND_COLOR = "#050505"
-		document.body.style.backgroundColor = "#050505";
-		document.body.style.color = "#add8e6";
-		document.getElementById("colorPicker").value="#050505";
-		document.getElementById("colorPicker2").value="#050505";
-		document.getElementById("colorPicker3").value="#add8e6";
+		BACKGROUND_COLOR = DARK_COLORS.canvas;
+		document.body.style.backgroundColor = DARK_COLORS.page;
+		document.body.style.color = DARK_COLORS.text;
+		document.getElementById("colorPicker").value = DARK_COLORS.page;
+		document.getElementById("colorPicker2").value = DARK_COLORS.canvas;
+		document.getElementById("colorPicker3").value = DARK_COLORS.text;
 		darkmode = true;
 	}
 	else{
@@ -12210,6 +12222,7 @@ function darkMode(){
 	}
 	DARKMODE.checked(darkmode);
 	getEl("outertime").style.color = document.body.style.color;
+	updateTheme();
 }
 
 function swipeRotate() {
@@ -14016,6 +14029,7 @@ function settingsDefault(){
 	document.getElementById("colorPicker2").value="#e7e5ff";
 	document.getElementById("colorPicker3").value="#0a1970";
 	document.getElementById("colorPicker4").value="#000000";
+	updateTheme();
 	changeKeys();
 	CAMZOOM = -170;
 	SIZE_SLIDER2.value(-CAMZOOM);

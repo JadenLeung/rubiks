@@ -795,3 +795,33 @@ button:hover {
 #recent_solves_body tr {
     height: 32px;
 }
+
+/* ---------- Dark mode ----------
+   sketch.js sets data-bs-theme="dark" on <html> whenever the page background is dark.
+   Bootstrap then handles inputs, selects and tables; these cover the hard-coded light surfaces. */
+[data-bs-theme="dark"] #chat-container,
+[data-bs-theme="dark"] #chat-messages,
+[data-bs-theme="dark"] #chat-input {
+    background: #1f252f;
+    border-color: #3a4352;
+}
+[data-bs-theme="dark"] .message {
+    background: #2c3a52;
+}
+[data-bs-theme="dark"] #allmessages {
+    color: inherit;
+}
+[data-bs-theme="dark"] #keymap td {
+    background: #262d39;
+    border-color: #3a4352;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+[data-bs-theme="dark"] #keymap td:hover {
+    background: #2f3846;
+}
+[data-bs-theme="dark"] #keymap td:active {
+    background: #364052;
+}
+[data-bs-theme="dark"] #keymap {
+    color: inherit;
+}
