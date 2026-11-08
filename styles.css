@@ -881,3 +881,116 @@ button:hover {
 [data-bs-theme="dark"] #keymap {
     color: inherit;
 }
+
+/* ---------- Settings panel ----------
+   Scoped styles that tidy up the Advanced Settings list: consistent spacing,
+   label/control alignment, and larger, friendlier color pickers.
+   Controls are injected by p5 into the inline placeholders, so only layout
+   is adjusted here — element IDs and structure are untouched. */
+#settings1 {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 4px 2px 12px;
+    text-align: left;
+}
+#settings1 .settings-title {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin: 14px 0 10px;
+}
+/* Toolbar of back / default / hotkey / keyboard buttons */
+#settings1 .settings-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+#settings1 .settings-toolbar > p {
+    display: inline-block;
+    margin: 0;
+}
+/* Each labelled setting is a two-column row: label on the left, control on the right */
+#settings1 .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 34px;
+    padding: 6px 4px;
+    margin: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+#settings1 .setting-row:last-of-type {
+    border-bottom: none;
+}
+#settings1 .setting-row > p,
+#settings1 .setting-row > span {
+    font-size: 15px;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+}
+/* The label is the first child; let it take the remaining space */
+#settings1 .setting-row > .setting-label {
+    flex: 1 1 auto;
+    text-align: left;
+}
+/* The control placeholder sits on the right and shrinks to its content */
+#settings1 .setting-row > .setting-control {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+#settings1 .setting-note {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: -2px;
+    padding: 0 4px 6px;
+}
+/* Larger, rounded color swatches with a subtle ring */
+#settings1 .colorPicker {
+    width: 30px;
+    height: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 0;
+    background: none;
+}
+#settings1 .colorPicker:hover {
+    transform: scale(1.08);
+}
+/* Group heading for the color section */
+#settings1 .settings-subhead {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 14px 4px 4px;
+}
+
+[data-bs-theme="dark"] #settings1 .setting-row {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+[data-bs-theme="dark"] #settings1 .colorPicker {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* p5 checkboxes (Dark Mode, Auto-align, Hollow Cube) render as a wrapper div
+   with an <input type=checkbox> inside. Keep them compact and centered. */
+#settings1 .setting-control input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Sliders (Cube Size, Border Width, Gap Width) are injected by p5 directly
+   into their label <p>, right after the label text. Add breathing room so the
+   slider isn't flush against the colon. */
+#settings1 .setting-label > input[type="range"] {
+    margin-left: 10px;
+}

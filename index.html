@@ -454,69 +454,71 @@
 		  	</div>
 			<div id = "timed_right"></div>
 			<div id = "settings1" class = "noselect">
-				<div style = "margin-top: 10px;">
-					<p id="settingsback" class = "button" style = "text-align:left; display: inline;"></p>
-					<p id="settingsdefault" class = "button" style = "text-align:left; display: inline;"></p>
-					<p id="settingshotkey" class = "button" style = "text-align:left; display: inline;"></p>
-					<p id="settingskeyboard" class = "button" style = "text-align:left; display: inline;"></p>
+				<div class = "settings-toolbar">
+					<p id="settingsback" class = "button"></p>
+					<p id="settingsdefault" class = "button"></p>
+					<p id="settingshotkey" class = "button"></p>
+					<p id="settingskeyboard" class = "button"></p>
 				</div>
-				<p style = "font-size:20px; text-align:left; padding-top:15px; text-align: center"><b>Advanced Settings</b></p>
-				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
-					<p id="size" style = "display: inline;"><span>Cube Size: &nbsp;</span></p>
-					<span style = "display: inline;" id = "size2"></span>
-				</div>	
-				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
-					<p id="border" style = "display: inline;"><span>Border Width: &nbsp;</span></p>
-					<span style = "display: inline;" id = "border2"></span>
-				</div>	
-				<div id = "gapdiv" class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
-					<p id="gap" style = "display: inline;"><span>Gap Width: &nbsp;</span></p>
-					<span style = "display: inline;" id = "gap2">3</span>
-				</div>	
-				<div id = "sounddiv" class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
-					<p style = "display: inline;"><span>Sound: &nbsp;</span></p>
-					<span style = "display: inline;" id = "sound"></span>
-				</div>	
-				<div class = "noselect" style = "padding-bottom:7px; margin-top:8px;">
-					<p style = "display: inline;"><span>Keyboard: &nbsp;</span></p>
-					<span style = "display: inline;" id = "keyboard"></span>
-				</div>	
-				<div style = "padding-bottom:7px; margin-top:8px;">
-					<p style = "display: inline; font-size:15px; text-align:left; padding-top:15px;">Top Color:</p>
-					<p id = "topwhite" style = "display: inline;"></p>			
+				<p class = "settings-title">Advanced Settings</p>
+				<div class = "setting-row noselect">
+					<p id="size" class = "setting-label"><span>Cube Size:</span></p>
+					<span class = "setting-control" id = "size2"></span>
 				</div>
-				<div style = "padding-bottom:7px; margin-top:8px;">
-					<p style = "display: inline; font-size:15px; text-align:left;">Top Color for OLL/PLL modes:</p>
-					<p id = "toppll" style = "display: inline;"></p>			
+				<div class = "setting-row noselect">
+					<p id="border" class = "setting-label"><span>Border Width:</span></p>
+					<span class = "setting-control" id = "border2"></span>
 				</div>
-				<div style = "padding-bottom:0px; margin-top:8px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Dark Mode:</p>
-					<p id = "dankmode" style = "display: inline;"></p>		
+				<div id = "gapdiv" class = "setting-row noselect">
+					<p id="gap" class = "setting-label"><span>Gap Width:</span></p>
+					<span class = "setting-control" id = "gap2">3</span>
 				</div>
-				<div style = "padding-bottom:0cm; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Auto-align Camera Rotation:</p>
-					<p id = "swiperotate" style = "display: inline;"></p>		
+				<div id = "sounddiv" class = "setting-row noselect">
+					<p class = "setting-label"><span>Sound:</span></p>
+					<span class = "setting-control" id = "sound"></span>
 				</div>
-				<div style = "padding-bottom:0px; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Hollow Cube:</p>
-					<p id = "hollow" style = "display: inline;"></p>		
-					<p style = "display: inline; font-size:15px;">(not recommended for mouse turning)</p>	
+				<div class = "setting-row noselect">
+					<p class = "setting-label"><span>Keyboard:</span></p>
+					<span class = "setting-control" id = "keyboard"></span>
 				</div>
-				<div style = "padding-bottom:7px; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Border Color:</p>
-					<input type="color" class="colorPicker" id="colorPicker4" value="black">
+				<div class = "setting-row">
+					<p class = "setting-label">Top Color:</p>
+					<p id = "topwhite" class = "setting-control"></p>
 				</div>
-				<div style = "padding-bottom:7px; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Outer Background Color:</p>
-					<input type="color" class="colorPicker" id="colorPicker" value="#dae3d3">
+				<div class = "setting-row">
+					<p class = "setting-label">Top Color for OLL/PLL modes:</p>
+					<p id = "toppll" class = "setting-control"></p>
 				</div>
-				<div style = "padding-bottom:7px; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Inner Background Color:</p>
-					<input type="color" class="colorPicker" id="colorPicker2" value="#e6e6e6">
+				<div class = "setting-row">
+					<p class = "setting-label">Dark Mode:</p>
+					<p id = "dankmode" class = "setting-control"></p>
 				</div>
-				<div style = "padding-bottom:7px; margin-top:0px;">
-					<p style = "display: inline; font-size:15px; text-align:left; ">Text Color:</p>
-					<input type="color" class="colorPicker" id="colorPicker3" value="#0a1970">
+				<div class = "setting-row">
+					<p class = "setting-label">Auto-align Camera Rotation:</p>
+					<p id = "swiperotate" class = "setting-control"></p>
+				</div>
+				<div class = "setting-row">
+					<p class = "setting-label">Hollow Cube:</p>
+					<p id = "hollow" class = "setting-control"></p>
+				</div>
+				<p class = "setting-note">Hollow cube is not recommended for mouse turning.</p>
+
+				<p class = "settings-subhead">Colors</p>
+				<div class = "setting-row">
+					<p class = "setting-label">Border Color:</p>
+					<span class = "setting-control"><input type="color" class="colorPicker" id="colorPicker4" value="black"></span>
+				</div>
+				<div class = "setting-row">
+					<p class = "setting-label">Outer Background Color:</p>
+					<span class = "setting-control"><input type="color" class="colorPicker" id="colorPicker" value="#dae3d3"></span>
+				</div>
+				<div class = "setting-row">
+					<p class = "setting-label">Inner Background Color:</p>
+					<span class = "setting-control"><input type="color" class="colorPicker" id="colorPicker2" value="#e6e6e6"></span>
+				</div>
+				<div class = "setting-row">
+					<p class = "setting-label">Text Color:</p>
+					<span class = "setting-control"><input type="color" class="colorPicker" id="colorPicker3" value="#0a1970"></span>
 				</div>
 			</div>
 			<div id = "hotkey1">

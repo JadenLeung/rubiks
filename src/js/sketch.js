@@ -1382,17 +1382,17 @@ p.setup = () => {
 
 	HOLLOW = p.createCheckbox("", localStorage.hollow === "true" ? true : false);
 	HOLLOW.parent("hollow")
-	HOLLOW.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
+	HOLLOW.style("display:inline-flex; align-items:center; padding-right:5px; font-size:20px;")
 	HOLLOW.changed(hollowCube);
 
 	DARKMODE = p.createCheckbox("", false);
 	DARKMODE.parent("dankmode")
-	DARKMODE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
+	DARKMODE.style("display:inline-flex; align-items:center; padding-right:5px; font-size:20px;")
 	DARKMODE.changed(darkMode);
 
 	SWIPEROTATE = p.createCheckbox("", localStorage.swiperotate === "false" ? false : true);
 	SWIPEROTATE.parent("swiperotate")
-	SWIPEROTATE.style("display:inline; padding-right:5px; font-size:20px; height:200px;")
+	SWIPEROTATE.style("display:inline-flex; align-items:center; padding-right:5px; font-size:20px;")
 	SWIPEROTATE.changed(swipeRotate);
 
 	hollowCube(false);
@@ -12235,7 +12235,7 @@ function setColors(a, b, c, d) {
 	p.background(BACKGROUND_COLOR);
 	updateTheme();
 }
-const DARK_COLORS = { page: "#181c24", canvas: "#232a35", text: "#b8babc" };
+const DARK_COLORS = { page: "#141c30", canvas: "#161c2c", text: "#b8babc" };
 
 function updateTheme() {
 	const hex = stringrgbToHex(document.body.style.backgroundColor || "rgb(214, 241, 255)");
