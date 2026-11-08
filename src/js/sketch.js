@@ -3397,7 +3397,7 @@ function setCustomShape(initial = false) {
 			CHECK[i].checked(saveshapemod[i]);
 		}
 		row.appendChild(checkboxContainer);
-		const style = ((i % (size * size)) < size && i > size) ? "padding-right: 3px; padding-top: 15px;" : "padding-right: 3px;";
+		const style = ((i % (size * size)) < size && i > size) ? "padding-right: 3px; padding-top: 15px;" : "padding-right: 3px; padding-top: 3px;";
 		CHECK[i].style(style);
 		let layer = Math.floor(i / (size * size)) + 1;
 		let checkall = false;
