@@ -191,6 +191,7 @@ weird{
 #s_high,
 #m_high,
 #c_week,
+#game_high,
 #loginform,
 #suggest_container,
 #settings1 {
@@ -217,7 +218,8 @@ weird{
 }
 #s_high .skinnyscore,
 #m_high .skinnyscore,
-#c_week .skinnyscore {
+#c_week .skinnyscore,
+#game_high .skinnyscore {
     font-size: 0.95rem;
     padding: 3px 0;
 }

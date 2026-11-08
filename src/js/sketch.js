@@ -4052,6 +4052,7 @@ function regular(nocustom){
 		"custom-dialog", "custom-dialog-backdrop", "times_par", "moves_par", "customglow", "wannapeek", "ma_highscores", "show_marathon", "question", "ID1"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct", "s_instruct2", "s_RACE3", "s_difficulty", "l_message", "lobby_warn", "allmessages", "match_description", "compete_group_container","compete_difficulty"]);
 	[COMPETE_1V1, COMPETE_GROUP, COMPETE_TEAMBLIND].forEach((b) => b && b.style("backgroundColor", ""));
+	hideGameHigh();
 	getEl("times_desc").innerHTML = "Times:";
 	getEl("outertime").style.color = document.body.style.color;
 	if (document.getElementById("cnv_div").style.display == "none" && (getEl("s_prac3x3o").style.display == "none" || pracmode != "OLL")) {
@@ -6115,6 +6116,7 @@ function dailychallenge(cube) {
 	quickSolve();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
+	showGameHigh(...(cube == 3 ? ["c_day_bweek", "c_day"] : ["c_day2_bweek", "c_day2"]));
 	if (!isMobile()) setDisplay("table", ["keymap"]);
 	setDisplay("inline", ["undo", "redo", "reset3_div",  "speed", "slider_div", "outertime"]);
 	setDisplay("block", ["input"]);
@@ -6135,6 +6137,7 @@ function blindmode() {
 		setInput();
 		setDisplay("none", ["s_easy", "s_medium", "m_34", "m_4", "m_high", "s_OLL", "s_PLL", "s_bot", "s_high", "s_RACE",
 			 "s_prac", "s_prac2","blind","b_win","b_start","marathon","ma_buttons", "switcher", "show_marathon"]);
+		showGameHigh(DIM == 50 ? "blind3x3" : "blind2x2");
 		setDisplay("inline", ["input", "speed", "slider_div", "undo", "redo","reset2_div"]);
 		setDisplay("block", ["input", "peek_container", "blind2", "wannapeek"]);
 		getEl("peeks").style.display = isthin ? "inline" : "block";
@@ -6146,6 +6149,7 @@ function blindmode() {
 	} else if (bstep == 3) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "input2", "wannapeek"]);
 		setDisplay("block", ["b_win", "b_start","m_high"]);
+		hideGameHigh();
 		toggleBlind(false);
 		getEl("b_win").innerHTML = "You did it! You solved the cube in " + peeks + " peek" + (peeks == 1 ? "." : "s. <br> Play again?");
 		setScore("blind" + (DIM == 50 ? "3x3" : "2x2"), peeks, true);
@@ -6202,6 +6206,7 @@ function startMarathon(type) {
 function shapemarathon() { 
 	if (mastep == 0) {
 		showMarathon();
+		showGameHigh(ma_data.maphighscore[ma_data.type]);
 		ao5 = [];
 		mo5 = [];
 	}
@@ -6233,6 +6238,7 @@ function shapemarathon() {
 	if (mastep / 2 == ma_data.cubes.length) {
 		setDisplay("none", ["overlay", "keymap", "slider_div", "speed", "peeks", "scramble_par", "input2"]);
 		setDisplay("block", ["ma_highscores"]);
+		hideGameHigh();
 		setInnerHTML(["ma_list"]);
 		let score;
 		if (ma_data.type == "blind") {
@@ -6392,6 +6398,7 @@ function startchallenge() {
 	setInput();
 	cstep = 1;
 	setDisplay("none", ["c_INSTRUCT", "c_week"]);
+	showGameHigh("c_week");
 	setDisplay("inline", ["undo", "redo", "reset2_div",  "speed", "slider_div", "outertime"]);
 	setDisplay("block", ["input"]);
 	if (INPUT.selected() != "Normal") {
@@ -6402,6 +6409,7 @@ function endchallenge(passed = true) {
 	cstep = 0;
 	setDisplay("none", ["test_alg_div"]);
 	setDisplay("block", ["c_INSTRUCT", "c_week"]);
+	hideGameHigh();
 	
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
@@ -6693,6 +6701,7 @@ function speedmode()
 		"input", "input2", "scram", "s_RACE2", "timeselect","s_start", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("inline", ["s_easy", "s_OLL", "s_PLL"]);
 	setDisplay("block", ["s_bot", "s_high", "s_RACE", "s_prac"]);
+	hideGameHigh();
 	document.getElementById("s_instruct2").innerHTML = "";
 	document.getElementById("s_RACE3").innerHTML = "";
 	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Time Attack" : "2x2 Time Attack";
@@ -6751,6 +6760,7 @@ function movesmode()
 		"solve", "input", "input2", "scram", "timeselect", "recent_solves_container", "keymap", "show_keyboard"]);
 	setDisplay("inline", ["m_34", "m_4"]);
 	setDisplay("block", ["m_high", "blind","b_start","marathon", "show_marathon", "marathon"]);
+	hideGameHigh();
 
 	document.getElementById('s_INSTRUCT').scrollIntoView({ behavior: 'smooth', block: "center" });
 	document.getElementById("s_INSTRUCT").innerHTML = DIM == 50 ? "3x3 Fewest Moves Challenge" : "2x2 Fewest Moves Challenge";
@@ -6934,6 +6944,26 @@ function updateScores() {
 			document.getElementById(mode + "score").innerHTML = display[mode] +  ": " + "N/A";
 		}
 	})
+	refreshGameHigh();
+}
+// Score card for the game being played (the menu score cards are hidden during a game)
+var GAME_HIGH_IDS = { easy: "s_easyscore", medium: "s_mediumscore", oll: "s_ollscore", pll: "s_pllscore",
+	easy2: "s_easyscore", oll2: "s_mediumscore", pbl2: "s_ollscore" };
+var gameHighKeys = [];
+function showGameHigh(...keys) {
+	gameHighKeys = keys;
+	refreshGameHigh();
+}
+function hideGameHigh() {
+	gameHighKeys = [];
+	refreshGameHigh();
+}
+function refreshGameHigh() {
+	const card = getEl("game_high");
+	if (!card || !gameHighKeys) return; // may run before these vars are initialized during setup
+	const lines = gameHighKeys.map((k) => getEl(GAME_HIGH_IDS[k] || k + "score")).filter(Boolean).map((el) => el.innerHTML);
+	getEl("game_high_scores").innerHTML = lines.map((l) => `<p class="skinnyscore">${l}</p>`).join("");
+	card.style.display = lines.length ? "block" : "none";
 }
 function setScore(mode, total, getlow = true, persist = false) {
 	const highscores = parseFloat(localStorage[mode]);
@@ -7007,6 +7037,7 @@ function easy()
 		document.getElementById("s_instruct").innerHTML = "Move any layer to start time, solve the cube to stop it.";
 		
 		showSpeed();
+		showGameHigh(DIM == 50 ? "easy" : "easy2");
 		timer.stop();
 		timer.reset();
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
@@ -7155,6 +7186,7 @@ function easy()
 		document.getElementById("s_OLL").style.display = "inline";
 		document.getElementById("s_PLL").style.display = "inline";
 		document.getElementById("s_high").style.display = "block";
+		hideGameHigh();
 		if (medstep == 8) {
 			setScore("medium", total);
 		} else if (ollstep == 8) {
@@ -7197,6 +7229,7 @@ function medium(){
 	{
 		reCam();
 		showSpeed();
+		showGameHigh("medium");
 		ao5 = [];
 		mo5 = [];
 		quickSolve();
@@ -7417,6 +7450,7 @@ function speedPLL()
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (pllstep/2+1) + ": Solve the Cube";
 		showSpeed();
+		showGameHigh(DIM == 50 ? "pll" : "pbl2");
 		timer.stop();
 		timer.reset();
 		let possible = ["Aa", "Ab", "F", "Ja", "Jb", "Ra", "Rb", "T", "Ga", "Gb", "Gc", "Gd", "E", "Na", 
@@ -7473,6 +7507,7 @@ function speedOLL()
 		quickSolve();
 		document.getElementById("s_INSTRUCT").innerHTML = "Challenge #" + (ollstep/2+1) + ": Solve the Top Layer";
 		showSpeed();
+		showGameHigh(DIM == 50 ? "oll" : "oll2");
 		timer.stop();
 		timer.reset();
 		let possible = allplls[9];
@@ -7770,6 +7805,7 @@ function speedRace(type){
 	round = 1;
 	roundresult = [0, 0];
 	showSpeed();
+	if (type == "virtual") showGameHigh(DIM == 50 ? "race3x3" : "race2x2");
 	setDisplay("none", ["keymap", "input", "input2", "undo", "scram", "redo", "reset3_div", "outermoves", "outertime", "times_par", "delayuseless", "scramble_par", "r_physical", "input2"]); 
 	setDisplay("block", ["readybot", "delaywhole", "race_instruct_div", "botestimate"]);
 	setInnerHTML(["s_INSTRUCT", "s_instruct"])
@@ -7930,6 +7966,7 @@ function m_34()
 		quickSolve();
 		arr = [];
 		showSpeed();
+		showGameHigh("m_easy");
 		m_34step = Math.floor(obj.m_34step / 2) * 2;
 		m_34step++;
 		displayMoveTitle("m_34");
@@ -7970,6 +8007,7 @@ function m_34()
 		}
 		quickSolve();
 		showSpeed();
+		showGameHigh("m_easy");
 		displayMoveTitle("m_34");
 		const possible = ["R'", "R", "L", "L'", "U", "U'", "D", "D'", "B", "B'", "F", "F'"];
 		arr = [];
@@ -8026,6 +8064,7 @@ function m_4()
 		quickSolve();
 		arr = [];
 		showSpeed();
+		showGameHigh("m_medium");
 		m_4step = Math.floor(obj.m_4step / 2) * 2;
 		m_4step++;
 		displayMoveTitle("m_4");
@@ -8050,6 +8089,7 @@ function m_4()
 		if(rand % 5 == 0 && m_4step > 6) m_offset++;
 		quickSolve();
 		showSpeed();
+		showGameHigh("m_medium");
 		if(m_type < 20)
 			displayMoveTitle("m_4");
 		else
@@ -8108,6 +8148,7 @@ function m_4()
 		document.getElementById("m_34").style.display = "inline";
 		document.getElementById("m_4").style.display = "inline";
 		document.getElementById("m_high").style.display = "block";
+		hideGameHigh();
 
 		m_34step = 0;
 		m_4step = 0;
