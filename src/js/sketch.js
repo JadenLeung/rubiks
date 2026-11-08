@@ -4022,6 +4022,7 @@ function regular(nocustom){
 	fullScreen(false);
 	reSetup();
 	displayAverage();
+	hideHighscoreModal();
 	race = 0;
 	var elements = document.getElementsByClassName('normal');
 	for(var i=0; i<elements.length; i++) { 
