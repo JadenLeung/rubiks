@@ -190,6 +190,7 @@ weird{
 /* ---------- Side panels ---------- */
 #s_high,
 #m_high,
+#ma_highscores,
 #c_week,
 #game_high,
 #loginform,
@@ -202,6 +203,7 @@ weird{
 }
 #s_high h6,
 #m_high h6,
+#ma_highscores h6,
 #c_week h6 {
     border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
     font-size: 0.8rem;
@@ -212,11 +214,13 @@ weird{
 }
 #s_high br,
 #m_high br,
+#ma_highscores br,
 #c_week br {
     display: none;
 }
 #s_high .skinnyscore,
 #m_high .skinnyscore,
+#ma_highscores .skinnyscore,
 #c_week .skinnyscore,
 #game_high .skinnyscore {
     font-size: 0.95rem;
@@ -327,6 +331,22 @@ button:hover {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 .btn:not(.cube-picker):not(.nav-btn):active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+/* Settings and fullscreen icons aren't .btn, so give them the same hover/press feedback as the volume button */
+#settings > button,
+#fullscreen > button {
+    border-radius: 10px;
+    transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+#settings > button:hover,
+#fullscreen > button:hover {
+    filter: brightness(0.92);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+#settings > button:active,
+#fullscreen > button:active {
     transform: translateY(1px);
     box-shadow: none;
 }
