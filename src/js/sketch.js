@@ -3994,16 +3994,24 @@ function sliderUpdate2(){
 	rotateIt();
 	CAM.zoom(CAMZOOM + ZOOMADD);
 }
-//Henry
 function startCube() {
 	if(localStorage.startcube && localStorage.startcube == 2) changeTwo();
 	else changeThree();
 }
+function trySave() {
+	if (MODE == "normal") {
+		saveData(localStorage.username, null, "POST", true);
+	}
+}
 function regular(nocustom){
 	modeData("normal");
-	if (!["normal", "timed", "compete"].includes(MODE) || ["settings"].includes(MINIMODE)) {
+	if (!["normal"].includes(MODE) || ["settings"].includes(MINIMODE)) {
 		if (username != "signedout") {
-			saveData(localStorage.username, null, "POST", true);
+			if (timer.isRunning) {
+				saveData(localStorage.username, null, "POST", true);
+			} else {
+				setTimeout(trySave, 200);
+			}
 		}
 	}
 	MINIMODE = "normal";
@@ -7600,7 +7608,7 @@ window.saveData = saveData;
 
 async function saveData(username, password, method, al) {
 	if (document.getElementById("logindesc").innerHTML == "")
-		document.getElementById("logindesc").innerHTML = "Saving data...";
+		document.getElementById("logindesc").innerHTML = "Saving...";
 	const data = {
 		username: username,
 		password: password ?? "bruh",
