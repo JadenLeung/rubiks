@@ -1684,7 +1684,7 @@ p.setup = () => {
 
 	let TIMEGONE3 = p.createButton('🗑️');
 	TIMEGONE3.parent("timegone5");
-	TIMEGONE3.mousePressed(removeSpecificTime.bind(null, 0));	
+	TIMEGONE3.mousePressed(removeSpecificTime.bind(null, undefined));	
 
 	LEFTMOD = p.createButton('←');
 	setButton(LEFTMOD, "leftmod", 'btn btn-light', 'font-size:15px; width:70px; margin-right:5px; border-color: black;', changeMod.bind(null, -1));
@@ -3286,8 +3286,10 @@ function change19(){
 	refreshButtons();
 	CUBE15.style('background-color', "#8ef5ee");
 }
-function switchCube(cubename) {
-	bandaged = [];
+function switchCube(cubename, keepBandaged = true) {
+	if (keepBandaged) {
+		bandaged = [];
+	}
 	CUBEMAP[cubename]();
 	CUBENAME = cubename;
 	PRACTICE_SEL.value(cubename);
@@ -3860,7 +3862,7 @@ function CustomBandage(){
 	doneBandage();
 	modeData("custombandage");
 	ban9();
-	switchCube(BANDAGE_SELECT.value());
+	switchCube(BANDAGE_SELECT.value(), false);
 }
 function CustomGlow() {
 	custom = 2;
@@ -9668,7 +9670,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(cursolvestat);
+		console.log(bandaged, bandaged2, JSON.stringify(bandaged3["3x3"]));
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab

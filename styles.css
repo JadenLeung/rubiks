@@ -1,11 +1,21 @@
+:root {
+    --nav-h: 52px;
+    --nav-bg: #1d2333;
+    --nav-fg: #ffffff;
+    --nav-muted: rgba(255, 255, 255, 0.78);
+    --nav-hover: rgba(255, 255, 255, 0.12);
+    --panel-radius: 12px;
+}
 body{
     background-color:#d6f1ff; /*#c9ffda*/
     color:#0a1970;
-    font:courier;
-    
 }
 button:focus {
     outline: none;
+}
+button:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
 }
 .actualbody{
     padding-left:0px;
@@ -19,29 +29,197 @@ table, th, td{
 weird{
     float:left;
 }
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
+
+/* ---------- Top navigation ---------- */
+#banner {
+    position: relative;
+    z-index: 20;
+    background-color: var(--nav-bg);
+    color: var(--nav-fg);
+    padding-bottom: 0 !important; /* sketch.js adds padding on thin screens; not needed with this layout */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
-li {
-    float: left;
+.nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--nav-h);
+    padding: 0 12px;
 }
-li a{
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    cursor: pointer;
+.nav-brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 2px;
 }
-li a:hover {
-    background-color: #111;
+.nav-title,
+.nav-help,
+.nav-account-toggle {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--nav-fg);
+    padding: 6px 8px;
+    white-space: nowrap;
 }
-.active {
-    background-color: #04AA6D;
+.nav-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.2px;
+}
+.nav-help {
+    color: var(--nav-muted);
+    font-size: 1.05rem;
+}
+.nav-title:hover,
+.nav-help:hover,
+.nav-account-toggle:hover {
+    background-color: var(--nav-hover);
+    color: var(--nav-fg);
+}
+.nav-modes {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.nav-modes::-webkit-scrollbar {
+    display: none;
+}
+.btn.nav-btn {
+    flex-shrink: 0;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--nav-muted);
+    padding: 5px 10px;
+    white-space: nowrap;
+}
+.btn.nav-btn:hover,
+.btn.nav-btn:focus-visible {
+    background-color: var(--nav-hover);
+    color: var(--nav-fg);
+}
+.btn.nav-btn:active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--nav-fg);
+}
+.nav-account {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 8px;
+    margin-left: auto;
+}
+.nav-account .btn {
+    border-radius: 8px;
+}
+#inaccount > * {
+    margin-left: 4px;
+    vertical-align: middle;
+}
+#logindesc {
+    color: var(--nav-muted);
+    font-size: 0.85rem;
+}
+.nav-user {
+    color: var(--nav-fg);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+.nav-account-toggle {
+    display: none;
+    flex-shrink: 0;
+    font-size: 1.4rem;
+    line-height: 1;
+    margin-left: auto;
+}
+@media screen and (max-width: 1199px) {
+    /* Account controls move into a dropdown so the mode buttons keep one row */
+    .nav-account-toggle {
+        display: inline-flex;
+    }
+    .nav-account {
+        display: none;
+        position: absolute;
+        top: var(--nav-h);
+        right: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        min-width: 220px;
+        padding: 12px;
+        background-color: var(--nav-bg);
+        border-radius: 0 0 var(--panel-radius) var(--panel-radius);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+    .nav-account.open {
+        display: flex;
+    }
+    .nav-account #bannerlogin {
+        display: block !important; /* sketch.js hides it on thin screens; the dropdown has room */
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    #inaccount > * {
+        display: block;
+        width: 100%;
+        margin: 6px 0 0 0;
+        text-align: center;
+    }
+    #loaddata:empty::after { content: " Load data"; }
+    #savedata:empty::after { content: " Save data"; }
+}
+@media screen and (max-width: 991px) {
+    #bannercube {
+        display: none !important;
+    }
+}
+@media screen and (max-width: 767px) {
+    .nav-inner {
+        gap: 4px;
+        padding: 0 6px;
+    }
+    .btn.nav-btn {
+        font-size: 1.05rem;
+        padding: 5px 9px;
+    }
+}
+
+/* ---------- Side panels ---------- */
+#s_high,
+#m_high,
+#c_week,
+#loginform,
+#suggest_container,
+#settings1 {
+    background-color: color-mix(in srgb, currentColor 5%, transparent);
+    border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    border-radius: var(--panel-radius);
+    margin-top: 10px;
+    padding: 12px 14px;
+}
+#s_high h6,
+#m_high h6,
+#c_week h6 {
+    border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding-bottom: 6px;
+    text-transform: uppercase;
+}
+#s_high br,
+#m_high br,
+#c_week br {
+    display: none;
+}
+#s_high .skinnyscore,
+#m_high .skinnyscore,
+#c_week .skinnyscore {
+    font-size: 0.95rem;
+    padding: 3px 0;
 }
 .caption{
     text-align:center;
@@ -55,6 +233,12 @@ img{
 }		
 .row{
     max-width:100%;
+    /* Match the Bootstrap 4 grid this layout was built on (15px gutters, positioned columns).
+       Canvas overlays and p5 .position() calls are placed relative to #cnv_div. */
+    --bs-gutter-x: 30px;
+}
+.row > [class*="col"] {
+    position: relative;
 }
 #keymap {
   border-collapse: separate;
@@ -131,7 +315,19 @@ button{
 }
 button:hover {
     cursor: pointer;
-    background-color: #FABD44;
+}
+.btn {
+    white-space: nowrap; /* Bootstrap 4 default that this layout relies on */
+    user-select: none;
+    transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+.btn:not(.cube-picker):not(.nav-btn):hover {
+    filter: brightness(0.92);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.btn:not(.cube-picker):not(.nav-btn):active {
+    transform: translateY(1px);
+    box-shadow: none;
 }
 .cube-picker {
     align-items: center;
@@ -376,13 +572,6 @@ button:hover {
     font-size: 30px; 
     width: 100px; 
     margin-top: 20px
-}
-.navbar-nohighlight {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
 }
 #continuematch {
     position: absolute;
