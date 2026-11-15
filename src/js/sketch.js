@@ -1298,7 +1298,7 @@ p.setup = () => {
 	const S_DESELECTALL = p.createButton('Deselect All');
 	setButton(S_DESELECTALL, "s_deselectall", 'btn btn-light', 'border-color: black;', setTogglePLL.bind(null, "uncheck"));
 
-	const IDBACK = p.createButton('Back');
+	const IDBACK = p.createButton('Home');
 	setButton(IDBACK, "idback", 'btn btn-light', 'font-size:20px; border-color: black;', () => {MODE == "finishpaint" ? paintmode() : MODE.includes("paint") ? idmode() : regular()});
 
 	const SETTINGSBACK = p.createButton('Back');
@@ -1307,7 +1307,7 @@ p.setup = () => {
 	const COMPETEBACK = p.createButton('Back');
 	setButton(COMPETEBACK, "competeback", 'btn btn-light', 'font-size:20px; border-color: black;', competemode.bind(null, 0));
 
-	const COMPETERESTORE = p.createButton('Restore Defaults');
+	const COMPETERESTORE = p.createButton('Restore Default');
 	setButton(COMPETERESTORE, "competerestore", 'btn btn-light', 'font-size:20px; border-color: black;', () => {});
 
 	const COMPETESELBACK = p.createButton('×');
@@ -1332,7 +1332,7 @@ p.setup = () => {
 	const CHALLENGEBACK = p.createButton('Return to Challenges');
 	setButton(CHALLENGEBACK, "challengeback", 'btn btn-light', 'font-size:20px; border-color: black;', challengemode.bind(null, 0));
 
-	const IDDEFAULT = p.createButton('Restore defaults');
+	const IDDEFAULT = p.createButton('Restore Default ID');
 	setButton(IDDEFAULT, "iddefault", 'btn btn-light', 'font-size:20px; border-color: black;', iddefault);
 
 	const SETTINGSDEFAULT = p.createButton('Restore defaults');
@@ -1576,8 +1576,8 @@ p.setup = () => {
 	GENERATE = p.createButton('Generate');
 	setButton(GENERATE, 'generate', 'btn btn-success', '', generateID.bind(null, 0));
 
-	const PAINT = p.createButton('Start Paint');
-	setButton(PAINT, 'startpaint', 'btn btn-info', '', paintmode);
+	const PAINT = p.createButton('<span class="convert-emoji">🎨</span><span class="convert-label">By Paint</span>');
+	setButton(PAINT, 'startpaint', 'convert-square-btn', '', paintmode);
 
 	const FINISHPAINT = p.createButton('Finish Paint');
 	setButton(FINISHPAINT, 'finishpaint', 'btn btn-success', 'font-size: 20px;', finishpaint);
@@ -2085,6 +2085,10 @@ setInterval(() => {
 		getEl("s_start").style.display = (pracalgs.length == 0 ? "none" : "block");
 	}
 	if(document.getElementById("idcurrent").innerHTML != getID()) document.getElementById("idcurrent").innerHTML = getID();
+	try {
+		let defaultID = cubePosToID(allcubies);
+		if(document.getElementById("iddefaultval").innerHTML != defaultID) document.getElementById("iddefaultval").innerHTML = defaultID;
+	} catch(e) {}
 	realtop = getRealTop();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
 	special[4] = getEl("colorPicker4").value;
@@ -2652,6 +2656,110 @@ function IDtoReal(id){
 
 	return a;
 	//[front,back,right,left,bottom,top]
+}
+// Inverse of IDtoReal: build a [6][3][3] layout of color letters straight from
+// an allcubies array (27 cubies x 6 face slots). Each entry below is the
+// [cuby, slot] that IDtoReal read into id[face][x][y].
+function allcubiesToLayout(allcubies){
+	// map[face][x][y] = [cubyIndex, faceSlot]
+	const map = [
+		[ [[0,3],[3,3],[6,3]], [[9,3],[12,3],[15,3]], [[18,3],[21,3],[24,3]] ],   // face 0
+		[ [[2,2],[5,2],[8,2]], [[11,2],[14,2],[17,2]], [[20,2],[23,2],[26,2]] ],  // face 1
+		[ [[0,5],[1,5],[2,5]], [[3,5],[4,5],[5,5]], [[6,5],[7,5],[8,5]] ],        // face 2
+		[ [[18,4],[19,4],[20,4]], [[21,4],[22,4],[23,4]], [[24,4],[25,4],[26,4]] ],// face 3
+		[ [[0,1],[1,1],[2,1]], [[9,1],[10,1],[11,1]], [[18,1],[19,1],[20,1]] ],   // face 4
+		[ [[6,0],[7,0],[8,0]], [[15,0],[16,0],[17,0]], [[24,0],[25,0],[26,0]] ],  // face 5
+	];
+	let layout2 = new Array(6).fill(null).map(() => new Array(3).fill(null).map(() => new Array(3).fill(0)));
+	for(let f = 0; f < 6; f++){
+		for(let x = 0; x < 3; x++){
+			for(let y = 0; y < 3; y++){
+				let [cuby, slot] = map[f][x][y];
+				layout2[f][x][y] = allcubies[cuby][slot];
+			}
+		}
+	}
+	return layout2;
+}
+// Convert an allcubies array directly to a position ID (same format as getID),
+// without touching the live CUBE/layout globals.
+function cubePosToID(allcubies){
+	let lay = allcubiesToLayout(allcubies);
+	let ID = "";
+	let ID2 = "";
+	let realID = "";
+	let cnt = 0;
+	for(let x = 2; x >= 0; x--){ //front
+		for(let y = 0; y < 3; y++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(lay[5][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(lay[5][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	cnt = 0;
+	for(let x = 2; x >= 0; x--){ //right
+		for(let y = 2; y >= 0; y--){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(lay[1][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(lay[1][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	let a = parseInt(ID, 7);
+	a = to132(a);
+	realID += a + " ";
+	ID = "";
+	cnt = 0;
+	for(let x = 2; x >= 0; x--){ //back
+		for(let y = 2; y >= 0; y--){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(lay[4][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(lay[4][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	cnt = 0;
+	for(let x = 2; x >= 0; x--){ //left
+		for(let y = 0; y < 3; y++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(lay[0][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(lay[0][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	a = parseInt(ID, 7);
+	a = to132(a);
+	realID += a + " ";
+	ID = "";
+	cnt = 0;
+	for(let y = 2; y >= 0; y--){ //bottom
+		for(let x = 0; x < 3; x++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(lay[3][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(lay[3][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	cnt = 0;
+	for(let y = 0; y < 3; y++){ //top
+		for(let x = 0; x < 3; x++){
+			if(cnt == 4)
+				ID2 += colororder.indexOf(lay[2][x][y][0]) + "";
+			else
+				ID += colororder.indexOf(lay[2][x][y][0]) + "";
+			cnt++;
+		}
+	}
+	a = parseInt(ID, 7);
+	a = to132(a);
+	realID += a + " " + to132(parseInt(ID2, 7));
+	return realID;
 }
 function escapeHtml(unsafe) {
     return unsafe
@@ -9729,7 +9837,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(bandaged, bandaged2, JSON.stringify(bandaged3["3x3"]));
+		console.log(cubePosToID(allcubies));
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab

@@ -105,7 +105,7 @@
 			<div id = "ID_left">
 				<div id = "ID1">
 					<p id = "or_instruct6" class = "hidethin" style = "font-size:20px; text-align:center;"><b>Position ID</b></p>
-					<p id = "or_instruct7" class = "hidethin" style = "font-size:12px; text-align:center">Save any cube position (on your own cube or on the virtual cube) as an ID.</p>
+					<p id = "or_instruct7" class = "hidethin" style = "font-size:12px; text-align:left">Save any cube position (on your own cube or on the virtual cube) as an ID.</p>
 					<p id="ID2" class = "button" style = "text-align:center; margin-top: 0px;"></p>
 				</div>
 			</div>
@@ -369,19 +369,28 @@
 					<p id="iddefault" class = "button" style = "text-align:left; display: inline;"></p>
 				</div>
 				<div id = "ID5">
+					<p style = "font-size:15px; text-align:left; margin-bottom:0px; padding-top:15px;"><b>Default ID is: </b></p>
+					<div>
+						<p id = "iddefaultval" style = "font-size:15px; text-align:left; display:inline;"></p>
+					</div>
 					<p style = "font-size:15px; text-align:left; margin-bottom:0px; padding-top:15px;"><b>Your current position ID is: </b></p>
 					<div>
 						<p id = "idcurrent" style = "font-size:15px; text-align:left; display:inline;"></p>
 						<p id = "idcopy" style = "display: inline;" class = "button"></p>
-						<p style = "font-size:10px; text-align:left; padding-top:8px; margin-bottom: 0px">Press '7' to alert the current ID, press 'Shift+7' to copy the ID</p>
+						<p style = "font-size:10px; text-align:left; padding-top:8px; margin-bottom: 0px">Default ID represents the position the cube goes to when the 'reset' button is pressed.</p>
+						<p style = "font-size:10px; text-align:left; margin-bottom: 0px">Press '7' to alert the current ID, press 'Shift+7' to copy the ID</p>
 						<p style = "font-size:10px; text-align:left; padding-top: 0px;">Press 'Shift+9' to save default ID, press 'Shift+0' to save current ID</p>
 					</div>
 				</div>
 				<div id = "ID4">
-					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Position ID using webcam 📷</b></p>
-					<p>Go to our <a href = "camera.html" target = "_blank">ID generator</a> and follow the instructions.</p>
-					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Position ID using paint tool 🎨</b></p>
-					<p id = "startpaint"></p>
+					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Convert Physical Cube Position to Virtual</b></p>
+					<div id = "convert-options">
+						<a href = "camera.html" target = "_blank" class = "convert-square" id = "convert-webcam">
+							<span class = "convert-emoji">📷</span>
+							<span class = "convert-label">By Webcam</span>
+						</a>
+						<div id = "startpaint"></div>
+					</div>
 					<p style = "font-size:20px; text-align:left; padding-top:15px;"><b>Generate Premade Cube Positions:</b></p>
 					<div>
 						<div class = "noselect" id = "idinput" style = "font-size:15px; padding-top: 5px; display: inline;">
@@ -389,7 +398,7 @@
 						</div>	
 						<p id = "generate" style = "display: inline;"></p>
 					</div>
-					<p style = "font-size:20px; text-align:left; padding-top:20px;"><b>Set Default Cube Position as ID:</b></p>
+					<p style = "font-size:20px; text-align:left; padding-top:20px;"><b>Set Default ID:</b></p>
 				</div>
 				<p id = "saveposition"></p>
 			</div>
