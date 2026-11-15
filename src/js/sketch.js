@@ -12,7 +12,7 @@ import { computeCubeScore } from '../components/computeCubeScore.js';
 import { updateRecentSolvesTable } from '../components/RecentSolvesTable.js';
 import { showHighscoreModal, hideHighscoreModal } from '../components/HighscoreModal.js';
 import { speeddata } from '../data/speeddata.js';
-import { showCustomModal } from '../components/CustomModal.js';
+import { showCustomModal, hideCustomModal } from '../components/CustomModal.js';
 let userId = localStorage.userId;
 if (!userId && window.crypto) {
   if (crypto.randomUUID) {
@@ -6555,8 +6555,8 @@ function suggestMode() {
 	document.getElementById("l_title").innerHTML = "Create an Account";
 	document.getElementById("l_forgot").innerText = "Have an account?";
 	document.getElementById("l_link").innerText = "Log in";
-	setDisplay("none", ["test_alg_div", "timeselect", "keymap", "show_keyboard"]);
-	setDisplay("block", ["loginform", "suggest_container", "suggest_submit"]);
+	setDisplay("none", ["test_alg_div", "timeselect", "keymap", "show_keyboard", "loginform"]);
+	setDisplay("block", ["suggest_container", "suggest_submit"]);
 	setDisplay("inline", ["suggest_input"])
 	
 	var elements = document.getElementsByClassName('normal');
@@ -14266,8 +14266,16 @@ getEl("suggest_submit").addEventListener("click", async function(event) {
 getEl("cubequestion").addEventListener("click", async function() {
 	showCustomModal(`
 			<p id = "or_instruct2" style = "font-size:12px; margin: 0px;">Drag the mouse on a cube layer <b>across a solid black line</b> to rotate it. You can also use the keyboard.
-				<a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a>
+				<a href="FAQ.html" target="_blank">FAQs</a> <a href="devlog.html" target="_blank">Devlog</a> <a href="#" id="suggest_feature_link">Suggest a Feature</a></p>
 		`);
+	const suggestLink = document.getElementById("suggest_feature_link");
+	if (suggestLink) {
+		suggestLink.addEventListener("click", function(event) {
+			event.preventDefault();
+			hideCustomModal();
+			suggestMode();
+		});
+	}
 });
 
 
