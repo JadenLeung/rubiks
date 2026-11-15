@@ -5,7 +5,7 @@ const jumpToPositionIcon = `<svg width="16" height="16" viewBox="0 0 16 16" fill
 
 // Create a dialog to show solve details
 function showSolveDialog(solveNumber, time, moves, scramble, cubename, scrambletype, solvestat, onDelete, mode, MINIMODE) {
-	console.log("scramble is ", scramble, cubename);
+	console.log("in showSolveDialog, ", scramble, cubename, time, moves, solvestat);
 	let modal = document.getElementById("solve-detail-dialog");
 	let backdrop = document.getElementById("solve-detail-backdrop");
 	
@@ -181,6 +181,7 @@ if (isAppleDevice) {
 		<p style="margin: 10px 0;"><strong>Cube:</strong> ${cubename}</p>
 		<p style="margin: 10px 0;"><strong>Time:</strong> ${time}</p>
 		<p style="margin: 10px 0;"><strong>Moves:</strong> ${moves}</p>
+		${moves && time && moves != 0 ? `<p style="margin: 10px 0;"><strong>Turns per Second</strong> ${(moves / parseFloat(time)).toFixed(2)}</p>` : ''}
 		${scrambletype !== "Normal" ? `<p style="margin: 10px 0;"><strong>Scramble Type:</strong> ${scrambletype}</p>` : ''}
 		<p style="margin: 10px 0; display: flex; align-items: flex-start; gap: 8px;">
 			<strong>Scramble:</strong> 
