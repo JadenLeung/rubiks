@@ -9,7 +9,7 @@ export const weeklyscrambles =
     {cube: "3x3 Glow Cube", pos: "2øGÑF$õ 1ÑWAàTÑ 5ýVTìmò 1ë9"},
     {cube: "Sandwich", pos: "4éO1Wú$ 4IvÐûN6 4G3ß|th 2xz"},
     {cube: "3x3 Glow Cube", pos: "5NííòäX 5ûÓ$ëÝ÷ 3æÎÎqKm 1ë9"},
-    {cube: "3x3", pos: "16saûók 2cUin*s 5v8HýçA 1ë9"},
+    {cube: "3x3", pos: "1déÎu×G 62ïæ#!% 56p#UWo 1ë9"},
     {cube: "3x3 Fade Glow", pos: "2þ%Þ2vt 2Cÿ@}tK 62õg1oß 1ë9"},
     {cube: "3x3x2 Plus Cube", pos: "3ioMnÕ1 6n|4z#Û 5uÙÕÉUS 1ë9"},
     {cube: "Sandwich", pos: "16saûók 2cUin*s 5v8HýçA 1ë9"},
