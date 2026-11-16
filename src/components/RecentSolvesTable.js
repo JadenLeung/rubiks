@@ -1,6 +1,70 @@
 // SVG icon for jump to position button
 import { modalManager } from './ModalManager.js';
 
+// Sort state for the recent-solves table. When sortColumn is one of
+// 'time' | 'moves' | 'ao5' | 'ao12', rows are reordered so the BEST (fastest /
+// fewest / lowest) value sits at the BOTTOM of the table. null = chronological.
+let sortColumn = null;
+
+// Compute the per-solve Ao5 ending at a given chronological solve number
+// (same logic as the inline Ao5 column calculation). Returns a finite number
+// or null if it can't be computed.
+function computeAo5At(mo5, solveNumber) {
+	if (solveNumber < 5) return null;
+	const fiveSolves = mo5.slice(solveNumber - 5, solveNumber);
+	const validTimes = fiveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+	if (validTimes.length < 3) return null;
+	const sortedTimes = [...validTimes].sort((a, b) => a - b);
+	const middleTimes = sortedTimes.slice(1, -1);
+	const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+	return Math.round((totalMiddle / middleTimes.length) * 100) / 100;
+}
+
+// Compute the per-solve Ao12 ending at a given chronological solve number
+// (same logic as the inline Ao12 column calculation). Returns a finite number
+// or null if it can't be computed.
+function computeAo12At(mo5, solveNumber) {
+	if (solveNumber < 12) return null;
+	const twelveSolves = mo5.slice(solveNumber - 12, solveNumber);
+	const validTimes = twelveSolves.filter(t => t !== "DNF" && t !== undefined && t !== null && !isNaN(t));
+	if (validTimes.length < 10) return null;
+	const sortedTimes = [...validTimes].sort((a, b) => a - b);
+	const middleTimes = sortedTimes.slice(1, -1);
+	const totalMiddle = middleTimes.reduce((a, b) => a + b, 0);
+	return Math.round((totalMiddle / middleTimes.length) * 100) / 100;
+}
+
+// Numeric sort key for a value. Non-finishers (DNF, undefined, N/A, null) sort
+// as the WORST so they end up at the top (best stays at the bottom). null means
+// "no value" and also sorts to the top.
+function sortKey(value) {
+	if (value === undefined || value === null || value === "DNF" || value === "N/A" || isNaN(value)) {
+		return Infinity;
+	}
+	return Number(value);
+}
+
+// Build the display order (array of chronological data indices) for the given
+// solve count. Identity order unless a sort column is active. Best value last.
+function buildDisplayOrder(count, mo5, movesarr) {
+	const order = Array.from({ length: count }, (_, i) => i);
+	if (!sortColumn) return order;
+	const keyFor = (dataIndex) => {
+		if (sortColumn === 'time') return sortKey(mo5[dataIndex]);
+		if (sortColumn === 'moves') return sortKey(movesarr[dataIndex]);
+		if (sortColumn === 'ao5') return sortKey(computeAo5At(mo5, dataIndex + 1));
+		if (sortColumn === 'ao12') return sortKey(computeAo12At(mo5, dataIndex + 1));
+		return 0;
+	};
+	// Descending by key => largest (worst) at top, smallest (best) at bottom.
+	// Stable tie-break by original index keeps chronological order within ties.
+	return order.sort((a, b) => {
+		const ka = keyFor(a), kb = keyFor(b);
+		if (ka !== kb) return kb - ka;
+		return a - b;
+	});
+}
+
 const jumpToPositionIcon = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>`;
 
 // Create a dialog to show solve details
@@ -389,6 +453,47 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 	const ao5StatDiv = document.getElementById('ao5_stat').parentElement;
 	const timeHeader = document.getElementById('time_header');
 	
+	// Wire up click-to-sort on the Time, Moves, Ao5, and Ao12 headers. Clicking
+	// a header sorts rows so the BEST value (fastest time / fewest moves /
+	// lowest average) is at the BOTTOM; clicking the active column again clears
+	// the sort. A "*" is shown next to the column currently sorted by (applied
+	// after the mode-specific header text is set, see applySortMarkers below).
+	// Only meaningful outside competing/group modes, where these columns hold
+	// per-solve numeric values.
+	const isCompetingMode = MODE === "competing";
+	const rerender = () => updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapShown, solvedata, competedata, socketId, opponentId, ma_data, isthin);
+	const sortableHeaders = [
+		[timeHeader, 'time', 'Time'],
+		[movesHeader, 'moves', 'Moves'],
+		[ao5Header, 'ao5', 'Ao5'],
+		[ao12Header, 'ao12', 'Ao12'],
+	];
+	for (const [headerEl, columnKey] of sortableHeaders) {
+		if (!headerEl) continue;
+		if (isCompetingMode) {
+			headerEl.style.cursor = '';
+			headerEl.onclick = null;
+			continue;
+		}
+		headerEl.style.cursor = 'pointer';
+		headerEl.title = 'Click to sort (fastest/best at bottom)';
+		headerEl.onclick = (e) => {
+			e.stopPropagation();
+			sortColumn = (sortColumn === columnKey) ? null : columnKey;
+			rerender();
+		};
+	}
+	// Append "*" to whichever column is the active sort. Must run AFTER any
+	// mode-specific code that rewrites header text (e.g. Time/Moves resets),
+	// so call applySortMarkers() at the end of header setup rather than here.
+	const applySortMarkers = () => {
+		if (isCompetingMode) return;
+		for (const [headerEl, columnKey, baseLabel] of sortableHeaders) {
+			if (!headerEl) continue;
+			headerEl.textContent = (sortColumn === columnKey) ? baseLabel + '*' : baseLabel;
+		}
+	};
+	
 	// Initialize table scroll offset if not exists
 	if (window.tableScrollOffset === undefined) {
 		window.tableScrollOffset = 0;
@@ -650,6 +755,10 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		}
 	}
 	
+	// Now that header text is finalized for the current mode, apply the "*"
+	// marker to the active sort column (no-op in competing mode).
+	applySortMarkers();
+	
 	// console.log(MODE, MINIMODE);
 	// Show table only in normal mode, otherwise show old format
 	if ((MODE == "normal" && MINIMODE == "normal") || ["cube", "timed"].includes(MODE)
@@ -685,13 +794,23 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 		// Calculate total rows to show (at least numRows, but can be more if there are more solves)
 		const totalRows = Math.max(numRows, recentTimes.length);
 		
+		// Determine the order in which to render solves. In the normal (non-
+		// competing) case this honors the active sort column; otherwise it's
+		// chronological. displayOrder[displayPos] = chronological data index.
+		const useSort = !isCompeting && sortColumn;
+		const displayOrder = useSort
+			? buildDisplayOrder(recentTimes.length, mo5, movesarr)
+			: Array.from({ length: recentTimes.length }, (_, i) => i);
+		
 		// Create rows
 		for (let i = 0; i < totalRows; i++) {
 			const row = tbody.insertRow();
 			
 			if (i < recentTimes.length) {
+				// Map this display position to the actual chronological index.
+				const dataIndex = displayOrder[i];
 				// Calculate solve number (1-indexed from the full array)
-				const solveNumber = i + 1;
+				const solveNumber = dataIndex + 1;
 				
 				// # column
 				const cellNum = row.insertCell(0);
@@ -713,7 +832,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				const cellTime = row.insertCell(1);
 				if (isGroupMode) {
 					// For group mode, create a cell for each player
-					const playerTimes = recentTimes[i];
+					const playerTimes = recentTimes[dataIndex];
 					if (Array.isArray(playerTimes)) {
 						groupPlayers.forEach((playerId, idx) => {
 							const time = playerTimes[idx];
@@ -736,18 +855,18 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 					// Remove the default time cell since we created individual cells
 					row.deleteCell(1);
 				} else if (isCompeting) {
-					cellTime.textContent = recentTimes[i] === undefined ? '' : (recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's'));
+					cellTime.textContent = recentTimes[dataIndex] === undefined ? '' : (recentTimes[dataIndex] + (recentTimes[dataIndex] == "DNF" ? "" : 's'));
 				} else {
-					cellTime.textContent = recentTimes[i] + (recentTimes[i] == "DNF" ? "" : 's');
+					cellTime.textContent = recentTimes[dataIndex] + (recentTimes[dataIndex] == "DNF" ? "" : 's');
 				}
 			
 			// Moves/Opponent column (show for competing or when showMoves is true)
 			if ((isCompeting && !isGroupMode) || showMoves) {
 				const cellMoves = row.insertCell(2);
 				if (isCompeting && !isGroupMode) {
-					cellMoves.textContent = recentMoves[i] === undefined ? '' : (recentMoves[i] + (recentMoves[i] == "DNF" ? "" : 's'));
+					cellMoves.textContent = recentMoves[dataIndex] === undefined ? '' : (recentMoves[dataIndex] + (recentMoves[dataIndex] == "DNF" ? "" : 's'));
 				} else {
-					cellMoves.textContent = recentMoves[i] || 'N/A';
+					cellMoves.textContent = recentMoves[dataIndex] || 'N/A';
 				}
 			}			
 			// Ao5 column - calculate Ao5 for current solve
@@ -803,7 +922,7 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			// Peeks column
 			if (showPeeks) {
 				const cellPeeks = row.insertCell(showAo12 ? (showAo5 ? 5 : 4) : (showAo5 ? 4 : 3));
-				const peeksValue = solvedata[i].peeks;
+				const peeksValue = solvedata[dataIndex].peeks;
 				cellPeeks.textContent = peeksValue !== undefined && peeksValue !== null ? peeksValue : 'N/A';
 			}
 		} else {
