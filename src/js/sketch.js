@@ -7984,6 +7984,10 @@ function speedRace2(){
 		}
 	}
 	canMan = false;
+	if (MINIMODE == "virtual") {
+		getEl("scramble_par").style.display = "none";
+	}
+	getEl("s_INSTRUCT").style.marginTop = "20px";
 }
 function raceWinner(winner) {
 	if (race > 0) {
@@ -7995,6 +7999,8 @@ function raceWinner(winner) {
 	}
 }
 function raceResults(winner) {
+
+
 	if (winner == 0) {
 		if(roundresult[0] < 5){
 			document.getElementById("s_INSTRUCT").innerHTML = "You Win!";
@@ -8028,6 +8034,10 @@ function raceResults(winner) {
 		raceTimes(1);
 		raceHide();
 	}
+
+	getEl("scramble_par").style.display = "block";
+	getEl("s_INSTRUCT").style.marginTop = "0px";
+	setInnerHTML(["stepbig", "step"])
 }
 function raceHide() {
 	setDisplay("none", ["slider_div", "speed", "delaywhole", "scramble_par"])
