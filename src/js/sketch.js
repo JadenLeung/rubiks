@@ -1635,22 +1635,22 @@ p.setup = () => {
 	setButton(STARTBLIND, "b_regular", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); blindmode()});
 
 	const STARTBLIND2 = p.createButton('Blind');
-	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {movesmode(); startMarathon("blind")});
+	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#63ceff"), () => {movesmode(); startMarathon("blind")});
 
 	const SHOWMARATHON = p.createButton('Start Marathon');
 	setButton(SHOWMARATHON, "show_marathon", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {showMarathons()});
 
 	const STARTMARATHON = p.createButton('Shape');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("shape")});
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', MODEBUTTONSTYLE("#42ff58"), () => {startMarathon("shape")});
 	
 	const STARTMARATHON2 = p.createButton('Bandage');
-	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("bandage")});
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {startMarathon("bandage")});
 
 	const STARTMARATHON3 = p.createButton('Cuboid');
-	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("cuboid")});
+	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', MODEBUTTONSTYLE("#ff9ee8"), () => {startMarathon("cuboid")});
 
 	const STARTMARATHON4 = p.createButton('Baby');
-	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("baby")});
+	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', MODEBUTTONSTYLE("#fc5f53"), () => {startMarathon("baby")});
 
 	const GLOWMARATHON = p.createButton('Glow');
 	setButton(GLOWMARATHON, "ma_startglow", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("glow")});
@@ -7603,6 +7603,11 @@ function speedPLL()
 		for(let i = 0; i < rnd2; i++) {
 			arr.push("U");
 		}
+		if (DIM == 50) {
+			document.getElementById("scramble").innerHTML = `${arr.join(" ")} (${rnd} perm)`;
+		} else {
+			document.getElementById("scramble").innerHTML = `${arr.join(" ")} (PBL ${rnd})`;
+		}
 		multipleEasy(0, 2);
 	}
 	else if(pllstep == 8)
@@ -7658,6 +7663,7 @@ function speedOLL()
 		{
 			arr.push("U");
 		}
+		document.getElementById("scramble").innerHTML = `${arr.join(" ")} (OLL ${rnd})`;
 		multipleEasy(0, 5);
 	}
 	else if(ollstep == 8)
@@ -7944,6 +7950,7 @@ function speedRace(type){
 	setDisplay("none", ["slider_div", "speed", "delaywhole"]);
 	modeData("race");
 	canMan = true;
+	getEl("scramble_par").style.display = "none";
 }
 function speedRace2(){
 	canMan = true;
