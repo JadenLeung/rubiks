@@ -1935,13 +1935,12 @@ setInterval(() => {
 			stopAndUpdateTimes();
 			pllstep++;
 			speedPLL();
-		} else if(((isSolved() && pracmode == "PLL") || (sideSolved(realtop) && pracmode == "OLL")) && pllpracstep % 2 == 1) {
+		} else if(((isSolved() && pracmode == "PLL") || (isOLLSolved() && sideSolved(realtop)  && pracmode == "OLL")) && pllpracstep % 2 == 1) {
 			stopAndUpdateTimes();
 			pllpracstep++;
 			practicePLL();
-		} else if(sideSolved(realtop) && ollstep % 2 == 1) {
+		} else if(isOLLSolved() && sideSolved(realtop) && ollstep % 2 == 1) {
 			stopAndUpdateTimes();
-			console.log("SIDE SOLVED OLL", mo5);
 			ollstep++;
 			speedOLL();
 		} else if (MINIMODE == "practice" && practiceObj.solvedFunc() && practiceObj.step % 2 == 1) {
@@ -1953,7 +1952,7 @@ setInterval(() => {
 	}
 	else if(MODE == "moves")
 	{
-		if (mastep % 2 == 1 && (isSolved() || (ma_data.type == "oll" && sideSolved(realtop)))) {
+		if (mastep % 2 == 1 && (isSolved() || (ma_data.type == "oll" && isOLLSolved() && sideSolved(realtop)))) {
 			stopAndUpdateTimes();
 			mastep++;
 			peeks = 0;
@@ -6515,7 +6514,9 @@ function waitStopTurning(timed = true, mode = "wtev", start = false) {
 				savesetup = IDtoReal(IDtoLayout(decode(getID())));
 				special[2] = savesetup;
 				savebandage = mapBandaged();
-				if (timer.getTime() > 0 || isAnimating() || (bstep == 0 && cstep == 0 && mastep == 0)) {
+				// Alg marathons (PLL/OLL) start already scrambled; capture that
+				// position once and stop, so a later user turn can't overwrite it.
+				if (["pll", "oll"].includes(mode) || timer.getTime() > 0 || isAnimating() || (bstep == 0 && cstep == 0 && mastep == 0)) {
 					clearInterval(interval2); 
 				}
 			}, 10);
