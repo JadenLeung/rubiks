@@ -6346,17 +6346,17 @@ function shapemarathon() {
 			let perm = ma_data.cubes[mastep / 2];
 			getEl("ma_cube").innerHTML = "PLL " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
 			getEl("ma_small").innerHTML = "Solve the " + perm + " perm.";
-			let str = "PLL Lineup<br>";
-			ma_data.cubes.forEach((pll, i) => {
-				if (i == mastep / 2) {
-					str += "<b style = 'color: green'>"
-				}
-				str += (i + 1) + ") " + pll + " perm";
-				if (i == mastep / 2) {
-					str += "</b>"
-				}
-				str += "<br>"
-			})
+			let items = ma_data.cubes.map((pll, i) => {
+				let label = (i + 1) + ") " + pll + " perm";
+				let cell = i == mastep / 2 ? "<b style='color: green'>" + label + "</b>" : label;
+				return "<div>" + cell + "</div>";
+			}).join("");
+			let str = "PLL Lineup"
+				+ "<div style='display:grid; grid-template-columns:1fr 1fr; "
+				+ "grid-auto-flow:column; grid-template-rows:repeat("
+				+ Math.ceil(ma_data.cubes.length / 2) + ", auto); "
+				+ "column-gap:12px; text-align:left; justify-content:center;'>"
+				+ items + "</div>";
 			getEl("ma_list").innerHTML = str;
 			switchCube("3x3")
 			realtop = getRealTop();
