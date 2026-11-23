@@ -6443,12 +6443,11 @@ function setupAlgMarathon() {
 	switchCube("3x3");
 	realtop = getRealTop();
 	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
-	reSetup();
+	quickSolve();
 	setTimeout(() => {
-		quickSolve();
 		// Random U-turn setup so the case isn't always in the same orientation
 		const uturns = Math.floor(Math.random() * 4);
-		changeArr("U ".repeat(uturns) + config.algs[current][1]);
+		changeArr(config.algs[current][1] + " U".repeat(uturns));
 		document.getElementById("scramble").innerHTML = `${arr.join(" ")} (${config.scrambleLabel(current)})`;
 		multiple2("scramble");
 		waitStopTurning(false, ma_data.type);
