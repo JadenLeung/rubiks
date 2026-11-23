@@ -1006,9 +1006,8 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 				sumValue = Math.round(totalTime * 100) / 100;
 			}
 			
-			// Hide Ao5 and Mo5, show sum in best time
+			// Hide Ao5, show sum in best time
 			document.getElementById('ao5_stat').parentElement.style.display = 'none';
-			document.getElementById('mo5_stat').parentElement.style.display = 'none';
 			document.getElementById('best_ao5_div').style.display = 'none';
 			
 			// Update best time label to "Sum of Times" and show sum
@@ -1017,6 +1016,21 @@ export function updateRecentSolvesTable(MODE, mo5, movesarr, MINIMODE, keymapSho
 			const bestTimeLabel = bestTimeDiv.querySelector('strong');
 			if (bestTimeLabel) bestTimeLabel.textContent = 'Sum of Times:';
 			document.getElementById('best_time_stat').textContent = sumValue === 'N/A' ? sumValue : sumValue + 's';
+			
+			// In marathon, also show the mean (Mo5) time; otherwise hide it
+			const mo5StatElem = document.getElementById('mo5_stat');
+			if (isMarathonNonBlind) {
+				let meanValue = 'N/A';
+				if (validTimes.length > 0) {
+					meanValue = Math.round((validTimes.reduce((a, b) => a + b, 0) / validTimes.length) * 100) / 100;
+				}
+				mo5StatElem.parentElement.style.display = '';
+				const mo5Label = mo5StatElem.parentElement.querySelector('strong');
+				if (mo5Label) mo5Label.textContent = 'Mean:';
+				mo5StatElem.textContent = meanValue === 'N/A' ? meanValue : meanValue + 's';
+			} else {
+				mo5StatElem.parentElement.style.display = 'none';
+			}
 		} else if (recentTimes.length > 0) {
 			// Normal mode - hide Ao5 stat, show Mo5 and Best Time
 			document.getElementById('ao5_stat').parentElement.style.display = 'none';

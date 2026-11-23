@@ -1658,6 +1658,9 @@ p.setup = () => {
 	const PLLMARATHON = p.createButton('PLL');
 	setButton(PLLMARATHON, "ma_startpll", 'btn btn-info', MODEBUTTONSTYLE("#c89bff"), () => {marathonmode("pll")});
 
+	const OLLMARATHON = p.createButton('OLL');
+	setButton(OLLMARATHON, "ma_startoll", 'btn btn-info', MODEBUTTONSTYLE("#9bc9ff"), () => {marathonmode("oll")});
+
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
 		try {
@@ -1950,7 +1953,7 @@ setInterval(() => {
 	}
 	else if(MODE == "moves")
 	{
-		if (mastep % 2 == 1 && isSolved()) {
+		if (mastep % 2 == 1 && (isSolved() || (ma_data.type == "oll" && sideSolved(realtop)))) {
 			stopAndUpdateTimes();
 			mastep++;
 			peeks = 0;
@@ -2400,7 +2403,7 @@ function to10(num) {
 	return total;
 }
 function getRealTop() {
-	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL", "PLLprac", "OLLprac"].includes(MINIMODE) || (MINIMODE == "practice" && practiceObj.shouldFlipCube)))
+	if(TOPPLL.value() == "Opposite of above" && (["PLL", "OLL", "pracPLL", "PLLprac", "OLLprac"].includes(MINIMODE) || (MINIMODE == "practice" && practiceObj.shouldFlipCube) || (MINIMODE == "marathon" && ["pll", "oll"].includes(ma_data.type))))
 		return opposite[TOPWHITE.value()[0].toLowerCase()];
 	else
 		return TOPWHITE.value()[0].toLowerCase();
@@ -6313,7 +6316,7 @@ function marathonmode(type) {
 	reSetup();
 	MINIMODE = "marathon"
 	ma_data.type = type;
-	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow", pll: "marathonpll"};
+	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow", pll: "marathonpll", oll: "marathonoll"};
 	if (type == "cuboid") {
 		ma_data.cubes = ["2x2x4", "2x3x4", "3x3x4", "3x3x5", "4x4 Plus Cube"];
 	} else if (type == "shape" || type == "blind") {
@@ -6326,6 +6329,8 @@ function marathonmode(type) {
 		ma_data.cubes = ["3x3 Glow Cube", "3x3 Anti-Glow", "2x2 Side Glow", "3x3 Side Glow", "3x3 Cross Glow", "2x2 Cuby Glow", "3x3 Fade Glow"];
 	} else if (type == "pll") {
 		ma_data.cubes = ["Aa", "Ab", "E", "F", "Ga", "Gb", "Gc", "Gd", "H", "Ja", "Jb", "Na", "Nb", "Ra", "Rb", "T", "Ua", "Ub", "V", "Y", "Z"];
+	} else if (type == "oll") {
+		ma_data.cubes = Array.from({ length: 57 }, (_, i) => (i + 1).toString());
 	}
 
 	if (type == "blind") {
@@ -6342,36 +6347,8 @@ function startMarathon() {
 		mo5 = [];
 	}
 	if (mastep % 2 == 0 && mastep / 2 < ma_data.cubes.length) {
-		if (ma_data.type == "pll") {
-			let perm = ma_data.cubes[mastep / 2];
-			getEl("ma_cube").innerHTML = "PLL " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
-			getEl("ma_small").innerHTML = "Solve the " + perm + " perm.";
-			let items = ma_data.cubes.map((pll, i) => {
-				let label = (i + 1) + ") " + pll + " perm";
-				let cell = i == mastep / 2 ? "<b style='color: green'>" + label + "</b>" : label;
-				return "<div>" + cell + "</div>";
-			}).join("");
-			let str = "PLL Lineup"
-				+ "<div style='display:grid; grid-template-columns:1fr 1fr; "
-				+ "grid-auto-flow:column; grid-template-rows:repeat("
-				+ Math.ceil(ma_data.cubes.length / 2) + ", auto); "
-				+ "column-gap:12px; text-align:left; justify-content:center;'>"
-				+ items + "</div>";
-			getEl("ma_list").innerHTML = str;
-			switchCube("3x3")
-			realtop = getRealTop();
-			special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
-			reSetup();
-			setTimeout(() => {
-				quickSolve();
-				// Random U-turn setup so the perm isn't always in the same orientation
-				let uturns = Math.floor(Math.random() * 4);
-				let setup = "U ".repeat(uturns);
-				changeArr(setup + plls[perm][1]);
-				multiple2("scramble");
-				waitStopTurning(false, ma_data.type);
-				toggleBlind(false, false);
-			}, 50)
+		if (ma_data.type == "pll" || ma_data.type == "oll") {
+			setupAlgMarathon();
 		} else {
 			getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
 			getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + (ma_data.type == "blind" ? " with the fewest peeks.": ".");
@@ -6414,6 +6391,69 @@ function startMarathon() {
 		setDisplay("block", ["show_marathon"]);
 		setScore(ma_data.maphighscore[ma_data.type], score, true);
 	}
+}
+
+// Shared per-round setup for algorithm marathons (PLL / OLL), which scramble
+// only the last layer of a solved 3x3 using a stored algorithm scramble.
+function setupAlgMarathon() {
+	const idx = mastep / 2;
+	const config = {
+		pll: {
+			title: "PLL",
+			small: "Solve the " + ma_data.cubes[idx] + " perm.",
+			algs: typeof plls !== "undefined" ? plls : {},
+			label: (name, i) => (i + 1) + ") " + name + " perm",
+			scrambleLabel: (name) => name + " perm",
+			lineup: "PLL Lineup",
+			gridStyle: "display:grid; grid-template-columns:1fr 1fr; grid-auto-flow:column; "
+				+ "grid-template-rows:repeat(" + Math.ceil(ma_data.cubes.length / 2) + ", auto); "
+				+ "column-gap:12px; text-align:left; justify-content:center;",
+		},
+		oll: {
+			title: "OLL",
+			small: "Orient the top layer (OLL " + ma_data.cubes[idx] + ").",
+			algs: typeof olls !== "undefined" ? olls : {},
+			label: (name) => "OLL " + name,
+			scrambleLabel: (name) => "OLL " + name,
+			lineup: "OLL Lineup",
+			gridStyle: "display:grid; grid-template-columns:repeat(5, 1fr); gap:2px 10px; "
+				+ "text-align:left; justify-content:center; max-height:150px; overflow-y:auto;",
+		},
+	}[ma_data.type];
+
+	const current = ma_data.cubes[idx];
+	getEl("ma_cube").innerHTML = config.title + " " + (idx + 1) + " of " + ma_data.cubes.length;
+	getEl("ma_small").innerHTML = config.small;
+
+	const items = ma_data.cubes.map((name, i) => {
+		const text = config.label(name, i);
+		const cell = i == idx ? "<b style='color: green' id='ma_current'>" + text + "</b>" : text;
+		return "<div>" + cell + "</div>";
+	}).join("");
+	getEl("ma_list").innerHTML = config.lineup
+		+ "<div id='ma_alg_grid' style='" + config.gridStyle + "'>" + items + "</div>";
+
+	// Keep the active case in view within the (possibly scrolling) lineup
+	const grid = getEl("ma_alg_grid");
+	const cur = getEl("ma_current");
+	if (grid && cur) {
+		grid.scrollTop = cur.offsetTop - grid.offsetTop - grid.clientHeight / 2;
+	}
+
+	switchCube("3x3");
+	realtop = getRealTop();
+	special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+	reSetup();
+	setTimeout(() => {
+		quickSolve();
+		// Random U-turn setup so the case isn't always in the same orientation
+		const uturns = Math.floor(Math.random() * 4);
+		changeArr("U ".repeat(uturns) + config.algs[current][1]);
+		document.getElementById("scramble").innerHTML = `${arr.join(" ")} (${config.scrambleLabel(current)})`;
+		multiple2("scramble");
+		waitStopTurning(false, ma_data.type);
+		toggleBlind(false, false);
+	}, 50);
 }
 
 function isBot() {
@@ -7095,7 +7135,7 @@ function updateScores() {
 	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
-			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon", marathonpll: "PLL Marathon"};
+			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon", marathonpll: "PLL Marathon", marathonoll: "OLL Marathon"};
 	Object.keys(display).forEach((mode) => {
 		let score  = localStorage[mode];
 		if (score == "undefined") {
@@ -7808,6 +7848,7 @@ async function saveData(username, password, method, al) {
 		marathon5: localStorage.marathon5 ?? -1,
 		marathonglow: localStorage.marathonglow ?? -1,
 		marathonpll: localStorage.marathonpll ?? -1,
+		marathonoll: localStorage.marathonoll ?? -1,
 		keymappings: localStorage.keymappings,
 	};
 	console.log(data);
@@ -7872,7 +7913,7 @@ async function loadData(times, userdata, showText=true) {
 	console.log("Userdata is ", userdata);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
-			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5","marathonglow","marathonpll"];
+			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5","marathonglow","marathonpll","marathonoll"];
 		params.forEach((param) => {
 			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
 				localStorage[param] = userdata[param];
