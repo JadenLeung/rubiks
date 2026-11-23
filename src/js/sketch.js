@@ -1655,6 +1655,9 @@ p.setup = () => {
 	const GLOWMARATHON = p.createButton('Glow');
 	setButton(GLOWMARATHON, "ma_startglow", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("glow")});
 
+	const PLLMARATHON = p.createButton('PLL');
+	setButton(PLLMARATHON, "ma_startpll", 'btn btn-info', MODEBUTTONSTYLE("#c89bff"), () => {startMarathon("pll")});
+
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
 		try {
@@ -3256,10 +3259,10 @@ function changeThree(switchstart = true)
 	if (["speed", "moves"].includes(MODE)) {
 		refreshButtons();
 	}
-	if (MODE == "speed") {
+	if (MODE == "speed" && MINIMODE == "speed") {
 		speedmode();
 	}
-	if(MODE == "moves")
+	if(MODE == "moves" && MINIMODE == "moves")
 		movesmode();
 	if(MODE == "paint")
 		idmode();
@@ -6256,6 +6259,7 @@ function dailychallenge(cube) {
 	}
 }
 function blindmode() {
+	MINIMODE = "blind"
 	if (bstep == 0) {
 		peeks = 0;
 		bstep = 1;
@@ -6309,7 +6313,7 @@ function startMarathon(type) {
 	reSetup();
 	MINIMODE = "marathon"
 	ma_data.type = type;
-	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow"};
+	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow", pll: "marathon6"};
 	if (type == "cuboid") {
 		ma_data.cubes = ["2x2x4", "2x3x4", "3x3x4", "3x3x5", "4x4 Plus Cube"];
 	} else if (type == "shape" || type == "blind") {
@@ -6320,6 +6324,8 @@ function startMarathon(type) {
 		ma_data.cubes = ["1x2x2", "1x2x3", "Plus Lite", "3x3x2 Plus Cube", "Snake Eyes", "1x4x4", "1x5x5"];
 	} else if (type == "glow") {
 		ma_data.cubes = ["3x3 Glow Cube", "3x3 Anti-Glow", "2x2 Side Glow", "3x3 Side Glow", "3x3 Cross Glow", "2x2 Cuby Glow", "3x3 Fade Glow"];
+	} else if (type == "pll") {
+		ma_data.cubes = ["Aa", "Ab", "E", "F", "Ga", "Gb", "Gc", "Gd", "H", "Ja", "Jb", "Na", "Nb", "Ra", "Rb", "T", "Ua", "Ub", "V", "Y", "Z"];
 	}
 
 	if (type == "blind") {
@@ -6336,28 +6342,60 @@ function shapemarathon() {
 		mo5 = [];
 	}
 	if (mastep % 2 == 0 && mastep / 2 < ma_data.cubes.length) {
-		getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
-		getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + (ma_data.type == "blind" ? " with the fewest peeks.": ".");
-		let str = "Cube Lineup<br>";
-		ma_data.cubes.forEach((cube, i) => {
-			console.log(i, mastep / 2)
-			if (i == mastep / 2) {
-				str += "<b style = 'color: green'>"
-			}
-			str += (i+1) + ") " + cube;
-			if (i == mastep / 2) {
-				str += "</b>"
-			}
-			str +=  "<br>"
-		})
-		getEl("ma_list").innerHTML = str;
-		switchCube(ma_data.cubes[mastep / 2]);
-		reSetup();
-		setTimeout(() => {
-			shuffleCube();
-			waitStopTurning(false, ma_data.type);
-			toggleBlind(false, false);
-		}, 50)
+		if (ma_data.type == "pll") {
+			let perm = ma_data.cubes[mastep / 2];
+			getEl("ma_cube").innerHTML = "PLL " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
+			getEl("ma_small").innerHTML = "Solve the " + perm + " perm.";
+			let str = "PLL Lineup<br>";
+			ma_data.cubes.forEach((pll, i) => {
+				if (i == mastep / 2) {
+					str += "<b style = 'color: green'>"
+				}
+				str += (i + 1) + ") " + pll + " perm";
+				if (i == mastep / 2) {
+					str += "</b>"
+				}
+				str += "<br>"
+			})
+			getEl("ma_list").innerHTML = str;
+			switchCube("3x3")
+			realtop = getRealTop();
+			special[2] = IDtoReal(IDtoLayout(decode(colorvalues[realtop])));
+			reSetup();
+			setTimeout(() => {
+				quickSolve();
+				// Random U-turn setup so the perm isn't always in the same orientation
+				let uturns = Math.floor(Math.random() * 4);
+				let setup = "U ".repeat(uturns);
+				changeArr(setup + plls[perm][1]);
+				multiple2("scramble");
+				waitStopTurning(false, ma_data.type);
+				toggleBlind(false, false);
+			}, 50)
+		} else {
+			getEl("ma_cube").innerHTML = "Cube " + (mastep / 2 + 1) + " of " + ma_data.cubes.length;
+			getEl("ma_small").innerHTML = "Solve the " + ma_data.cubes[mastep / 2] + (ma_data.type == "blind" ? " with the fewest peeks.": ".");
+			let str = "Cube Lineup<br>";
+			ma_data.cubes.forEach((cube, i) => {
+				console.log(i, mastep / 2)
+				if (i == mastep / 2) {
+					str += "<b style = 'color: green'>"
+				}
+				str += (i+1) + ") " + cube;
+				if (i == mastep / 2) {
+					str += "</b>"
+				}
+				str +=  "<br>"
+			})
+			getEl("ma_list").innerHTML = str;
+			switchCube(ma_data.cubes[mastep / 2]);
+			reSetup();
+			setTimeout(() => {
+				shuffleCube();
+				waitStopTurning(false, ma_data.type);
+				toggleBlind(false, false);
+			}, 50)
+		}
 
 	}
 	if (mastep / 2 == ma_data.cubes.length) {
@@ -6867,6 +6905,7 @@ function movesmode()
 	m_offset = 0;
 	canMan = false;
 	MODE = "moves"
+	MINIMODE = "moves"
 	DIM = DIM2;
 	reSetup();
 	saveao5 = [ao5, mo5, solvedata, movesarr];
@@ -7056,7 +7095,7 @@ function updateScores() {
 	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
-			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon"};
+			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon", marathon6: "PLL Marathon"};
 	Object.keys(display).forEach((mode) => {
 		let score  = localStorage[mode];
 		if (score == "undefined") {
@@ -9854,7 +9893,7 @@ p.keyPressed = (event) => {
 		return;
 	}
 	if(p.keyCode == 16){ //shift
-		console.log(cubePosToID(allcubies));
+		console.log(MINIMODE);
 		// socket.emit("debug");
 	}
 	if(p.keyCode == 9){ //tab
