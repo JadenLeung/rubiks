@@ -1635,28 +1635,28 @@ p.setup = () => {
 	setButton(STARTBLIND, "b_regular", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {movesmode(); blindmode()});
 
 	const STARTBLIND2 = p.createButton('Blind');
-	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#63ceff"), () => {movesmode(); startMarathon("blind")});
+	setButton(STARTBLIND2, "b_marathon", 'btn btn-info', MODEBUTTONSTYLE("#63ceff"), () => {movesmode(); marathonmode("blind")});
 
 	const SHOWMARATHON = p.createButton('Start Marathon');
 	setButton(SHOWMARATHON, "show_marathon", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {showMarathons()});
 
 	const STARTMARATHON = p.createButton('Shape');
-	setButton(STARTMARATHON, "ma_start", 'btn btn-info', MODEBUTTONSTYLE("#42ff58"), () => {startMarathon("shape")});
+	setButton(STARTMARATHON, "ma_start", 'btn btn-info', MODEBUTTONSTYLE("#42ff58"), () => {marathonmode("shape")});
 	
 	const STARTMARATHON2 = p.createButton('Bandage');
-	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {startMarathon("bandage")});
+	setButton(STARTMARATHON2, "ma_start2", 'btn btn-info', MODEBUTTONSTYLE("#FBF35B"), () => {marathonmode("bandage")});
 
 	const STARTMARATHON3 = p.createButton('Cuboid');
-	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', MODEBUTTONSTYLE("#ff9ee8"), () => {startMarathon("cuboid")});
+	setButton(STARTMARATHON3, "ma_start3", 'btn btn-info', MODEBUTTONSTYLE("#ff9ee8"), () => {marathonmode("cuboid")});
 
 	const STARTMARATHON4 = p.createButton('Baby');
-	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', MODEBUTTONSTYLE("#fc5f53"), () => {startMarathon("baby")});
+	setButton(STARTMARATHON4, "ma_start4", 'btn btn-info', MODEBUTTONSTYLE("#fc5f53"), () => {marathonmode("baby")});
 
 	const GLOWMARATHON = p.createButton('Glow');
-	setButton(GLOWMARATHON, "ma_startglow", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {startMarathon("glow")});
+	setButton(GLOWMARATHON, "ma_startglow", 'btn btn-info', MODEBUTTONSTYLE("#ffb163"), () => {marathonmode("glow")});
 
 	const PLLMARATHON = p.createButton('PLL');
-	setButton(PLLMARATHON, "ma_startpll", 'btn btn-info', MODEBUTTONSTYLE("#c89bff"), () => {startMarathon("pll")});
+	setButton(PLLMARATHON, "ma_startpll", 'btn btn-info', MODEBUTTONSTYLE("#c89bff"), () => {marathonmode("pll")});
 
 	const SAVEPOSITION = p.createButton('Save Current Position');
 	setButton(SAVEPOSITION, "saveposition", 'btn btn-success', '', () => {
@@ -1954,7 +1954,7 @@ setInterval(() => {
 			stopAndUpdateTimes();
 			mastep++;
 			peeks = 0;
-			shapemarathon();
+			startMarathon();
 		} else if (bstep == 2 && isSolved()) {
 			bstep = 3;
 			blindmode();
@@ -6309,11 +6309,11 @@ function showMarathons() {
 	setDisplay("block", ["ma_buttons", "ma_highscores"]);
 }
 
-function startMarathon(type) {
+function marathonmode(type) {
 	reSetup();
 	MINIMODE = "marathon"
 	ma_data.type = type;
-	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow", pll: "marathon6"};
+	ma_data.maphighscore = {shape:"marathon", bandage:"marathon2", blind: "marathon3", cuboid: "marathon4", baby: "marathon5", glow: "marathonglow", pll: "marathonpll"};
 	if (type == "cuboid") {
 		ma_data.cubes = ["2x2x4", "2x3x4", "3x3x4", "3x3x5", "4x4 Plus Cube"];
 	} else if (type == "shape" || type == "blind") {
@@ -6332,9 +6332,9 @@ function startMarathon(type) {
 		setDisplay("block", ["peek_container"]);
 	}
 	mastep = 0;
-	shapemarathon();
+	startMarathon();
 }
-function shapemarathon() { 
+function startMarathon() { 
 	if (mastep == 0) {
 		showMarathon();
 		showGameHigh(ma_data.maphighscore[ma_data.type]);
@@ -7095,7 +7095,7 @@ function updateScores() {
 	display = {m_easy: "3-5 Movers", m_medium: "Endless", c_week: "Weekly", c_day2: "Daily 2x2 all time"
 		, c_day: "Daily 3x3 all time", c_day_bweek : "Daily 3x3 this week", c_day2_bweek : "Daily 2x2 this week", 
 			blind2x2 : "Blind 2x2", blind3x3: "Blind 3x3", marathon: "Shape Marathon", marathon2: "Bandage Marathon", marathon3: "Blind Marathon", race2x2: "2x2 Virtual Race",
-			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon", marathon6: "PLL Marathon"};
+			race3x3: "3x3 Virtual Race", marathon4: "Cuboid Marathon", marathon5: "Baby Marathon", marathonglow: "Glow Marathon", marathonpll: "PLL Marathon"};
 	Object.keys(display).forEach((mode) => {
 		let score  = localStorage[mode];
 		if (score == "undefined") {
@@ -7135,7 +7135,7 @@ function setScore(mode, total, getlow = true, persist = false) {
 	let scoreChanged = false;
 	console.log("In setscore ", mode, total, localStorage[mode], highscores === null || highscores === undefined, MODE, getlow, total < highscores && getlow, ((total > highscores && !getlow) || (total < highscores && getlow)));
 	const chalday = {"c_week" : "cdate", "c_day" : "cdate2", "c_day2" : "cdate3"}
-	if (highscores === null || highscores === undefined || highscores == -1 || (MODE == "speed" && total < highscores) || 
+	if (highscores === null || highscores === undefined || isNaN(highscores) || highscores == -1 || (MODE == "speed" && total < highscores) || 
 	(MODE == "moves" && ((total > highscores && !getlow) || (total < highscores && getlow)))
 	|| (["weekly", "daily"].includes(MODE) && (localStorage[chalday[mode]] != (mode == "c_week" ? week : sinceOct12('d')) || total < highscores))) {
 		if (localStorage.username != "signedout") {
@@ -7807,6 +7807,7 @@ async function saveData(username, password, method, al) {
 		marathon4: localStorage.marathon4 ?? -1,
 		marathon5: localStorage.marathon5 ?? -1,
 		marathonglow: localStorage.marathonglow ?? -1,
+		marathonpll: localStorage.marathonpll ?? -1,
 		keymappings: localStorage.keymappings,
 	};
 	console.log(data);
@@ -7871,7 +7872,7 @@ async function loadData(times, userdata, showText=true) {
 	console.log("Userdata is ", userdata);
 	if (times) {
 		let params = ["easy", "medium", "oll", "pll", "easy2", "oll2", "pbl2", "blind2x2", "blind3x3", 
-			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5","marathonglow"];
+			"marathon", "marathon2","marathon3","race2x2","race3x3","marathon4","marathon5","marathonglow","marathonpll"];
 		params.forEach((param) => {
 			if (userdata[param] != -1 && (localStorage[param] == undefined || localStorage[param] == -1 || +localStorage[param] > +userdata[param]))
 				localStorage[param] = userdata[param];
@@ -9922,7 +9923,7 @@ p.keyPressed = (event) => {
 			if (m_34step > 0) func = m_34;
 			if (m_4step > 0) func = m_4; 
 			if (bstep > 0) func = blindmode; 
-			if (mastep > 0) func = startMarathon.bind(0, ma_data.type);
+			if (mastep > 0) func = marathonmode.bind(0, ma_data.type);
 			if (func) {
 				if (mastep > 0 && layout[2][1][1][0] != TOPWHITE.value()[0].toLowerCase()) {
 					movesmode();
